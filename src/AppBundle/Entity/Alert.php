@@ -2,13 +2,16 @@
 
 namespace AppBundle\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Alert
  *
  * @ORM\Table(name="alert")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\AlertRepository")
+ * @ApiResource
  */
 class Alert
 {
@@ -25,13 +28,24 @@ class Alert
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, unique=true)
+     * @Assert\NotBlank
      */
     private $name;
+
+    /**
+     * @var probe
+     *
+     * @ORM\ManyToOne(targetEntity="Probe")
+     * @ORM\JoinColumn(name="probe_id", referencedColumnName="id")
+     * @Assert\NotBlank
+     */
+    private $probe;
 
     /**
      * @var string
      *
      * @ORM\Column(name="datasource", type="string", length=255)
+     * @Assert\NotBlank
      */
     private $datasource;
 
@@ -39,6 +53,7 @@ class Alert
      * @var string
      *
      * @ORM\Column(name="pattern", type="string", length=255)
+     * @Assert\NotBlank
      */
     private $pattern;
 
@@ -124,5 +139,28 @@ class Alert
     {
         return $this->pattern;
     }
-}
 
+    /**
+     * Set probe
+     *
+     * @param \AppBundle\Entity\Probe $probe
+     *
+     * @return Alert
+     */
+    public function setProbe(\AppBundle\Entity\Probe $probe = null)
+    {
+        $this->probe = $probe;
+
+        return $this;
+    }
+
+    /**
+     * Get probe
+     *
+     * @return \AppBundle\Entity\Probe
+     */
+    public function getProbe()
+    {
+        return $this->probe;
+    }
+}

@@ -2,13 +2,16 @@
 
 namespace AppBundle\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Probe
  *
  * @ORM\Table(name="probe")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\ProbeRepository")
+ * @ApiResource
  */
 class Probe
 {
@@ -25,6 +28,7 @@ class Probe
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, unique=true)
+     * @Assert\NotBlank
      */
     private $name;
 
@@ -32,6 +36,7 @@ class Probe
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=255)
+     * @Assert\NotBlank
      */
     private $type;
 
@@ -39,6 +44,7 @@ class Probe
      * @var int
      *
      * @ORM\Column(name="step", type="integer")
+     * @Assert\NotBlank
      */
     private $step;
 
@@ -46,6 +52,7 @@ class Probe
      * @var int
      *
      * @ORM\Column(name="samples", type="integer")
+     * @Assert\NotBlank
      */
     private $samples;
 
@@ -156,4 +163,3 @@ class Probe
         return $this->samples;
     }
 }
-

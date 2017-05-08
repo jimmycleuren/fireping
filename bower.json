@@ -1,0 +1,19 @@
+{
+  "name": "fireping",
+  "homepage": "https://github.com/jimmycleuren/fireping",
+  "authors": [
+    "Jimmy Cleuren <jimmy.cleuren@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "GNU General Public License v3.0",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "web/assets/vendor/",
+    "test",
+    "tests"
+  ]
+}
