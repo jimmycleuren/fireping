@@ -12,7 +12,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *
  * @ORM\Table(name="slave")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\SlaveRepository")
- * @ApiResource()
+ * @ApiResource(attributes={"normalization_context"={"groups"={"slave"}}})
  */
 class Slave
 {
@@ -187,6 +187,10 @@ class Slave
         return $this->domains;
     }
 
+    /**
+     * @return array
+     * @Groups({"slave"})
+     */
     public function getConfig()
     {
         $result = array();
