@@ -73,6 +73,12 @@ class Domain
      */
     private $devices;
 
+    /**
+     * @var domain
+     * @ORM\OneToMany(targetEntity="Domain", mappedBy="parent")
+     */
+    private $subdomains;
+
 
     /**
      * Get id
@@ -275,5 +281,39 @@ class Domain
     public function getDevices()
     {
         return $this->devices;
+    }
+
+    /**
+     * Add subdomain
+     *
+     * @param \AppBundle\Entity\Domain $subdomain
+     *
+     * @return Domain
+     */
+    public function addSubdomain(\AppBundle\Entity\Domain $subdomain)
+    {
+        $this->subdomains[] = $subdomain;
+
+        return $this;
+    }
+
+    /**
+     * Remove subdomain
+     *
+     * @param \AppBundle\Entity\Domain $subdomain
+     */
+    public function removeSubdomain(\AppBundle\Entity\Domain $subdomain)
+    {
+        $this->subdomains->removeElement($subdomain);
+    }
+
+    /**
+     * Get subdomains
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getSubdomains()
+    {
+        return $this->subdomains;
     }
 }

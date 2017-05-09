@@ -196,12 +196,7 @@ class Slave
         $result = array();
 
         foreach($this->domains as $domain) {
-            foreach ($domain->getDevices() as $device) {
-                $result[$device->getName()] = array(
-                    'ip' => $device->getIp(),
-                    'probes' => $this->getDeviceProbes($device),
-                );
-            }
+            $this->getDomainDevices($domain, $result);
         }
 
         foreach($this->devices as $device) {
@@ -211,6 +206,20 @@ class Slave
             );
         }
         return $result;
+    }
+
+    private function getDomainDevices($domain, &$result)
+    {
+        foreach ($domain->getSubDomains() as $subdomain) {
+            $this->getDomainDevices($subdomain, $result);
+        }
+
+        foreach ($domain->getDevices() as $device) {
+            $result[$device->getName()] = array(
+                'ip' => $device->getIp(),
+                'probes' => $this->getDeviceProbes($device),
+            );
+        }
     }
 
     private function getDeviceProbes($device)
@@ -223,17 +232,18 @@ class Slave
                 'step' => $probe->getStep(),
                 'samples' => $probe->getSamples(),
             );
-            $parent = $device->getDomain();
-            while($parent != null) {
-                foreach($parent->getProbes() as $probe) {
-                    $result[] = array(
-                        'type' => $probe->getType(),
-                        'step' => $probe->getStep(),
-                        'samples' => $probe->getSamples(),
-                    );
-                }
-                $parent = $parent->getParent();
+        }
+
+        $parent = $device->getDomain();
+        while($parent != null) {
+            foreach($parent->getProbes() as $probe) {
+                $result[] = array(
+                    'type' => $probe->getType(),
+                    'step' => $probe->getStep(),
+                    'samples' => $probe->getSamples(),
+                );
             }
+            $parent = $parent->getParent();
         }
 
         return $result;
