@@ -67,6 +67,12 @@ class Domain
      */
     private $alerts;
 
+    /**
+     * @var device
+     * @ORM\OneToMany(targetEntity="Device", mappedBy="domain")
+     */
+    private $devices;
+
 
     /**
      * Get id
@@ -235,5 +241,39 @@ class Domain
     public function getAlerts()
     {
         return $this->alerts;
+    }
+
+    /**
+     * Add device
+     *
+     * @param \AppBundle\Entity\Device $device
+     *
+     * @return Domain
+     */
+    public function addDevice(\AppBundle\Entity\Device $device)
+    {
+        $this->devices[] = $device;
+
+        return $this;
+    }
+
+    /**
+     * Remove device
+     *
+     * @param \AppBundle\Entity\Device $device
+     */
+    public function removeDevice(\AppBundle\Entity\Device $device)
+    {
+        $this->devices->removeElement($device);
+    }
+
+    /**
+     * Get devices
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getDevices()
+    {
+        return $this->devices;
     }
 }
