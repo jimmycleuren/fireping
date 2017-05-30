@@ -1,19 +1,31 @@
 <?php
 namespace AppBundle\Command;
 
-use GuzzleHttp\Client;
+use AppBundle\Probe\ProbeDefinition;
+use AppBundle\Probe\DeviceDefinition;
+
+use React\EventLoop\Factory;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\InputStream;
 use Symfony\Component\Process\Process;
-use React\Socket\Server;
 
+/**
+ * Class ProbeDispatcherCommand
+ * @package AppBundle\Command
+ */
 class ProbeDispatcherCommand extends ContainerAwareCommand
 {
+    /**
+     * @var array
+     */
     protected $processes = array();
+
+    /**
+     * @var array
+     */
     protected $inputs = array();
 
     protected function configure()
@@ -26,47 +38,65 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $slave_id = $this->getContainer()->getParameter('slave_id');
-        echo time() . ": dispatcher started for slave $slave_id.\n";
-        $loop = \React\EventLoop\Factory::create();
+        $pid = getmypid();
+        $now = date('l jS \of F Y h:i:s A');
 
-        $loop->addTimer(24 * 60, function () {
-            echo time() . ": dispatcher running for 24 hours; aborting.\n";
+        $this->log($pid, "Started on $now");
+
+        $slave = $this->getContainer()->getParameter('slave_id');
+
+        $loop = Factory::create();
+
+        // TODO: Design considerations
+        // Perhaps another timer should stop the master process from creating new processes after 23 hours 50 minutes.
+        // This gives the master process 10 minutes to catch up on any remaining processes.
+        // Ten minutes later, this timer will then exit the process entirely.
+        // In the meantime, another master process will already have started.
+        $loop->addTimer(24 * 3600, function () use ($pid) {
+            $this->log($pid, "Runtime exceeds 24 hours. Shutting down.");
             exit();
         });
 
-        echo time() . ": fetcher ProbeStore service.\n";
-        $ps = $this->getContainer()->get('probe_store');
+        $probeStore = $this->getContainer()->get('probe_store');
 
-        $loop->addPeriodicTimer(15 * 60, function () use ($ps) {
-            echo time() . ": synchronizing config.\n";
-            $ps->sync();
+        // TODO: Design Considerations
+        // See design consideration for the 24 hour timer.
+        $loop->addPeriodicTimer(15 * 60, function () use ($pid, $probeStore) {
+            $this->log($pid, "Synchronizing ProbeStore.");
+            $probeStore->sync();
         });
 
-        $loop->addPeriodicTimer(1, function () use ($ps) {
-            foreach ($ps->getProbes() as $probe) {
-                $id = $probe->getId();
-                $current_time = time(); // 14214124124921
-                $remaining = $current_time % $probe->getInterval();
-                if ($remaining == 0) {
-                    echo time() . ": sending job to probe[$id].\n";
-                    $proc = $this->getProcess($id);
-                    $input = $this->getInput($id);
-                    // get data to write and write it.
-                    $chunks = array_chunk($probe->getDevices(), 50);
+        // All of these actions should be non-blocking as we only dispatch actions towards our workers.
+        $loop->addPeriodicTimer(1, function () use ($pid, $probeStore) {
+            foreach ($probeStore->getProbes() as $probe) {
+                /* @var $probe ProbeDefinition */
+                $now = time();
+                $remainder = $now % $probe->getStep();
+
+                if ($remainder == 0) {
+                    $probeType = $probe->getType();
+                    $chunkSize = $probeType === 'mtr' ? 1 : 50;
+                    $chunks = array_chunk($probe->getDevices(), $chunkSize);
+
                     foreach ($chunks as $devices) {
-                        $ips = array_map(function ($device) {
+                        $worker = $this->getWorker();
+                        $workerPid = $worker->getPid();
+                        $input = $this->getInput($workerPid);
+
+                        $ipAddresses = array_map(function (DeviceDefinition $device) {
                             return $device->getIp();
                         }, $devices);
+
                         $instruction = array(
-                            'probe_id' => $probe->getId(),
+                            'probeId' => $probe->getId(),
                             'command' => $probe->getType(),
                             'samples' => $probe->getSamples(),
                             'interval' => $probe->getInterval(),
-                            'targets' => $ips,
+                            'targets' => $ipAddresses,
                         );
                         $instruction = json_encode($instruction);
-                        echo time() . ": instructing probe[$id]: $instruction\n";
+
+                        $this->log($pid, "Sending instruction to pid/$workerPid: $instruction");
                         $input->write($instruction);
                     }
                 }
@@ -74,97 +104,199 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         });
 
         $loop->addPeriodicTimer(0.1, function () {
-            foreach ($this->processes as $id => $proc) {
+            foreach ($this->processes as $pid => $process) {
                 try {
-                    if ($proc) {
-                        $proc->checkTimeout();
-                        $proc->getIncrementalOutput();
+                    if ($process) {
+                        $process->checkTimeout();
+                        $process->getIncrementalOutput();
                     }
-                } catch (ProcessTimedOutException $e) {
-                    $this->cleanup($id);
+                } catch (ProcessTimedOutException $exception) {
+                    $this->cleanup($pid);
                 }
             }
         });
 
-        echo time() . ": initial config sync.\n";
-        $ps->sync();
+        $this->log($pid, "Synchronizing ProbeStore.");
+        $probeStore->sync();
 
         $loop->run();
     }
 
-    /*
-     * Gets or creates a new process for a given Probe ID.
+    /**
+     * @param $pid
+     * @param $data
      */
-    private function getProcess($id) {
-        if (!isset($this->processes[$id])) {
-            $this->processes[$id] = new Process("exec php /var/www/fireping/bin/console app:probe:worker");
-            $input = $this->getInput($id);
-            $this->processes[$id]->setInput($input);
-            $this->processes[$id]->setTimeout(180); // Necessary? Every Probe has one process that runs for infinite time.
-            $this->processes[$id]->setIdleTimeout(60);
-            $this->processes[$id]->start(function ($type, $data) use ($id) {
-                $this->handleResponse($id, $type, $data);
-            });
-        }
-        return $this->processes[$id];
+    private function log($pid, $data)
+    {
+        $className = get_class($this);
+        $now = date('Y/m/j H:i:s');
+        echo "$now $className($pid) $data\n";
     }
 
+    /**
+     * Get a new Worker process.
+     *
+     * @return Process
+     */
+    private function getWorker()
+    {
+        // TODO: Remove verbosity.
+        // TODO: Replace absolute path.
+        $process = new Process("exec php /var/www/fireping/bin/console app:probe:worker -vvv");
+        $input = new InputStream();
+        $process->setInput($input);
+        $process->setTimeout(180);
+        $process->setIdleTimeout(60);
+        $process->start(function ($type, $data) use ($process) {
+            $pid = $process->getPid();
+            $this->handleResponse($pid, $type, $data);
+        });
+        $pid = $process->getPid();
+        echo "[Process/$pid] Started\n";
+
+        $this->processes[$pid] = $process;
+        $this->inputs[$pid] = $input;
+
+        return $process;
+    }
+
+    /**
+     * Handler function for any incoming responses. This function either ignores responses if they are improperly
+     * formatted, or delegates them to another function depending on certain data.
+     *
+     * @param $pid
+     * @param $type
+     * @param $data
+     */
     private function handleResponse($pid, $type, $data)
     {
-        $ps = $this->getContainer()->get('probe_store');
+        $probeStore = $this->getContainer()->get('probe_store');
 
         $decoded = json_decode($data, true);
-        print_r($decoded);
 
         if (!$decoded) {
-            echo "Invalid JSON.\n";
-        }
-
-        if ($decoded['status'] != 200) {
-            echo "Worker did not return OK.\n";
+            $this->log($pid, "Error: could not decode to json: $data");
             return;
         }
 
-        $probe = $ps->getProbeById($decoded['probe_id']);
-        $probe_id = $decoded['probe_id'];
+        if (!isset($decoded['probeId'], $decoded['timestamp'], $decoded['type'])) {
+            $this->log($pid, "Error: missing parameter in decoded json object:");
+            var_dump($decoded);
+            return;
+        }
+
+        $probeId = $decoded['probeId'];
+        $probe = $probeStore->getProbeById($probeId);
 
         if (!$probe) {
-            echo "No probe was found.\n";
+            $this->log($pid, "Error: could not find probe.");
+            return;
         }
 
-        $formatted = array(
-            $probe_id => array(
-                'type' => $decoded['type'],
-                'timestamp' => $decoded['timestamp'],
-                'targets' => array(),
-            )
-        );
-
-        foreach ($decoded['return'] as $result) {
-            $device_id = $probe->getDeviceByIp($result['ip']);
-            if (!$device_id) {
-                echo "Device already removed from probe, ignoring.\n";
-            }
-            $formatted[$probe_id]['targets'][$device_id] = $this->transformResult($result['result']);
+        $probeType = $decoded['type'];
+        $formatted = array();
+        switch ($probeType) {
+            case 'fping':
+                $formatted = $this->handlePingResponse($probe, $type, $decoded);
+                break;
+            case 'mtr':
+                $formatted = $this->handleMtrResponse($probe, $type, $decoded);
+                break;
+            default:
+                $this->log($pid, "Error: $probeType response handling not implemented.");
         }
 
-//        This will work next week.
-//        $client = new Client();
-//        $client->post('http://smokeping-dev.cegeka.be/api/slaves/'. $slave_id .'/result', [
-//            'body' => json_encode($formatted);
-//        ]);
-
-        echo json_encode($formatted) . "\n";
+        $this->log(0, "Info: Attempting to Post Results.");
+        $this->postResults($formatted);
     }
 
+    /**
+     * Formats the output of the fping command to a proper format for the master.
+     *
+     * @param ProbeDefinition $probe
+     * @param $type
+     * @param $data
+     * @return array
+     */
+    private function handlePingResponse(ProbeDefinition $probe, $type, $data)
+    {
+        $probeId = $probe->getId();
+
+        $formatted = array(
+            $probeId => array(
+                'type' => $data['type'],
+                'timestamp' => $data['timestamp'],
+                'targets' => array(),
+            ),
+        );
+
+        foreach ($data['return'] as $result) {
+            $deviceId = $probe->getDeviceByIp($result['ip']);
+            if (!$deviceId) {
+                $this->log(0, "Warning: Device/$deviceId was already removed from Probe/$probeId.\n");
+            }
+            $formatted[$probeId]['targets'][$deviceId] = $this->transformResult($result['result']);
+        }
+
+        return $formatted;
+    }
+
+    private function handleMtrResponse(ProbeDefinition $probe, $type, $data)
+    {
+        $probeId = $probe->getId();
+
+        $formatted = array(
+            $probeId => array(
+                'type' => $data['type'],
+                'timestamp' => $data['timestamp'],
+                'targets' => array(),
+            ),
+        );
+
+        foreach ($data['return'] as $result) {
+            $deviceId = $probe->getDeviceByIp($result['ip']);
+            if (!$deviceId) {
+                $this->log(0, "Warning: Device/$deviceId was already removed from Probe/$probeId.\n");
+            }
+            $formatted[$probeId]['targets'][$deviceId] = $result['result'];
+        }
+
+        return $formatted;
+    }
+
+    /**
+     * Posts the formatted results from any probe to the master.
+     *
+     * @param array $results
+     */
+    private function postResults(array $results)
+    {
+        // TODO: Replace output log to data post.
+//        $client = new Client();
+//        $client->post('https://smokeping-dev.cegeka.be/api/slaves/1/result', [
+//            'body' => json_encode($results),
+//        ]);
+        $this->log(0, "Info: Dumping results array.");
+        var_dump(json_encode($results));
+    }
+
+    /**
+     * Transforms the results from fping from "-" to "-1" and turns it into an array.
+     *
+     * @param $input
+     * @return array
+     */
     private function transformResult($input)
     {
         $dashes = str_replace("-", "-1", $input);
         return explode(" ", $dashes);
     }
 
-    /*
-     * Gets or creates a new input stream.
+    /**
+     * Get or create a new InputStream for a given $id.
+     *
+     * @param $id
+     * @return mixed
      */
     private function getInput($id) {
         if (!isset($this->inputs[$id])) {
@@ -173,6 +305,11 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         return $this->inputs[$id];
     }
 
+    /**
+     * Dereferences old processes and inputs.
+     *
+     * @param $id
+     */
     private function cleanup($id)
     {
         if (isset($this->processes[$id])) {
