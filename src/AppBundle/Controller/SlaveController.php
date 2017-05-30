@@ -9,10 +9,12 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Slave;
+use AppBundle\Storage\RrdStorage;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 class SlaveController extends Controller
@@ -41,6 +43,46 @@ class SlaveController extends Controller
         }
 
         return new JsonResponse($config);
+    }
+
+    /**
+     * @param $id
+     * @return array
+     *
+     * @Method("POST")
+     * @Route("/api/slaves/{id}/result")
+     * @ParamConverter("slave", class="AppBundle:Slave")
+     *
+     * Process new results from a slave
+     */
+    public function resultAction($slave, Request $request)
+    {
+        try {
+            $this->em = $this->container->get('doctrine')->getManager();
+            $probeRepository = $this->em->getRepository("AppBundle:Probe");
+            $deviceRepository = $this->em->getRepository("AppBundle:Device");
+
+            $probes = json_decode($request->getContent());
+
+            foreach ($probes as $probeId => $probeData) {
+                $probe = $probeRepository->findOneById($probeId);
+                $timestamp = $probeData->timestamp;
+                $targets = $probeData->targets;
+
+                foreach ($targets as $targetId => $targetData) {
+                    $device = $deviceRepository->findOneById($targetId);
+                    switch ($probe->getType()) {
+                        case "fping":
+                            $this->container->get('processor.ping')->storeResult($device, $probe, $timestamp, $targetData);
+                            break;
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(array('code' => 500, 'message' => $e->getMessage()));
+        }
+
+        return new JsonResponse(array("code" => 200, "message" => "Results saved"));
     }
 
     private function getDomainDevices($domain, &$config)
@@ -73,19 +115,5 @@ class SlaveController extends Controller
             }
             $parent = $parent->getParent();
         }
-    }
-
-    /**
-     * @param $id
-     * @return array
-     *
-     * @Route("/api/slaves/{id}/result")
-     * @Method("POST")
-     *
-     * Process new results from a slave
-     */
-    public function resultAction($id)
-    {
-        return new JsonResponse(array("code" => 200, "message" => "Results saved"));
     }
 }
