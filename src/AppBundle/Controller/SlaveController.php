@@ -79,10 +79,10 @@ class SlaveController extends Controller
                 }
             }
         } catch (\Exception $e) {
-            return new JsonResponse(array('code' => 500, 'message' => $e->getMessage()));
+            return new JsonResponse(array('code' => 500, 'message' => $e->getMessage()), 500);
         }
 
-        return new JsonResponse(array("code" => 200, "message" => "Results saved"), 500);
+        return new JsonResponse(array("code" => 200, "message" => "Results saved"));
     }
 
     private function getDomainDevices($domain, &$config)
