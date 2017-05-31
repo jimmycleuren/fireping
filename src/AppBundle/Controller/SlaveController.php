@@ -82,7 +82,7 @@ class SlaveController extends Controller
             return new JsonResponse(array('code' => 500, 'message' => $e->getMessage()));
         }
 
-        return new JsonResponse(array("code" => 200, "message" => "Results saved"));
+        return new JsonResponse(array("code" => 200, "message" => "Results saved"), 500);
     }
 
     private function getDomainDevices($domain, &$config)
