@@ -41,6 +41,7 @@ class RrdStorage extends Storage
     public function __construct($container)
     {
         $this->container = $container;
+        $this->logger = $container->get('logger');
         $this->path = $container->get('kernel')->getRootDir()."/../var/rrd/";
 
         if (!file_exists($this->path)) {
@@ -48,7 +49,7 @@ class RrdStorage extends Storage
         }
     }
 
-    public function store(Device $device, Probe $probe, $timestamp, $data)
+    public function getFilePath(Device $device, Probe $probe)
     {
         $path = $this->path.$device->getId();
 
@@ -56,7 +57,12 @@ class RrdStorage extends Storage
             mkdir($path);
         }
 
-        $path = $this->path.$device->getId()."/".$probe->getId().'.rrd';
+        return $this->path.$device->getId()."/".$probe->getId().'.rrd';
+    }
+
+    public function store(Device $device, Probe $probe, $timestamp, $data)
+    {
+        $path = $this->getFilePath($device, $probe);
 
         if (!file_exists($path)) {
             $this->create($path, $probe, $timestamp, $data);
@@ -122,6 +128,9 @@ class RrdStorage extends Storage
         $options = array("-t", implode(":", $template), implode(":", $values));
 
         $return = rrd_update($filename, $options);
+
+        $this->logger->debug("Updating $filename with ".print_r($options, true));
+
         if (!$return) {
             throw new RrdException(rrd_error());
         }

@@ -59,6 +59,8 @@ class SlaveController extends Controller
     {
         try {
             $this->em = $this->container->get('doctrine')->getManager();
+            $this->logger = $this->container->get('logger');
+
             $probeRepository = $this->em->getRepository("AppBundle:Probe");
             $deviceRepository = $this->em->getRepository("AppBundle:Device");
 
@@ -71,8 +73,9 @@ class SlaveController extends Controller
 
                 foreach ($targets as $targetId => $targetData) {
                     $device = $deviceRepository->findOneById($targetId);
+                    $this->logger->debug("Updating data for probe ".$probe->getType()." on ".$device->getName());
                     switch ($probe->getType()) {
-                        case "fping":
+                        case "ping":
                             $this->container->get('processor.ping')->storeResult($device, $probe, $timestamp, $targetData);
                             break;
                     }

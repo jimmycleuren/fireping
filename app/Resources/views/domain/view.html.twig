@@ -7,6 +7,11 @@
     </div>
     <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
         <h1 class="page-header">{{ domain.name }}</h1>
+
+        {% for device in domain.devices %}
+            <h3>{{ device.name }}</h3>
+            <img src="{{ path('app_graph_summary', {id: device.id}) }}" />
+        {% endfor %}
     </div>
 </div>
 {% endblock %}
