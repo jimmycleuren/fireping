@@ -96,10 +96,8 @@ class ProbeDefinition
     public function addDevice(DeviceDefinition $device)
     {
         if (!isset($this->devices[$device->getId()])) {
-            print("[Probe:" . $this->id . "] Adding new Device: " . $device->getIp() . "\n");
             $this->devices[$device->getId()] = $device;
         }
-        print("[Probe:".$this->id."] Activating Device: " . $device->getId() . "\n");
         $this->devices[$device->getId()]->setActive(true);
     }
 
@@ -115,14 +113,10 @@ class ProbeDefinition
     {
         foreach ($this->devices as $key => $device)
         {
-            print("[Probe:".$this->getId()."] Analysing ". $device->getId() . "[$key]\n");
-            print("[Probe:".$this->getId()."] Device Active State: " . $device->isActive() . "\n");
             if (!$device->isActive())
             {
-                print("[Probe:".$this->getId()."] Device is not active.\n");
                 $name = $this->getId();
                 $id = $device->getId();
-                print("[Probe:".$this->getId()."] purging $id with key $key\n");
                 unset($this->devices[$key]);
             }
         }

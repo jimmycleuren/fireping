@@ -4,6 +4,9 @@ namespace AppBundle\Command;
 use AppBundle\Probe\ProbeDefinition;
 use AppBundle\Probe\DeviceDefinition;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+use Psr\Http\Message\ResponseInterface;
 use React\EventLoop\Factory;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -235,7 +238,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             if (!$deviceId) {
                 $this->log(0, "Warning: Device/$deviceId was already removed from Probe/$probeId.\n");
             }
-            $formatted[$probeId]['targets'][$deviceId] = $this->transformResult($result['result']);
+            $formatted[$probeId]['targets'][$deviceId] = $result['result'];
         }
 
         return $formatted;
@@ -253,13 +256,13 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             ),
         );
 
-        foreach ($data['return'] as $result) {
-            $deviceId = $probe->getDeviceByIp($result['ip']);
-            if (!$deviceId) {
-                $this->log(0, "Warning: Device/$deviceId was already removed from Probe/$probeId.\n");
-            }
-            $formatted[$probeId]['targets'][$deviceId] = $result['result'];
+        $deviceId = $probe->getDeviceByIp($data['return']['ip']);
+
+        if (!$deviceId) {
+            $this->log(0, "Warning: Device/$deviceId was already removed from Probe/$probeId.");
         }
+
+        $formatted[$probeId]['targets'][$deviceId] = $data['return']['result'];
 
         return $formatted;
     }
@@ -271,26 +274,48 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
      */
     private function postResults(array $results)
     {
-        // TODO: Replace output log to data post.
-//        $client = new Client();
-//        $client->post('https://smokeping-dev.cegeka.be/api/slaves/1/result', [
+        /*$this->log(0, 'Building Client...');
+        $client = new Client();
+
+        $this->log(0, 'Building Promise...');
+        $promise = $client->postAsync('https://smokeping-dev.cegeka.be/api/slaves/1/result', [
+            'json' => $results,
+        ]);
+        $promise->then(
+            function (ResponseInterface $response) {
+                $this->log(0, 'Received Response...');
+                $statusCode = $response->getStatusCode();
+                $body = $response->getBody();
+                $this->log(0, "Info: code=$statusCode, body=$body");
+            },
+            function (RequestException $exception) {
+                $this->log(0, 'Received Error...');
+                $message = $exception->getMessage();
+                $this->log(0, "Error: message=$message");
+            }
+        );*/
+
+//        $response = $client->post('https://smokeping-dev.cegeka.be/api/slaves/1/result', [
 //            'body' => json_encode($results),
 //        ]);
+//        $statusCode = $response->getStatusCode();
+//        $body = $response->getBody();
+//        $this->log(0, "Response code=$statusCode, body=$body");
         $this->log(0, "Info: Dumping results array.");
         var_dump(json_encode($results));
     }
 
     /**
      * Transforms the results from fping from "-" to "-1" and turns it into an array.
-     *
+     * TODO: Remove this, dead code.
      * @param $input
      * @return array
      */
-    private function transformResult($input)
+    /*private function transformResult($input)
     {
         $dashes = str_replace("-", "-1", $input);
         return explode(" ", $dashes);
-    }
+    }*/
 
     /**
      * Get or create a new InputStream for a given $id.

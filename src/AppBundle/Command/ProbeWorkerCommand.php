@@ -1,6 +1,9 @@
 <?php
 namespace AppBundle\Command;
 
+use AppBundle\Probe\PingResponseFormatter;
+use AppBundle\Probe\PingShellCommand;
+use AppBundle\Probe\MtrShellCommand;
 use React\EventLoop\Factory;
 use React\Stream\ReadableResourceStream;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -81,8 +84,6 @@ class ProbeWorkerCommand extends ContainerAwareCommand
         }
     }
 
-
-
     /**
      * @param $targets
      * @param int $pauseInterval the amount of time in seconds to wait between each icmp echo-request.
@@ -91,6 +92,21 @@ class ProbeWorkerCommand extends ContainerAwareCommand
      * @return array|\RuntimeException
      */
     protected function fping($targets, $count = 2, $pauseInterval = 1, $quiet = true)
+    {
+        $exec = new PingShellCommand($targets, $count, $pauseInterval);
+        $out = $exec->execute();
+        $formatter = new PingResponseFormatter();
+        return $formatter->format($out);
+    }
+
+    /**
+     * @param $targets
+     * @param int $pauseInterval the amount of time in seconds to wait between each icmp echo-request.
+     * @param int $count the amount of icmp echo-requests that will be sent to each target.
+     * @param bool $quiet show only aggregate results.
+     * @return array|\RuntimeException
+     */
+    protected function fping2($targets, $count = 2, $pauseInterval = 1, $quiet = true)
     {
         $finder = new ExecutableFinder();
         if (!$finder->find('fping')) {
@@ -134,6 +150,23 @@ class ProbeWorkerCommand extends ContainerAwareCommand
      * @param int $samples default behaviour of mtr is to send 10 icmp echo-requests, we mimic that here.
      */
     protected function mtr($target, $samples = 10)
+    {
+        $mtr = new MtrShellCommand($target, $samples);
+        $out = $mtr->execute();
+
+        $output = array(
+            'ip' => $out['report']['mtr']['dst'],
+            'result' => $out['report']['hubs'],
+        );
+
+        return $output;
+    }
+
+    /**
+     * @param $target
+     * @param int $samples default behaviour of mtr is to send 10 icmp echo-requests, we mimic that here.
+     */
+    protected function mtr2($target, $samples = 10)
     {
         $finder = new ExecutableFinder();
         if (!$finder->find('mtr')) {
