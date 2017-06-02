@@ -154,6 +154,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             $this->handleResponse($pid, $type, $data);
             $this->log(0, "Killing Process/$pid");
             $process->stop(3, SIGINT);
+            $this->cleanup($pid);
         });
         $pid = $process->getPid();
         $this->log(0,"[Process/$pid] Started");
