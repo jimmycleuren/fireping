@@ -97,7 +97,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                 }
             }
         });
-        
+
         $loop->addPeriodicTimer(10 * 60, function () {
             while (!$this->queue->isEmpty()) {
                 $node = $this->queue->dequeue();
@@ -300,7 +300,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         } catch (TransferException $exception) {
             $this->queue->enqueue($results);
             $message = $exception->getMessage();
-            $this->log(0, "Exception while pushing results: $exception.");
+            $this->log(0, "Exception while pushing results: $message.");
         }
 
         $statusCode = $response->getStatusCode();
