@@ -5,8 +5,7 @@ use AppBundle\Probe\ProbeDefinition;
 use AppBundle\Probe\DeviceDefinition;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
-use Psr\Http\Message\ResponseInterface;
+use GuzzleHttp\Exception\TransferException;
 use React\EventLoop\Factory;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -31,6 +30,9 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
      */
     protected $inputs = array();
 
+    /** @var \SplQueue */
+    protected $queue;
+
     protected function configure()
     {
         $this
@@ -41,6 +43,8 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->queue = new \SplQueue();
+
         $pid = getmypid();
         $now = date('l jS \of F Y h:i:s A');
 
@@ -91,6 +95,13 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                         $input->write($instruction);
                     }
                 }
+            }
+        });
+        
+        $loop->addPeriodicTimer(10 * 60, function () {
+            while (!$this->queue->isEmpty()) {
+                $node = $this->queue->dequeue();
+                $this->postResults($node);
             }
         });
 
@@ -282,10 +293,16 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                 $this->log(0, "Error: message=$message");
             }
         );*/
+        try {
+            $response = $client->post('https://smokeping-dev.cegeka.be/api/slaves/1/result', [
+                'body' => json_encode($results),
+            ]);
+        } catch (TransferException $exception) {
+            $this->queue->enqueue($results);
+            $message = $exception->getMessage();
+            $this->log(0, "Exception while pushing results: $exception.");
+        }
 
-        $response = $client->post('https://smokeping-dev.cegeka.be/api/slaves/1/result', [
-            'body' => json_encode($results),
-        ]);
         $statusCode = $response->getStatusCode();
         $body = $response->getBody();
         $this->log(0, "Response code=$statusCode, body=$body");
