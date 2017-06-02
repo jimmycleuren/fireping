@@ -52,9 +52,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
         $probeStore = $this->getContainer()->get('probe_store');
 
-        // TODO: Design Considerations
-        // See design consideration for the 24 hour timer.
-        $syncTimer = $loop->addPeriodicTimer(15 * 60, function () use ($pid, $probeStore) {
+        $loop->addPeriodicTimer(15 * 60, function () use ($pid, $probeStore) {
             $this->log($pid, "Synchronizing ProbeStore.");
             $probeStore->sync();
         });
@@ -107,32 +105,6 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                     $this->cleanup($pid);
                 }
             }
-        });
-
-        $loop->addTimer(24 * 3575, function () use ($pid, $syncTimer, $workerTimer) {
-            // This gives the master process a maximum of ten minutes to finish up existing processes.
-            // TODO: supervisor won't restart the dispatcher until this one closes, this will lose us data.
-            // As such, I need to be able to 'cancel' these timers, and immediately start a new dispatcher.
-            // Perhaps create a new dispatcher daemon from this loop?
-            $syncTimer->cancel();
-            $workerTimer->cancel();
-            // We can continuously check here if there are any remaining processes.
-            // If there are none, we can prematurely end the master process already!
-        });
-
-        // TODO: Design considerations
-        // Perhaps another timer should stop the master process from creating new processes after 23 hours 50 minutes.
-        // This gives the master process 10 minutes to catch up on any remaining processes.
-        // Ten minutes later, this timer will then exit the process entirely.
-        // In the meantime, another master process will already have started.
-        // TODO: Timers...
-        // This loop should stay and exit() the process after 24 hours.
-        // Another loop, at 23 hours at 50 minutes, should stop starting new worker processes. This gives the pending
-        //  workers time to complete their actions, as well as giving the dispatcher time to post the results.
-        // At 24 hours this dispatcher will then halt completely, while the new dispatcher has already started.
-        $loop->addTimer(24 * 3600, function () use ($pid) {
-            $this->log($pid, "Runtime exceeds 24 hours. Shutting down.");
-            exit();
         });
 
         $this->log($pid, "Synchronizing ProbeStore.");
