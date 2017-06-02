@@ -9,7 +9,7 @@
         <h1 class="page-header">{{ domain.name }}</h1>
 
         {% for device in domain.devices %}
-            <img src="{{ path('app_graph_summary', {id: device.id}) }}" /><br/>
+            <a href="{{ path('app_device_get', {id: device.id}) }}"><img src="{{ path('app_graph_summary', {id: device.id}) }}" /></a><br/>
         {% endfor %}
     </div>
 </div>

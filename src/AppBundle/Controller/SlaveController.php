@@ -9,6 +9,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Slave;
+use AppBundle\Exception\WrongTimestampRrdException;
 use AppBundle\Storage\RrdStorage;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -77,7 +78,7 @@ class SlaveController extends Controller
                         $this->logger->error("Slave sends data for device '$targetId' but it does not exist");
                         continue;
                     }
-                    $this->logger->debug("Updating data for probe ".$probe->getType()." on ".$device->getName());
+                    $this->logger->debug("Updating data for probe " . $probe->getType() . " on " . $device->getName());
                     switch ($probe->getType()) {
                         case "ping":
                             $this->container->get('processor.ping')->storeResult($device, $probe, $timestamp, $targetData);
@@ -85,6 +86,8 @@ class SlaveController extends Controller
                     }
                 }
             }
+        } catch (WrongTimestampRrdException $e) {
+            return new JsonResponse(array('code' => 409, 'message' => $e->getMessage()), 409);
         } catch (\Exception $e) {
             return new JsonResponse(array('code' => 500, 'message' => $e->getMessage()), 500);
         }

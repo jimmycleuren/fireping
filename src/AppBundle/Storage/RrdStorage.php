@@ -11,6 +11,7 @@ namespace AppBundle\Storage;
 use AppBundle\Entity\Device;
 use AppBundle\Entity\Probe;
 use AppBundle\Exception\RrdException;
+use AppBundle\Exception\WrongTimestampRrdException;
 
 class RrdStorage extends Storage
 {
@@ -115,7 +116,7 @@ class RrdStorage extends Storage
         }
 
         if ($update["last_update"] >= $timestamp) {
-            throw new RrdException("RRD last update was ".$update["last_update"].", cannot update at ".$timestamp);
+            throw new WrongTimestampRrdException("RRD last update was ".$update["last_update"].", cannot update at ".$timestamp);
         }
 
         $template = array();
