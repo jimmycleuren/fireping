@@ -34,7 +34,9 @@ class PingProcessor extends Processor
         }
 
         $datasources['loss'] = $failed / $probe->getSamples();
-        if ($success != 0) {
+        if ($success == 0) {
+            $datasources['median'] = "U";
+        } else {
             $datasources['median'] = $total / $success;
         }
 
