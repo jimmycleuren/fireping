@@ -295,19 +295,18 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                 $this->log(0, "Error: message=$message");
             }
         );*/
-        /*try {
+        try {
             $response = $client->post('https://smokeping-dev.cegeka.be/api/slaves/1/result', [
                 'body' => json_encode($results),
             ]);
+            $statusCode = $response->getStatusCode();
+            $body = $response->getBody();
+            $this->log(0, "Response code=$statusCode, body=$body");
         } catch (TransferException $exception) {
             $this->queue->enqueue($results);
             $message = $exception->getMessage();
             $this->log(0, "Exception while pushing results: $message.");
         }
-
-        $statusCode = $response->getStatusCode();
-        $body = $response->getBody();
-        $this->log(0, "Response code=$statusCode, body=$body");*/
         $this->log(0, "Info: Dumping results array.");
         var_dump(json_encode($results));
     }
