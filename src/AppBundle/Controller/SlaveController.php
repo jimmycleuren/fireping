@@ -73,6 +73,10 @@ class SlaveController extends Controller
 
                 foreach ($targets as $targetId => $targetData) {
                     $device = $deviceRepository->findOneById($targetId);
+                    if (!$device) {
+                        $this->logger->error("Slave sends data for device '$targetId' but it does not exist");
+                        continue;
+                    }
                     $this->logger->debug("Updating data for probe ".$probe->getType()." on ".$device->getName());
                     switch ($probe->getType()) {
                         case "ping":
