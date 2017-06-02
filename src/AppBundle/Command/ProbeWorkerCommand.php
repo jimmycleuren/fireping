@@ -1,13 +1,13 @@
 <?php
 namespace AppBundle\Command;
 
+use AppBundle\Probe\MtrResponseFormatter;
 use AppBundle\Probe\PingResponseFormatter;
 use AppBundle\Probe\PingShellCommand;
 use AppBundle\Probe\MtrShellCommand;
 use React\EventLoop\Factory;
 use React\Stream\ReadableResourceStream;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\ExecutableFinder;
@@ -51,8 +51,7 @@ class ProbeWorkerCommand extends ContainerAwareCommand
             $this->sendResponse(array('return' => "Error Processing Data."));
         } else {
             switch ($data->command) {
-                // TODO: API will return 'ping' instead of 'fping' soon.
-                case 'fping':
+                case 'ping':
                     $timestamp = time();
                     $samples = $data->samples;
                     $results = $this->fping($data->targets, $samples);
@@ -99,7 +98,7 @@ class ProbeWorkerCommand extends ContainerAwareCommand
         return $formatter->format($out);
     }
 
-    /**
+    /** TODO: Clean up :-)
      * @param $targets
      * @param int $pauseInterval the amount of time in seconds to wait between each icmp echo-request.
      * @param int $count the amount of icmp echo-requests that will be sent to each target.
@@ -153,16 +152,11 @@ class ProbeWorkerCommand extends ContainerAwareCommand
     {
         $mtr = new MtrShellCommand($target, $samples);
         $out = $mtr->execute();
-
-        $output = array(
-            'ip' => $out['report']['mtr']['dst'],
-            'result' => $out['report']['hubs'],
-        );
-
-        return $output;
+        $formatter = new MtrResponseFormatter();
+        return $formatter->format($out);
     }
 
-    /**
+    /** TODO: Clean up :-)
      * @param $target
      * @param int $samples default behaviour of mtr is to send 10 icmp echo-requests, we mimic that here.
      */

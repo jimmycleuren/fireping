@@ -20,17 +20,22 @@ class PingResponseFormatter
     {
         $output = array();
         foreach ($input as $target) {
-            list ($ip, $result) = explode(' : ', $target);
-            $sub = array(
-                "ip" => $ip,
-                "result" => $this->transformResult($result),
-            );
-            $output[] = $sub;
+            $output[] = $this->parseInput($target);
         }
         return $output;
     }
 
-    public function transformResult($result)
+    private function parseInput($input)
+    {
+        list ($ip, $result) = explode(' : ', $input);
+        $sub = array(
+            'ip' => $ip,
+            'result' => $this->transformResult($result),
+        );
+        return $sub;
+    }
+
+    private function transformResult($result)
     {
         $dashes = str_replace("-", "-1", $result);
         return explode(" ", $dashes);
