@@ -16,7 +16,7 @@ class PingGraph extends Graph
 {
     public function getSummaryGraph(Device $device, Probe $probe)
     {
-        $start = date("U") - 3600;
+        $start = date("U") - 3600 * 12;
         $title = $device->getName();
 
         $imageFile = tempnam("/tmp", 'image');
@@ -24,17 +24,23 @@ class PingGraph extends Graph
             //"--slope-mode",
             "--start", $start,
             "--title=$title",
-            "--vertical-label=Seconds",
+            "--vertical-label=ms",
             "--lower-limit=0",
+            "--width=600",
+            "--height=60",
         );
 
         $options[] = sprintf("DEF:%s=%s:%s:%s",'median', $this->storage->getFilePath($device, $probe), 'median', "AVERAGE");
+        $options[] = sprintf("DEF:%s=%s:%s:%s",'loss', $this->storage->getFilePath($device, $probe), 'loss', "AVERAGE");
+        $options[] = sprintf("VDEF:%s=%s,%s",'stdev', "median", "STDEV");
+        $options[] = sprintf("CDEF:%s=%s,%s,%s",'loss_percent', "loss", "100", "*");
 
-        $options[] = sprintf("%s:%s%s:%s", 'LINE', 'median', '#00ff00', 'median');
-        $options[] = sprintf("GPRINT:%s:%s:%s", 'median', 'LAST', "cur\:%7.2lf");
-        $options[] = sprintf("GPRINT:%s:%s:%s", 'median', 'AVERAGE', "avg\:%7.2lf");
-        $options[] = sprintf("GPRINT:%s:%s:%s", 'median', 'MAX', "max\:%7.2lf");
-        $options[] = "COMMENT:\\n";
+        $options[] = sprintf("%s:%s%s:%s", 'LINE', 'median', '#0000ff', 'median');
+        $options[] = sprintf("GPRINT:%s:%s:%s", 'median', 'AVERAGE', "%7.2lf ms av md");
+        $options[] = sprintf("GPRINT:%s:%s:%s", 'loss_percent', 'AVERAGE', "%7.2lf %% av ls");
+        $options[] = sprintf("GPRINT:%s:%s", 'stdev', "%7.2lf ms av sd");
+        $options[] = "COMMENT: \\n";
+        $options[] = "COMMENT:".date("D M j H\\\:i\\\:s Y")." \\r";
 
         $return = rrd_graph($imageFile, $options);
         $error = rrd_error();
