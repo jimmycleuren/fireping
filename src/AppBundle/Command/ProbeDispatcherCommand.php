@@ -235,7 +235,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         );
 
         foreach ($data['return'] as $result) {
-            $deviceId = $probe->getDeviceByIp($result['ip']);
+            $deviceId = $probe->getDeviceByIp(trim($result['ip']));
             if (!$deviceId) {
                 $this->log(0, "Warning: Device/$deviceId was already removed from Probe/$probeId.\n");
             }
@@ -295,7 +295,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                 $this->log(0, "Error: message=$message");
             }
         );*/
-        try {
+        /*try {
             $response = $client->post('https://smokeping-dev.cegeka.be/api/slaves/1/result', [
                 'body' => json_encode($results),
             ]);
@@ -307,7 +307,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
         $statusCode = $response->getStatusCode();
         $body = $response->getBody();
-        $this->log(0, "Response code=$statusCode, body=$body");
+        $this->log(0, "Response code=$statusCode, body=$body");*/
         $this->log(0, "Info: Dumping results array.");
         var_dump(json_encode($results));
     }
