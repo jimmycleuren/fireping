@@ -34,7 +34,9 @@ class PingProcessor extends Processor
         }
 
         $datasources['loss'] = $failed / $probe->getSamples();
-        $datasources['median'] = $total / $success;
+        if ($success != 0) {
+            $datasources['median'] = $total / $success;
+        }
 
         $this->storage->store($device, $probe, $timestamp, $datasources);
     }
