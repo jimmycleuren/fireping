@@ -98,52 +98,6 @@ class ProbeWorkerCommand extends ContainerAwareCommand
         return $formatter->format($out);
     }
 
-    /** TODO: Clean up :-)
-     * @param $targets
-     * @param int $pauseInterval the amount of time in seconds to wait between each icmp echo-request.
-     * @param int $count the amount of icmp echo-requests that will be sent to each target.
-     * @param bool $quiet show only aggregate results.
-     * @return array|\RuntimeException
-     */
-    protected function fping2($targets, $count = 2, $pauseInterval = 1, $quiet = true)
-    {
-        $finder = new ExecutableFinder();
-        if (!$finder->find('fping')) {
-            throw new \RuntimeException('Probe does not have fping installed.');
-        }
-
-        $pauseInterval *= 1000; // Converting seconds to milliseconds for fping.
-        $command = "fping -C $count -p $pauseInterval";
-        if ($quiet) {
-            $command .= " -q";
-        }
-        $command .= " ";
-        $command .= implode(" ", $targets);
-        $command .= " 2>&1";
-
-        $out = '';
-        exec($command, $out);
-
-        /*
-         * This returns an output in the format of:
-         * (
-         *  'ip': 'ip-addr',
-         *  'results': '1 2 3 4 -1 5 -1 3'
-         * )
-         */
-        $output = array();
-        foreach ((array) $out as $target) {
-            list ($ip, $result) = explode(' : ', $target);
-            $sub = array(
-                "ip" => $ip,
-                "result" => $result,
-            );
-            $output[] = $sub;
-        }
-
-        return $output;
-    }
-
     /**
      * @param $target
      * @param int $samples default behaviour of mtr is to send 10 icmp echo-requests, we mimic that here.
@@ -154,40 +108,6 @@ class ProbeWorkerCommand extends ContainerAwareCommand
         $out = $mtr->execute();
         $formatter = new MtrResponseFormatter();
         return $formatter->format($out);
-    }
-
-    /** TODO: Clean up :-)
-     * @param $target
-     * @param int $samples default behaviour of mtr is to send 10 icmp echo-requests, we mimic that here.
-     */
-    protected function mtr2($target, $samples = 10)
-    {
-        $finder = new ExecutableFinder();
-        if (!$finder->find('mtr')) {
-            throw new \RuntimeException('Probe does not have mtr installed.');
-        }
-
-        if (count($target) != 1) {
-            throw new \RuntimeException('More than one target given.');
-        }
-
-        $target = $target[0];
-
-        $command = "mtr -n -c $samples $target --json 2>&1";
-
-        $out = ''; // this will be in JSON format.
-        exec($command, $out); // this returns an array of strings for each line of the response.
-
-        $out = implode("\n", $out); // Glue the array of strings back together.
-
-        $decoded = json_decode($out, true);
-
-        $output = array(
-            'ip' => $decoded['report']['mtr']['dst'],
-            'result' => $decoded['report']['hubs'],
-        );
-
-        return $output;
     }
 
     protected function sendResponse($data)
