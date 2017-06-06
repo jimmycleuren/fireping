@@ -33,6 +33,9 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
     /** @var \SplQueue */
     protected $queue;
 
+    /** @var boolean */
+    protected $queueLock;
+
     protected function configure()
     {
         $this
@@ -44,7 +47,6 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->queue = new \SplQueue();
-
         $pid = getmypid();
         $now = date('l jS \of F Y h:i:s A');
 
@@ -58,6 +60,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
         $loop->addPeriodicTimer(15 * 60, function () use ($pid, $probeStore) {
             $this->log($pid, "Synchronizing ProbeStore.");
+            // TODO: Check if this is blocking?
             $probeStore->sync();
         });
 
@@ -98,10 +101,20 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             }
         });
 
-        $loop->addPeriodicTimer(10 * 60, function () {
-            while (!$this->queue->isEmpty()) {
-                $node = $this->queue->dequeue();
-                $this->postResults($node);
+        $loop->addPeriodicTimer(1 * 30, function () {
+            $x = $this->queue->count();
+            $this->log(0, "Queue currently has $x items left to be processed.");
+            if (!$this->queueLock) {
+                $this->queueLock = true;
+                while (!$this->queue->isEmpty()) {
+                    $node = $this->queue->shift();
+                    try {
+                        $this->postResults($node);
+                    } catch (\Exception $exception) {
+                        $this->queue->unshift($node);
+                    }
+                }
+                $this->queueLock = false;
             }
         });
 
@@ -135,35 +148,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         echo "$now $className($pid) $data\n";
     }
 
-    /**
-     * Get a new Worker process.
-     *
-     * @return Process
-     */
-    private function getWorker()
-    {
-        // TODO: Remove verbosity.
-        // TODO: Replace absolute path.
-        $process = new Process("exec php /var/www/fireping/bin/console app:probe:worker -vvv");
-        $input = new InputStream();
-        $process->setInput($input);
-        $process->setTimeout(180);
-        $process->setIdleTimeout(60);
-        $process->start(function ($type, $data) use ($process) {
-            $pid = $process->getPid();
-            $this->handleResponse($pid, $type, $data);
-            $this->log(0, "Killing Process/$pid");
-            $process->stop(3, SIGINT);
-            $this->cleanup($pid);
-        });
-        $pid = $process->getPid();
-        $this->log(0,"[Process/$pid] Started");
 
-        $this->processes[$pid] = $process;
-        $this->inputs[$pid] = $input;
-
-        return $process;
-    }
 
     /**
      * Handler function for any incoming responses. This function either ignores responses if they are improperly
@@ -212,7 +197,8 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         }
 
         $this->log(0, "Info: Attempting to Post Results.");
-        $this->postResults($formatted);
+        //$this->postResults($formatted);
+        $this->queue->enqueue($formatted);
     }
 
     /**
@@ -296,7 +282,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                 $this->log(0, "Error: message=$message");
             }
         );*/
-        try {
+        /*try {
             $response = $client->post('https://smokeping-dev.cegeka.be/api/slaves/1/result', [
                 'body' => json_encode($results),
             ]);
@@ -307,9 +293,39 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             $this->queue->enqueue($results);
             $message = $exception->getMessage();
             $this->log(0, "Exception while pushing results: $message.");
-        }
+        }*/
         $this->log(0, "Info: Dumping results array.");
         var_dump(json_encode($results));
+    }
+
+    /**
+     * Get a new Worker process.
+     *
+     * @return Process
+     */
+    private function getWorker()
+    {
+        // TODO: Remove verbosity.
+        // TODO: Replace absolute path.
+        $process = new Process("exec php /var/www/fireping/bin/console app:probe:worker -vvv");
+        $input = new InputStream();
+        $process->setInput($input);
+        $process->setTimeout(180);
+        $process->setIdleTimeout(60);
+        $process->start(function ($type, $data) use ($process) {
+            $pid = $process->getPid();
+            $this->handleResponse($pid, $type, $data);
+            $this->log(0, "Killing Process/$pid");
+            $process->stop(3, SIGINT);
+            $this->cleanup($pid);
+        });
+        $pid = $process->getPid();
+        $this->log(0,"[Process/$pid] Started");
+
+        $this->processes[$pid] = $process;
+        $this->inputs[$pid] = $input;
+
+        return $process;
     }
 
     /**
