@@ -53,4 +53,13 @@ class DeviceDefinition
     {
         $this->active = $active;
     }
+
+    public function asArray()
+    {
+        return array(
+            "id" => $this->id,
+            "ip" => $this->ip,
+            "active" => $this->active,
+        );
+    }
 }

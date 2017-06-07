@@ -121,4 +121,20 @@ class ProbeDefinition
             }
         }
     }
+
+    public function asArray()
+    {
+        $devices = array_map(function (DeviceDefinition $device) {
+            return $device->asArray();
+        }, $this->devices);
+
+        return array(
+            "id" => $this->id,
+            "type" => $this->type,
+            "step" => $this->step,
+            "samples" => $this->samples,
+            "interval" => $this->interval,
+            "devices" => $devices,
+        );
+    }
 }
