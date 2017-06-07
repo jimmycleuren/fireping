@@ -85,12 +85,16 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                             return $device->getIp();
                         }, $devices);
 
+                        $serializedDevices = array_map(function (DeviceDefinition $device) {
+                            return $device->asArray();
+                        }, $devices);
+
                         $instruction = array(
                             'probeId' => $probe->getId(),
                             'command' => $probe->getType(),
                             'samples' => $probe->getSamples(),
                             'interval' => $probe->getInterval(),
-                            'targets' => $ipAddresses,
+                            'targets' => $serializedDevices,
                         );
                         $instruction = json_encode($instruction);
 
@@ -101,7 +105,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             }
         });
 
-        $loop->addPeriodicTimer(1 * 30, function () {
+        $loop->addPeriodicTimer(1 * 60, function () {
             $x = $this->queue->count();
             $this->log(0, "Queue currently has $x items left to be processed.");
             if (!$this->queueLock) {
@@ -110,11 +114,14 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                     $node = $this->queue->shift();
                     try {
                         $this->postResults($node);
-                    } catch (\Exception $exception) {
+                    } catch (TransferException $exception) {
                         $this->queue->unshift($node);
+                        break;
                     }
                 }
                 $this->queueLock = false;
+            } else {
+                $this->log(0, "Queue is currently locked.");
             }
         });
 
@@ -147,8 +154,6 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         $now = date('Y/m/j H:i:s');
         echo "$now $className($pid) $data\n";
     }
-
-
 
     /**
      * Handler function for any incoming responses. This function either ignores responses if they are improperly
@@ -196,7 +201,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                 $this->log($pid, "Error: $probeType response handling not implemented.");
         }
 
-        $this->log(0, "Info: Attempting to Post Results.");
+        $this->log(0, "Queueing results received from Process.");
         //$this->postResults($formatted);
         $this->queue->enqueue($formatted);
     }
@@ -217,17 +222,17 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             $probeId => array(
                 'type' => $data['type'],
                 'timestamp' => $data['timestamp'],
-                'targets' => array(),
+                'targets' => $data['return'],
             ),
         );
 
-        foreach ($data['return'] as $result) {
+        /*foreach ($data['return'] as $result) {
             $deviceId = $probe->getDeviceByIp(trim($result['ip']));
             if (!$deviceId) {
                 $this->log(0, "Warning: Device/$deviceId was already removed from Probe/$probeId.\n");
             }
             $formatted[$probeId]['targets'][$deviceId] = $result['result'];
-        }
+        }*/
 
         return $formatted;
     }
@@ -244,7 +249,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             ),
         );
 
-        $deviceId = $probe->getDeviceByIp($data['return']['ip']);
+        $deviceId = $probe->getDeviceByIp(trim($data['return']['ip']));
 
         if (!$deviceId) {
             $this->log(0, "Warning: Device/$deviceId was already removed from Probe/$probeId.");
@@ -265,37 +270,21 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         $this->log(0, 'Building Client...');
         $client = new Client();
 
-        /*$this->log(0, 'Building Promise...');
-        $promise = $client->postAsync('https://smokeping-dev.cegeka.be/api/slaves/1/result', [
-            'json' => $results,
-        ]);
-        $promise->then(
-            function (ResponseInterface $response) {
-                $this->log(0, 'Received Response...');
-                $statusCode = $response->getStatusCode();
-                $body = $response->getBody();
-                $this->log(0, "Info: code=$statusCode, body=$body");
-            },
-            function (RequestException $exception) {
-                $this->log(0, 'Received Error...');
-                $message = $exception->getMessage();
-                $this->log(0, "Error: message=$message");
-            }
-        );*/
-        /*try {
-            $response = $client->post('https://smokeping-dev.cegeka.be/api/slaves/1/result', [
+        $data = json_encode($results);
+        $this->log(0, "Attempting to post results: $data");
+        try {
+            $id = $this->getContainer()->getParameter('slave_id');
+            $response = $client->post("https://smokeping-dev.cegeka.be/api/slaves/$id/result", [
                 'body' => json_encode($results),
             ]);
             $statusCode = $response->getStatusCode();
             $body = $response->getBody();
             $this->log(0, "Response code=$statusCode, body=$body");
         } catch (TransferException $exception) {
-            $this->queue->enqueue($results);
             $message = $exception->getMessage();
             $this->log(0, "Exception while pushing results: $message.");
-        }*/
-        $this->log(0, "Info: Dumping results array.");
-        var_dump(json_encode($results));
+            throw $exception; // TODO: This probably just shouldn't throw any exceptions and instead let the timer handle it.
+        }
     }
 
     /**
