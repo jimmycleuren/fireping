@@ -116,7 +116,7 @@ class RrdStorage extends Storage
         }
 
         if ($update["last_update"] >= $timestamp) {
-            throw new WrongTimestampRrdException("RRD last update was ".$update["last_update"].", cannot update at ".$timestamp);
+            throw new WrongTimestampRrdException("RRD $filename last update was ".$update["last_update"].", cannot update at ".$timestamp);
         }
 
         $template = array();
