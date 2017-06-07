@@ -4,13 +4,17 @@ namespace AppBundle\DependencyInjection;
 use GuzzleHttp\Client;
 use AppBundle\Probe\ProbeDefinition;
 use AppBundle\Probe\DeviceDefinition;
+use GuzzleHttp\Exception\TransferException;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ProbeStore
 {
+    private $container;
     protected $probes = array();
 
-    public function __construct()
+    public function __construct(ContainerInterface $container)
     {
+        $this->container = $container;
     }
 
     private function addProbe(ProbeDefinition $probe)
@@ -67,25 +71,39 @@ class ProbeStore
 
     public function sync()
     {
-        $this->deactivateAllDevices();
         $client = new Client();
-        // TODO: Remove absolute API uri. Guzzle can have .yml-config for this?
-        $result = $client->get('https://smokeping-dev.cegeka.be/api/slaves/1/config');
-        $decoded = json_decode($result->getBody(), true);
-        foreach ($decoded as $id => $probeConfig)
-        {
-            $type = $probeConfig['type'];
-            $step = $probeConfig['step'];
-            $samples = $probeConfig['samples'];
+        // TODO: Process Async
+        $result = '';
 
-            $probe = $this->getProbe($id, $type, $step, $samples);
-            foreach ($probeConfig['targets'] as $hostname => $ip)
-            {
-                $device = new DeviceDefinition($hostname, $ip);
-                $probe->addDevice($device);
-            }
+        try {
+            $id = $this->container->getParameter('slave_id');
+            $result = $client->get("https://smokeping-dev.cegeka.be/api/slaves/$id/config");
+        } catch (TransferException $exception) {
+            // TODO: Log this failure!
         }
-        $this->purgeAllInactiveDevices();
+
+        $decoded = json_decode($result->getBody(), true);
+
+        if (!$decoded) {
+            // TODO: Log this failure! Something wrong with the response body.
+        } else {
+            $this->deactivateAllDevices();
+            foreach ($decoded as $id => $probeConfig)
+            {
+                // TODO: More checks to make sure all of this data is here?
+                $type = $probeConfig['type'];
+                $step = $probeConfig['step'];
+                $samples = $probeConfig['samples'];
+
+                $probe = $this->getProbe($id, $type, $step, $samples);
+                foreach ($probeConfig['targets'] as $hostname => $ip)
+                {
+                    $device = new DeviceDefinition($hostname, $ip);
+                    $probe->addDevice($device);
+                }
+            }
+            $this->purgeAllInactiveDevices();
+        }
     }
 
     public function printDevices()
