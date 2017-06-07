@@ -1,6 +1,7 @@
 <?php
 namespace AppBundle\Command;
 
+use AppBundle\Probe\DeviceDefinition;
 use AppBundle\Probe\MtrResponseFormatter;
 use AppBundle\Probe\PingResponseFormatter;
 use AppBundle\Probe\PingShellCommand;
@@ -46,20 +47,20 @@ class ProbeWorkerCommand extends ContainerAwareCommand
             return;
         }
 
-        $data = json_decode($rawData);
+        $data = json_decode($rawData, true);
         if (!$data) {
             $this->sendResponse(array('return' => "Error Processing Data."));
         } else {
-            switch ($data->command) {
+            switch ($data['command']) {
                 case 'ping':
                     $timestamp = time();
-                    $samples = $data->samples;
-                    $results = $this->fping($data->targets, $samples);
+                    $samples = $data['samples'];
+                    $results = $this->fping($data['targets'], $samples);
                     $this->sendResponse(array(
                         'status' => 200,
                         'timestamp' => $timestamp,
-                        'type' => $data->command,
-                        'probeId' => $data->probeId,
+                        'type' => $data['command'],
+                        'probeId' => $data['probeId'],
                         'return' => $results,
                     ));
                     break;
@@ -90,12 +91,24 @@ class ProbeWorkerCommand extends ContainerAwareCommand
      * @param bool $quiet show only aggregate results.
      * @return array|\RuntimeException
      */
-    protected function fping($targets, $count = 2, $pauseInterval = 1, $quiet = true)
+    protected function fping($targets, $count = 2, $pauseInterval = 1)
     {
-        $exec = new PingShellCommand($targets, $count, $pauseInterval);
+        $ipAddresses = array_map(function ($device) {
+            return $device['ip'];
+        }, $targets);
+        $exec = new PingShellCommand($ipAddresses, $count, $pauseInterval);
         $out = $exec->execute();
-        $formatter = new PingResponseFormatter();
-        return $formatter->format($out);
+        $output = array();
+        foreach ((array) $out as $key => $result) {
+            list ($ip, $result) = explode(" : ", $result);
+            $result = str_replace("-", "-1", $result);
+            $result = explode(" ", $result);
+            $deviceId = $targets[$key]['id'];
+            $output[$deviceId] = $result;
+        }
+        return $output;
+        //$formatter = new PingResponseFormatter();
+        //return $formatter->format($out);
     }
 
     /**
