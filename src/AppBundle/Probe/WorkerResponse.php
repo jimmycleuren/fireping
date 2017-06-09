@@ -27,6 +27,11 @@ class WorkerResponse
 
     public function __toString()
     {
+        return $this->toJSON();
+    }
+
+    public function toJSON()
+    {
         $probeId = $this->probe->getId();
         $probeType = $this->probe->getType();
         $timestamp = $this->data['timestamp'];
@@ -40,7 +45,7 @@ class WorkerResponse
         );
 
         foreach ($this->data['return'] as $device) {
-            $ipAddress = $device['ip'];
+            $ipAddress = trim($device['ip']);
             $deviceId = $this->probe->getDeviceByIp($ipAddress);
             if ($deviceId) {
                 $results = $device['result'];
