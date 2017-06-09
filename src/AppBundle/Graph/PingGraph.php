@@ -70,17 +70,23 @@ class PingGraph extends RrdGraph
         $imageFile = tempnam("/tmp", 'image');
         $options = array(
             //"--slope-mode",
+            "--border=0",
             "--start", $start,
             "--title=$title",
             "--vertical-label=ms",
             "--lower-limit=0",
-            "--width=600",
+            "--upper-limit=".$this->getMedianMax($start, $this->storage->getFilePath($device, $probe)),
+            "--width=1000",
+            "--height=200",
         );
 
         $options[] = sprintf("DEF:%s=%s:%s:%s",'median', $this->storage->getFilePath($device, $probe), 'median', "AVERAGE");
         $options[] = sprintf("DEF:%s=%s:%s:%s",'loss', $this->storage->getFilePath($device, $probe), 'loss', "AVERAGE");
-        $options[] = sprintf("VDEF:%s=%s,%s",'stdev', "median", "STDEV");
+        $options[] = "CDEF:dm0=median,0,$max,LIMIT";
         $options[] = sprintf("CDEF:%s=%s,%s,%s",'loss_percent', "loss", "100", "*");
+        $this->calculateStdDev($options, $this->storage->getFilePath($device, $probe), $probe->getSamples());
+        $options[] = "CDEF:s2d0=sdev0";
+
         $options[] = "CDEF:lossred=loss,0.8,GT,median,UNKN,IF";
         $options[] = "CDEF:lossorange=loss,0.4,GE,median,UNKN,IF";
         $options[] = "CDEF:lossgreen=loss,0.4,LT,median,UNKN,IF";
@@ -97,13 +103,22 @@ class PingGraph extends RrdGraph
             $options[] = "STACK:smoke$i#33333322";
         }
 
-        $options[] = sprintf("%s:%s%s:%s", 'LINE2', 'lossgreen', '#00ff00', '0');
-        $options[] = sprintf("%s:%s%s:%s", 'LINE2', 'lossorange', '#ff9900', '40%');
-        $options[] = sprintf("%s:%s%s:%s", 'LINE2', 'lossred', '#ff0000', '80%');
+        $options[] = sprintf("%s:%s%s", 'LINE2', 'lossgreen', '#00ff00');
+        $options[] = sprintf("%s:%s%s", 'LINE2', 'lossorange', '#ff9900');
+        $options[] = sprintf("%s:%s%s", 'LINE2', 'lossred', '#ff0000');
 
-        $options[] = sprintf("GPRINT:%s:%s:%s", 'median', 'AVERAGE', "%7.2lf ms av md");
-        $options[] = sprintf("GPRINT:%s:%s:%s", 'loss_percent', 'AVERAGE', "%7.2lf %% av ls");
-        $options[] = sprintf("GPRINT:%s:%s", 'stdev', "%7.2lf ms av sd");
+        $options[] = "GPRINT:median:AVERAGE:median rtt\: %7.2lf ms avg";
+        $options[] = "GPRINT:median:MAX:%7.2lf ms max";
+        $options[] = "GPRINT:median:MIN:%7.2lf ms min";
+        $options[] = "GPRINT:median:LAST:%7.2lf ms now";
+        $options[] = "GPRINT:s2d0:AVERAGE:%7.2lf ms sd";
+
+        $options[] = "GPRINT:loss:AVERAGE:packet loss\: %7.2lf %% avg";
+        $options[] = "GPRINT:loss:MAX:%7.2lf %% max";
+        $options[] = "GPRINT:loss:MIN:%7.2lf %% min";
+        $options[] = "GPRINT:loss:LAST:%7.2lf %% now";
+
+        //$options[] = sprintf("GPRINT:%s:%s:%s", 'loss_percent', 'AVERAGE', "%7.2lf %% av ls");
         $options[] = "COMMENT: \\n";
         $options[] = "COMMENT:".date("D M j H\\\:i\\\:s Y")." \\r";
 
@@ -135,5 +150,21 @@ class PingGraph extends RrdGraph
         $options[] = "CDEF:pings0=$pings,p0p1,UN,".implode(",", $temp).",-";
         $options[] = "CDEF:m0=p0p1,".implode(",", $temp2).",pings0,/";
         $options[] = "CDEF:sdev0=p0p1,m0,-,DUP,*,".implode(",", $temp3).",pings0,/,SQRT";
+    }
+
+    private function getMedianMax($start, $file)
+    {
+        $options = array(
+            "--start", $start,
+            "--width=600",
+            "DEF:maxping=$file:median:AVERAGE",
+            "PRINT:maxping:MAX:%le"
+        );
+
+        $tempFile = tempnam("/tmp", 'temp');
+        $data = rrd_graph($tempFile, $options);
+        $maxMedian = (float)$data['calcpr'][0];
+
+        return $maxMedian;
     }
 }

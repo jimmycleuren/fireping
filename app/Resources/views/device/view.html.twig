@@ -9,9 +9,9 @@
             <h1 class="page-header">{{ device.name }}</h1>
 
             {% for probe in device.getAllProbes() %}
-                <img src="{{ path('app_graph_detail', {device_id: device.id, probe_id: probe.id, start:-7200 }) }}" /><br/>
-                <img src="{{ path('app_graph_detail', {device_id: device.id, probe_id: probe.id, start:-86400 }) }}" /><br/>
-                <img src="{{ path('app_graph_detail', {device_id: device.id, probe_id: probe.id, start:-2678400 }) }}" /><br/>
+                <img src="{{ path('app_graph_detail', {device_id: device.id, probe_id: probe.id, start:-7200 }) }}" /><br/><br/>
+                <img src="{{ path('app_graph_detail', {device_id: device.id, probe_id: probe.id, start:-86400 }) }}" /><br/><br/>
+                <img src="{{ path('app_graph_detail', {device_id: device.id, probe_id: probe.id, start:-2678400 }) }}" /><br/><br/>
             {% endfor %}
         </div>
     </div>
