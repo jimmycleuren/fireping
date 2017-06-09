@@ -18,7 +18,8 @@ class MtrResponseFormatter
 
     public function format($input)
     {
-        $output = array(
+        $output = array();
+        $output[] = array(
             'ip' => $input['report']['mtr']['dst'],
             'result' => $input['report']['hubs'],
         );
