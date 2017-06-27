@@ -102,7 +102,6 @@ abstract class ShellCommand implements ShellCommandInterface
             } else {
                 $str .= ' ' . $param . ' ' . $value;
             }
-            print("String is now: $str\n");
         }
         return $str;
     }
@@ -143,7 +142,6 @@ abstract class ShellCommand implements ShellCommandInterface
 
         // build the arguments
         $command .= $this->buildArguments();
-        print("Command after buildArguments was called: $command\n");
 
         // build any additional arguments
         if ($this->EXTRA_ARGUMENTS) {
@@ -155,7 +153,6 @@ abstract class ShellCommand implements ShellCommandInterface
 
         // build output
         $command .= ' ' . '2>&1'; // output stderr to stdout.
-        print("Command built: $command\n");
         return $command;
     }
 
