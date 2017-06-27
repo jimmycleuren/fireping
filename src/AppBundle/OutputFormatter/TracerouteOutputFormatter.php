@@ -46,6 +46,7 @@ class TracerouteOutputFormatter implements OutputFormatterInterface
     protected function transformResult(string $input) : array
     {
         $input = str_replace('ms', '', $input);
+        $input = str_replace('*', '-1', $input);
         $input = trim($input);
         return preg_split('/\s+/', $input);
     }
