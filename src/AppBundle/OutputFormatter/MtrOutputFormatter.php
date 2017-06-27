@@ -13,6 +13,8 @@ class MtrOutputFormatter implements OutputFormatterInterface
 {
     public function format($input)
     {
-        // TODO: Implement format() method.
+        $data = implode("\n", $input);
+        $data = json_decode($data, true);
+        return $data['report']['hubs'];
     }
 }

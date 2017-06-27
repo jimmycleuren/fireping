@@ -17,6 +17,7 @@ class ShellCommandFactory
     protected static $mappings = array(
         'ping' => 'AppBundle\\ShellCommand\\PingShellCommand',
         'mtr' => 'AppBundle\\ShellCommand\\MtrShellCommand',
+        'traceroute' => 'AppBundle\\ShellCommand\\TracerouteShellCommand',
     );
 
     public function create($command, $args)

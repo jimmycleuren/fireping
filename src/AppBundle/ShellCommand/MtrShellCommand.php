@@ -16,10 +16,18 @@ class MtrShellCommand extends ShellCommand
     protected $command = 'mtr';
     protected $MAPPED_ARGUMENTS = array(
         'samples' => '-c',
+        'interval' => '-i',
+        'packet_size' => '-s',
+        'grace_period' => '-G',
+        'first_ttl' => '-f',
+        'max_ttl' => '-m',
+        'max_unknown' => '-U',
+        'timeout' => '-Z',
     );
     protected $REQUIRED_ARGUMENTS = array('-c');
     protected $EXTRA_ARGUMENTS = array('-n', '--json');
-    protected $MAX_TARGETS = 1;
+
+    protected $EXECUTION_MODE = ShellCommand::SERIAL_EXECUTION;
 
     public function __construct($name, $args)
     {
