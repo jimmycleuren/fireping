@@ -76,7 +76,7 @@ class ProbeStore
         $result = '';
 
         try {
-            $id = $this->container->getParameter('slave_id');
+            $id = $this->container->getParameter('slave.id');
             $result = $client->get("https://smokeping-dev.cegeka.be/api/slaves/$id/config");
         } catch (TransferException $exception) {
             // TODO: Log this failure!
