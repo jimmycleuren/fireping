@@ -122,6 +122,11 @@ class ProbeDefinition
         }
     }
 
+    public function getConfiguration() : array
+    {
+        return json_decode(json_encode($this->args), true);
+    }
+
     public function asArray()
     {
         $devices = array_map(function (DeviceDefinition $device) {
