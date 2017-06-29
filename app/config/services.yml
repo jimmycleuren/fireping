@@ -8,5 +8,8 @@ services:
     #    class: AppBundle\Directory\ClassName
     #    arguments: ['@another_service_name', 'plain_value', '%parameter_name%']
     probe_store:
-        class:    AppBundle\DependencyInjection\ProbeStore
-        arguments: ["@service_container"]
+        class:      AppBundle\DependencyInjection\ProbeStore
+        arguments:  ["@service_container"]
+    instruction_builder:
+        class:      AppBundle\DependencyInjection\InstructionBuilderService
+        arguments:  ["@service_container"]
