@@ -1,6 +1,8 @@
 <?php
 namespace AppBundle\Command;
 
+use AppBundle\Instruction\Instruction;
+use AppBundle\Instruction\InstructionBuilder;
 use AppBundle\Probe\ProbeDefinition;
 use AppBundle\Probe\DeviceDefinition;
 
@@ -52,8 +54,6 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
         $this->log($pid, "Started on $now");
 
-        $slave = $this->getContainer()->getParameter('slave_id');
-
         $loop = Factory::create();
 
         $probeStore = $this->getContainer()->get('probe_store');
@@ -64,41 +64,24 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             $probeStore->sync();
         });
 
-        // All of these actions should be non-blocking as we only dispatch actions towards our workers.
-        $workerTimer = $loop->addPeriodicTimer(1, function () use ($pid, $probeStore) {
+        $loop->addPeriodicTimer(1, function () use ($probeStore) {
             foreach ($probeStore->getProbes() as $probe) {
                 /* @var $probe ProbeDefinition */
                 $now = time();
                 $remainder = $now % $probe->getStep();
 
-                if ($remainder == 0) {
-                    $probeType = $probe->getType();
-                    $chunkSize = $probeType === 'mtr' ? 1 : 50;
-                    $chunks = array_chunk($probe->getDevices(), $chunkSize);
+                if (!$remainder) {
 
-                    foreach ($chunks as $devices) {
+                    $instructionBuilder = $this->getContainer()->get('instruction_builder');
+                    $instructions = $instructionBuilder->create($probe);
+
+                    /* @var $instructions Instruction */
+                    foreach ($instructions->getChunks() as $instruction) {
                         $worker = $this->getWorker();
                         $workerPid = $worker->getPid();
                         $input = $this->getInput($workerPid);
-
-                        $ipAddresses = array_map(function (DeviceDefinition $device) {
-                            return $device->getIp();
-                        }, $devices);
-
-                        $serializedDevices = array_map(function (DeviceDefinition $device) {
-                            return $device->asArray();
-                        }, $devices);
-
-                        $instruction = array(
-                            'probeId' => $probe->getId(),
-                            'command' => $probe->getType(),
-                            'samples' => $probe->getSamples(),
-                            'interval' => $probe->getInterval(),
-                            'targets' => $serializedDevices,
-                        );
                         $instruction = json_encode($instruction);
-
-                        $this->log($pid, "Sending instruction to pid/$workerPid: $instruction");
+                        $this->log(0, "Sending instruction to pid/$workerPid: $instruction");
                         $input->write($instruction);
                     }
                 }
@@ -113,7 +96,8 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                 while (!$this->queue->isEmpty()) {
                     $node = $this->queue->shift();
                     try {
-                        $this->postResults($node);
+                        //$this->postResults($node);
+                        echo "Posting results to master: \n" . json_encode($node) . "\n";
                     } catch (TransferException $exception) {
                         $this->queue->unshift($node);
                         break;
@@ -155,109 +139,32 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         echo "$now $className($pid) $data\n";
     }
 
-    /**
-     * Handler function for any incoming responses. This function either ignores responses if they are improperly
-     * formatted, or delegates them to another function depending on certain data.
-     *
-     * @param $pid
-     * @param $type
-     * @param $data
-     */
-    private function handleResponse($pid, $type, $data)
+    private function handleResponse($type, $data)
     {
-        $probeStore = $this->getContainer()->get('probe_store');
-
         $decoded = json_decode($data, true);
 
         if (!$decoded) {
-            $this->log($pid, "Error: could not decode to json: $data");
+            $this->log(0, "Error: could not decode to json: $data");
             return;
         }
 
-        if (!isset($decoded['probeId'], $decoded['timestamp'], $decoded['type'])) {
-            $this->log($pid, "Error: missing parameter in decoded json object:");
+        if (!isset($decoded['status'], $decoded['message'], $decoded['body']))
+        {
+            $this->log(0, "Error: missing key in response:");
             var_dump($decoded);
             return;
         }
 
-        $probeId = $decoded['probeId'];
-        $probe = $probeStore->getProbeById($probeId);
-
-        if (!$probe) {
-            $this->log($pid, "Error: could not find probe.");
-            return;
-        }
-
-        $probeType = $decoded['type'];
-        $formatted = array();
-        switch ($probeType) {
-            case 'ping':
-                $formatted = $this->handlePingResponse($probe, $type, $decoded);
-                break;
-            case 'mtr':
-                $formatted = $this->handleMtrResponse($probe, $type, $decoded);
-                break;
-            default:
-                $this->log($pid, "Error: $probeType response handling not implemented.");
-        }
-
-        $this->log(0, "Queueing results received from Process.");
-        //$this->postResults($formatted);
-        $this->queue->enqueue($formatted);
-    }
-
-    /**
-     * Formats the output of the fping command to a proper format for the master.
-     *
-     * @param ProbeDefinition $probe
-     * @param $type
-     * @param $data
-     * @return array
-     */
-    private function handlePingResponse(ProbeDefinition $probe, $type, $data)
-    {
-        $probeId = $probe->getId();
-
-        $formatted = array(
-            $probeId => array(
-                'type' => $data['type'],
-                'timestamp' => $data['timestamp'],
-                'targets' => $data['return'],
-            ),
-        );
-
-        /*foreach ($data['return'] as $result) {
-            $deviceId = $probe->getDeviceByIp(trim($result['ip']));
-            if (!$deviceId) {
-                $this->log(0, "Warning: Device/$deviceId was already removed from Probe/$probeId.\n");
+        // TODO: Handle different status codes.  Right now, we assume that only data is sent.
+        // TODO: Should also handle client and server errors.
+        foreach ($decoded['body'] as $message) {
+            if (!isset($message['type'], $message['timestamp'], $message['targets'])) {
+                $this->log(0, "Error: missing key in results.");
+                var_dump($message);
+                continue; // Do not attempt to post incomplete results.
             }
-            $formatted[$probeId]['targets'][$deviceId] = $result['result'];
-        }*/
-
-        return $formatted;
-    }
-
-    private function handleMtrResponse(ProbeDefinition $probe, $type, $data)
-    {
-        $probeId = $probe->getId();
-
-        $formatted = array(
-            $probeId => array(
-                'type' => $data['type'],
-                'timestamp' => $data['timestamp'],
-                'targets' => array(),
-            ),
-        );
-
-        $deviceId = $probe->getDeviceByIp(trim($data['return']['ip']));
-
-        if (!$deviceId) {
-            $this->log(0, "Warning: Device/$deviceId was already removed from Probe/$probeId.");
+            $this->queue->enqueue($message);
         }
-
-        $formatted[$probeId]['targets'][$deviceId] = $data['return']['result'];
-
-        return $formatted;
     }
 
     /**
@@ -273,7 +180,8 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         $data = json_encode($results);
         $this->log(0, "Attempting to post results: $data");
         try {
-            $id = $this->getContainer()->getParameter('slave_id');
+            $id = $this->getContainer()->getParameter('slave.id');
+            $this->log(0, "Retrieving config for Slave $id");
             $response = $client->post("https://smokeping-dev.cegeka.be/api/slaves/$id/result", [
                 'body' => json_encode($results),
             ]);
@@ -303,9 +211,8 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         $process->setIdleTimeout(60);
         $process->start(function ($type, $data) use ($process) {
             $pid = $process->getPid();
-            $this->handleResponse($pid, $type, $data);
+            $this->handleResponse($type, $data);
             $this->log(0, "Killing Process/$pid");
-            $process->stop(3, SIGINT);
             $this->cleanup($pid);
         });
         $pid = $process->getPid();
@@ -338,7 +245,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
     private function cleanup($id)
     {
         if (isset($this->processes[$id])) {
-            $this->processes[$id]->stop(0);
+            $this->processes[$id]->stop(3, SIGINT);
             $this->processes[$id] = null;
             unset($this->processes[$id]);
         }
