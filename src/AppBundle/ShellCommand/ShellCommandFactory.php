@@ -23,6 +23,6 @@ class ShellCommandFactory
     public function create($command, $args)
     {
         $class = self::$mappings[$command];
-        return new $class($command, $args);
+        return new $class($args);
     }
 }

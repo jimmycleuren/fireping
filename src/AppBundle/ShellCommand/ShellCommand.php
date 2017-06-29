@@ -15,7 +15,6 @@ use Symfony\Component\Process\ExecutableFinder;
  */
 abstract class ShellCommand implements ShellCommandInterface
 {
-    protected $name;
     protected $command;
     protected $targets = array();
 
@@ -35,16 +34,15 @@ abstract class ShellCommand implements ShellCommandInterface
     /* @var $outputFormatter OutputFormatterInterface */
     protected $outputFormatter;
 
-    public function __construct($name, $args)
+    public function __construct($data)
     {
         $finder = new ExecutableFinder();
         if (!$finder->find($this->command)) {
             throw new \Exception($this->command . " is not installed on this system.");
         }
 
-        $this->name = $name;
-        $this->arguments = $this->mapArguments($args);
-        $this->targets = $args['targets'];
+        $this->arguments = $this->mapArguments($data['args']);
+        $this->targets = $data['targets'];
         $this->outputFormatter = new DefaultOutputFormatter();
     }
 

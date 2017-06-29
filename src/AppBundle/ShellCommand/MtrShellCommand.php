@@ -29,9 +29,9 @@ class MtrShellCommand extends ShellCommand
 
     protected $EXECUTION_MODE = ShellCommand::SERIAL_EXECUTION;
 
-    public function __construct($name, $args)
+    public function __construct($data)
     {
-        parent::__construct($name, $args);
+        parent::__construct($data);
         $this->setOutputFormatter(new MtrOutputFormatter());
     }
 }

@@ -16,14 +16,13 @@ class PingShellCommand extends ShellCommand
     protected $command = 'fping';
     protected $MAPPED_ARGUMENTS = array(
         'samples' => '-C',
-        'interval' => '-p',
     );
     protected $EXTRA_ARGUMENTS = array('-q');
-    protected $REQUIRED_ARGUMENTS = array('-C', '-p');
+    protected $REQUIRED_ARGUMENTS = array('-C');
 
-    public function __construct($name, $args)
+    public function __construct($data)
     {
-        parent::__construct($name, $args);
+        parent::__construct($data);
         $this->setOutputFormatter(new PingOutputFormatter());
     }
 }
