@@ -15,16 +15,19 @@ class ProbeDefinition
     protected $type;
     protected $step;
     protected $samples;
-    protected $interval;
+
+    protected $args = array();
     protected $devices = array();
 
-    function __construct($id, $type, $step, $samples)
+    function __construct($id, $type, $step, $samples, array $args = null)
     {
         $this->id = $id;
         $this->type = $type;
         $this->step = $step;
         $this->samples = $samples;
-        $this->interval = intval($step/$samples);
+
+        $this->args = isset($args) ? $args : array();
+        $this->args['samples'] = $samples;
     }
 
     /**
@@ -59,20 +62,20 @@ class ProbeDefinition
         return $this->samples;
     }
 
-    /**
-     * @return int
-     */
-    public function getInterval()
+    public function getArgs() : array
     {
-        return $this->interval;
+        return $this->args;
     }
 
-    /**
-     * @param int $interval
-     */
-    public function setInterval($interval)
+    public function getConfiguration($targets = null) : array
     {
-        $this->interval = $interval;
+        return array(
+            'id' => $this->id,
+            'type' => $this->type,
+            'step' => $this->step,
+            'args' => $this->args,
+            'targets' => $targets,
+        );
     }
 
     /**
@@ -115,31 +118,8 @@ class ProbeDefinition
         {
             if (!$device->isActive())
             {
-                $name = $this->getId();
-                $id = $device->getId();
                 unset($this->devices[$key]);
             }
         }
-    }
-
-    public function getConfiguration() : array
-    {
-        return json_decode(json_encode($this->args), true);
-    }
-
-    public function asArray()
-    {
-        $devices = array_map(function (DeviceDefinition $device) {
-            return $device->asArray();
-        }, $this->devices);
-
-        return array(
-            "id" => $this->id,
-            "type" => $this->type,
-            "step" => $this->step,
-            "samples" => $this->samples,
-            "interval" => $this->interval,
-            "devices" => $devices,
-        );
     }
 }
