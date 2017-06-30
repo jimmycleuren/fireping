@@ -100,6 +100,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                         echo "Posting results to master: \n" . json_encode($node) . "\n";
                     } catch (TransferException $exception) {
                         $this->queue->unshift($node);
+                        $this->queueLock = false;
                         break;
                     }
                 }
