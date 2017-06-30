@@ -228,14 +228,19 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
     /**
      * Get or create a new InputStream for a given $id.
      *
-     * @param $id
+     * @param $pid
      * @return mixed
      */
-    private function getInput($id) {
-        if (!isset($this->inputs[$id])) {
-            $this->inputs[$id] = new InputStream();
+    private function getInput($pid) {
+        if (!isset($this->processes[$pid])) {
+            throw new \Exception("Process for PID=$pid not found.");
         }
-        return $this->inputs[$id];
+
+        if (!isset($this->inputs[$pid])) {
+            throw new \Exception("Input for PID=$pid not found.");
+        }
+
+        return $this->inputs[$pid];
     }
 
     /**
