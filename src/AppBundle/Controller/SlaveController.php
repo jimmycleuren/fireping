@@ -68,6 +68,9 @@ class SlaveController extends Controller
             $probes = json_decode($request->getContent());
 
             foreach ($probes as $probeId => $probeData) {
+                if (!isset($probeData->timestamp)) {
+                    return new JsonResponse(array('code' => 400, 'message' => "No timestamp found in probe data"), 400);
+                }
                 $probe = $probeRepository->findOneById($probeId);
                 $timestamp = $probeData->timestamp;
                 $targets = $probeData->targets;
