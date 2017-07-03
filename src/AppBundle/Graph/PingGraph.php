@@ -16,6 +16,11 @@ class PingGraph extends RrdGraph
 {
     public function getSummaryGraph(Device $device, Probe $probe)
     {
+        $file = $this->storage->getFilePath($device, $probe);
+        if (!file_exists($file)) {
+           return dirname(__FILE__)."/../../../web/notfound.png";
+        }
+
         $start = date("U") - 3600 * 12;
         $title = $device->getName();
 
@@ -69,13 +74,14 @@ class PingGraph extends RrdGraph
 
         $imageFile = tempnam("/tmp", 'image');
         $options = array(
-            //"--slope-mode",
+            "--slope-mode",
             "--border=0",
             "--start", $start,
             "--title=$title",
             "--vertical-label=ms",
             "--lower-limit=0",
             "--upper-limit=".$this->getMedianMax($start, $this->storage->getFilePath($device, $probe)),
+            "--rigid",
             "--width=1000",
             "--height=200",
         );
@@ -103,9 +109,9 @@ class PingGraph extends RrdGraph
             $options[] = "STACK:smoke$i#33333322";
         }
 
-        $options[] = sprintf("%s:%s%s", 'LINE2', 'lossgreen', '#00ff00');
-        $options[] = sprintf("%s:%s%s", 'LINE2', 'lossorange', '#ff9900');
-        $options[] = sprintf("%s:%s%s", 'LINE2', 'lossred', '#ff0000');
+        $options[] = sprintf("%s:%s%s", 'LINE1', 'lossgreen', '#00ff00');
+        $options[] = sprintf("%s:%s%s", 'LINE1', 'lossorange', '#ff9900');
+        $options[] = sprintf("%s:%s%s", 'LINE1', 'lossred', '#ff0000');
 
         $options[] = "GPRINT:median:AVERAGE:median rtt\: %7.2lf ms avg";
         $options[] = "GPRINT:median:MAX:%7.2lf ms max";
@@ -127,6 +133,8 @@ class PingGraph extends RrdGraph
         if (!$return || $error) {
             throw new RrdException($error);
         }
+
+        //var_dump($options);
 
         return $imageFile;
     }
@@ -165,6 +173,6 @@ class PingGraph extends RrdGraph
         $data = rrd_graph($tempFile, $options);
         $maxMedian = (float)$data['calcpr'][0];
 
-        return $maxMedian;
+        return $maxMedian * 1.2;
     }
 }
