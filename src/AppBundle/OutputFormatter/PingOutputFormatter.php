@@ -15,19 +15,29 @@ class PingOutputFormatter implements OutputFormatterInterface
     {
         $output = array();
         foreach ($input as $target) {
-            $output[] = $this->parseInput($target);
+            $parsed = $this->parseInput($target);
+            if (!empty($parsed)) {
+                $output[] = $parsed;
+            }
         }
         return $output;
     }
 
     private function parseInput($input) : array
     {
-        list ($ip, $result) = explode(' : ', $input);
-        $sub = array(
-            'ip' => trim($ip),
-            'result' => $this->transformResult($result),
+        $output = array();
+        preg_match(
+            "/^(?P<ip>(?:[\d]{1,3}\.){3}[\d]{1,3})\s+:\s+(?P<result>[\d\.\-\s]+)$/",
+            $input,
+            $matches
         );
-        return $sub;
+        if (isset($matches['ip'])) {
+            $output['ip'] = $matches['ip'];
+        }
+        if (isset($matches['result'])) {
+            $output['result'] = $this->transformResult($matches['result']);
+        }
+        return $output;
     }
 
     private function transformResult($result)
