@@ -69,6 +69,7 @@ class SlaveController extends Controller
 
             foreach ($probes as $probeId => $probeData) {
                 if (!isset($probeData->timestamp)) {
+                    $this->logger->warning("Incorrect data received from slave");
                     return new JsonResponse(array('code' => 400, 'message' => "No timestamp found in probe data"), 400);
                 }
                 $probe = $probeRepository->findOneById($probeId);
