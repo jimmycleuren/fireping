@@ -158,14 +158,16 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
         // TODO: Handle different status codes.  Right now, we assume that only data is sent.
         // TODO: Should also handle client and server errors.
-        foreach ($decoded['body'] as $message) {
+        $cleaned = array();
+        foreach ($decoded['body'] as $id => $message) {
             if (!isset($message['type'], $message['timestamp'], $message['targets'])) {
                 $this->log(0, "Error: missing key in results.");
                 var_dump($message);
                 continue; // Do not attempt to post incomplete results.
             }
-            $this->queue->enqueue($message);
+            $cleaned[$id] = $message;
         }
+        $this->queue->enqueue($cleaned);
     }
 
     /**
