@@ -24,3 +24,5 @@ parameters:
     slave.instructions:
         ping: ~
         mtr: ~
+    
+    storage: rrd

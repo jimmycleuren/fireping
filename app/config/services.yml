@@ -13,3 +13,15 @@ services:
     instruction_builder:
         class:      AppBundle\DependencyInjection\InstructionBuilderService
         arguments:  ["@service_container"]
+
+    processor.ping:
+        class: AppBundle\Processor\PingProcessor
+        arguments: ["@service_container"]
+
+    graph.ping:
+        class: AppBundle\Graph\PingGraph
+        arguments: ["@service_container"]
+
+    storage.rrd:
+        class: AppBundle\Storage\RrdStorage
+        arguments: ["@service_container"]
