@@ -22,6 +22,10 @@ class ShellCommandFactory
 
     public function create($command, $args)
     {
+        if (!isset(self::$mappings[$command])) {
+            throw new \Exception("No mapping exists for command $command.");
+        }
+
         $class = self::$mappings[$command];
         return new $class($args);
     }
