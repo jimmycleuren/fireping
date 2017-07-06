@@ -7,9 +7,16 @@ use AppBundle\Probe\DeviceDefinition;
 use GuzzleHttp\Exception\TransferException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Class ProbeStore
+ * @package AppBundle\DependencyInjection
+ */
 class ProbeStore
 {
-    private $container;
+    /**
+     * @var ContainerInterface
+     */
+    private   $container;
     protected $probes = array();
 
     public function __construct(ContainerInterface $container)
@@ -94,6 +101,8 @@ class ProbeStore
                 $type = $probeConfig['type'];
                 $step = $probeConfig['step'];
                 $samples = $probeConfig['samples'];
+                // TODO: Only type, step and targets needs to exist for operational.
+                // Anything else is custom configuration.
 
                 $probe = $this->getProbe($id, $type, $step, $samples);
                 foreach ($probeConfig['targets'] as $hostname => $ip)

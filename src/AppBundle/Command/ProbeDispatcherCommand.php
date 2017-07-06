@@ -3,6 +3,11 @@ namespace AppBundle\Command;
 
 use AppBundle\Instruction\Instruction;
 use AppBundle\Instruction\InstructionBuilder;
+use AppBundle\Probe\EchoPoster;
+use AppBundle\Probe\HttpPoster;
+use AppBundle\Probe\Message;
+use AppBundle\Probe\MessageQueueHandler;
+use AppBundle\Probe\MessageQueue;
 use AppBundle\Probe\ProbeDefinition;
 use AppBundle\Probe\DeviceDefinition;
 
@@ -11,6 +16,7 @@ use GuzzleHttp\Exception\TransferException;
 use React\EventLoop\Factory;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\InputStream;
@@ -38,16 +44,36 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
     /** @var boolean */
     protected $queueLock;
 
+    /** @var MessageQueueHandler */
+    protected $queueHandler;
+
+    protected $workerLimit;
+
     protected function configure()
     {
         $this
             ->setName('app:probe:dispatcher')
             ->setDescription('Start the probe dispatcher.')
+            ->addOption(
+                'workers-limit',
+                'w',
+                InputOption::VALUE_REQUIRED,
+                'How many workers can be created at most?',
+                50
+            )
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $id = $this->getContainer()->getParameter('slave.id');
+        $poster = new EchoPoster("https://smokeping-dev.cegeka.be/api/slaves/$id/result");
+        $this->queueHandler = new MessageQueueHandler($poster);
+        $this->queueHandler->addQueue(new MessageQueue('data'));
+        $this->queueHandler->addQueue(new MessageQueue('exceptions'));
+
+        $this->workerLimit = $input->getOption('workers-limit');
+
         $this->queue = new \SplQueue();
         $pid = getmypid();
         $now = date('l jS \of F Y h:i:s A');
@@ -60,7 +86,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
         $loop->addPeriodicTimer(15 * 60, function () use ($pid, $probeStore) {
             $this->log($pid, "Synchronizing ProbeStore.");
-            // TODO: Check if this is blocking?
+            // TODO: This is blocking!!
             $probeStore->sync();
         });
 
@@ -77,7 +103,18 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
                     /* @var $instructions Instruction */
                     foreach ($instructions->getChunks() as $instruction) {
-                        $worker = $this->getWorker();
+                        try {
+                            $worker = $this->getWorker();
+                        } catch (\Exception $exception) {
+                            $this->queueHandler->addMessage('exceptions', new Message(
+                                MESSAGE::SERVER_ERROR,
+                                'Workers limit reached.',
+                                array(
+                                    get_class($exception) => $exception->getMessage(),
+                                )
+                            ));
+                            break;
+                        }
                         $workerPid = $worker->getPid();
                         $input = $this->getInput($workerPid);
                         $instruction = json_encode($instruction);
@@ -108,6 +145,10 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             } else {
                 $this->log(0, "Queue is currently locked.");
             }
+        });
+
+        $loop->addPeriodicTimer(1 * 30, function () {
+            $this->queueHandler->processQueue('exceptions');
         });
 
         $loop->addPeriodicTimer(0.1, function () {
@@ -167,6 +208,19 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             }
             $cleaned[$id] = $message;
         }
+        if ($decoded['status'] == Message::MESSAGE_OK) {
+            $this->queueHandler->addMessage('data', new Message(
+                Message::MESSAGE_OK,
+                'Message OK',
+                $cleaned
+            ));
+        } else {
+            $this->queueHandler->addMessage('exceptions', new Message(
+                Message::SERVER_ERROR,
+                'An error...',
+                $decoded
+            ));
+        }
         $this->queue->enqueue($cleaned);
     }
 
@@ -205,6 +259,10 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
      */
     private function getWorker()
     {
+        if (count($this->processes) > $this->workerLimit) {
+            throw new \Exception("Worker limit reached.");
+        }
+
         // TODO: Remove verbosity.
         // TODO: Replace absolute path.
         $process = new Process("exec php /var/www/fireping/bin/console app:probe:worker -vvv");

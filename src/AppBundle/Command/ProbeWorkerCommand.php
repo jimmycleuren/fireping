@@ -2,6 +2,7 @@
 namespace AppBundle\Command;
 
 use AppBundle\Probe\DeviceDefinition;
+use AppBundle\Probe\Message;
 use AppBundle\Probe\MtrResponseFormatter;
 use AppBundle\Probe\PingResponseFormatter;
 use AppBundle\Probe\PingShellCommand;
@@ -47,6 +48,8 @@ class ProbeWorkerCommand extends ContainerAwareCommand
 
     protected function process($data)
     {
+        $timestamp = time();
+
         if (!trim($data)) {
             return;
         }
@@ -56,10 +59,18 @@ class ProbeWorkerCommand extends ContainerAwareCommand
             return;
         }
 
-        $factory = new ShellCommandFactory();
-        $command = $factory->create($data['type'], $data);
+        if (!isset($data['type'])) {
+            return;
+        }
 
-        $timestamp = time();
+        $factory = new ShellCommandFactory();
+        $command = null;
+        try {
+            $command = $factory->create($data['type'], $data);
+        } catch (\Exception $e) {
+            // TODO: Do something with this exception.
+        }
+
         $shellOutput = $command->execute();
 
         $this->sendResponse(array(
