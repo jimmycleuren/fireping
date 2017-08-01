@@ -195,16 +195,14 @@ class Slave
     {
         $result = array();
 
-        foreach($this->domains as $domain) {
+        foreach ($this->domains as $domain) {
             $this->getDomainDevices($domain, $result);
         }
 
-        foreach($this->devices as $device) {
-            $result[$device->getName()] = array(
-                'ip' => $device->getIp(),
-                'probes' => $this->getDeviceProbes($device),
-            );
+        foreach ($this->devices as $device) {
+            $this->getDeviceProbes($device, $result);
         }
+
         return $result;
     }
 
@@ -215,37 +213,33 @@ class Slave
         }
 
         foreach ($domain->getDevices() as $device) {
-            $result[$device->getName()] = array(
-                'ip' => $device->getIp(),
-                'probes' => $this->getDeviceProbes($device),
-            );
+            $this->getDeviceProbes($device, $result);
         }
     }
 
-    private function getDeviceProbes($device)
+    private function getDeviceProbes($device, &$result)
     {
-        $result = array();
-
-        foreach($device->getProbes() as $probe) {
-            $result[] = array(
-                'type' => $probe->getType(),
-                'step' => $probe->getStep(),
-                'samples' => $probe->getSamples(),
-            );
-        }
+        $this->addDeviceToProbeTargets($device, $device, $result);
 
         $parent = $device->getDomain();
-        while($parent != null) {
-            foreach($parent->getProbes() as $probe) {
-                $result[] = array(
+        while ($parent != null) {
+            $this->addDeviceToProbeTargets($parent, $device, $result);
+            $parent = $parent->getParent();
+        }
+    }
+
+    private function addDeviceToProbeTargets($probable, $device, &$result)
+    {
+        foreach ($probable->getProbes() as $probe) {
+            $probeName = $probe->getName();
+            if (!isset($result[$probeName])) {
+                $result[$probeName] = array(
                     'type' => $probe->getType(),
                     'step' => $probe->getStep(),
                     'samples' => $probe->getSamples(),
                 );
             }
-            $parent = $parent->getParent();
+            $result[$probeName]['targets'][$device->getName()] = $device->getIp();
         }
-
-        return $result;
     }
 }

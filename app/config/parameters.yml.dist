@@ -20,4 +20,9 @@ parameters:
 
     cors_allow_origin: 'http://localhost'
 
+    slave.id: ~
+    slave.instructions:
+        ping: ~
+        mtr: ~
+    
     storage: rrd
