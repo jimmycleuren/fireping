@@ -93,9 +93,9 @@ class PingGraph extends RrdGraph
         $this->calculateStdDev($options, $this->storage->getFilePath($device, $probe), $probe->getSamples());
         $options[] = "CDEF:s2d0=sdev0";
 
-        $options[] = "CDEF:lossred=loss,0.8,GT,median,UNKN,IF";
-        $options[] = "CDEF:lossorange=loss,0.4,GE,median,UNKN,IF";
-        $options[] = "CDEF:lossgreen=loss,0.4,LT,median,UNKN,IF";
+        $options[] = "CDEF:lossred=loss,0.2,GT,median,UNKN,IF";
+        $options[] = "CDEF:lossorange=loss,0.05,GE,median,UNKN,IF";
+        $options[] = "CDEF:lossgreen=loss,0.05,LT,median,UNKN,IF";
 
         $total = $probe->getSamples();
         $file = $this->storage->getFilePath($device, $probe);
