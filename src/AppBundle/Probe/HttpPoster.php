@@ -10,6 +10,8 @@ namespace AppBundle\Probe;
 
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ConnectException;
 
 class HttpPoster extends Poster
 {
@@ -42,6 +44,21 @@ class HttpPoster extends Poster
                 'json' => json_encode($message->getBody()),
             ));
             return $response->getBody();
+        } catch (ClientException $exception) {
+            // Return|Throw -> Indicate Message SHOULD NOT be retried.
+            throw new DiscardMessageException(
+                $exception->getMessage(),
+                $exception->getCode(),
+                $exception);
+        } catch (ConnectException $exception) {
+            // Return|Throw -> Indicate Message SHOULD be retried
+            throw new RetryMessageException($exception->getMessage());
+        } catch (\Exception $exception) {
+            // Return|Throw -> Indicate an Exception that was not specifically handled.
+            // These SHOULD be discarded just to be safe (prevent queue blocking)
+            // This SHOULD raise an incident so we can investigate the exception,
+            //   and handle it specifically.
+            throw new UnhandledMessageException($exception->getMessage());
         }
     }
 }
