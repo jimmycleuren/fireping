@@ -22,6 +22,12 @@ class Message
 
     const SERVER_ERROR = 500;
 
+    const E_REJECT_UNHANDLED = 1;
+    const E_REJECT_RETRY = 2;
+    const E_REJECT_RETRY_PRIORITY = 3;
+    const E_REJECT_DISCARD = 4;
+    const E_REJECT_ABORT = 5;
+
     public static $codeMap = array(
         Message::MESSAGE_OK => 'OK',
         Message::CLIENT_ERROR => 'Client Error.',

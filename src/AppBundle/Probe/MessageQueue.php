@@ -9,7 +9,6 @@
 namespace AppBundle\Probe;
 
 
-use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\TransferException;
 
@@ -58,6 +57,63 @@ class MessageQueue implements MessageQueueInterface
             try {
                 $response = $poster->post($message);
                 yield $response;
+            } catch (PosterException $exception) {
+                switch ($exception->getCode()) {
+                    case Message::E_REJECT_RETRY_PRIORITY:
+                        $this->messages->unshift($message);
+                        yield new Message(
+                            Message::SERVER_ERROR,
+                            'A message was rejected and requeued with priority.',
+                            array(
+                                'input' => "$message",
+                                'message' => $exception->getMessage(),
+                            )
+                        );
+                        break;
+                    case Message::E_REJECT_RETRY:
+                        $this->addMessage($message);
+                        yield new Message(
+                            Message::SERVER_ERROR,
+                            'A message was rejected and requeued.',
+                            array(
+                                'input' => "$message",
+                                'message' => $exception->getMessage(),
+                            )
+                        );
+                        break;
+                    case PosterInterface::E_REJECT:
+                        yield new Message(
+                            Message::SERVER_ERROR,
+                            'A message was rejected and requeued.',
+                            array(
+                                'input' => "$message",
+                                'message' => $exception->getMessage(),
+                            )
+                        );
+                        break;
+                    case PosterInterface::E_ABORT:
+                        yield new Message(
+                            Message::SERVER_ERROR,
+                            'Message rejected and queue processing aborted.',
+                            array(
+                                'input' => "$message",
+                                'message' => $exception->getMessage(),
+                            )
+                        );
+                        break 2;
+                    case PosterInterface::E_UNHANDLED:
+                        yield new Message(
+                            Message::SERVER_ERROR,
+                            'Message rejected for error not specifically handled.',
+                            array(
+                                'input' => "$message",
+                                'message' => $exception->getMessage(),
+                            )
+                        );
+                        break;
+                    default:
+                        break;
+                }
             } catch (ClientException $exception) {
                 yield new Message(
                     Message::SERVER_ERROR,
