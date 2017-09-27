@@ -76,6 +76,7 @@ class Domain
     /**
      * @var domain
      * @ORM\OneToMany(targetEntity="Domain", mappedBy="parent")
+     * @ORM\OrderBy({"name" = "asc"})
      */
     private $subdomains;
 

@@ -79,3 +79,8 @@ nelmio_cors:
         max_age:        3600
     paths:
         '^/': ~
+
+api_platform:
+    collection:
+        pagination:
+            enabled: false

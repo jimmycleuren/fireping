@@ -238,27 +238,6 @@ class Device
     }
 
     /**
-     * Get probes
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getAllProbes()
-    {
-        $result = new ArrayCollection();
-        foreach ($this->probes as $probe) {
-            $result->add($probe);
-        }
-        $parent = $this->getDomain();
-        while ($parent != null) {
-            foreach ($parent->getProbes() as $probe) {
-                $result->add($probe);
-            }
-            $parent = $parent->getParent();
-        }
-        return $result;
-    }
-
-    /**
      * Add alert
      *
      * @param \AppBundle\Entity\Alert $alert
