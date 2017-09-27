@@ -68,7 +68,13 @@ class ProbeWorkerCommand extends ContainerAwareCommand
         try {
             $command = $factory->create($data['type'], $data);
         } catch (\Exception $e) {
-            // TODO: Do something with this exception.
+            $this->sendResponse(array(
+                'status' => 500,
+                'message' => 'NOK',
+                'body' => array(
+                    '_exception' => $e->getMessage(),
+                ),
+            ));
         }
 
         $shellOutput = $command->execute();

@@ -199,16 +199,20 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             return;
         }
 
-        // TODO: Handle different status codes.  Right now, we assume that only data is sent.
-        // TODO: Should also handle client and server errors.
-        $cleaned = array();
-        foreach ($decoded['body'] as $id => $message) {
-            if (!isset($message['type'], $message['timestamp'], $message['targets'])) {
-                $this->logger->warning('One or more required keys {type, timestamp, targets} are missing from the response body: ' . json_encode($decoded));
-                continue; // Do not attempt to post incomplete results.
+        if ($decoded['status'] == 500) {
+            //TODO: This is temporary!!
+            $this->logger->info($data);
+        } else {
+            // TODO: Handle different status codes.  Right now, we assume that only data is sent.
+            // TODO: Should also handle client and server errors.
+            $cleaned = array();
+            foreach ($decoded['body'] as $id => $message) {
+                if (!isset($message['type'], $message['timestamp'], $message['targets'])) {
+                    $this->logger->warning('One or more required keys {type, timestamp, targets} are missing from the response body: ' . json_encode($decoded));
+                    continue; // Do not attempt to post incomplete results.
+                }
+                $cleaned[$id] = $message;
             }
-            $cleaned[$id] = $message;
-        }
 //        if ($decoded['status'] == Message::MESSAGE_OK) {
 //            $this->logger->info("Adding message to data queue.");
 //            $this->queueHandler->addMessage('data', new Message(
@@ -224,7 +228,8 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 //                $decoded
 //            ));
 //        }
-        $this->queue->enqueue($cleaned);
+            $this->queue->enqueue($cleaned);
+        }
     }
 
     /**
