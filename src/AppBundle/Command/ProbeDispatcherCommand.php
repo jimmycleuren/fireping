@@ -18,6 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\InputStream;
 use Symfony\Component\Process\Process;
@@ -49,6 +50,9 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
     protected $workerLimit;
 
+    /** @var KernelInterface */
+    protected $kernel;
+
     protected function configure()
     {
         $this
@@ -66,6 +70,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->kernel = $this->getContainer()->get('kernel');
         $logger = $this->getContainer()->get('logger');
         $id = $this->getContainer()->getParameter('slave.id');
         $poster = new EchoPoster("https://smokeping-dev.cegeka.be/api/slaves/$id/result");
@@ -85,7 +90,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
         $probeStore = $this->getContainer()->get('probe_store');
 
-        $loop->addPeriodicTimer(15, function () use ($pid, $probeStore, $logger) {
+        $loop->addPeriodicTimer(15 * 60, function () use ($pid, $probeStore, $logger) {
             $this->log($pid, "Synchronizing ProbeStore Asynchronously.");
             $probeStore->async($logger);
         });
@@ -133,7 +138,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                 while (!$this->queue->isEmpty()) {
                     $node = $this->queue->shift();
                     try {
-                        //$this->postResults($node);
+                        $this->postResults($node);
                         echo "Posting results to master: \n" . json_encode($node) . "\n";
                     } catch (TransferException $exception) {
                         $this->queue->unshift($node);
@@ -263,9 +268,9 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             throw new \Exception("Worker limit reached.");
         }
 
-        // TODO: Remove verbosity.
-        // TODO: Replace absolute path.
-        $process = new Process("exec php /var/www/fireping/bin/console app:probe:worker -vvv");
+        $executable = $this->kernel->getRootDir() . '/../bin/console';
+        $environment = $this->kernel->getEnvironment();
+        $process = new Process("exec php $executable app:probe:worker --env=$environment");
         $input = new InputStream();
         $process->setInput($input);
         $process->setTimeout(180);
