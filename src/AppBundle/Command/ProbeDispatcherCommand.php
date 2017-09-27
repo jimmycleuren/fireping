@@ -13,6 +13,7 @@ use AppBundle\Probe\DeviceDefinition;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\TransferException;
+use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -53,6 +54,9 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
     /** @var KernelInterface */
     protected $kernel;
 
+    /** @var LoggerInterface */
+    protected $logger;
+
     protected function configure()
     {
         $this
@@ -71,7 +75,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->kernel = $this->getContainer()->get('kernel');
-        $logger = $this->getContainer()->get('logger');
+        $this->logger = $this->getContainer()->get('logger');
         $id = $this->getContainer()->getParameter('slave.id');
         $poster = new EchoPoster("https://smokeping-dev.cegeka.be/api/slaves/$id/result");
         $this->queueHandler = new MessageQueueHandler($poster);
@@ -84,15 +88,15 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         $pid = getmypid();
         $now = date('l jS \of F Y h:i:s A');
 
-        $this->log($pid, "Started on $now");
+        $this->logger->info("Slave started at $now");
 
         $loop = Factory::create();
 
         $probeStore = $this->getContainer()->get('probe_store');
 
-        $loop->addPeriodicTimer(15 * 60, function () use ($pid, $probeStore, $logger) {
-            $this->log($pid, "Synchronizing ProbeStore Asynchronously.");
-            $probeStore->async($logger);
+        $loop->addPeriodicTimer(15 * 60, function () use ($pid, $probeStore) {
+            $this->logger->info("ProbeStore Sync Started");
+            $probeStore->async($this->logger);
         });
 
         $loop->addPeriodicTimer(1, function () use ($probeStore) {
@@ -123,7 +127,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                         $workerPid = $worker->getPid();
                         $input = $this->getInput($workerPid);
                         $instruction = json_encode($instruction);
-                        $this->log(0, "Sending instruction to pid/$workerPid: $instruction");
+                        $this->logger->info("Sending instruction to pid/$workerPid: $instruction");
                         $input->write($instruction);
                     }
                 }
@@ -132,14 +136,13 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
         $loop->addPeriodicTimer(1 * 60, function () {
             $x = $this->queue->count();
-            $this->log(0, "Queue currently has $x items left to be processed.");
+            $this->logger->info("Queue currently has $x items left to be processed.");
             if (!$this->queueLock) {
                 $this->queueLock = true;
                 while (!$this->queue->isEmpty()) {
                     $node = $this->queue->shift();
                     try {
                         $this->postResults($node);
-                        echo "Posting results to master: \n" . json_encode($node) . "\n";
                     } catch (TransferException $exception) {
                         $this->queue->unshift($node);
                         $this->queueLock = false;
@@ -148,12 +151,13 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                 }
                 $this->queueLock = false;
             } else {
-                $this->log(0, "Queue is currently locked.");
+                $this->logger->warning("Queue is currently locked.");
             }
         });
 
         $loop->addPeriodicTimer(1 * 30, function () {
-            $this->queueHandler->processQueue('exceptions');
+            $this->logger->info("Processing queues.");
+            $this->queueHandler->processQueues();
         });
 
         $loop->addPeriodicTimer(0.1, function () {
@@ -169,21 +173,10 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             }
         });
 
-        $this->log($pid, "Synchronizing ProbeStore.");
+        $this->logger->info("Initializing ProbeStore.");
         $probeStore->sync();
 
         $loop->run();
-    }
-
-    /**
-     * @param $pid
-     * @param $data
-     */
-    private function log($pid, $data)
-    {
-        $className = get_class($this);
-        $now = date('Y/m/j H:i:s');
-        echo "$now $className($pid) $data\n";
     }
 
     private function handleResponse($type, $data)
@@ -191,14 +184,13 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         $decoded = json_decode($data, true);
 
         if (!$decoded) {
-            $this->log(0, "Error: could not decode to json: $data");
+            $this->logger->warning("$data could not be decoded to JSON.");
             return;
         }
 
         if (!isset($decoded['status'], $decoded['message'], $decoded['body']))
         {
-            $this->log(0, "Error: missing key in response:");
-            var_dump($decoded);
+            $this->logger->warning('One more or required keys {status,message,body} are missing from worker response: ' . json_encode($decoded));
             return;
         }
 
@@ -207,25 +199,26 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         $cleaned = array();
         foreach ($decoded['body'] as $id => $message) {
             if (!isset($message['type'], $message['timestamp'], $message['targets'])) {
-                $this->log(0, "Error: missing key in results.");
-                var_dump($message);
+                $this->logger->warning('One or more required keys {type, timestamp, targets} are missing from the response body: ' . json_encode($decoded));
                 continue; // Do not attempt to post incomplete results.
             }
             $cleaned[$id] = $message;
         }
-        if ($decoded['status'] == Message::MESSAGE_OK) {
-            $this->queueHandler->addMessage('data', new Message(
-                Message::MESSAGE_OK,
-                'Message OK',
-                $cleaned
-            ));
-        } else {
-            $this->queueHandler->addMessage('exceptions', new Message(
-                Message::SERVER_ERROR,
-                'An error...',
-                $decoded
-            ));
-        }
+//        if ($decoded['status'] == Message::MESSAGE_OK) {
+//            $this->logger->info("Adding message to data queue.");
+//            $this->queueHandler->addMessage('data', new Message(
+//                Message::MESSAGE_OK,
+//                'Message OK',
+//                $cleaned
+//            ));
+//        } else {
+//            $this->logger->info("Adding message to exceptions queue.");
+//            $this->queueHandler->addMessage('exceptions', new Message(
+//                Message::SERVER_ERROR,
+//                'An error...',
+//                $decoded
+//            ));
+//        }
         $this->queue->enqueue($cleaned);
     }
 
@@ -236,23 +229,25 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
      */
     private function postResults(array $results)
     {
-        $this->log(0, 'Building Client...');
+        $id = $this->getContainer()->getParameter('slave.id');
+        $prod_endpoint = "https://smokeping-dev.cegeka.be/api/slaves/$id/result";
+        $dev_dendpoint = "http://localhost/api/slaves/$id/result";
+        $endpoint = $prod_endpoint;
+
         $client = new Client();
 
         $data = json_encode($results);
-        $this->log(0, "Attempting to post results: $data");
         try {
-            $id = $this->getContainer()->getParameter('slave.id');
-            $this->log(0, "Retrieving config for Slave $id");
-            $response = $client->post("https://smokeping-dev.cegeka.be/api/slaves/$id/result", [
+            $this->logger->info("Posting $endpoint with data: $data");
+            $response = $client->post($endpoint, [
                 'body' => json_encode($results),
             ]);
             $statusCode = $response->getStatusCode();
             $body = $response->getBody();
-            $this->log(0, "Response code=$statusCode, body=$body");
+            $this->logger->info("Response ($statusCode) from $endpoint: $body");
         } catch (TransferException $exception) {
             $message = $exception->getMessage();
-            $this->log(0, "Exception while pushing results: $message.");
+            $this->logger->error("Exception (message: $message) was thrown while posting data to $endpoint.");
             throw $exception; // TODO: This probably just shouldn't throw any exceptions and instead let the timer handle it.
         }
     }
@@ -270,7 +265,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
         $executable = $this->kernel->getRootDir() . '/../bin/console';
         $environment = $this->kernel->getEnvironment();
-        $process = new Process("exec php $executable app:probe:worker --env=$environment");
+        $process = new Process("exec php $executable app:probe:worker --env=$environment -vvv");
         $input = new InputStream();
         $process->setInput($input);
         $process->setTimeout(180);
@@ -278,11 +273,11 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         $process->start(function ($type, $data) use ($process) {
             $pid = $process->getPid();
             $this->handleResponse($type, $data);
-            $this->log(0, "Killing Process/$pid");
+            $this->logger->info("Killing Process/$pid");
             $this->cleanup($pid);
         });
         $pid = $process->getPid();
-        $this->log(0,"[Process/$pid] Started");
+        $this->logger->info("Started Process/$pid");
 
         $this->processes[$pid] = $process;
         $this->inputs[$pid] = $input;
