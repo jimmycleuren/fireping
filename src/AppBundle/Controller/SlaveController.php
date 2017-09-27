@@ -28,7 +28,7 @@ class SlaveController extends Controller
      * @Route("/api/slaves/{id}/config")
      * @ParamConverter("slave", class="AppBundle:Slave")
      */
-    public function configAction($slave)
+    public function configAction($slave, Request $request)
     {
         $config = array();
 
@@ -43,7 +43,12 @@ class SlaveController extends Controller
             );
         }
 
-        return new JsonResponse($config);
+        $response = new JsonResponse($config);
+        $response->setEtag(md5(json_encode($config)));
+        $response->setPublic();
+        $response->isNotModified($request);
+
+        return $response;
     }
 
     /**
