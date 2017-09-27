@@ -93,8 +93,12 @@ class ProbeStore
                 // Do something with this and abort.
                 $logger->error("Non-JSON reply from configuration endpoint: " . $response->getBody());
             } else {
-                $logger->info("Applying new configuration.");
-                $this->updateConfig($configuration);
+                if ($response->getStatusCode() === 304) {
+                    $this->container->get('logger')->info("Configuration already up-to-date, no need to apply new changes.");
+                } else {
+                    $logger->info("Applying new configuration.");
+                    $this->updateConfig($configuration);
+                }
             }
         });
     }
@@ -134,6 +138,10 @@ class ProbeStore
             $result = $client->get($endpoint);
         } catch (TransferException $exception) {
             // TODO: Log this failure!
+        }
+
+        if ($result->getStatusCode() === 304) {
+            return "Configuration has not changed; no changes were applied.";
         }
 
         $decoded = json_decode($result->getBody(), true);
