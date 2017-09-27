@@ -66,6 +66,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $logger = $this->getContainer()->get('logger');
         $id = $this->getContainer()->getParameter('slave.id');
         $poster = new EchoPoster("https://smokeping-dev.cegeka.be/api/slaves/$id/result");
         $this->queueHandler = new MessageQueueHandler($poster);
@@ -84,10 +85,9 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
         $probeStore = $this->getContainer()->get('probe_store');
 
-        $loop->addPeriodicTimer(15 * 60, function () use ($pid, $probeStore) {
-            $this->log($pid, "Synchronizing ProbeStore.");
-            // TODO: This is blocking!!
-            $probeStore->sync();
+        $loop->addPeriodicTimer(15, function () use ($pid, $probeStore, $logger) {
+            $this->log($pid, "Synchronizing ProbeStore Asynchronously.");
+            $probeStore->async($logger);
         });
 
         $loop->addPeriodicTimer(1, function () use ($probeStore) {
