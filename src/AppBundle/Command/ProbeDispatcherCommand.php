@@ -144,9 +144,14 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                     try {
                         $this->postResults($node);
                     } catch (TransferException $exception) {
-                        $this->queue->unshift($node);
-                        $this->queueLock = false;
-                        break;
+                        if ($exception->getCode() === 409) {
+                            // Conflict detected, discard the message.
+                            $this->logger->warning("Master indicates that we are attempting to update the past, discarding message.");
+                        } else {
+                            $this->queue->unshift($node);
+                            $this->queueLock = false;
+                            break;
+                        }
                     }
                 }
                 $this->queueLock = false;
@@ -231,7 +236,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
     {
         $id = $this->getContainer()->getParameter('slave.id');
         $prod_endpoint = "https://smokeping-dev.cegeka.be/api/slaves/$id/result";
-        $dev_dendpoint = "http://localhost/api/slaves/$id/result";
+        $dev_endpoint = "http://localhost/api/slaves/$id/result";
         $endpoint = $prod_endpoint;
 
         $client = new Client();
