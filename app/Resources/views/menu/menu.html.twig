@@ -1,0 +1,11 @@
+<ul class="nav nav-sidebar">
+    {% for domain in domains %}
+        <li {% if current_domain is defined and current_domain.id == domain.id %}class="active"{% endif %}><a href="{{ path('app_domain_get', {id: domain.id}) }}">{{ domain.name }}</a></li>
+        {% for subdomain in domain.subdomains %}
+            <li {% if current_domain is defined and current_domain.id == subdomain.id %}class="active"{% endif %}><a href="{{ path('app_domain_get', {id: subdomain.id}) }}"> - {{ subdomain.name }}</a></li>
+            {% for subsubdomain in subdomain.subdomains %}
+                <li {% if current_domain is defined and current_domain.id == subsubdomain.id %}class="active"{% endif %}><a href="{{ path('app_domain_get', {id: subsubdomain.id}) }}"> -- {{ subsubdomain.name }}</a></li>
+            {% endfor %}
+        {% endfor %}
+    {% endfor %}
+</ul>

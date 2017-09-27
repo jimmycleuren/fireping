@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -234,6 +235,27 @@ class Device
     public function getProbes()
     {
         return $this->probes;
+    }
+
+    /**
+     * Get probes
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAllProbes()
+    {
+        $result = new ArrayCollection();
+        foreach ($this->probes as $probe) {
+            $result->add($probe);
+        }
+        $parent = $this->getDomain();
+        while ($parent != null) {
+            foreach ($parent->getProbes() as $probe) {
+                $result->add($probe);
+            }
+            $parent = $parent->getParent();
+        }
+        return $result;
     }
 
     /**
