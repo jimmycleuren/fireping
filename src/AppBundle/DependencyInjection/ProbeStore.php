@@ -124,11 +124,14 @@ class ProbeStore
     {
         $client = new Client();
         // TODO: Process Async
+        $id = $this->container->getParameter('slave.id');
+        $prod_endpoint = "https://smokeping-dev.cegeka.be/api/slaves/$id/config";
+        $dev_endpoint = "http://localhost/api/slaves/$id/config";
+        $endpoint = $prod_endpoint;
         $result = '';
 
         try {
-            $id = $this->container->getParameter('slave.id');
-            $result = $client->get("https://smokeping-dev.cegeka.be/api/slaves/$id/config");
+            $result = $client->get($endpoint);
         } catch (TransferException $exception) {
             // TODO: Log this failure!
         }
