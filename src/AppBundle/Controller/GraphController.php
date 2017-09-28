@@ -72,6 +72,7 @@ class GraphController extends Controller
     public function detailAction(Device $device, Probe $probe, Request $request)
     {
         $start = $request->get('start');
+        $end = $request->get('end');
         if ($probe->getType() == "ping") {
             $filename = $this->get('graph.ping')->getDetailGraph($device, $probe, $start);
             $response = new Response(file_get_contents($filename), 200);

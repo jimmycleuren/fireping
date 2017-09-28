@@ -27,7 +27,7 @@ class Domain
     /**
      * @var domain
      *
-     * @ORM\ManyToOne(targetEntity="Domain")
+     * @ORM\ManyToOne(targetEntity="Domain", inversedBy="subdomains")
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id", nullable=true)
      */
     private $parent;
@@ -41,13 +41,13 @@ class Domain
     private $name;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Slave", inversedBy="domains")
-     * @ORM\JoinTable(name="domain_slaves",
+     * @ORM\ManyToMany(targetEntity="SlaveGroup", inversedBy="domains")
+     * @ORM\JoinTable(name="domain_slavegroups",
      *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="slave_id", referencedColumnName="id")}
+     *      inverseJoinColumns={@ORM\JoinColumn(name="slavegroup_id", referencedColumnName="id")}
      *      )
      */
-    private $slaves;
+    private $slavegroups;
 
     /**
      * @ORM\ManyToMany(targetEntity="Probe")
@@ -119,7 +119,7 @@ class Domain
      */
     public function __construct()
     {
-        $this->slaves = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->slavegroups = new \Doctrine\Common\Collections\ArrayCollection();
         $this->probes = new \Doctrine\Common\Collections\ArrayCollection();
         $this->alerts = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -149,37 +149,37 @@ class Domain
     }
 
     /**
-     * Add slave
+     * Add slavegroup
      *
-     * @param \AppBundle\Entity\Slave $slave
+     * @param \AppBundle\Entity\SlaveGroup $slavegroup
      *
      * @return Domain
      */
-    public function addSlave(\AppBundle\Entity\Slave $slave)
+    public function addSlaveGroup(\AppBundle\Entity\SlaveGroup $slavegroup)
     {
-        $this->slaves[] = $slave;
+        $this->slavegroups[] = $slavegroup;
 
         return $this;
     }
 
     /**
-     * Remove slave
+     * Remove slavegroup
      *
-     * @param \AppBundle\Entity\Slave $slave
+     * @param \AppBundle\Entity\SlaveGroup $slavegroup
      */
-    public function removeSlave(\AppBundle\Entity\Slave $slave)
+    public function removeSlaveGroup(\AppBundle\Entity\SlaveGroup $slavegroup)
     {
-        $this->slaves->removeElement($slave);
+        $this->slavegroups->removeElement($slavegroup);
     }
 
     /**
-     * Get slaves
+     * Get slavegroups
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getSlaves()
+    public function getSlaveGroups()
     {
-        return $this->slaves;
+        return $this->slavegroups;
     }
 
     /**
@@ -316,5 +316,10 @@ class Domain
     public function getSubdomains()
     {
         return $this->subdomains;
+    }
+
+    public function __toString()
+    {
+        return $this->name;
     }
 }

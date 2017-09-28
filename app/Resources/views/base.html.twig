@@ -56,8 +56,7 @@
                 margin-left: -20px;
             }
             .nav-sidebar > li > a {
-                padding-right: 20px;
-                padding-left: 20px;
+                padding: 0px 20px;
             }
             .nav-sidebar > .active > a,
             .nav-sidebar > .active > a:hover,
@@ -81,7 +80,8 @@
                 </div>
                 <div id="navbar" class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <li class="active"><a href="{{ path('homepage') }}">Home</a></li>
+                        <li {% if active_menu is defined and active_menu == "slavegroup" %}class="active"{% endif %}><a href="{{ path('slavegroup_index') }}">Slavegroups</a></li>
+                        <li {% if active_menu is defined and active_menu == "slave" %}class="active"{% endif %}><a href="{{ path('slave_index') }}">Slaves</a></li>
                     </ul>
                 </div><!--/.nav-collapse -->
             </div>

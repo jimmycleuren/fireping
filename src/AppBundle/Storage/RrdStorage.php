@@ -50,7 +50,7 @@ class RrdStorage extends Storage
         }
     }
 
-    public function getFilePath(Device $device, Probe $probe)
+    public function getFilePath(Device $device, Probe $probe, SlaveGroup $group)
     {
         $path = $this->path.$device->getId();
 
@@ -58,12 +58,18 @@ class RrdStorage extends Storage
             mkdir($path);
         }
 
-        return $this->path.$device->getId()."/".$probe->getId().'.rrd';
+        $path = $this->path.$device->getId()."/".$probe->getId();
+
+        if (!file_exists($path)) {
+            mkdir($path);
+        }
+
+        return $this->path.$device->getId()."/".$probe->getId()."/".$group->getId().'.rrd';
     }
 
-    public function store(Device $device, Probe $probe, $timestamp, $data)
+    public function store(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data)
     {
-        $path = $this->getFilePath($device, $probe);
+        $path = $this->getFilePath($device, $probe, $group);
 
         if (!file_exists($path)) {
             $this->create($path, $probe, $timestamp, $data);

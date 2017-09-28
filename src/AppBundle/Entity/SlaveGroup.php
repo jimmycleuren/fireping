@@ -8,59 +8,42 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * Slave
+ * SlaveGroup
  *
- * @ORM\Table(name="slave")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\SlaveRepository")
- * @ApiResource(attributes={"normalization_context"={"groups"={"slave"}}})
+ * @ORM\Table(name="slave_group")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\SlaveGroupRepository")
+ * @ApiResource(attributes={"normalization_context"={"groups"={"slavegroup"}}})
  */
-class Slave
+class SlaveGroup
 {
     /**
-     * @var string
+     * @var int
      *
-     * @ORM\Column(name="id", type="string", length=255)
+     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @Groups({"slave"})
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="secret", type="string", length=255)
+     * @ORM\Column(name="name", type="string", length=255, unique=true)
+     * @Assert\NotBlank
+     * @Groups({"slavegroup"})
      */
-    private $secret;
+    private $name;
 
     /**
-     * @var slavegroup
-     *
-     * @ORM\ManyToOne(targetEntity="SlaveGroup")
-     * @ORM\JoinColumn(name="slavegroup_id", referencedColumnName="id")
-     * @Groups({"slave"})
+     * @ORM\ManyToMany(targetEntity="Device", mappedBy="slavegroups")
      */
-    private $slavegroup;
+    private $devices;
 
     /**
-     * @var datetime
-     *
-     * @ORM\Column(name="last_contact", type="datetime")
+     * @ORM\ManyToMany(targetEntity="Domain", mappedBy="slavegroups")
      */
-    private $lastContact;
+    private $domains;
 
-    /**
-     * Set id
-     *
-     * @param string $id
-     *
-     * @return Slave
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
 
     /**
      * Get id
@@ -73,51 +56,27 @@ class Slave
     }
 
     /**
-     * Set secret
+     * Set name
      *
-     * @param string $secret
+     * @param string $name
      *
-     * @return Slave
+     * @return SlaveGroup
      */
-    public function setSecret($secret)
+    public function setName($name)
     {
-        $this->secret = $secret;
+        $this->name = $name;
 
         return $this;
     }
 
     /**
-     * Get secret
+     * Get name
      *
      * @return string
      */
-    public function getSecret()
+    public function getName()
     {
-        return $this->secret;
-    }
-
-    /**
-     * Set lastContact
-     *
-     * @param string $lastContact
-     *
-     * @return Slave
-     */
-    public function setLastContact($lastContact)
-    {
-        $this->lastContact = $lastContact;
-
-        return $this;
-    }
-
-    /**
-     * Get lastcontact
-     *
-     * @return string
-     */
-    public function getLastContact()
-    {
-        return $this->lastContact;
+        return $this->name;
     }
 
     /**
@@ -134,7 +93,7 @@ class Slave
      *
      * @param \AppBundle\Entity\Device $device
      *
-     * @return Slave
+     * @return SlaveGroup
      */
     public function addDevice(\AppBundle\Entity\Device $device)
     {
@@ -168,7 +127,7 @@ class Slave
      *
      * @param \AppBundle\Entity\Domain $domain
      *
-     * @return Slave
+     * @return SlaveGroup
      */
     public function addDomain(\AppBundle\Entity\Domain $domain)
     {
@@ -197,29 +156,8 @@ class Slave
         return $this->domains;
     }
 
-    /**
-     * Set slavegroup
-     *
-     * @param \AppBundle\Entity\SlaveGroup $slavegroup
-     *
-     * @return Slave
-     * @Groups({"slave"})
-     */
-    public function setSlaveGroup(\AppBundle\Entity\SlaveGroup $slavegroup = null)
+    public function __toString()
     {
-        $this->slavegroup = $slavegroup;
-
-        return $this;
-    }
-
-    /**
-     * Get slavegroup
-     *
-     * @return \AppBundle\Entity\SlaveGroup
-     * @Groups({"slave"})
-     */
-    public function getSlaveGroup()
-    {
-        return $this->slavegroup;
+        return $this->name;
     }
 }

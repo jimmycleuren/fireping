@@ -33,7 +33,7 @@ class Device
     /**
      * @var domain
      *
-     * @ORM\ManyToOne(targetEntity="Domain")
+     * @ORM\ManyToOne(targetEntity="Domain", inversedBy="devices")
      * @ORM\JoinColumn(name="domain_id", referencedColumnName="id")
      * @Assert\NotBlank
      * @Groups({"device"})
@@ -59,14 +59,14 @@ class Device
     private $ip;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Slave", inversedBy="devices")
-     * @ORM\JoinTable(name="device_slaves",
+     * @ORM\ManyToMany(targetEntity="SlaveGroup", inversedBy="devices")
+     * @ORM\JoinTable(name="device_slavegroups",
      *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="slave_id", referencedColumnName="id")}
+     *      inverseJoinColumns={@ORM\JoinColumn(name="slavegroup_id", referencedColumnName="id")}
      *      )
      * @Groups({"device"})
      */
-    private $slaves;
+    private $slavegroups;
 
     /**
      * @ORM\ManyToMany(targetEntity="Probe")
@@ -156,7 +156,7 @@ class Device
      */
     public function __construct()
     {
-        $this->slaves = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->slavegroups = new \Doctrine\Common\Collections\ArrayCollection();
         $this->probes = new \Doctrine\Common\Collections\ArrayCollection();
         $this->alerts = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -188,38 +188,38 @@ class Device
     }
 
     /**
-     * Add slave
+     * Add slavegroup
      *
-     * @param \AppBundle\Entity\Slave $slave
+     * @param \AppBundle\Entity\SlaveGroup $slavegroup
      *
      * @return Device
      */
-    public function addSlave(\AppBundle\Entity\Slave $slave)
+    public function addSlaveGroup(\AppBundle\Entity\SlaveGroup $slavegroup)
     {
-        $this->slaves[] = $slave;
+        $this->slavegroups[] = $slavegroup;
 
         return $this;
     }
 
     /**
-     * Remove slave
+     * Remove slavegroup
      *
-     * @param \AppBundle\Entity\Slave $slave
+     * @param \AppBundle\Entity\SlaveGroup $slavegroup
      */
-    public function removeSlave(\AppBundle\Entity\Slave $slave)
+    public function removeSlaveGroup(\AppBundle\Entity\SlaveGroup $slavegroup)
     {
-        $this->slaves->removeElement($slave);
+        $this->slavegroups->removeElement($slavegroup);
     }
 
     /**
-     * Get slaves
+     * Get slavegroups
      *
      * @return \Doctrine\Common\Collections\Collection
      * @Groups({"device"})
      */
-    public function getSlaves()
+    public function getSlaveGroups()
     {
-        return $this->slaves;
+        return $this->slavegroups;
     }
 
     /**
@@ -311,5 +311,10 @@ class Device
     public function getAlerts()
     {
         return $this->alerts;
+    }
+
+    public function __toString()
+    {
+        return $this->name;
     }
 }
