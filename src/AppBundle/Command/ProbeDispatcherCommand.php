@@ -94,9 +94,9 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
         $probeStore = $this->getContainer()->get('probe_store');
 
-        $loop->addPeriodicTimer(15 * 60, function () use ($pid, $probeStore) {
+        $loop->addPeriodicTimer(60, function () use ($pid, $probeStore) {
             $this->logger->info("ProbeStore Sync Started");
-            $probeStore->async($this->logger);
+            $probeStore->sync($this->logger);
         });
 
         $loop->addPeriodicTimer(1, function () use ($probeStore) {
@@ -147,6 +147,9 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                         if ($exception->getCode() === 409) {
                             // Conflict detected, discard the message.
                             $this->logger->warning("Master indicates that we are attempting to update the past, discarding message.");
+                        } elseif ($exception->getCode() === 500) {
+                            // TODO: This should probably be more specific but the master currently returns 500 if we send incorrect data.
+                            $this->logger->error("Master indicates an error, discarding data... \n" . $exception->getMessage());
                         } else {
                             $this->queue->unshift($node);
                             $this->queueLock = false;
@@ -179,7 +182,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         });
 
         $this->logger->info("Initializing ProbeStore.");
-        $probeStore->sync();
+        $probeStore->sync($this->logger);
 
         $loop->run();
     }
