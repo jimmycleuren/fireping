@@ -10,6 +10,7 @@ namespace AppBundle\Graph;
 
 use AppBundle\Entity\Device;
 use AppBundle\Entity\Probe;
+use AppBundle\Entity\SlaveGroup;
 use AppBundle\Exception\RrdException;
 
 class PingGraph extends RrdGraph
@@ -74,7 +75,7 @@ class PingGraph extends RrdGraph
         return $imageFile;
     }
 
-    public function getDetailGraph(Device $device, Probe $probe, $start = -3600)
+    public function getDetailGraph(Device $device, Probe $probe, SlaveGroup $slavegroup, $start = -3600, $end = "now")
     {
         $max = 100000;
 
@@ -91,17 +92,17 @@ class PingGraph extends RrdGraph
             "--title=$title",
             "--vertical-label=ms",
             "--lower-limit=0",
-            "--upper-limit=".$this->getMedianMax($start, $this->storage->getFilePath($device, $probe)),
+            "--upper-limit=".$this->getMedianMax($start, $this->storage->getFilePath($device, $probe, $slavegroup)),
             "--rigid",
             "--width=1000",
             "--height=200",
         );
 
-        $options[] = sprintf("DEF:%s=%s:%s:%s",'median', $this->storage->getFilePath($device, $probe), 'median', "AVERAGE");
-        $options[] = sprintf("DEF:%s=%s:%s:%s",'loss', $this->storage->getFilePath($device, $probe), 'loss', "AVERAGE");
+        $options[] = sprintf("DEF:%s=%s:%s:%s",'median', $this->storage->getFilePath($device, $probe, $slavegroup), 'median', "AVERAGE");
+        $options[] = sprintf("DEF:%s=%s:%s:%s",'loss', $this->storage->getFilePath($device, $probe, $slavegroup), 'loss', "AVERAGE");
         $options[] = "CDEF:dm0=median,0,$max,LIMIT";
         $options[] = sprintf("CDEF:%s=%s,%s,%s",'loss_percent', "loss", "100", "*");
-        $this->calculateStdDev($options, $this->storage->getFilePath($device, $probe), $probe->getSamples());
+        $this->calculateStdDev($options, $this->storage->getFilePath($device, $probe, $slavegroup), $probe->getSamples());
         $options[] = "CDEF:s2d0=sdev0";
 
         $options[] = "CDEF:lossred=loss,0.2,GT,median,UNKN,IF";
@@ -109,7 +110,7 @@ class PingGraph extends RrdGraph
         $options[] = "CDEF:lossgreen=loss,0.05,LT,median,UNKN,IF";
 
         $total = $probe->getSamples();
-        $file = $this->storage->getFilePath($device, $probe);
+        $file = $this->storage->getFilePath($device, $probe, $slavegroup);
         for ($i = 1; $i <= $probe->getSamples(); $i++) {
             $options[] = "DEF:ping$i=$file:ping$i:AVERAGE";
             $options[] = "CDEF:cp$i=ping$i,$max,LT,ping$i,INF,IF";
