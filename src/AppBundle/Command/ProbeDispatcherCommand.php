@@ -76,7 +76,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
     {
         $this->kernel = $this->getContainer()->get('kernel');
         $this->logger = $this->getContainer()->get('logger');
-        $id = $this->getContainer()->getParameter('slave.id');
+        $id = $this->getContainer()->getParameter('slave.name');
         $poster = new EchoPoster("https://smokeping-dev.cegeka.be/api/slaves/$id/result");
         $this->queueHandler = new MessageQueueHandler($poster);
         $this->queueHandler->addQueue(new MessageQueue('data'));
@@ -242,7 +242,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
      */
     private function postResults(array $results)
     {
-        $id = $this->getContainer()->getParameter('slave.id');
+        $id = $this->getContainer()->getParameter('slave.name');
         $prod_endpoint = "https://smokeping-dev.cegeka.be/api/slaves/$id/result";
         $dev_endpoint = "http://localhost/api/slaves/$id/result";
         $endpoint = $prod_endpoint;
