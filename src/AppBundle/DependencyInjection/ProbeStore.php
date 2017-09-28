@@ -4,7 +4,10 @@ namespace AppBundle\DependencyInjection;
 use GuzzleHttp\Client;
 use AppBundle\Probe\ProbeDefinition;
 use AppBundle\Probe\DeviceDefinition;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\TransferException;
+use GuzzleHttp\Psr7\Request;
+use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -20,6 +23,7 @@ class ProbeStore
      */
     private   $container;
     protected $probes = array();
+    protected $etag = null;
 
     public function __construct(ContainerInterface $container)
     {
@@ -49,10 +53,8 @@ class ProbeStore
     public function getProbe($id, $type, $step, $samples)
     {
         foreach ($this->probes as $probe) {
-            if ($probe->getId() === $id
-                && $probe->getType() === $type
-                && $probe->getStep() === $step
-                && $probe->getSamples() === $samples) {
+            if ($probe->getId() === $id) {
+                $probe->setConfiguration($id, $type, $step, $samples);
                 return $probe;
             }
         }
@@ -78,31 +80,6 @@ class ProbeStore
         }
     }
 
-    public function async(LoggerInterface $logger)
-    {
-        $client = new Client();
-
-        $id = $this->container->getParameter('slave.id');
-        $promise = $client->requestAsync('GET', "https://smokeping-dev.cegeka.be/api/slaves/$id/config");
-        $logger->info("Created promise for config request.");
-        $promise->then(function(ResponseInterface $response) use ($logger) {
-            $logger->info("Received response to config request.");
-            $configuration = json_decode($response->getBody(), true);
-
-            if (!$configuration) {
-                // Do something with this and abort.
-                $logger->error("Non-JSON reply from configuration endpoint: " . $response->getBody());
-            } else {
-                if ($response->getStatusCode() === 304) {
-                    $this->container->get('logger')->info("Configuration already up-to-date, no need to apply new changes.");
-                } else {
-                    $logger->info("Applying new configuration.");
-                    $this->updateConfig($configuration);
-                }
-            }
-        });
-    }
-
     private function updateConfig($configuration) {
         $this->deactivateAllDevices();
         foreach ($configuration as $id => $probeConfig)
@@ -124,58 +101,44 @@ class ProbeStore
         $this->purgeAllInactiveDevices();
     }
 
-    public function sync()
+    public function sync(LoggerInterface $logger)
     {
         $client = new Client();
-        // TODO: Process Async
+
         $id = $this->container->getParameter('slave.id');
+
         $prod_endpoint = "https://smokeping-dev.cegeka.be/api/slaves/$id/config";
         $dev_endpoint = "http://localhost/api/slaves/$id/config";
         $endpoint = $prod_endpoint;
-        $result = '';
 
         try {
-            $result = $client->get($endpoint);
-        } catch (TransferException $exception) {
-            // TODO: Log this failure!
-        }
+            $request = isset($this->etag) ?
+                new Request('GET', $endpoint, ['If-None-Match' => $this->etag]) :
+                new Request('GET', $endpoint);
 
-        if ($result->getStatusCode() === 304) {
-            return "Configuration has not changed; no changes were applied.";
-        }
+            $response = $client->send($request);
 
-        $decoded = json_decode($result->getBody(), true);
+            $etag = $response->hasHeader('ETag') ? $response->getHeader('ETag')[0] : null;
 
-        if (!$decoded) {
-            // TODO: Log this failure! Something wrong with the response body.
-        } else {
-            $this->deactivateAllDevices();
-            foreach ($decoded as $id => $probeConfig)
-            {
-                // TODO: More checks to make sure all of this data is here?
-                $type = $probeConfig['type'];
-                $step = $probeConfig['step'];
-                $samples = $probeConfig['samples'];
-                // TODO: Only type, step and targets needs to exist for operational.
-                // Anything else is custom configuration.
-
-                $probe = $this->getProbe($id, $type, $step, $samples);
-                foreach ($probeConfig['targets'] as $hostname => $ip)
-                {
-                    $device = new DeviceDefinition($hostname, $ip);
-                    $probe->addDevice($device);
-                }
+            if ($response->getStatusCode() === 304) {
+                $logger->info("Configuration has not changed.");
+                return null;
             }
-            $this->purgeAllInactiveDevices();
-        }
-    }
 
-    public function printDevices()
-    {
-        foreach ($this->getProbes() as $probe)
-        {
-            print("[Probe:".$probe->getId()."] Devices:\n");
-            print_r($probe->getDevices());
+            $logger->info("Reloading configuration...");
+
+            $json = json_decode($response->getBody(), true);
+
+            if (!$json) {
+                $logger->error("Master is returnin non-JSON.");
+                return null;
+            }
+
+            $this->updateConfig($json);
+
+            $this->etag = $etag;
+        } catch (TransferException $e) {
+            $logger->error("Response (" . $e->getCode() . ") while retrieving configuration from $endpoint: " . $e->getMessage());
         }
     }
 }
