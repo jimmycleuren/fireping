@@ -49,7 +49,7 @@ class GraphController extends Controller
 
         foreach ($probes as $probe) {
             if ($probe->getType() == "ping") {
-                $filename = $this->get('graph.ping')->getSummaryGraph($device, $probe);;
+                $filename = $this->get('graph.ping')->getSummaryGraph($device, $probe);
                 $response = new Response(file_get_contents($filename), 200);
                 $response->headers->set('Content-Type', 'image/png');
 

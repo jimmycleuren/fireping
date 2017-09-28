@@ -10,6 +10,7 @@ namespace AppBundle\Storage;
 
 use AppBundle\Entity\Device;
 use AppBundle\Entity\Probe;
+use AppBundle\Entity\SlaveGroup;
 
 abstract class Storage
 {

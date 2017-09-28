@@ -16,10 +16,19 @@ class PingGraph extends RrdGraph
 {
     public function getSummaryGraph(Device $device, Probe $probe)
     {
+        /*
         $file = $this->storage->getFilePath($device, $probe);
         if (!file_exists($file)) {
            return dirname(__FILE__)."/../../../web/notfound.png";
         }
+        */
+
+        $slavegroups = $device->getSlaveGroups()->toArray();
+        $domain = $device->getDomain();
+        do {
+            $slavegroups = array_merge($slavegroups, $domain->getSlaveGroups()->toArray());
+            $domain = $domain->getParent();
+        } while ($domain != null);
 
         $start = date("U") - 3600 * 12;
         $title = $device->getName();
@@ -35,17 +44,19 @@ class PingGraph extends RrdGraph
             "--height=60",
         );
 
-        $options[] = sprintf("DEF:%s=%s:%s:%s",'median', $this->storage->getFilePath($device, $probe), 'median', "AVERAGE");
-        $options[] = sprintf("DEF:%s=%s:%s:%s",'loss', $this->storage->getFilePath($device, $probe), 'loss', "AVERAGE");
-        $options[] = "CDEF:dm0=median,0,100000,LIMIT";
-        $options[] = sprintf("CDEF:%s=%s,%s,%s",'loss_percent', "loss", "100", "*");
-        $this->calculateStdDev($options, $this->storage->getFilePath($device, $probe), $probe->getSamples());
+        foreach ($slavegroups as $slavegroup) {
+            $options[] = sprintf("DEF:%s=%s:%s:%s", 'median', $this->storage->getFilePath($device, $probe, $slavegroup), 'median', "AVERAGE");
+            $options[] = sprintf("DEF:%s=%s:%s:%s", 'loss', $this->storage->getFilePath($device, $probe, $slavegroup), 'loss', "AVERAGE");
+            $options[] = "CDEF:dm0=median,0,100000,LIMIT";
+            $options[] = sprintf("CDEF:%s=%s,%s,%s", 'loss_percent', "loss", "100", "*");
+            $this->calculateStdDev($options, $this->storage->getFilePath($device, $probe, $slavegroup), $probe->getSamples());
 
-        $options[] = "CDEF:dmlow0=dm0,sdev0,2,/,-";
-        $options[] = "CDEF:s2d0=sdev0";
-        $options[] = sprintf("LINE:%s%s:%s", 'median', '#0000ff', 'median');
-        $options[] = sprintf("AREA:%s", 'dmlow0');
-        $options[] = "AREA:s2d0#0000FF44::STACK";
+            $options[] = "CDEF:dmlow0=dm0,sdev0,2,/,-";
+            $options[] = "CDEF:s2d0=sdev0";
+            $options[] = sprintf("LINE:%s%s:%s", 'median', '#0000ff', 'median');
+            $options[] = sprintf("AREA:%s", 'dmlow0');
+            $options[] = "AREA:s2d0#0000FF44::STACK";
+        }
 
         $options[] = "VDEF:avsd0=sdev0,AVERAGE";
         $options[] = sprintf("GPRINT:%s:%s:%s", 'median', 'AVERAGE', "%7.2lf ms av md");
