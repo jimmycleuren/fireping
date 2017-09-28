@@ -33,7 +33,7 @@ class Device
     /**
      * @var domain
      *
-     * @ORM\ManyToOne(targetEntity="Domain")
+     * @ORM\ManyToOne(targetEntity="Domain", inversedBy="devices")
      * @ORM\JoinColumn(name="domain_id", referencedColumnName="id")
      * @Assert\NotBlank
      * @Groups({"device"})
