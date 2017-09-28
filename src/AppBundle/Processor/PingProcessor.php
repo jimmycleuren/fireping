@@ -10,6 +10,7 @@ namespace AppBundle\Processor;
 
 use AppBundle\Entity\Device;
 use AppBundle\Entity\Probe;
+use AppBundle\Entity\SlaveGroup;
 
 class PingProcessor extends Processor
 {
