@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Slave list</h1>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Slavegroup</th>
+            <th>Last contact</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for slave in slaves %}
+            <tr>
+                <td>{{ slave.id }}</td>
+                <td>{{ slave.slavegroup }}</td>
+                <td>{{ slave.lastContact|date("d-m-Y H:i:s") }}</td>
+                <td>
+                    <a href="{{ path('slave_edit', { 'id': slave.id }) }}" class="btn btn-default btn-xs">edit</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
