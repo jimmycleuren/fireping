@@ -21,6 +21,11 @@ class ProbeDefinition
 
     function __construct($id, $type, $step, $samples, array $args = null)
     {
+        $this->setConfiguration($id, $type, $step, $samples, $args);
+    }
+
+    public function setConfiguration($id, $type, $step, $samples, array $args = null)
+    {
         $this->id = $id;
         $this->type = $type;
         $this->step = $step;
