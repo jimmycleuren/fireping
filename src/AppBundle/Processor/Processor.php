@@ -22,5 +22,5 @@ abstract class Processor
         $this->storage = $container->get('storage.'.$container->getParameter('storage'));
     }
 
-    abstract function storeResult(Device $device, Probe $probe, $timestamp, $data);
+    abstract function storeResult(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data);
 }

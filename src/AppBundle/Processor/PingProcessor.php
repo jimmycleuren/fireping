@@ -13,7 +13,7 @@ use AppBundle\Entity\Probe;
 
 class PingProcessor extends Processor
 {
-    public function storeResult(Device $device, Probe $probe, $timestamp, $data)
+    public function storeResult(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data)
     {
         if (count($data) != $probe->getSamples()) {
             throw new \Exception(count($data)." ping samples received, should have been ".$probe->getSamples());
@@ -40,6 +40,6 @@ class PingProcessor extends Processor
             $datasources['median'] = $total / $success;
         }
 
-        $this->storage->store($device, $probe, $timestamp, $datasources);
+        $this->storage->store($device, $probe, $group, $timestamp, $datasources);
     }
 }

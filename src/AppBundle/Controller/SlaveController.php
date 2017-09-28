@@ -187,7 +187,7 @@ class SlaveController extends Controller
                     $this->logger->debug("Updating data for probe " . $probe->getType() . " on " . $device->getName());
                     switch ($probe->getType()) {
                         case "ping":
-                            $this->container->get('processor.ping')->storeResult($device, $probe, $timestamp, $targetData);
+                            $this->container->get('processor.ping')->storeResult($device, $probe, $slave->getSlaveGroup(), $timestamp, $targetData);
                             break;
                     }
                 }

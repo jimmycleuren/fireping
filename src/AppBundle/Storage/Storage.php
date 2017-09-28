@@ -20,5 +20,5 @@ abstract class Storage
         $this->container = $container;
     }
 
-    abstract function store(Device $device, Probe $probe, $timestamp, $data);
+    abstract function store(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data);
 }
