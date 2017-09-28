@@ -223,6 +223,27 @@ class Device
     }
 
     /**
+     * Get probes
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAllSlaveGroups()
+    {
+        $result = new ArrayCollection();
+        foreach ($this->slavegroups as $slavegroup) {
+            $result->add($slavegroup);
+        }
+        $parent = $this->getDomain();
+        while ($parent != null) {
+            foreach ($parent->getSlaveGroups() as $slavegroup) {
+                $result->add($slavegroup);
+            }
+            $parent = $parent->getParent();
+        }
+        return $result;
+    }
+
+    /**
      * Add probe
      *
      * @param \AppBundle\Entity\Probe $probe

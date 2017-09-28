@@ -6,13 +6,22 @@
             {% include 'menu/menu.html.twig' %}
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-            <h1 class="page-header">{{ device.name }}</h1>
+            <h1 class="page-header">{{ device.name }} - {{ device.ip }}</h1>
 
             {% for probe in device.getAllProbes() %}
-                <img src="{{ path('app_graph_detail', {device_id: device.id, probe_id: probe.id, start:-10800 }) }}" /><br/><br/>
-                <img src="{{ path('app_graph_detail', {device_id: device.id, probe_id: probe.id, start:-108000 }) }}" /><br/><br/>
-                <img src="{{ path('app_graph_detail', {device_id: device.id, probe_id: probe.id, start:-864000 }) }}" /><br/><br/>
-                <img src="{{ path('app_graph_detail', {device_id: device.id, probe_id: probe.id, start:-34560000 }) }}" /><br/><br/>
+                <h4>{{ probe.name }}</h4>
+                {% for slavegroup in device.getAllSlaveGroups() %}
+                    <img src="{{ path('app_graph_detail', {device_id: device.id, probe_id: probe.id, slavegroup_id: slavegroup.id, start:-10800 }) }}" /><br/><br/>
+                {% endfor %}
+                {% for slavegroup in device.getAllSlaveGroups() %}
+                    <img src="{{ path('app_graph_detail', {device_id: device.id, probe_id: probe.id, slavegroup_id: slavegroup.id, start:-108000 }) }}" /><br/><br/>
+                {% endfor %}
+                {% for slavegroup in device.getAllSlaveGroups() %}
+                    <img src="{{ path('app_graph_detail', {device_id: device.id, probe_id: probe.id, slavegroup_id: slavegroup.id, start:-864000 }) }}" /><br/><br/>
+                {% endfor %}
+                {% for slavegroup in device.getAllSlaveGroups() %}
+                    <img src="{{ path('app_graph_detail', {device_id: device.id, probe_id: probe.id, slavegroup_id: slavegroup.id, start:-34560000 }) }}" /><br/><br/>
+                {% endfor %}
             {% endfor %}
         </div>
     </div>

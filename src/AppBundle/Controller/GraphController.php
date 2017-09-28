@@ -10,6 +10,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Device;
 use AppBundle\Entity\Probe;
+use AppBundle\Entity\SlaveGroup;
 use AppBundle\Exception\RrdException;
 use AppBundle\Graph\PingGraph;
 use Symfony\Component\HttpFoundation\Request;
@@ -65,16 +66,17 @@ class GraphController extends Controller
      * @return Response
      *
      * @Method("GET")
-     * @Route("/api/graphs/detail/{device_id}/{probe_id}")
+     * @Route("/api/graphs/detail/{device_id}/{probe_id}/{slavegroup_id}")
      * @ParamConverter("device", class="AppBundle:Device", options={"id" = "device_id"})
      * @ParamConverter("probe", class="AppBundle:Probe", options={"id" = "probe_id"})
+     * @ParamConverter("slavegroup", class="AppBundle:SlaveGroup", options={"id" = "slavegroup_id"})
      */
-    public function detailAction(Device $device, Probe $probe, Request $request)
+    public function detailAction(Device $device, Probe $probe, SlaveGroup $slavegroup, Request $request)
     {
         $start = $request->get('start');
         $end = $request->get('end');
         if ($probe->getType() == "ping") {
-            $filename = $this->get('graph.ping')->getDetailGraph($device, $probe, $start);
+            $filename = $this->get('graph.ping')->getDetailGraph($device, $probe, $slavegroup, $start, $end);
             $response = new Response(file_get_contents($filename), 200);
             $response->headers->set('Content-Type', 'image/png');
 
