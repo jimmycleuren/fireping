@@ -14,7 +14,7 @@ class IndexController extends Controller
     public function indexAction(Request $request)
     {
         $this->em = $this->container->get('doctrine')->getManager();
-        $domains = $this->em->getRepository("AppBundle:Domain")->findBy(array('parent' => null));
+        $domains = $this->em->getRepository("AppBundle:Domain")->findBy(array('parent' => null), array('name' => 'ASC'));
 
         return $this->render('default/index.html.twig', array(
             'domains' => $domains

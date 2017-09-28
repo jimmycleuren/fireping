@@ -6,13 +6,17 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * Device
  *
  * @ORM\Table(name="device")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\DeviceRepository")
- * @ApiResource
+ * @ApiResource(attributes={
+ *     "normalization_context"={"groups"={"device"}},
+ *     "denormalization_context"={"groups"={"device"}}
+ * })
  */
 class Device
 {
@@ -22,6 +26,7 @@ class Device
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"device"})
      */
     private $id;
 
@@ -31,6 +36,7 @@ class Device
      * @ORM\ManyToOne(targetEntity="Domain")
      * @ORM\JoinColumn(name="domain_id", referencedColumnName="id")
      * @Assert\NotBlank
+     * @Groups({"device"})
      */
     private $domain;
 
@@ -39,6 +45,7 @@ class Device
      *
      * @ORM\Column(name="name", type="string", length=255)
      * @Assert\NotBlank
+     * @Groups({"device"})
      */
     private $name;
 
@@ -47,6 +54,7 @@ class Device
      *
      * @ORM\Column(name="ip", type="string", length=255)
      * @Assert\NotBlank
+     * @Groups({"device"})
      */
     private $ip;
 
@@ -56,6 +64,7 @@ class Device
      *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="slave_id", referencedColumnName="id")}
      *      )
+     * @Groups({"device"})
      */
     private $slaves;
 
@@ -65,6 +74,7 @@ class Device
      *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="probe_id", referencedColumnName="id")}
      *      )
+     * @Groups({"device"})
      */
     private $probes;
 
@@ -74,6 +84,7 @@ class Device
      *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="alert_id", referencedColumnName="id")}
      *      )
+     * @Groups({"device"})
      */
     private $alerts;
 
@@ -82,6 +93,7 @@ class Device
      * Get id
      *
      * @return int
+     * @Groups({"device"})
      */
     public function getId()
     {
@@ -94,6 +106,7 @@ class Device
      * @param string $name
      *
      * @return Device
+     * @Groups({"device"})
      */
     public function setName($name)
     {
@@ -106,6 +119,7 @@ class Device
      * Get name
      *
      * @return string
+     * @Groups({"device"})
      */
     public function getName()
     {
@@ -118,6 +132,7 @@ class Device
      * @param string $ip
      *
      * @return Device
+     * @Groups({"device"})
      */
     public function setIp($ip)
     {
@@ -130,6 +145,7 @@ class Device
      * Get ip
      *
      * @return string
+     * @Groups({"device"})
      */
     public function getIp()
     {
@@ -151,6 +167,7 @@ class Device
      * @param \AppBundle\Entity\Domain $domain
      *
      * @return Device
+     * @Groups({"device"})
      */
     public function setDomain(\AppBundle\Entity\Domain $domain = null)
     {
@@ -163,6 +180,7 @@ class Device
      * Get domain
      *
      * @return \AppBundle\Entity\Domain
+     * @Groups({"device"})
      */
     public function getDomain()
     {
@@ -197,6 +215,7 @@ class Device
      * Get slaves
      *
      * @return \Doctrine\Common\Collections\Collection
+     * @Groups({"device"})
      */
     public function getSlaves()
     {
@@ -231,10 +250,32 @@ class Device
      * Get probes
      *
      * @return \Doctrine\Common\Collections\Collection
+     * @Groups({"device"})
      */
     public function getProbes()
     {
         return $this->probes;
+    }
+
+    /**
+     * Get probes
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAllProbes()
+    {
+        $result = new ArrayCollection();
+        foreach ($this->probes as $probe) {
+            $result->add($probe);
+        }
+        $parent = $this->getDomain();
+        while ($parent != null) {
+              foreach ($parent->getProbes() as $probe) {
+                      $result->add($probe);
+                  }
+            $parent = $parent->getParent();
+        }
+        return $result;
     }
 
     /**
@@ -265,6 +306,7 @@ class Device
      * Get alerts
      *
      * @return \Doctrine\Common\Collections\Collection
+     * @Groups({"device"})
      */
     public function getAlerts()
     {
