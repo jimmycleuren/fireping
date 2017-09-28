@@ -16,6 +16,7 @@ class PingShellCommand extends ShellCommand
     protected $command = 'fping';
     protected $MAPPED_ARGUMENTS = array(
         'samples' => '-C',
+        'packet_size' => '-s',
     );
     protected $EXTRA_ARGUMENTS = array('-q');
     protected $REQUIRED_ARGUMENTS = array('-C');
