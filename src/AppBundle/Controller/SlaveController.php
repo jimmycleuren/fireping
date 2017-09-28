@@ -160,6 +160,10 @@ class SlaveController extends Controller
             $this->em = $this->container->get('doctrine')->getManager();
             $this->logger = $this->container->get('logger');
 
+            $slave->setLastContact(new \DateTime());
+            $this->em->persist($slave);
+            $this->em->flush();
+
             $probeRepository = $this->em->getRepository("AppBundle:Probe");
             $deviceRepository = $this->em->getRepository("AppBundle:Device");
 
