@@ -26,13 +26,6 @@ class Slave
     private $id;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="secret", type="string", length=255)
-     */
-    private $secret;
-
-    /**
      * @var slavegroup
      *
      * @ORM\ManyToOne(targetEntity="SlaveGroup")
@@ -70,30 +63,6 @@ class Slave
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set secret
-     *
-     * @param string $secret
-     *
-     * @return Slave
-     */
-    public function setSecret($secret)
-    {
-        $this->secret = $secret;
-
-        return $this;
-    }
-
-    /**
-     * Get secret
-     *
-     * @return string
-     */
-    public function getSecret()
-    {
-        return $this->secret;
     }
 
     /**
