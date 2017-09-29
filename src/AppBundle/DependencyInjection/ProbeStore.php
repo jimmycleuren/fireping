@@ -103,19 +103,17 @@ class ProbeStore
 
     public function sync(LoggerInterface $logger)
     {
-        $client = new Client();
+        /** @var \GuzzleHttp\Client $client */
+        $client = $this->container->get('guzzle.client.api_fireping');
 
         $id = $this->container->getParameter('slave.name');
-
-        $prod_endpoint = "https://smokeping-dev.cegeka.be/api/slaves/$id/config";
-        $dev_endpoint = "http://localhost/api/slaves/$id/config";
-        $endpoint = $prod_endpoint;
+        $endpoint = "/api/slaves/$id/config";
 
         try {
             $request = isset($this->etag) ?
                 new Request('GET', $endpoint, ['If-None-Match' => $this->etag]) :
                 new Request('GET', $endpoint);
-
+            
             $response = $client->send($request);
 
             $etag = $response->hasHeader('ETag') ? $response->getHeader('ETag')[0] : null;
