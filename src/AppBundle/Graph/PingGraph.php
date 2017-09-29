@@ -17,6 +17,20 @@ class PingGraph extends RrdGraph
 {
     public function getSummaryGraph(Device $device, Probe $probe)
     {
+        $colors = array(
+            array(
+                'main' => '#0000ff',
+                'stddev' => '#0044ff'
+            ),
+            array(
+                'main' => '#00ff00',
+                'stddev' => '#00ff44'
+            ),
+            array(
+                'main' => '#ff0000',
+                'stddev' => '#ff4400'
+            ),
+        );
         /*
         $file = $this->storage->getFilePath($device, $probe);
         if (!file_exists($file)) {
@@ -31,7 +45,7 @@ class PingGraph extends RrdGraph
             $domain = $domain->getParent();
         } while ($domain != null);
 
-        $start = date("U") - 3600 * 12;
+        $start = date("U") - 3600 * 12 * 2;
         $title = $device->getName();
 
         $imageFile = tempnam("/tmp", 'image');
@@ -45,25 +59,29 @@ class PingGraph extends RrdGraph
             "--height=60",
         );
 
+        $counter = 0;
         foreach ($slavegroups as $slavegroup) {
-            $options[] = sprintf("DEF:%s=%s:%s:%s", 'median', $this->storage->getFilePath($device, $probe, $slavegroup), 'median', "AVERAGE");
-            $options[] = sprintf("DEF:%s=%s:%s:%s", 'loss', $this->storage->getFilePath($device, $probe, $slavegroup), 'loss', "AVERAGE");
-            $options[] = "CDEF:dm0=median,0,100000,LIMIT";
-            $options[] = sprintf("CDEF:%s=%s,%s,%s", 'loss_percent', "loss", "100", "*");
-            $this->calculateStdDev($options, $this->storage->getFilePath($device, $probe, $slavegroup), $probe->getSamples());
+            $options[] = sprintf("DEF:%s=%s:%s:%s", $slavegroup->getId() . '-median', $this->storage->getFilePath($device, $probe, $slavegroup), 'median', "AVERAGE");
+            $options[] = sprintf("DEF:%s=%s:%s:%s", $slavegroup->getId() . '-loss', $this->storage->getFilePath($device, $probe, $slavegroup), 'loss', "AVERAGE");
+            $options[] = "CDEF:" . $slavegroup->getId() . "-dm0=" . $slavegroup->getId()."-median,0,100000,LIMIT";
+            $options[] = sprintf("CDEF:%s=%s,%s,%s", $slavegroup->getId() . '-loss_percent', $slavegroup->getId() . "-loss", "100", "*");
+            $this->calculateStdDev($options, $this->storage->getFilePath($device, $probe, $slavegroup), $probe->getSamples(), $slavegroup);
 
-            $options[] = "CDEF:dmlow0=dm0,sdev0,2,/,-";
-            $options[] = "CDEF:s2d0=sdev0";
-            $options[] = sprintf("LINE:%s%s:%s", 'median', '#0000ff', 'median');
-            $options[] = sprintf("AREA:%s", 'dmlow0');
-            $options[] = "AREA:s2d0#0000FF44::STACK";
+            $options[] = "CDEF:" . $slavegroup->getId() . "-dmlow0=" . $slavegroup->getId() . "-dm0," . $slavegroup->getId() . "-sdev0,2,/,-";
+            $options[] = "CDEF:" . $slavegroup->getId() . "-s2d0=" . $slavegroup->getId() . "-sdev0";
+            $options[] = sprintf("LINE:%s%s:%s", $slavegroup->getId()."-median", $colors[$counter]['main'], sprintf("%-10s", $slavegroup->getName()));
+            $options[] = sprintf("AREA:%s", $slavegroup->getId() . '-dmlow0');
+            $options[] = "AREA:" . $slavegroup->getId() . "-s2d0".$colors[$counter]['stddev']."::STACK";
+
+            $options[] = "VDEF:" . $slavegroup->getId() . "-avsd0=" . $slavegroup->getId() . "-sdev0,AVERAGE";
+            $options[] = sprintf("GPRINT:%s:%s:%s", $slavegroup->getId()."-median", 'AVERAGE', "%7.2lf ms av md");
+            $options[] = sprintf("GPRINT:%s:%s:%s", $slavegroup->getId() .'-loss_percent', 'AVERAGE', "%7.2lf %% av ls");
+            $options[] = sprintf("GPRINT:%s:%s", $slavegroup->getId() .'-avsd0', "%7.2lf ms av sd");
+            $options[] = "COMMENT: \\n";
+
+            $counter = ($counter + 1) % 3;
         }
 
-        $options[] = "VDEF:avsd0=sdev0,AVERAGE";
-        $options[] = sprintf("GPRINT:%s:%s:%s", 'median', 'AVERAGE', "%7.2lf ms av md");
-        $options[] = sprintf("GPRINT:%s:%s:%s", 'loss_percent', 'AVERAGE', "%7.2lf %% av ls");
-        $options[] = sprintf("GPRINT:%s:%s", 'avsd0', "%7.2lf ms av sd");
-        $options[] = "COMMENT: \\n";
         $options[] = "COMMENT:".date("D M j H\\\:i\\\:s Y")." \\r";
 
         $return = rrd_graph($imageFile, $options);
@@ -151,25 +169,25 @@ class PingGraph extends RrdGraph
         return $imageFile;
     }
 
-    private function calculateStdDev(&$options, $file, $pings)
+    private function calculateStdDev(&$options, $file, $pings, $slavegroup)
     {
         $temp = array();
         $temp2 = array();
         $temp3 = array();
 
         for ($i = 1; $i < $pings; $i++) {
-            $options[] = "DEF:pin0p$i=$file:ping$i:AVERAGE";
-            $options[] = "CDEF:p0p$i=pin0p$i,UN,0,pin0p$i,IF";
+            $options[] = "DEF:".$slavegroup->getId()."-pin0p$i=$file:ping$i:AVERAGE";
+            $options[] = "CDEF:".$slavegroup->getId()."-p0p$i=".$slavegroup->getId()."-pin0p$i,UN,0,".$slavegroup->getId()."-pin0p$i,IF";
             if($i > 1) {
-                $temp[] = "p0p$i,UN,+";
-                $temp2[] = "p0p$i,+";
-                $temp3[] = "p0p$i,m0,-,DUP,*,+";
+                $temp[] = $slavegroup->getId()."-p0p$i,UN,+";
+                $temp2[] = $slavegroup->getId()."-p0p$i,+";
+                $temp3[] = $slavegroup->getId()."-p0p$i,".$slavegroup->getId()."-m0,-,DUP,*,+";
             }
         }
 
-        $options[] = "CDEF:pings0=$pings,p0p1,UN,".implode(",", $temp).",-";
-        $options[] = "CDEF:m0=p0p1,".implode(",", $temp2).",pings0,/";
-        $options[] = "CDEF:sdev0=p0p1,m0,-,DUP,*,".implode(",", $temp3).",pings0,/,SQRT";
+        $options[] = "CDEF:".$slavegroup->getId()."-pings0=$pings,".$slavegroup->getId()."-p0p1,UN,".implode(",", $temp).",-";
+        $options[] = "CDEF:".$slavegroup->getId()."-m0=".$slavegroup->getId()."-p0p1,".implode(",", $temp2).",".$slavegroup->getId()."-pings0,/";
+        $options[] = "CDEF:".$slavegroup->getId()."-sdev0=".$slavegroup->getId()."-p0p1,".$slavegroup->getId()."-m0,-,DUP,*,".implode(",", $temp3).",".$slavegroup->getId()."-pings0,/,SQRT";
     }
 
     private function getMedianMax($start, $file)
