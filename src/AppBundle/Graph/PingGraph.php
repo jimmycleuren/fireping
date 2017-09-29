@@ -20,15 +20,15 @@ class PingGraph extends RrdGraph
         $colors = array(
             array(
                 'main' => '#0000ff',
-                'stddev' => '#0044ff'
+                'stddev' => '#0000ff44'
             ),
             array(
                 'main' => '#00ff00',
-                'stddev' => '#00ff44'
+                'stddev' => '#00ff0044'
             ),
             array(
                 'main' => '#ff0000',
-                'stddev' => '#ff4400'
+                'stddev' => '#ff000044'
             ),
         );
 
