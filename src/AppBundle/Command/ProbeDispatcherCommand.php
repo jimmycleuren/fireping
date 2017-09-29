@@ -242,12 +242,11 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
      */
     private function postResults(array $results)
     {
-        $id = $this->getContainer()->getParameter('slave.name');
-        $prod_endpoint = "https://smokeping-dev.cegeka.be/api/slaves/$id/result";
-        $dev_endpoint = "http://localhost/api/slaves/$id/result";
-        $endpoint = $prod_endpoint;
+        /** @var \GuzzleHttp\Client $client */
+        $client = $this->getContainer()->get('guzzle.client.api_fireping');
 
-        $client = new Client();
+        $id = $this->getContainer()->getParameter('slave.name');
+        $endpoint = "/api/slaves/$id/result";
 
         $data = json_encode($results);
         try {

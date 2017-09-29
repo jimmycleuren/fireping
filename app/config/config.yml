@@ -84,3 +84,16 @@ api_platform:
     collection:
         pagination:
             enabled: false
+
+guzzle:
+    logging: true
+
+    clients:
+        api_fireping:
+            base_url: "https://smokeping-dev.cegeka.be"
+
+            options:
+                headers:
+                    Accept: "application/json"
+
+                timeout: 5
