@@ -31,12 +31,6 @@ class PingGraph extends RrdGraph
                 'stddev' => '#ff4400'
             ),
         );
-        /*
-        $file = $this->storage->getFilePath($device, $probe);
-        if (!file_exists($file)) {
-           return dirname(__FILE__)."/../../../web/notfound.png";
-        }
-        */
 
         $slavegroups = $device->getSlaveGroups()->toArray();
         $domain = $device->getDomain();
@@ -45,7 +39,7 @@ class PingGraph extends RrdGraph
             $domain = $domain->getParent();
         } while ($domain != null);
 
-        $start = date("U") - 3600 * 12 * 2;
+        $start = date("U") - 3600 * 12;
         $title = $device->getName();
 
         $imageFile = tempnam("/tmp", 'image');
@@ -61,6 +55,12 @@ class PingGraph extends RrdGraph
 
         $counter = 0;
         foreach ($slavegroups as $slavegroup) {
+
+            $file = $this->storage->getFilePath($device, $probe, $slavegroup);
+            if (!file_exists($file)) {
+                continue;
+            }
+
             $options[] = sprintf("DEF:%s=%s:%s:%s", $slavegroup->getId() . '-median', $this->storage->getFilePath($device, $probe, $slavegroup), 'median', "AVERAGE");
             $options[] = sprintf("DEF:%s=%s:%s:%s", $slavegroup->getId() . '-loss', $this->storage->getFilePath($device, $probe, $slavegroup), 'loss', "AVERAGE");
             $options[] = "CDEF:" . $slavegroup->getId() . "-dm0=" . $slavegroup->getId()."-median,0,100000,LIMIT";
@@ -69,9 +69,9 @@ class PingGraph extends RrdGraph
 
             $options[] = "CDEF:" . $slavegroup->getId() . "-dmlow0=" . $slavegroup->getId() . "-dm0," . $slavegroup->getId() . "-sdev0,2,/,-";
             $options[] = "CDEF:" . $slavegroup->getId() . "-s2d0=" . $slavegroup->getId() . "-sdev0";
-            $options[] = sprintf("LINE:%s%s:%s", $slavegroup->getId()."-median", $colors[$counter]['main'], sprintf("%-10s", $slavegroup->getName()));
+            $options[] = sprintf("LINE:%s%s:%s", $slavegroup->getId()."-median", $colors[$counter % 3]['main'], sprintf("%-10s", $slavegroup->getName()));
             $options[] = sprintf("AREA:%s", $slavegroup->getId() . '-dmlow0');
-            $options[] = "AREA:" . $slavegroup->getId() . "-s2d0".$colors[$counter]['stddev']."::STACK";
+            $options[] = "AREA:" . $slavegroup->getId() . "-s2d0".$colors[$counter % 3]['stddev']."::STACK";
 
             $options[] = "VDEF:" . $slavegroup->getId() . "-avsd0=" . $slavegroup->getId() . "-sdev0,AVERAGE";
             $options[] = sprintf("GPRINT:%s:%s:%s", $slavegroup->getId()."-median", 'AVERAGE', "%7.2lf ms av md");
@@ -79,7 +79,11 @@ class PingGraph extends RrdGraph
             $options[] = sprintf("GPRINT:%s:%s", $slavegroup->getId() .'-avsd0', "%7.2lf ms av sd");
             $options[] = "COMMENT: \\n";
 
-            $counter = ($counter + 1) % 3;
+            $counter++;
+        }
+
+        if ($counter == 0) {
+            return dirname(__FILE__)."/../../../web/notfound.png";
         }
 
         $options[] = "COMMENT:".date("D M j H\\\:i\\\:s Y")." \\r";
