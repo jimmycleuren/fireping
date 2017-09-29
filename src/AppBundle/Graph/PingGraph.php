@@ -116,6 +116,7 @@ class PingGraph extends RrdGraph
             "--slope-mode",
             "--border=0",
             "--start", $start,
+            "--end", $end,
             "--title=$title",
             "--vertical-label=ms",
             "--lower-limit=0",
