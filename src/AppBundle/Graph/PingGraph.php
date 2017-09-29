@@ -99,6 +99,11 @@ class PingGraph extends RrdGraph
 
     public function getDetailGraph(Device $device, Probe $probe, SlaveGroup $slavegroup, $start = -3600, $end = "now")
     {
+        $file = $this->storage->getFilePath($device, $probe, $slavegroup);
+        if (!file_exists($file)) {
+            return dirname(__FILE__)."/../../../web/notfound.png";;
+        }
+
         $max = 100000;
 
         if ($start < 0) {
@@ -124,8 +129,8 @@ class PingGraph extends RrdGraph
         $options[] = sprintf("DEF:%s=%s:%s:%s",'loss', $this->storage->getFilePath($device, $probe, $slavegroup), 'loss', "AVERAGE");
         $options[] = "CDEF:dm0=median,0,$max,LIMIT";
         $options[] = sprintf("CDEF:%s=%s,%s,%s",'loss_percent', "loss", "100", "*");
-        $this->calculateStdDev($options, $this->storage->getFilePath($device, $probe, $slavegroup), $probe->getSamples());
-        $options[] = "CDEF:s2d0=sdev0";
+        $this->calculateStdDev($options, $this->storage->getFilePath($device, $probe, $slavegroup), $probe->getSamples(), $slavegroup);
+        $options[] = "CDEF:s2d0=".$slavegroup->getId()."-sdev0";
 
         $options[] = "CDEF:lossred=loss,0.2,GT,median,UNKN,IF";
         $options[] = "CDEF:lossorange=loss,0.05,GE,median,UNKN,IF";
