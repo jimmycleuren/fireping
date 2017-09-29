@@ -105,7 +105,7 @@ class ProbeStore
     {
         $client = new Client();
 
-        $id = $this->container->getParameter('slave.id');
+        $id = $this->container->getParameter('slave.name');
 
         $prod_endpoint = "https://smokeping-dev.cegeka.be/api/slaves/$id/config";
         $dev_endpoint = "http://localhost/api/slaves/$id/config";
@@ -127,14 +127,20 @@ class ProbeStore
 
             $logger->info("Reloading configuration...");
 
-            $json = json_decode($response->getBody(), true);
+            $configuration = json_decode($response->getBody()->getContents(), true);
 
-            if (!$json) {
-                $logger->error("Master is returnin non-JSON.");
+            if ($configuration === null) {
+                $logger->error("Master is returning non-JSON.");
                 return null;
             }
 
-            $this->updateConfig($json);
+            if (count($configuration) === 0) {
+                $logger->info("Empty configuration received.");
+                $this->probes = array();
+                return null;
+            }
+
+            $this->updateConfig($configuration);
 
             $this->etag = $etag;
         } catch (TransferException $e) {
