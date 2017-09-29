@@ -113,7 +113,7 @@ class ProbeStore
             $request = isset($this->etag) ?
                 new Request('GET', $endpoint, ['If-None-Match' => $this->etag]) :
                 new Request('GET', $endpoint);
-            
+
             $response = $client->send($request);
 
             $etag = $response->hasHeader('ETag') ? $response->getHeader('ETag')[0] : null;
