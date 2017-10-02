@@ -69,7 +69,7 @@ class PingGraph extends RrdGraph
 
             $options[] = "CDEF:" . $slavegroup->getId() . "-dmlow0=" . $slavegroup->getId() . "-dm0," . $slavegroup->getId() . "-sdev0,2,/,-";
             $options[] = "CDEF:" . $slavegroup->getId() . "-s2d0=" . $slavegroup->getId() . "-sdev0";
-            $options[] = sprintf("LINE:%s%s:%s", $slavegroup->getId()."-median", $colors[$counter % 3]['main'], sprintf("%-10s", $slavegroup->getName()));
+            $options[] = sprintf("LINE:%s%s:%s", $slavegroup->getId()."-median", $colors[$counter % 3]['main'], sprintf("%-15s", $slavegroup->getName()));
             $options[] = sprintf("AREA:%s", $slavegroup->getId() . '-dmlow0');
             $options[] = "AREA:" . $slavegroup->getId() . "-s2d0".$colors[$counter % 3]['stddev']."::STACK";
 
@@ -158,15 +158,16 @@ class PingGraph extends RrdGraph
         $options[] = "GPRINT:median:MIN:%7.2lf ms min";
         $options[] = "GPRINT:median:LAST:%7.2lf ms now";
         $options[] = "GPRINT:s2d0:AVERAGE:%7.2lf ms sd";
+        $options[] = "COMMENT: \\n";
 
         $options[] = "GPRINT:loss:AVERAGE:packet loss\: %7.2lf %% avg";
-        $options[] = "GPRINT:loss:MAX:%7.2lf %% max";
-        $options[] = "GPRINT:loss:MIN:%7.2lf %% min";
-        $options[] = "GPRINT:loss:LAST:%7.2lf %% now";
-
-        //$options[] = sprintf("GPRINT:%s:%s:%s", 'loss_percent', 'AVERAGE', "%7.2lf %% av ls");
+        $options[] = "GPRINT:loss:MAX:%8.2lf %% max";
+        $options[] = "GPRINT:loss:MIN:%8.2lf %% min";
+        $options[] = "GPRINT:loss:LAST:%8.2lf %% now";
         $options[] = "COMMENT: \\n";
-        $options[] = "COMMENT:".date("D M j H\\\:i\\\:s Y")." \\r";
+
+        $options[] = "COMMENT:".$probe->getName()." (".$probe->getSamples()." probes of type ".$probe->getType()." in ".$probe->getStep()." seconds)";
+        $options[] = "COMMENT:ending on ".date("D M j H\\\:i\\\:s Y", $end);
 
         $return = rrd_graph($imageFile, $options);
         $error = rrd_error();
