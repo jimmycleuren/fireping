@@ -166,7 +166,7 @@ class PingGraph extends RrdGraph
         $options[] = "GPRINT:loss:LAST:%8.2lf %% now";
         $options[] = "COMMENT: \\n";
 
-        $options[] = "COMMENT:".$probe->getName()." (".$probe->getSamples()." probes of type ".$probe->getType()." in ".$probe->getStep()." seconds)";
+        $options[] = "COMMENT:".$probe->getName()." (".$probe->getSamples()." probes of type ".$probe->getType()." in ".$probe->getStep()." seconds) from ".$slavegroup->getName();
         $options[] = "COMMENT:ending on ".date("D M j H\\\:i\\\:s Y", $end);
 
         $return = rrd_graph($imageFile, $options);
