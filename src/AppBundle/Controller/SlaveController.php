@@ -123,19 +123,13 @@ class SlaveController extends Controller
 
         $config = array();
 
-        $this->domains = array();
-        $temp = $this->em->getRepository("AppBundle:Domain")->findAll();
-        foreach ($temp as $dom) {
-            $this->domains[$dom->getId()] = $dom;
-        }
-
         if ($slave->getSlaveGroup()) {
             foreach ($slave->getSlaveGroup()->getDomains() as $domain) {
                 $this->getDomainDevices($domain, $config);
             }
 
-            $query = $this->em->createQuery("SELECT d, p, dom FROM AppBundle:Device d LEFT JOIN d.probes p JOIN d.domain dom WHERE d in (:devices)")->setParameter("devices", $slave->getSlaveGroup()->getDevices());
-            $devices = $query->getArrayResult();
+            $query = $this->em->createQuery("SELECT d, p FROM AppBundle:Device d LEFT JOIN d.probes p WHERE d in (:devices)")->setParameter("devices", $slave->getSlaveGroup()->getDevices());
+            $devices = $query->getResult();
             foreach ($devices as $device) {
                 $this->getDeviceProbes($device, $config);
             }
@@ -212,8 +206,8 @@ class SlaveController extends Controller
             $this->getDomainDevices($subdomain, $config);
         }
 
-        $query = $this->em->createQuery("SELECT d, p, dom FROM AppBundle:Device d LEFT JOIN d.probes p JOIN d.domain dom WHERE d in (:devices)")->setParameter("devices", $domain->getDevices());
-        $devices = $query->getArrayResult();
+        $query = $this->em->createQuery("SELECT d, p FROM AppBundle:Device d LEFT JOIN d.probes p WHERE d in (:devices)")->setParameter("devices", $domain->getDevices());
+        $devices = $query->getResult();
         foreach ($devices as $device) {
             $this->getDeviceProbes($device, $config);
         }
@@ -221,20 +215,20 @@ class SlaveController extends Controller
 
     private function getDeviceProbes($device, &$config)
     {
-        foreach($device['probes'] as $probe) {
-            $config[$probe['id']]['type'] = $probe['type'];
-            $config[$probe['id']]['step'] = $probe['step'];
-            $config[$probe['id']]['samples'] = $probe['samples'];
-            $config[$probe['id']]['targets'][$device['id']] = $device['ip'];
+        foreach($device->getProbes() as $probe) {
+            $config[$probe->getId()]['type'] = $probe->getType();
+            $config[$probe->getId()]['step'] = $probe->getStep();
+            $config[$probe->getId()]['samples'] = $probe->getSamples();
+            $config[$probe->getId()]['targets'][$device->getId()] = $device->getIp();
         }
 
-        $parent = $this->domains[$device['domain']['id']];
+        $parent = $device->getDomain();
         while($parent != null) {
             foreach($parent->getProbes() as $probe) {
                 $config[$probe->getId()]['type'] = $probe->getType();
                 $config[$probe->getId()]['step'] = $probe->getStep();
                 $config[$probe->getId()]['samples'] = $probe->getSamples();
-                $config[$probe->getId()]['targets'][$device['id']] = $device['ip'];
+                $config[$probe->getId()]['targets'][$device->getId()] = $device->getIp();
             }
             $parent = $parent->getParent();
         }
