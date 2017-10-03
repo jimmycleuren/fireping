@@ -128,7 +128,10 @@ class SlaveController extends Controller
                 $this->getDomainDevices($domain, $config);
             }
 
-            $query = $this->em->createQuery("SELECT d, p FROM AppBundle:Device d LEFT JOIN d.probes p WHERE d in (:devices)")->setParameter("devices", $slave->getSlaveGroup()->getDevices());
+            $query = $this->em->createQuery("SELECT d, p FROM AppBundle:Device d LEFT JOIN d.probes p WHERE d in (:devices)")
+                ->setParameter("devices", $slave->getSlaveGroup()->getDevices())
+                ->useQueryCache(true)
+            ;
             $devices = $query->getResult();
             foreach ($devices as $device) {
                 $this->getDeviceProbes($device, $config);
@@ -206,7 +209,10 @@ class SlaveController extends Controller
             $this->getDomainDevices($subdomain, $config);
         }
 
-        $query = $this->em->createQuery("SELECT d, p FROM AppBundle:Device d LEFT JOIN d.probes p WHERE d in (:devices)")->setParameter("devices", $domain->getDevices());
+        $query = $this->em->createQuery("SELECT d, p FROM AppBundle:Device d LEFT JOIN d.probes p WHERE d in (:devices)")
+            ->setParameter("devices", $domain->getDevices())
+            ->useQueryCache(true)
+        ;
         $devices = $query->getResult();
         foreach ($devices as $device) {
             $this->getDeviceProbes($device, $config);

@@ -65,6 +65,7 @@ doctrine:
         # enable query caching
         query_cache_driver: redis
 
+
 # Swiftmailer Configuration
 swiftmailer:
     transport: '%mailer_transport%'
@@ -100,7 +101,7 @@ guzzle:
                 headers:
                     Accept: "application/json"
 
-                timeout: 5
+                timeout: 20
 
 snc_redis:
     # configure predis as client
