@@ -57,6 +57,9 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
     /** @var LoggerInterface */
     protected $logger;
 
+    /** @var \SplQueue */
+    protected $instructionQueue;
+
     protected function configure()
     {
         $this
@@ -110,11 +113,22 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                     $instructionBuilder = $this->getContainer()->get('instruction_builder');
                     $instructions = $instructionBuilder->create($probe);
 
+                    // Keep track of how many processes are starting.
+                    $counter = 0;
+
+                    $step = $probe->getStep();
+                    $samples = $probe->getSamples();
+                    $delay = 0;
+
                     /* @var $instructions Instruction */
                     foreach ($instructions->getChunks() as $instruction) {
                         try {
                             $worker = $this->getWorker();
+                            // Cycle between 0-3 seconds delay before executing command (fping/traceroute) on the list of targets
+                            $delay = intval($counter % ($step / $samples));
+                            $counter += 1;
                         } catch (\Exception $exception) {
+                            $this->logger->warning("Workers limit has been reached.");
                             $this->queueHandler->addMessage('exceptions', new Message(
                                 MESSAGE::SERVER_ERROR,
                                 'Workers limit reached.',
@@ -126,6 +140,8 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                         }
                         $workerPid = $worker->getPid();
                         $input = $this->getInput($workerPid);
+                        $this->logger->info("Worker/$workerPid is asked to delay execution by $delay seconds.");
+                        $instruction['delay_execution'] = $delay;
                         $instruction = json_encode($instruction);
                         $this->logger->info("Sending instruction to pid/$workerPid: $instruction");
                         $input->write($instruction);
@@ -144,13 +160,12 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                     try {
                         $this->postResults($node);
                     } catch (TransferException $exception) {
-                        if ($exception->getCode() === 409) {
+                        $code = $exception->getCode();
+                        if ($code === 409) {
                             // Conflict detected, discard the message.
-                            $this->logger->warning("Master indicates that we are attempting to update the past, discarding message.");
-                        } elseif ($exception->getCode() === 500) {
-                            // TODO: This should probably be more specific but the master currently returns 500 if we send incorrect data.
-                            $this->logger->error("Master indicates an error, discarding data... \n" . $exception->getMessage());
+                            $this->logger->warning("Master tells us we are sending old data, discarding it.");
                         } else {
+                            $this->logger->warning("Master indicated a problem on their end, retrying later.");
                             $this->queue->unshift($node);
                             $this->queueLock = false;
                             break;
@@ -204,7 +219,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
         if ($decoded['status'] == 500) {
             //TODO: This is temporary!!
-            $this->logger->info($data);
+            $this->logger->error($data);
         } else {
             // TODO: Handle different status codes.  Right now, we assume that only data is sent.
             // TODO: Should also handle client and server errors.
