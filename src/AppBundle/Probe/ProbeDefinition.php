@@ -33,6 +33,7 @@ class ProbeDefinition
 
         $this->args = isset($args) ? $args : array();
         $this->args['samples'] = $samples;
+        $this->args['wait_time'] = intval($step / $samples) * 1000;
     }
 
     /**
@@ -70,6 +71,11 @@ class ProbeDefinition
     public function getArgs() : array
     {
         return $this->args;
+    }
+
+    public function setArg($key, $value)
+    {
+        $this->args[$key] = $value;
     }
 
     public function getConfiguration($targets = null) : array
