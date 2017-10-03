@@ -2,27 +2,43 @@
 
 {% block body %}
     <div class="row">
-        <div class="col-sm-3 col-md-2 sidebar">
+        <div class="col-md-2 sidebar">
             {% include 'menu/menu.html.twig' %}
         </div>
-        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+        <div class="col-md-8 col-md-offset-2 main">
             <h1 class="page-header">{{ device.name }} - {{ device.ip }}</h1>
 
             {% for probe in device.getAllProbes() %}
                 <h4>{{ probe.name }}</h4>
                 {% for slavegroup in device.getAllSlaveGroups() %}
-                    <img src="{{ path('app_graph_detail', {device_id: device.id, probe_id: probe.id, slavegroup_id: slavegroup.id, start:-10800 }) }}" /><br/><br/>
-                {% endfor %}
-                {% for slavegroup in device.getAllSlaveGroups() %}
-                    <img src="{{ path('app_graph_detail', {device_id: device.id, probe_id: probe.id, slavegroup_id: slavegroup.id, start:-108000 }) }}" /><br/><br/>
-                {% endfor %}
-                {% for slavegroup in device.getAllSlaveGroups() %}
-                    <img src="{{ path('app_graph_detail', {device_id: device.id, probe_id: probe.id, slavegroup_id: slavegroup.id, start:-864000 }) }}" /><br/><br/>
-                {% endfor %}
-                {% for slavegroup in device.getAllSlaveGroups() %}
-                    <img src="{{ path('app_graph_detail', {device_id: device.id, probe_id: probe.id, slavegroup_id: slavegroup.id, start:-34560000 }) }}" /><br/><br/>
+                    <img style="width:1097px; height:301px;" class="graph" data-src-template="/api/graphs/detail/{{ device.id }}/{{ probe.id }}/{{ slavegroup.id }}{% verbatim %}?start={{start}}&end={{end}}{% endverbatim  %}" /><br/><br/>
                 {% endfor %}
             {% endfor %}
         </div>
+        <div class="col-md-2" id="ctrl" style="position:absolute; right:0px; top: 100px;">
+        </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript">
+        q.ready(function(){
+            // 'activate' the charts
+            var graphs = [];
+            q('.graph').forEach(function(item){
+                graphs.push(
+                    q(item).rrdGraphPng({
+                        canvasPadding: 120,
+                        cursorUrl: "/img",
+                    })
+                );
+            });
+
+            // crate a control panel and attach it to the charts
+            q('#ctrl').rrdGraphCtrl(graphs,{
+                initialTimeRange: 'Last 60 Minutes',
+                resetTimeOnDateChange: true
+            });
+        });
+    </script>
 {% endblock %}

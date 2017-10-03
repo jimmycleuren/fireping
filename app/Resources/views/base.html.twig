@@ -5,6 +5,7 @@
         <title>{% block title %}Welcome!{% endblock %}</title>
         {% block stylesheets %}{% endblock %}
         <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap/dist/css/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/rrdGraphCtrl.css') }}" />
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
         <style>
 
@@ -90,6 +91,11 @@
         <div class="container-fluid">
             {% block body %}{% endblock %}
         </div>
+        <script src="{{ asset('js/q-5.0.2.min.js') }}"></script>
+        <script src="{{ asset('js/moment.js') }}"></script>
+        <script src="{{ asset('js/moment-timezone-with-data.js') }}"></script>
+        <script src="{{ asset('js/rrdGraphPng.js') }}"></script>
+        <script src="{{ asset('js/rrdGraphCtrl.js') }}"></script>
         {% block javascripts %}{% endblock %}
     </body>
 </html>
