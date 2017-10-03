@@ -32,16 +32,3 @@ monolog:
 
 #swiftmailer:
 #    delivery_addresses: ['me@example.com']
-
-guzzle:
-    logging: true
-
-    clients:
-        api_fireping:
-            base_url: "http://localhost"
-
-            options:
-                headers:
-                    Accept: "application/json"
-
-                timeout: 5
