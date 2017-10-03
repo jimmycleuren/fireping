@@ -77,7 +77,19 @@ class ProbeWorkerCommand extends ContainerAwareCommand
             ));
         }
 
-        $shellOutput = $command->execute();
+        sleep($data['delay_execution']);
+
+        try {
+            $shellOutput = $command->execute();
+        } catch (\Exception $e) {
+            $this->sendResponse(array(
+                'status' => 500,
+                'message' => 'NOK',
+                'body' => array(
+                    '_exception' => $e->getMessage(),
+                ),
+            ));
+        }
 
         $this->sendResponse(array(
             'status' => 200,
@@ -87,6 +99,7 @@ class ProbeWorkerCommand extends ContainerAwareCommand
                     'type' => $data['type'],
                     'timestamp' => $timestamp,
                     'targets' => $shellOutput,
+                    'runtime' => time() - $timestamp,
                 ),
             ),
         ));
