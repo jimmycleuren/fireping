@@ -419,4 +419,16 @@ class Device
     {
         $this->alerts->removeElement($alert);
     }
+
+    /**
+     * Get root domain
+     */
+    public function getRootDomain()
+    {
+        $domain = $this->getDomain();
+        while ($domain->getParent() != null) {
+            $domain = $domain->getParent();
+        }
+        return $domain;
+    }
 }
