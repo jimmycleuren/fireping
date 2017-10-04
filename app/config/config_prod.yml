@@ -8,11 +8,17 @@ imports:
 #        query_cache_driver: apc
 
 monolog:
+    channels: ["alert"]
     handlers:
         main:
             type: stream
             path: '%kernel.logs_dir%/%kernel.environment%.log'
             level: info
+        alert:
+            type: stream
+            path:  "%kernel.logs_dir%/alert.%kernel.environment%.log"
+            level: info
+            channels: [alert]
         console:
             type: console
 

@@ -128,7 +128,10 @@ class SlaveController extends Controller
                 $this->getDomainDevices($domain, $config);
             }
 
-            $query = $this->em->createQuery("SELECT d, p FROM AppBundle:Device d LEFT JOIN d.probes p WHERE d in (:devices)")->setParameter("devices", $slave->getSlaveGroup()->getDevices());
+            $query = $this->em->createQuery("SELECT d, p FROM AppBundle:Device d LEFT JOIN d.probes p WHERE d in (:devices)")
+                ->setParameter("devices", $slave->getSlaveGroup()->getDevices())
+                ->useQueryCache(true)
+            ;
             $devices = $query->getResult();
             foreach ($devices as $device) {
                 $this->getDeviceProbes($device, $config);
@@ -200,13 +203,32 @@ class SlaveController extends Controller
         return new JsonResponse(array("code" => 200, "message" => "Results saved"));
     }
 
+    /**
+     * @param $id
+     * @return array
+     *
+     * @Method("POST")
+     * @Route("/api/slaves/{id}/error")
+     * @ParamConverter("slave", class="AppBundle:Slave")
+     *
+     * Process errors from a slave
+     */
+    public function errorAction($slave, Request $request)
+    {
+        //TODO: implement slave error handling
+        $this->logger->info("Error received from $slave");
+    }
+
     private function getDomainDevices($domain, &$config)
     {
         foreach ($domain->getSubDomains() as $subdomain) {
             $this->getDomainDevices($subdomain, $config);
         }
 
-        $query = $this->em->createQuery("SELECT d, p FROM AppBundle:Device d LEFT JOIN d.probes p WHERE d in (:devices)")->setParameter("devices", $domain->getDevices());
+        $query = $this->em->createQuery("SELECT d, p FROM AppBundle:Device d LEFT JOIN d.probes p WHERE d in (:devices)")
+            ->setParameter("devices", $domain->getDevices())
+            ->useQueryCache(true)
+        ;
         $devices = $query->getResult();
         foreach ($devices as $device) {
             $this->getDeviceProbes($device, $config);

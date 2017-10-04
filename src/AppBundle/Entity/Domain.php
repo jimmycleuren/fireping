@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -12,6 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="domain")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\DomainRepository")
  * @ApiResource
+ * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  */
 class Domain
 {
@@ -29,6 +31,7 @@ class Domain
      *
      * @ORM\ManyToOne(targetEntity="Domain", inversedBy="subdomains")
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id", nullable=true)
+     * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
      */
     private $parent;
 
@@ -59,23 +62,25 @@ class Domain
     private $probes;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Alert")
-     * @ORM\JoinTable(name="domain_alerts",
+     * @ORM\ManyToMany(targetEntity="AlertRule")
+     * @ORM\JoinTable(name="domain_alert_rules",
      *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="alert_id", referencedColumnName="id")}
+     *      inverseJoinColumns={@ORM\JoinColumn(name="alert_rule_id", referencedColumnName="id")}
      *      )
      */
-    private $alerts;
+    private $alertRules;
 
     /**
      * @var device
      * @ORM\OneToMany(targetEntity="Device", mappedBy="domain")
+     * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
      */
     private $devices;
 
     /**
      * @var domain
      * @ORM\OneToMany(targetEntity="Domain", mappedBy="parent")
+     * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
      * @ORM\OrderBy({"name" = "asc"})
      */
     private $subdomains;
@@ -121,7 +126,7 @@ class Domain
     {
         $this->slavegroups = new \Doctrine\Common\Collections\ArrayCollection();
         $this->probes = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->alerts = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->alertRules = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -217,37 +222,37 @@ class Domain
     }
 
     /**
-     * Add alert
+     * Add alert rule
      *
-     * @param \AppBundle\Entity\Alert $alert
+     * @param \AppBundle\Entity\AlertRule $alertRule
      *
      * @return Domain
      */
-    public function addAlert(\AppBundle\Entity\Alert $alert)
+    public function addAlertRule(\AppBundle\Entity\AlertRule $alertRule)
     {
-        $this->alerts[] = $alert;
+        $this->alertRules[] = $alertRule;
 
         return $this;
     }
 
     /**
-     * Remove alert
+     * Remove alert rule
      *
-     * @param \AppBundle\Entity\Alert $alert
+     * @param \AppBundle\Entity\AlertRule $alertRule
      */
-    public function removeAlert(\AppBundle\Entity\Alert $alert)
+    public function removeAlertRule(\AppBundle\Entity\AlertRule $alertRule)
     {
-        $this->alerts->removeElement($alert);
+        $this->alertRules->removeElement($alertRule);
     }
 
     /**
-     * Get alerts
+     * Get alert rules
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getAlerts()
+    public function getAlertRules()
     {
-        return $this->alerts;
+        return $this->alertRules;
     }
 
     /**
@@ -316,6 +321,24 @@ class Domain
     public function getSubdomains()
     {
         return $this->subdomains;
+    }
+
+    public function getActiveAlerts()
+    {
+        $activeAlerts = new ArrayCollection();
+        foreach ($this->devices as $device) {
+            foreach ($device->getActiveAlerts() as $alert) {
+                $activeAlerts->add($alert);
+            }
+        }
+
+        foreach ($this->subdomains as $subdomain) {
+            foreach ($subdomain->getActiveAlerts() as $alert) {
+                $activeAlerts->add($alert);
+            }
+        }
+
+        return $activeAlerts;
     }
 
     public function __toString()

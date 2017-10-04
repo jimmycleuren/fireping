@@ -7,14 +7,14 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Probe
+ * Alert
  *
- * @ORM\Table(name="probe")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\ProbeRepository")
+ * @ORM\Table(name="alert_rule")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\AlertRuleRepository")
  * @ApiResource
  * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  */
-class Probe
+class AlertRule
 {
     /**
      * @var int
@@ -34,28 +34,29 @@ class Probe
     private $name;
 
     /**
+     * @var probe
+     *
+     * @ORM\ManyToOne(targetEntity="Probe")
+     * @ORM\JoinColumn(name="probe_id", referencedColumnName="id")
+     * @Assert\NotBlank
+     */
+    private $probe;
+
+    /**
      * @var string
      *
-     * @ORM\Column(name="type", type="string", length=255)
+     * @ORM\Column(name="datasource", type="string", length=255)
      * @Assert\NotBlank
      */
-    private $type;
+    private $datasource;
 
     /**
-     * @var int
+     * @var string
      *
-     * @ORM\Column(name="step", type="integer")
+     * @ORM\Column(name="pattern", type="string", length=255)
      * @Assert\NotBlank
      */
-    private $step;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="samples", type="integer")
-     * @Assert\NotBlank
-     */
-    private $samples;
+    private $pattern;
 
 
     /**
@@ -73,7 +74,7 @@ class Probe
      *
      * @param string $name
      *
-     * @return Probe
+     * @return AlertRule
      */
     public function setName($name)
     {
@@ -93,74 +94,74 @@ class Probe
     }
 
     /**
-     * Set type
+     * Set datasource
      *
-     * @param string $type
+     * @param string $datasource
      *
-     * @return Probe
+     * @return AlertRule
      */
-    public function setType($type)
+    public function setDatasource($datasource)
     {
-        $this->type = $type;
+        $this->datasource = $datasource;
 
         return $this;
     }
 
     /**
-     * Get type
+     * Get datasource
      *
      * @return string
      */
-    public function getType()
+    public function getDatasource()
     {
-        return $this->type;
+        return $this->datasource;
     }
 
     /**
-     * Set step
+     * Set pattern
      *
-     * @param integer $step
+     * @param string $pattern
      *
-     * @return Probe
+     * @return AlertRule
      */
-    public function setStep($step)
+    public function setPattern($pattern)
     {
-        $this->step = $step;
+        $this->pattern = $pattern;
 
         return $this;
     }
 
     /**
-     * Get step
+     * Get pattern
      *
-     * @return int
+     * @return string
      */
-    public function getStep()
+    public function getPattern()
     {
-        return $this->step;
+        return $this->pattern;
     }
 
     /**
-     * Set samples
+     * Set probe
      *
-     * @param integer $samples
+     * @param \AppBundle\Entity\Probe $probe
      *
-     * @return Probe
+     * @return AlertRule
      */
-    public function setSamples($samples)
+    public function setProbe(\AppBundle\Entity\Probe $probe = null)
     {
-        $this->samples = $samples;
+        $this->probe = $probe;
 
         return $this;
     }
 
     /**
-     * Get samples
+     * Get probe
      *
-     * @return int
+     * @return \AppBundle\Entity\Probe
      */
-    public function getSamples()
+    public function getProbe()
     {
-        return $this->samples;
+        return $this->probe;
     }
 }

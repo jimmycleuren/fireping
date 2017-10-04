@@ -75,8 +75,10 @@ class GraphController extends Controller
     {
         $start = $request->get('start');
         $end = $request->get('end');
+        $debug = $this->container->get('session')->get('debug');
+
         if ($probe->getType() == "ping") {
-            $filename = $this->get('graph.ping')->getDetailGraph($device, $probe, $slavegroup, $start, $end);
+            $filename = $this->get('graph.ping')->getDetailGraph($device, $probe, $slavegroup, $start, $end, $debug);
             $response = new Response(file_get_contents($filename), 200);
             $response->headers->set('Content-Type', 'image/png');
 
