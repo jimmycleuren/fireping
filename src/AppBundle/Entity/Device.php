@@ -96,7 +96,6 @@ class Device
     /**
      * @var alerts
      * @ORM\OneToMany(targetEntity="Alert", mappedBy="device")
-     * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
      * @Groups({"device"})
      */
     private $alerts;
