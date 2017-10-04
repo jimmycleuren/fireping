@@ -2,16 +2,14 @@
 
 namespace AppBundle\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Alert
  *
  * @ORM\Table(name="alert")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\AlertRepository")
- * @ApiResource
+ * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  */
 class Alert
 {
@@ -25,37 +23,49 @@ class Alert
     private $id;
 
     /**
-     * @var string
+     * @var int
      *
-     * @ORM\Column(name="name", type="string", length=255, unique=true)
-     * @Assert\NotBlank
+     * @ORM\ManyToOne(targetEntity="Device", inversedBy="alerts")
+     * @ORM\JoinColumn(name="device_id", referencedColumnName="id")
      */
-    private $name;
+    private $device;
 
     /**
-     * @var probe
+     * @var int
      *
-     * @ORM\ManyToOne(targetEntity="Probe")
-     * @ORM\JoinColumn(name="probe_id", referencedColumnName="id")
-     * @Assert\NotBlank
+     * @ORM\ManyToOne(targetEntity="AlertRule")
+     * @ORM\JoinColumn(name="alert_rule_id", referencedColumnName="id")
      */
-    private $probe;
+    private $alertRule;
 
     /**
-     * @var string
+     * @var int
      *
-     * @ORM\Column(name="datasource", type="string", length=255)
-     * @Assert\NotBlank
+     * @ORM\ManyToOne(targetEntity="SlaveGroup")
+     * @ORM\JoinColumn(name="slave_group_id", referencedColumnName="id")
      */
-    private $datasource;
+    private $slaveGroup;
 
     /**
-     * @var string
+     * @var int
      *
-     * @ORM\Column(name="pattern", type="string", length=255)
-     * @Assert\NotBlank
+     * @ORM\Column(name="active", type="integer")
      */
-    private $pattern;
+    private $active;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="firstseen", type="datetime")
+     */
+    private $firstseen;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="lastseen", type="datetime")
+     */
+    private $lastseen;
 
 
     /**
@@ -69,98 +79,146 @@ class Alert
     }
 
     /**
-     * Set name
+     * Set device
      *
-     * @param string $name
+     * @param integer $device
      *
      * @return Alert
      */
-    public function setName($name)
+    public function setDevice($device)
     {
-        $this->name = $name;
+        $this->device = $device;
 
         return $this;
     }
 
     /**
-     * Get name
+     * Get device
      *
-     * @return string
+     * @return int
      */
-    public function getName()
+    public function getDevice()
     {
-        return $this->name;
+        return $this->device;
     }
 
     /**
-     * Set datasource
+     * Set alertRule
      *
-     * @param string $datasource
+     * @param integer $alertRule
      *
      * @return Alert
      */
-    public function setDatasource($datasource)
+    public function setAlertRule($alertRule)
     {
-        $this->datasource = $datasource;
+        $this->alertRule = $alertRule;
 
         return $this;
     }
 
     /**
-     * Get datasource
+     * Get alertRule
      *
-     * @return string
+     * @return int
      */
-    public function getDatasource()
+    public function getAlertRule()
     {
-        return $this->datasource;
+        return $this->alertRule;
     }
 
     /**
-     * Set pattern
+     * Set slave group
      *
-     * @param string $pattern
+     * @param integer $slaveGroup
      *
      * @return Alert
      */
-    public function setPattern($pattern)
+    public function setSlaveGroup($slaveGroup)
     {
-        $this->pattern = $pattern;
+        $this->slaveGroup = $slaveGroup;
 
         return $this;
     }
 
     /**
-     * Get pattern
+     * Get slave group
      *
-     * @return string
+     * @return int
      */
-    public function getPattern()
+    public function getSlaveGroup()
     {
-        return $this->pattern;
+        return $this->slaveGroup;
     }
 
     /**
-     * Set probe
+     * Set active
      *
-     * @param \AppBundle\Entity\Probe $probe
+     * @param integer $active
      *
      * @return Alert
      */
-    public function setProbe(\AppBundle\Entity\Probe $probe = null)
+    public function setActive($active)
     {
-        $this->probe = $probe;
+        $this->active = $active;
 
         return $this;
     }
 
     /**
-     * Get probe
+     * Get active
      *
-     * @return \AppBundle\Entity\Probe
+     * @return int
      */
-    public function getProbe()
+    public function getActive()
     {
-        return $this->probe;
+        return $this->active;
+    }
+
+    /**
+     * Set firstseen
+     *
+     * @param \DateTime $firstseen
+     *
+     * @return Alert
+     */
+    public function setFirstseen($firstseen)
+    {
+        $this->firstseen = $firstseen;
+
+        return $this;
+    }
+
+    /**
+     * Get firstseen
+     *
+     * @return \DateTime
+     */
+    public function getFirstseen()
+    {
+        return $this->firstseen;
+    }
+
+    /**
+     * Set lastseen
+     *
+     * @param \DateTime $lastseen
+     *
+     * @return Alert
+     */
+    public function setLastseen($lastseen)
+    {
+        $this->lastseen = $lastseen;
+
+        return $this;
+    }
+
+    /**
+     * Get lastseen
+     *
+     * @return \DateTime
+     */
+    public function getLastseen()
+    {
+        return $this->lastseen;
     }
 }

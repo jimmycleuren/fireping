@@ -97,7 +97,7 @@ class PingGraph extends RrdGraph
         return $imageFile;
     }
 
-    public function getDetailGraph(Device $device, Probe $probe, SlaveGroup $slavegroup, $start = -3600, $end = "now")
+    public function getDetailGraph(Device $device, Probe $probe, SlaveGroup $slavegroup, $start = -3600, $end = "now", $debug = false)
     {
         $file = $this->storage->getFilePath($device, $probe, $slavegroup);
         if (!file_exists($file)) {
@@ -128,6 +128,13 @@ class PingGraph extends RrdGraph
 
         $options[] = sprintf("DEF:%s=%s:%s:%s",'median', $this->storage->getFilePath($device, $probe, $slavegroup), 'median', "AVERAGE");
         $options[] = sprintf("DEF:%s=%s:%s:%s",'loss', $this->storage->getFilePath($device, $probe, $slavegroup), 'loss', "AVERAGE");
+
+        if ($debug) {
+            $options[] = sprintf("DEF:%s=%s:%s:%s", 'hwpredict', $this->storage->getFilePath($device, $probe, $slavegroup), 'median', "HWPREDICT");
+            $options[] = sprintf("DEF:%s=%s:%s:%s", 'devpredict', $this->storage->getFilePath($device, $probe, $slavegroup), 'median', "DEVPREDICT");
+            $options[] = sprintf("DEF:%s=%s:%s:%s", 'failures', $this->storage->getFilePath($device, $probe, $slavegroup), 'median', "FAILURES");
+        }
+
         $options[] = "CDEF:dm0=median,0,$max,LIMIT";
         $options[] = sprintf("CDEF:%s=%s,%s,%s",'loss_percent', "loss", "100", "*");
         $this->calculateStdDev($options, $this->storage->getFilePath($device, $probe, $slavegroup), $probe->getSamples(), $slavegroup);
@@ -136,6 +143,15 @@ class PingGraph extends RrdGraph
         $options[] = "CDEF:lossred=loss,0.2,GT,median,UNKN,IF";
         $options[] = "CDEF:lossorange=loss,0.05,GE,median,UNKN,IF";
         $options[] = "CDEF:lossgreen=loss,0.05,LT,median,UNKN,IF";
+
+        if ($debug) {
+            $options[] = "CDEF:upper=hwpredict,devpredict,2,*,+";
+            $options[] = "CDEF:lower=hwpredict,devpredict,2,*,-";
+        }
+
+        if ($debug) {
+            $options[] = sprintf("TICK:%s%s:%s", 'failures', '#fdd017', '1.0');
+        }
 
         $total = $probe->getSamples();
         $file = $this->storage->getFilePath($device, $probe, $slavegroup);
@@ -147,6 +163,12 @@ class PingGraph extends RrdGraph
             $options[] = "CDEF:smoke$i=cp$i,UN,UNKN,cp$total,cp$i,-,IF";
             $options[] = "AREA:cp$i";
             $options[] = "STACK:smoke$i#33333322";
+        }
+
+        if ($debug) {
+            $options[] = sprintf("LINE1:%s%s", 'upper', '#ff0000');
+            $options[] = sprintf("LINE1:%s%s", 'lower', '#0000ff');
+            $options[] = sprintf("LINE1:%s%s", 'hwpredict', '#ff00ff');
         }
 
         $options[] = sprintf("%s:%s%s", 'LINE1', 'lossgreen', '#00ff00');

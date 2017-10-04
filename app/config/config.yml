@@ -23,7 +23,6 @@ framework:
         engines: ['twig']
     default_locale: '%locale%'
     trusted_hosts: ~
-    trusted_proxies: ~
     session:
         # http://symfony.com/doc/current/reference/configuration/framework.html#handler-id
         handler_id:  session.handler.native_file
@@ -64,6 +63,12 @@ doctrine:
         metadata_cache_driver: redis
         # enable query caching
         query_cache_driver: redis
+        second_level_cache:
+            region_cache_driver:
+                type: service
+                id: snc_second_level_cache
+            enabled: true
+            region_lifetime: 86400
 
 
 # Swiftmailer Configuration
@@ -110,10 +115,12 @@ snc_redis:
             type: predis
             alias: default
             dsn: redis://localhost
+            logging: '%kernel.debug%'
         doctrine:
             type: predis
             alias: doctrine
             dsn: redis://localhost
+            logging: '%kernel.debug%'
     # configure doctrine caching
     doctrine:
         metadata_cache:
@@ -126,3 +133,7 @@ snc_redis:
         query_cache:
             client: doctrine
             entity_manager: default
+        second_level_cache:
+            client: doctrine
+            entity_manager: default
+            namespace: 'dslc:'

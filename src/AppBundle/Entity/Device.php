@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -17,6 +18,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *     "normalization_context"={"groups"={"device"}},
  *     "denormalization_context"={"groups"={"device"}}
  * })
+ * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  */
 class Device
 {
@@ -64,6 +66,7 @@ class Device
      *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="slavegroup_id", referencedColumnName="id")}
      *      )
+     * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
      * @Groups({"device"})
      */
     private $slavegroups;
@@ -74,16 +77,26 @@ class Device
      *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="probe_id", referencedColumnName="id")}
      *      )
+     * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
      * @Groups({"device"})
      */
     private $probes;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Alert")
-     * @ORM\JoinTable(name="device_alerts",
+     * @ORM\ManyToMany(targetEntity="AlertRule")
+     * @ORM\JoinTable(name="device_alert_rules",
      *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="alert_id", referencedColumnName="id")}
+     *      inverseJoinColumns={@ORM\JoinColumn(name="alert_rule_id", referencedColumnName="id")}
      *      )
+     * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
+     * @Groups({"device"})
+     */
+    private $alertRules;
+
+    /**
+     * @var alerts
+     * @ORM\OneToMany(targetEntity="Alert", mappedBy="device")
+     * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
      * @Groups({"device"})
      */
     private $alerts;
@@ -158,6 +171,7 @@ class Device
     {
         $this->slavegroups = new \Doctrine\Common\Collections\ArrayCollection();
         $this->probes = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->alertRules = new \Doctrine\Common\Collections\ArrayCollection();
         $this->alerts = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
@@ -302,6 +316,90 @@ class Device
     /**
      * Add alert
      *
+     * @param \AppBundle\Entity\AlertRule $alertRule
+     *
+     * @return Device
+     */
+    public function addAlertRule(\AppBundle\Entity\AlertRule $alertRule)
+    {
+        $this->alertRules[] = $alertRule;
+
+        return $this;
+    }
+
+    /**
+     * Remove alert
+     *
+     * @param \AppBundle\Entity\AlertRule $alertRule
+     */
+    public function removeAlertRule(\AppBundle\Entity\AlertRule $alertRule)
+    {
+        $this->alertRules->removeElement($alertRule);
+    }
+
+    /**
+     * Get alert rules
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     * @Groups({"device"})
+     */
+    public function getAlertRules()
+    {
+        return $this->alertRules;
+    }
+
+    /**
+     * Get alert rules
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAllAlertRules()
+    {
+        $result = new ArrayCollection();
+        foreach ($this->alertRules as $alertRule) {
+            $result->add($alertRule);
+        }
+        $parent = $this->getDomain();
+        while ($parent != null) {
+            foreach ($parent->getAlertRules() as $alertRule) {
+                $result->add($alertRule);
+            }
+            $parent = $parent->getParent();
+        }
+        return $result;
+    }
+
+    public function getActiveAlerts()
+    {
+        /*
+        $criteria = Criteria::create()->where(Criteria::expr()->eq("active", 1));
+
+        return $this->getAlerts()->matching($criteria);
+        */
+        $result = new ArrayCollection();
+
+        $alerts = $this->getAlerts();
+        foreach ($alerts as $alert) {
+            if($alert->getActive()) {
+                $result->add($alert);
+            }
+        }
+        return $result;
+    }
+
+    public function getAlerts()
+    {
+        return $this->alerts;
+    }
+
+    public function __toString()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Add alert
+     *
      * @param \AppBundle\Entity\Alert $alert
      *
      * @return Device
@@ -321,21 +419,5 @@ class Device
     public function removeAlert(\AppBundle\Entity\Alert $alert)
     {
         $this->alerts->removeElement($alert);
-    }
-
-    /**
-     * Get alerts
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     * @Groups({"device"})
-     */
-    public function getAlerts()
-    {
-        return $this->alerts;
-    }
-
-    public function __toString()
-    {
-        return $this->name;
     }
 }

@@ -13,6 +13,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ORM\Table(name="slave")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\SlaveRepository")
  * @ApiResource(attributes={"normalization_context"={"groups"={"slave"}}})
+ * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  */
 class Slave
 {

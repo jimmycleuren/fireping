@@ -203,6 +203,22 @@ class SlaveController extends Controller
         return new JsonResponse(array("code" => 200, "message" => "Results saved"));
     }
 
+    /**
+     * @param $id
+     * @return array
+     *
+     * @Method("POST")
+     * @Route("/api/slaves/{id}/error")
+     * @ParamConverter("slave", class="AppBundle:Slave")
+     *
+     * Process errors from a slave
+     */
+    public function errorAction($slave, Request $request)
+    {
+        //TODO: implement slave error handling
+        $this->logger->info("Error received from $slave");
+    }
+
     private function getDomainDevices($domain, &$config)
     {
         foreach ($domain->getSubDomains() as $subdomain) {
