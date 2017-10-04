@@ -8,6 +8,7 @@ imports:
 #        query_cache_driver: apc
 
 monolog:
+    channels: ["alert"]
     handlers:
         main:
             type: stream
