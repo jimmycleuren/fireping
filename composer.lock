@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "a750a0334215275a3a2b9ac5586e2a28",
+    "content-hash": "78bd0821973354bc21e1326dcf69b31d",
     "packages": [
         {
             "name": "api-platform/api-platform",
@@ -1281,6 +1281,61 @@
                 "wsse"
             ],
             "time": "2016-06-03T14:03:33+00:00"
+        },
+        {
+            "name": "ekino/newrelic-bundle",
+            "version": "1.3.2",
+            "target-dir": "Ekino/Bundle/NewRelicBundle",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ekino/EkinoNewRelicBundle.git",
+                "reference": "dd57044d7b8a38c1fe2ad20d408918b9f862e158"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ekino/EkinoNewRelicBundle/zipball/dd57044d7b8a38c1fe2ad20d408918b9f862e158",
+                "reference": "dd57044d7b8a38c1fe2ad20d408918b9f862e158",
+                "shasum": ""
+            },
+            "require-dev": {
+                "silex/silex": "~1.0",
+                "symfony/console": "~2.2|~3.0",
+                "symfony/framework-bundle": "~2.2|~3.0",
+                "twig/twig": "1.*"
+            },
+            "suggest": {
+                "sonata-project/block-bundle": "2.2.*@dev"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.3-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Ekino\\Bundle\\NewRelicBundle": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Thomas Rabaix",
+                    "email": "thomas.rabaix@ekino.com",
+                    "homepage": "http://ekino.com"
+                }
+            ],
+            "description": "Integrate New Relic into Symfony2",
+            "homepage": "https://github.com/ekino/EkinoNewRelicBundle",
+            "keywords": [
+                "metric",
+                "monitoring",
+                "performance"
+            ],
+            "time": "2015-11-12T08:59:07+00:00"
         },
         {
             "name": "evenement/evenement",
@@ -3064,71 +3119,6 @@
             "time": "2017-08-22T22:18:16+00:00"
         },
         {
-            "name": "snc/redis-bundle",
-            "version": "2.0.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/snc/SncRedisBundle.git",
-                "reference": "3fa62af06b9eb98cfb5a5a85ad4f7ec89ac1c8a2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/snc/SncRedisBundle/zipball/3fa62af06b9eb98cfb5a5a85ad4f7ec89ac1c8a2",
-                "reference": "3fa62af06b9eb98cfb5a5a85ad4f7ec89ac1c8a2",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.3",
-                "symfony/framework-bundle": "^2.7 || ^3.0",
-                "symfony/yaml": "^2.7 || ^3.0"
-            },
-            "require-dev": {
-                "doctrine/cache": "1.*",
-                "phpunit/phpunit": "4.8.*",
-                "predis/predis": "^1.0",
-                "symfony/console": "^2.7 || ^3.0",
-                "symfony/phpunit-bridge": "^2.7 || ^3.0"
-            },
-            "suggest": {
-                "monolog/monolog": "If you want to use the monolog redis handler.",
-                "predis/predis": "If you want to use predis.",
-                "symfony/console": "If you want to use commands to interact with the redis database"
-            },
-            "type": "symfony-bundle",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Snc\\RedisBundle\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Henrik Westphal",
-                    "email": "henrik.westphal@gmail.com"
-                },
-                {
-                    "name": "Community contributors",
-                    "homepage": "https://github.com/snc/SncRedisBundle/contributors"
-                }
-            ],
-            "description": "A Redis bundle for Symfony",
-            "homepage": "https://github.com/snc/SncRedisBundle",
-            "keywords": [
-                "nosql",
-                "redis",
-                "symfony"
-            ],
-            "time": "2017-10-02T10:10:06+00:00"
-        },
-        {
             "name": "swiftmailer/swiftmailer",
             "version": "v5.4.8",
             "source": {
@@ -4425,6 +4415,71 @@
             ],
             "description": "This bundle generates code for you",
             "time": "2017-07-18T07:57:44+00:00"
+        },
+        {
+            "name": "snc/redis-bundle",
+            "version": "2.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/snc/SncRedisBundle.git",
+                "reference": "3fa62af06b9eb98cfb5a5a85ad4f7ec89ac1c8a2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/snc/SncRedisBundle/zipball/3fa62af06b9eb98cfb5a5a85ad4f7ec89ac1c8a2",
+                "reference": "3fa62af06b9eb98cfb5a5a85ad4f7ec89ac1c8a2",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3",
+                "symfony/framework-bundle": "^2.7 || ^3.0",
+                "symfony/yaml": "^2.7 || ^3.0"
+            },
+            "require-dev": {
+                "doctrine/cache": "1.*",
+                "phpunit/phpunit": "4.8.*",
+                "predis/predis": "^1.0",
+                "symfony/console": "^2.7 || ^3.0",
+                "symfony/phpunit-bridge": "^2.7 || ^3.0"
+            },
+            "suggest": {
+                "monolog/monolog": "If you want to use the monolog redis handler.",
+                "predis/predis": "If you want to use predis.",
+                "symfony/console": "If you want to use commands to interact with the redis database"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Snc\\RedisBundle\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Henrik Westphal",
+                    "email": "henrik.westphal@gmail.com"
+                },
+                {
+                    "name": "Community contributors",
+                    "homepage": "https://github.com/snc/SncRedisBundle/contributors"
+                }
+            ],
+            "description": "A Redis bundle for Symfony",
+            "homepage": "https://github.com/snc/SncRedisBundle",
+            "keywords": [
+                "nosql",
+                "redis",
+                "symfony"
+            ],
+            "time": "2017-10-02T10:10:06+00:00"
         },
         {
             "name": "symfony/phpunit-bridge",

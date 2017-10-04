@@ -28,6 +28,7 @@
         "doctrine/orm": "^2.5",
         "eightpoints/guzzle-bundle": "^5.3",
         "eightpoints/guzzle-wsse-middleware": "^4.2",
+        "ekino/newrelic-bundle": "^1.3",
         "guzzlehttp/guzzle": "~6.0",
         "incenteev/composer-parameter-handler": "^2.0",
         "nelmio/api-doc-bundle": "^2.13",
