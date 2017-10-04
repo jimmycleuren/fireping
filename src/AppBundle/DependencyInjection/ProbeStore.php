@@ -63,27 +63,44 @@ class ProbeStore
         return $newProbe;
     }
 
+    public function getProbeDeviceCount($id)
+    {
+        /* @var $probe ProbeDefinition */
+        $probe = $this->getProbeById($id);
+        if ($probe === null) {
+            return 0;
+        }
+
+        return count($probe->getDevices());
+    }
+
+    public function getAllProbesDeviceCount()
+    {
+        $total = 0;
+        foreach ($this->getProbes() as $probe) {
+            /* @var $probe ProbeDefinition */
+            $total += count($probe->getDevices());
+        }
+        return $total;
+    }
+
     private function deactivateAllDevices()
     {
-        foreach ($this->getProbes() as $probe)
-        {
+        foreach ($this->getProbes() as $probe) {
             $probe->deactivateAllDevices();
         }
     }
 
     public function purgeAllInactiveDevices()
     {
-        foreach ($this->getProbes() as $probe)
-        {
-            $id = $probe->getId();
+        foreach ($this->getProbes() as $probe) {
             $probe->purgeAllInactiveDevices();
         }
     }
 
     private function updateConfig($configuration) {
         $this->deactivateAllDevices();
-        foreach ($configuration as $id => $probeConfig)
-        {
+        foreach ($configuration as $id => $probeConfig) {
             // TODO: More checks to make sure all of this data is here?
             $type = $probeConfig['type'];
             $step = $probeConfig['step'];
@@ -92,8 +109,7 @@ class ProbeStore
             // Anything else is custom configuration.
 
             $probe = $this->getProbe($id, $type, $step, $samples);
-            foreach ($probeConfig['targets'] as $hostname => $ip)
-            {
+            foreach ($probeConfig['targets'] as $hostname => $ip) {
                 $device = new DeviceDefinition($hostname, $ip);
                 $probe->addDevice($device);
             }
@@ -103,6 +119,8 @@ class ProbeStore
 
     public function sync(LoggerInterface $logger)
     {
+        $start = microtime();
+        $logger->info("Started syncing configuration.");
         /** @var \GuzzleHttp\Client $client */
         $client = $this->container->get('guzzle.client.api_fireping');
 
@@ -116,14 +134,29 @@ class ProbeStore
 
             $response = $client->send($request);
 
+            $logger->info("Configuration retrieved from master.", array('duration' => microtime() - $start));
+            $start = microtime();
+
             $etag = $response->hasHeader('ETag') ? $response->getHeader('ETag')[0] : null;
 
+            $stats = array();
+            foreach ($this->getProbes() as $probe) {
+                /* @var $probe \AppBundle\Probe\ProbeDefinition */
+                $stats[$probe->getId()] = $this->getProbeDeviceCount($probe->getId());
+            }
+
+            $stats['probes'] = count($this->getProbes());
+            $stats['total_devs'] = $this->getAllProbesDeviceCount();
+
             if ($response->getStatusCode() === 304) {
-                $logger->info("Configuration has not changed.");
+                $logger->info("Configuration has not changed.", $stats);
                 return null;
             }
 
-            $logger->info("Reloading configuration...");
+            $logger->info("Parsed configuration statistics.", array('duration' => microtime() - $start));
+            $start = microtime();
+
+            $logger->info("Reloading configuration...", $stats);
 
             $configuration = json_decode($response->getBody()->getContents(), true);
 
@@ -141,6 +174,22 @@ class ProbeStore
             $this->updateConfig($configuration);
 
             $this->etag = $etag;
+
+            $logger->info("Reloaded running-configuration.", array('duration' => microtime() - $start));
+            $start = microtime();
+
+            $stats = array();
+            foreach ($this->getProbes() as $probe) {
+                /* @var $probe \AppBundle\Probe\ProbeDefinition */
+                $stats[$probe->getId()] = $this->getProbeDeviceCount($probe->getId());
+            }
+
+            $stats['probes'] = count($this->getProbes());
+            $stats['total_devs'] = $this->getAllProbesDeviceCount();
+
+            $logger->info("New configuration stats calculated.", array('duration' => microtime() - $start));
+
+            $logger->info("Configuration sync completed", $stats);
         } catch (TransferException $e) {
             $logger->error("Response (" . $e->getCode() . ") while retrieving configuration from $endpoint: " . $e->getMessage());
         }

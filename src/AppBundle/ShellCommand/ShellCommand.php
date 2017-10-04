@@ -18,7 +18,8 @@ abstract class ShellCommand implements ShellCommandInterface
     protected $command;
     protected $targets = array();
 
-    protected $MAX_TARGETS = 100;
+    /* TODO: This should probably be more reasonable... :D */
+    protected $MAX_TARGETS = 10000;
 
     const SERIAL_EXECUTION = 1;
     const PARALLEL_EXECUTION = 2;

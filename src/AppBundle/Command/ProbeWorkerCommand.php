@@ -23,6 +23,8 @@ class ProbeWorkerCommand extends ContainerAwareCommand
      */
     protected $output;
 
+    protected $rcv_buff;
+
     protected function configure()
     {
         $this
@@ -40,7 +42,11 @@ class ProbeWorkerCommand extends ContainerAwareCommand
         $read = new ReadableResourceStream(STDIN, $loop);
 
         $read->on('data', function ($data) {
-            $this->process($data);
+            $this->rcv_buff .= $data;
+            if (json_decode($this->rcv_buff, true)) {
+                $this->process($this->rcv_buff);
+                $this->rcv_buff = "";
+            }
         });
 
         $loop->run();
@@ -51,15 +57,60 @@ class ProbeWorkerCommand extends ContainerAwareCommand
         $timestamp = time();
 
         if (!trim($data)) {
+            $this->sendResponse(array(
+                'status' => 500,
+                'message' => 'NOK',
+                'body' => array(
+                    '_exception' => "No input data received",
+                    'runtime' => time() - $timestamp,
+                    'request_data' => $data,
+                    'pid' => getmypid(),
+                ),
+                'debug' => array(
+                    'runtime' => time() - $timestamp,
+                    'request_data' => $data,
+                    'pid' => getmypid(),
+                )
+            ));
             return;
         }
 
         $data = json_decode($data, true);
         if (!$data) {
+            $this->sendResponse(array(
+                'status' => 500,
+                'message' => 'NOK',
+                'body' => array(
+                    '_exception' => 'Invalid JSON received',
+                    'runtime' => time() - $timestamp,
+                    'request_data' => $data,
+                    'pid' => getmypid(),
+                ),
+                'debug' => array(
+                    'runtime' => time() - $timestamp,
+                    'request_data' => $data,
+                    'pid' => getmypid(),
+                )
+            ));
             return;
         }
 
         if (!isset($data['type'])) {
+            $this->sendResponse(array(
+                'status' => 500,
+                'message' => 'NOK',
+                'body' => array(
+                    '_exception' => "Type key not set",
+                    'runtime' => time() - $timestamp,
+                    'request_data' => $data,
+                    'pid' => getmypid(),
+                ),
+                'debug' => array(
+                    'runtime' => time() - $timestamp,
+                    'request_data' => $data,
+                    'pid' => getmypid(),
+                )
+            ));
             return;
         }
 
@@ -73,14 +124,45 @@ class ProbeWorkerCommand extends ContainerAwareCommand
                 'message' => 'NOK',
                 'body' => array(
                     '_exception' => $e->getMessage(),
+                    'runtime' => time() - $timestamp,
+                    'request_data' => $data,
+                    'pid' => getmypid(),
                 ),
             ));
+            return;
         }
 
         sleep($data['delay_execution']);
 
         try {
             $shellOutput = $command->execute();
+
+            $requestedDevices = array_keys($data['targets']);
+            $returningDevices = $shellOutput;
+
+            $this->sendResponse(array(
+                'status' => 200,
+                'message' => 'OK',
+                'body' => array(
+                    $data['id'] => array(
+                        'type' => $data['type'],
+                        'timestamp' => $timestamp,
+                        'targets' => $shellOutput,
+                        'runtime' => time() - $timestamp,
+                        'request_data' => $data,
+                        'pid' => getmypid(),
+                    ),
+                ),
+                'debug' => array(
+                    'runtime' => time() - $timestamp,
+                    'request_data' => $data,
+                    'pid' => getmypid(),
+                    'req_dev' => count($requestedDevices),
+                    'ret_dev' => count($returningDevices),
+                )
+            ));
+            return;
+
         } catch (\Exception $e) {
             $this->sendResponse(array(
                 'status' => 500,
@@ -88,21 +170,15 @@ class ProbeWorkerCommand extends ContainerAwareCommand
                 'body' => array(
                     '_exception' => $e->getMessage(),
                 ),
-            ));
-        }
-
-        $this->sendResponse(array(
-            'status' => 200,
-            'message' => 'OK',
-            'body' => array(
-                $data['id'] => array(
-                    'type' => $data['type'],
-                    'timestamp' => $timestamp,
-                    'targets' => $shellOutput,
+                'debug' => array(
+                    '_exception' => $e->getMessage(),
                     'runtime' => time() - $timestamp,
-                ),
-            ),
-        ));
+                    'request_data' => $data,
+                    'pid' => getmypid(),
+                )
+            ));
+            return;
+        }
     }
 
     protected function sendResponse($data)
