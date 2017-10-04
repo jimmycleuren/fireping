@@ -39,6 +39,7 @@
         "react/stream": "^0.7.1",
         "sensio/distribution-bundle": "^5.0",
         "sensio/framework-extra-bundle": "^3.0.2",
+        "snc/redis-bundle": "^2.0",
         "symfony/cache": "^3.3",
         "symfony/monolog-bundle": "^3.0.2",
         "symfony/polyfill-apcu": "^1.0",
