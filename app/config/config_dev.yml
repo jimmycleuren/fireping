@@ -12,12 +12,18 @@ web_profiler:
     intercept_redirects: false
 
 monolog:
+    channels: ["alert"]
     handlers:
         main:
             type: stream
             path: '%kernel.logs_dir%/%kernel.environment%.log'
-            level: debug
+            level: info
             channels: ['!event']
+        alert:
+            type: stream
+            path:  "%kernel.logs_dir%/alert.%kernel.environment%.log"
+            level: info
+            channels: [alert]
         console:
             type: console
             channels: ['!event', '!doctrine']
@@ -43,3 +49,4 @@ guzzle:
             options:
                 headers:
                     Accept: "application/json"
+>>>>>>> d17b76fae9fb4166eef90c37601a4381c401d288

@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-2 sidebar">
+            {% include 'menu/menu.html.twig' %}
+        </div>
+        <div class="col-md-8 col-md-offset-2 main">
+            <h1 class="page-header">Active alerts{% if domain is defined %} in {{ domain.name }}{% endif %}</h1>
+
+            <span class="row">
+            {% for key,domain in alertDomains %}
+                <span class="col-md-2">
+                    <div class="panel {% if domain.alerts < 10 %}panel-warning{% else %}panel-danger{% endif %}">
+                        <div class="panel-heading"><a href="{{ path('app_alert_domain', {id: key}) }}">{{ domain.name }}</a></div>
+                        <div class="panel-body text-center"><h4>{{ domain.alerts }} active alerts</h4></div>
+                    </div>
+                </span>
+            {% endfor %}
+            </span>
+            <span class="row">
+            {% if domain is defined %}
+                {% for device in domain.devices %}
+                    {% if device.activeAlerts|length > 0 %}
+                        <span class="col-md-4">
+                        <div class="panel panel-warning">
+                            <div class="panel-heading"><a href="{{ path('app_device_get', {id: device.id}) }}">{{ device.name }}</a></div>
+                            <div class="panel-body">
+                                <ul>
+                                {% for alert in device.activeAlerts %}
+                                    <li>{{ alert.alertRule.name }}</li>
+                                {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </span>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            </span>
+        </div>
+        <div class="col-md-2" id="ctrl" style="position:absolute; right:0px; top: 100px;">
+        </div>
+    </div>
+{% endblock %}

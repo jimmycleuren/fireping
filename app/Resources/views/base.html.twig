@@ -83,7 +83,11 @@
                     <ul class="nav navbar-nav">
                         <li {% if active_menu is defined and active_menu == "slavegroup" %}class="active"{% endif %}><a href="{{ path('slavegroup_index') }}">Slavegroups</a></li>
                         <li {% if active_menu is defined and active_menu == "slave" %}class="active"{% endif %}><a href="{{ path('slave_index') }}">Slaves</a></li>
+                        <li {% if active_menu is defined and active_menu == "alerts" %}class="active"{% endif %}><a href="{{ path('app_alert_index') }}">Alerts</a></li>
                     </ul>
+                    <div style="float:right; margin:14px 0px;">
+                        <a class="label {% if app.session.get('debug') %}label-success{% else %}label-danger{% endif %}" href="{{ path('debug') }}">Debug mode</a>
+                    </div>
                 </div><!--/.nav-collapse -->
             </div>
         </nav>

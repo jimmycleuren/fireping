@@ -40,6 +40,16 @@ class RrdStorage extends Storage
         )
     );
 
+    private $predictions = array(
+        array(
+            'function' => 'HWPREDICT',
+            'rows' => 51840,
+            'alpha' => 0.1,
+            'beta' => 0.0035,
+            'period' => 1440
+        ),
+    );
+
     public function __construct($container)
     {
         $this->container = $container;
@@ -103,6 +113,17 @@ class RrdStorage extends Storage
                 strtoupper($value['function']),
                 $value['steps'],
                 $value['rows']
+            );
+        }
+
+        foreach ($this->predictions as $value) {
+            $options[] = sprintf(
+                "RRA:%s:%s:%s:%s:%s",
+                strtoupper($value['function']),
+                $value['rows'],
+                $value['alpha'],
+                $value['beta'],
+                $value['period']
             );
         }
 
