@@ -9,6 +9,7 @@
 namespace AppBundle\ShellCommand;
 
 
+use AppBundle\OutputFormatter\DefaultOutputFormatter;
 use AppBundle\OutputFormatter\TracerouteOutputFormatter;
 
 class TracerouteShellCommand extends ShellCommand
@@ -23,7 +24,7 @@ class TracerouteShellCommand extends ShellCommand
         'gateway' => '-g',
         'max_ttl' => '-m',
         'simultaneous_queries' => '-N',
-        'wait' => '-w',
+        'wait_time' => '-w',
     );
     protected $REQUIRED_ARGUMENTS = array('-q');
     protected $EXTRA_ARGUMENTS = array('-d');
