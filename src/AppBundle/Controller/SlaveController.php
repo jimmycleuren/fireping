@@ -244,6 +244,7 @@ class SlaveController extends Controller
             $config[$probe->getId()]['type'] = $probe->getType();
             $config[$probe->getId()]['step'] = $probe->getStep();
             $config[$probe->getId()]['samples'] = $probe->getSamples();
+            $config[$probe->getId()]['args'] = json_decode($probe->getArguments());
             $config[$probe->getId()]['targets'][$device->getId()] = $device->getIp();
         }
 
@@ -253,6 +254,7 @@ class SlaveController extends Controller
                 $config[$probe->getId()]['type'] = $probe->getType();
                 $config[$probe->getId()]['step'] = $probe->getStep();
                 $config[$probe->getId()]['samples'] = $probe->getSamples();
+                $config[$probe->getId()]['args'] = json_decode($probe->getArguments());
                 $config[$probe->getId()]['targets'][$device->getId()] = $device->getIp();
             }
             $parent = $parent->getParent();

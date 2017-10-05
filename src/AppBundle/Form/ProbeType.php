@@ -13,7 +13,7 @@ class ProbeType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('name')->add('type')->add('step')->add('samples');
+        $builder->add('name')->add('type')->add('arguments')->add('step')->add('samples');
     }
 
     /**

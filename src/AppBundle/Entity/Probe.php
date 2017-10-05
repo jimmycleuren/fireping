@@ -57,6 +57,13 @@ class Probe
      */
     private $samples;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="arguments", type="text")
+     */
+    private $arguments;
+
 
     /**
      * Get id
@@ -162,5 +169,29 @@ class Probe
     public function getSamples()
     {
         return $this->samples;
+    }
+
+    /**
+     * Set arguments
+     *
+     * @param string $arguments
+     *
+     * @return Probe
+     */
+    public function setArguments($arguments)
+    {
+        $this->arguments = $arguments;
+
+        return $this;
+    }
+
+    /**
+     * Get arguments
+     *
+     * @return string
+     */
+    public function getArguments()
+    {
+        return $this->arguments;
     }
 }
