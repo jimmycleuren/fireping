@@ -191,6 +191,9 @@ class SlaveController extends Controller
                         case "ping":
                             $this->container->get('processor.ping')->storeResult($device, $probe, $slave->getSlaveGroup(), $timestamp, $targetData);
                             break;
+                        case "traceroute":
+                            $this->container->get('processor.traceroute')->storeResult($device, $probe, $slave->getSlaveGroup(), $timestamp, $targetData);
+                            break;
                     }
                 }
             }

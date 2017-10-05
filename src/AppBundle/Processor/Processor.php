@@ -8,6 +8,7 @@
 
 namespace AppBundle\Processor;
 
+use AppBundle\Entity\Alert;
 use AppBundle\Entity\AlertRule;
 use AppBundle\Entity\Device;
 use AppBundle\Entity\Probe;

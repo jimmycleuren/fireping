@@ -12,18 +12,21 @@ use AppBundle\Entity\Device;
 use AppBundle\Entity\Probe;
 use AppBundle\Entity\SlaveGroup;
 
-class PingProcessor extends Processor
+class TracerouteProcessor extends Processor
 {
     public function storeResult(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data)
     {
         if (count($data) != $probe->getSamples()) {
-            throw new \Exception(count($data)." ping samples received, should have been ".$probe->getSamples());
+            throw new \Exception(count($data)." traceroute samples received, should have been ".$probe->getSamples());
         }
         $datasources = array();
         $total = 0;
         $failed = 0;
         $success = 0;
 
+        $this->logger->info(print_r($data, true));
+
+        /*
         foreach ($data as $key => $result) {
             $datasources['ping'.($key+1)] = $result;
             if ($result != -1) {
@@ -46,5 +49,6 @@ class PingProcessor extends Processor
 
         $this->cacheResults($device, $timestamp, $datasources);
         $this->processAlertRules($device, $probe, $group, $timestamp);
+        */
     }
 }
