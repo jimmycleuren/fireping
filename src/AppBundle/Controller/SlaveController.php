@@ -150,7 +150,8 @@ class SlaveController extends Controller
                 }
             }
 
-            $subset = array_chunk($devices, ceil(count($devices) / count($slaves)))[$slavePosition];
+            $size = ceil(count($devices) / count($slaves));
+            $subset = array_chunk($devices, (int)$size)[$slavePosition];
             foreach ($subset as $device) {
                 $this->getDeviceProbes($device, $config);
             }
