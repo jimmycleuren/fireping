@@ -123,17 +123,35 @@ class SlaveController extends Controller
 
         $config = array();
 
+        $devices = array();
         if ($slave->getSlaveGroup()) {
             foreach ($slave->getSlaveGroup()->getDomains() as $domain) {
-                $this->getDomainDevices($domain, $config);
+                $devices = array_merge($devices, $this->getDomainDevices($domain));
             }
 
             $query = $this->em->createQuery("SELECT d, p FROM AppBundle:Device d LEFT JOIN d.probes p WHERE d in (:devices)")
                 ->setParameter("devices", $slave->getSlaveGroup()->getDevices())
                 ->useQueryCache(true)
             ;
-            $devices = $query->getResult();
-            foreach ($devices as $device) {
+
+            $devices = array_merge($devices, $query->getResult());
+
+            $slaves = $slave->getSlaveGroup()->getSlaves();
+            foreach ($slaves as $key => $value) {
+                if ($value->getLastContact() <  new \DateTime("10 minutes ago")) {
+                    unset($slaves[$key]);
+                }
+            }
+
+            $slavePosition = 0;
+            foreach($slaves as $key => $temp) {
+                if ($temp->getId() == $slave->getId()) {
+                    $slavePosition = $key;
+                }
+            }
+
+            $subset = array_chunk($devices, ceil(count($devices) / count($slaves)))[$slavePosition];
+            foreach ($subset as $device) {
                 $this->getDeviceProbes($device, $config);
             }
         }
@@ -222,10 +240,10 @@ class SlaveController extends Controller
         $this->logger->info("Error received from $slave");
     }
 
-    private function getDomainDevices($domain, &$config)
+    private function getDomainDevices($domain)
     {
         foreach ($domain->getSubDomains() as $subdomain) {
-            $this->getDomainDevices($subdomain, $config);
+            $this->getDomainDevices($subdomain);
         }
 
         $query = $this->em->createQuery("SELECT d, p FROM AppBundle:Device d LEFT JOIN d.probes p WHERE d in (:devices)")
@@ -233,9 +251,8 @@ class SlaveController extends Controller
             ->useQueryCache(true)
         ;
         $devices = $query->getResult();
-        foreach ($devices as $device) {
-            $this->getDeviceProbes($device, $config);
-        }
+
+        return $devices;
     }
 
     private function getDeviceProbes($device, &$config)

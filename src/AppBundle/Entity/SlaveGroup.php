@@ -45,6 +45,14 @@ class SlaveGroup
      */
     private $domains;
 
+    /**
+     * @var domain
+     * @ORM\OneToMany(targetEntity="Slave", mappedBy="slavegroup")
+     * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
+     * @ORM\OrderBy({"id" = "asc"})
+     */
+    private $slaves;
+
 
     /**
      * Get id
@@ -160,5 +168,39 @@ class SlaveGroup
     public function __toString()
     {
         return $this->name;
+    }
+
+    /**
+     * Add slave
+     *
+     * @param \AppBundle\Entity\Slave $slave
+     *
+     * @return SlaveGroup
+     */
+    public function addSlave(\AppBundle\Entity\Slave $slave)
+    {
+        $this->slaves[] = $slave;
+
+        return $this;
+    }
+
+    /**
+     * Remove slave
+     *
+     * @param \AppBundle\Entity\Slave $slave
+     */
+    public function removeSlave(\AppBundle\Entity\Slave $slave)
+    {
+        $this->slaves->removeElement($slave);
+    }
+
+    /**
+     * Get slaves
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getSlaves()
+    {
+        return $this->slaves;
     }
 }
