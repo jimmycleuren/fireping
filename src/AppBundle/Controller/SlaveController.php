@@ -216,6 +216,7 @@ class SlaveController extends Controller
                 }
             }
         } catch (WrongTimestampRrdException $e) {
+            $this->logger->warning($e->getMessage());
             return new JsonResponse(array('code' => 409, 'message' => $e->getMessage()), 409);
         } catch (\Exception $e) {
             return new JsonResponse(array('code' => 500, 'message' => $e->getMessage()), 500);
