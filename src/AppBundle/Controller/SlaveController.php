@@ -249,15 +249,17 @@ class SlaveController extends Controller
 
     private function getDomainDevices($domain)
     {
+        $devices = array();
+
         foreach ($domain->getSubDomains() as $subdomain) {
-            $this->getDomainDevices($subdomain);
+            $devices = array_merge($devices, $this->getDomainDevices($subdomain));
         }
 
         $query = $this->em->createQuery("SELECT d, p FROM AppBundle:Device d LEFT JOIN d.probes p WHERE d in (:devices)")
             ->setParameter("devices", $domain->getDevices())
             ->useQueryCache(true)
         ;
-        $devices = $query->getResult();
+        $devices = $devices = array_merge($devices, $query->getResult());
 
         return $devices;
     }
