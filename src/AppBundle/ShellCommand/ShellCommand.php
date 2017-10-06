@@ -13,7 +13,7 @@ use Symfony\Component\Process\ExecutableFinder;
  * Date: 9/06/2017
  * Time: 12:38
  */
-abstract class ShellCommand implements ShellCommandInterface
+abstract class ShellCommand implements CommandInterface
 {
     protected $command;
     protected $targets = array();

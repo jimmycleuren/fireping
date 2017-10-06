@@ -8,7 +8,7 @@ use AppBundle\Probe\PingResponseFormatter;
 use AppBundle\Probe\PingShellCommand;
 use AppBundle\Probe\MtrShellCommand;
 use AppBundle\Probe\WorkerResponse;
-use AppBundle\ShellCommand\ShellCommandFactory;
+use AppBundle\ShellCommand\CommandFactory;
 use React\EventLoop\Factory;
 use React\Stream\ReadableResourceStream;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -58,6 +58,22 @@ class ProbeWorkerCommand extends ContainerAwareCommand
 
         if (!trim($data)) {
             $this->sendResponse(array(
+                'type' => 'exception',
+                'status' => 400,
+                'body' => array(
+                    'timestamp' => $timestamp,
+                    'contents' => 'Input data not received.'
+                ),
+                'debug' =>
+                    array(
+                        'runtime' => time() - $timestamp,
+                        'request' => $data,
+                        'pid' => getmypid(),
+                    ),
+                )
+            );
+            return;
+            /*$this->sendResponse(array(
                 'status' => 500,
                 'message' => 'NOK',
                 'body' => array(
@@ -72,12 +88,29 @@ class ProbeWorkerCommand extends ContainerAwareCommand
                     'pid' => getmypid(),
                 )
             ));
-            return;
+            return;*/
         }
 
         $data = json_decode($data, true);
+
         if (!$data) {
             $this->sendResponse(array(
+                    'type' => 'exception',
+                    'status' => 400,
+                    'body' => array(
+                        'timestamp' => $timestamp,
+                        'contents' => 'Invalid JSON Received.'
+                    ),
+                    'debug' =>
+                        array(
+                            'runtime' => time() - $timestamp,
+                            'request' => $data,
+                            'pid' => getmypid(),
+                        ),
+                )
+            );
+            return;
+            /*$this->sendResponse(array(
                 'status' => 500,
                 'message' => 'NOK',
                 'body' => array(
@@ -92,11 +125,27 @@ class ProbeWorkerCommand extends ContainerAwareCommand
                     'pid' => getmypid(),
                 )
             ));
-            return;
+            return;*/
         }
 
         if (!isset($data['type'])) {
             $this->sendResponse(array(
+                    'type' => 'exception',
+                    'status' => 400,
+                    'body' => array(
+                        'timestamp' => $timestamp,
+                        'contents' => 'Command type missing.'
+                    ),
+                    'debug' =>
+                        array(
+                            'runtime' => time() - $timestamp,
+                            'request' => $data,
+                            'pid' => getmypid(),
+                        ),
+                )
+            );
+            return;
+            /*$this->sendResponse(array(
                 'status' => 500,
                 'message' => 'NOK',
                 'body' => array(
@@ -111,15 +160,32 @@ class ProbeWorkerCommand extends ContainerAwareCommand
                     'pid' => getmypid(),
                 )
             ));
-            return;
+            return;*/
         }
 
-        $factory = new ShellCommandFactory();
+        $factory = new CommandFactory();
+        $data['container'] = $this->getContainer();
         $command = null;
         try {
             $command = $factory->create($data['type'], $data);
         } catch (\Exception $e) {
             $this->sendResponse(array(
+                    'type' => 'exception',
+                    'status' => 400,
+                    'body' => array(
+                        'timestamp' => $timestamp,
+                        'contents' => $e->getMessage()
+                    ),
+                    'debug' =>
+                        array(
+                            'runtime' => time() - $timestamp,
+                            'request' => $data,
+                            'pid' => getmypid(),
+                        ),
+                )
+            );
+            return;
+            /*$this->sendResponse(array(
                 'status' => 500,
                 'message' => 'NOK',
                 'body' => array(
@@ -129,7 +195,7 @@ class ProbeWorkerCommand extends ContainerAwareCommand
                     'pid' => getmypid(),
                 ),
             ));
-            return;
+            return;*/
         }
 
         sleep($data['delay_execution']);
@@ -137,34 +203,111 @@ class ProbeWorkerCommand extends ContainerAwareCommand
         try {
             $shellOutput = $command->execute();
 
-            $requestedDevices = array_keys($data['targets']);
-            $returningDevices = $shellOutput;
+            switch ($data['type']) {
+                case 'post-result':
+                    break;
 
-            $this->sendResponse(array(
-                'status' => 200,
-                'message' => 'OK',
-                'body' => array(
-                    $data['id'] => array(
+                case 'config-sync':
+                    // This is a request to get the latest configuration from the master.
+                    $this->sendResponse(array(
+                        'type' => $data['type'],
+                        'status' => $shellOutput['code'],
+                        'headers' => array(
+                            'etag' => $shellOutput['etag'],
+                        ),
+                        'body' => array(
+                            'timestamp' => $timestamp,
+                            'contents' => $shellOutput['contents'],
+                        ),
+                        'debug' => array(
+                            'runtime' => time() - $timestamp,
+                            'request' => $data,
+                            'pid' => getmypid(),
+                        ),
+                    ));
+                    break;
+
+                case 'ping':
+                case 'mtr':
+                case 'traceroute':
+                    $this->sendResponse(array(
+                        'type' => 'probe',
+                        'status' => 200,
+                        'body' => array(
+                            'timestamp' => $timestamp,
+                            'contents' => array(
+                                $data['id'] => array(
+                                    'type' => $data['type'],
+                                    'timestamp' => $timestamp,
+                                    'targets' => $shellOutput,
+                                )
+                            ),
+                        ),
+                        'debug' => array(
+                            'runtime' => time() - $timestamp,
+                            'request' => $data,
+                            'pid' => getmypid(),
+                        ),
+                    ));
+                    break;
+            }
+
+            /*if ($data['type'] === 'http') {
+                $this->sendResponse(array(
+                    'status' => 200,
+                    'message' => 'Sync OK',
+                    'body' => array(
                         'type' => $data['type'],
                         'timestamp' => $timestamp,
-                        'targets' => $shellOutput,
+                        'contents' => $shellOutput,
+                        'request_data' => $data,
+                        'pid' => getmypid(),
+                    )
+                ));
+                return;
+
+            } else {
+                $this->sendResponse(array(
+                    'status' => 200,
+                    'message' => 'OK',
+                    'body' => array(
+                        $data['id'] => array(
+                            'type' => $data['type'],
+                            'timestamp' => $timestamp,
+                            'targets' => $shellOutput,
+                            'runtime' => time() - $timestamp,
+                            'request_data' => $data,
+                            'pid' => getmypid(),
+                        ),
+                    ),
+                    'debug' => array(
                         'runtime' => time() - $timestamp,
                         'request_data' => $data,
                         'pid' => getmypid(),
-                    ),
-                ),
-                'debug' => array(
-                    'runtime' => time() - $timestamp,
-                    'request_data' => $data,
-                    'pid' => getmypid(),
-                    'req_dev' => count($requestedDevices),
-                    'ret_dev' => count($returningDevices),
-                )
-            ));
-            return;
+                    )
+                ));
+                return;
+            }*/
 
         } catch (\Exception $e) {
             $this->sendResponse(array(
+                    'type' => 'exception',
+                    'status' => 500,
+                    'body' => array(
+                        'timestamp' => $timestamp,
+                        'contents' => $e->getMessage()
+                    ),
+                    'debug' =>
+                        array(
+                            'runtime' => time() - $timestamp,
+                            'request' => $data,
+                            'pid' => getmypid(),
+                        ),
+                )
+            );
+            return;
+
+            /*$this->sendResponse(array(
                 'status' => 500,
                 'message' => 'NOK',
                 'body' => array(
@@ -177,7 +320,7 @@ class ProbeWorkerCommand extends ContainerAwareCommand
                     'pid' => getmypid(),
                 )
             ));
-            return;
+            return;*/
         }
     }
 

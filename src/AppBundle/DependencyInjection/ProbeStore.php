@@ -25,6 +25,22 @@ class ProbeStore
     protected $probes = array();
     protected $etag = null;
 
+    /**
+     * @return null
+     */
+    public function getEtag()
+    {
+        return $this->etag;
+    }
+
+    /**
+     * @param null $etag
+     */
+    public function setEtag($etag)
+    {
+        $this->etag = $etag;
+    }
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
@@ -50,15 +66,15 @@ class ProbeStore
         return null;
     }
 
-    public function getProbe($id, $type, $step, $samples)
+    public function getProbe($id, $type, $step, $samples, $args = null)
     {
         foreach ($this->probes as $probe) {
             if ($probe->getId() === $id) {
-                $probe->setConfiguration($id, $type, $step, $samples);
+                $probe->setConfiguration($id, $type, $step, $samples, $args);
                 return $probe;
             }
         }
-        $newProbe = new ProbeDefinition($id, $type, $step, $samples);
+        $newProbe = new ProbeDefinition($id, $type, $step, $samples, $args);
         $this->addProbe($newProbe);
         return $newProbe;
     }
@@ -98,23 +114,25 @@ class ProbeStore
         }
     }
 
-    private function updateConfig($configuration) {
+    public function updateConfig($configuration, $etag = null) {
         $this->deactivateAllDevices();
         foreach ($configuration as $id => $probeConfig) {
             // TODO: More checks to make sure all of this data is here?
             $type = $probeConfig['type'];
             $step = $probeConfig['step'];
             $samples = $probeConfig['samples'];
+            $args = isset($probeConfig['args']) ? $probeConfig['args'] : null;
             // TODO: Only type, step and targets needs to exist for operational.
             // Anything else is custom configuration.
 
-            $probe = $this->getProbe($id, $type, $step, $samples);
+            $probe = $this->getProbe($id, $type, $step, $samples, $args);
             foreach ($probeConfig['targets'] as $hostname => $ip) {
                 $device = new DeviceDefinition($hostname, $ip);
                 $probe->addDevice($device);
             }
         }
         $this->purgeAllInactiveDevices();
+        $this->setEtag($etag);
     }
 
     public function sync(LoggerInterface $logger)

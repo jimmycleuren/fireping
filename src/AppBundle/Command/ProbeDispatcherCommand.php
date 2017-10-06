@@ -4,16 +4,9 @@ namespace AppBundle\Command;
 
 use AppBundle\DependencyInjection\ProbeStore;
 use AppBundle\Instruction\Instruction;
-use AppBundle\Instruction\InstructionBuilder;
-use AppBundle\Probe\EchoPoster;
-use AppBundle\Probe\HttpPoster;
-use AppBundle\Probe\Message;
-use AppBundle\Probe\MessageQueueHandler;
-use AppBundle\Probe\MessageQueue;
-use AppBundle\Probe\ProbeDefinition;
-use AppBundle\Probe\DeviceDefinition;
 
-use GuzzleHttp\Client;
+use AppBundle\Probe\ProbeDefinition;
+
 use GuzzleHttp\Exception\TransferException;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
@@ -32,14 +25,10 @@ use Symfony\Component\Process\Process;
  */
 class ProbeDispatcherCommand extends ContainerAwareCommand
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $processes = array();
 
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $inputs = array();
 
     /** @var \SplQueue */
@@ -48,9 +37,6 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
     /** @var boolean */
     protected $queueLock;
 
-    /** @var MessageQueueHandler */
-    protected $queueHandler;
-
     protected $workerLimit;
 
     /** @var KernelInterface */
@@ -58,9 +44,6 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
     /** @var LoggerInterface */
     protected $logger;
-
-    /** @var \SplQueue */
-    protected $instructionQueue;
 
     /** @var ProbeStore */
     protected $probeStore;
@@ -72,6 +55,14 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
     protected $availableWorkers = array();
 
     protected $inUseWorkers = array();
+
+    /**
+     * This contains the process id of the worker process that is responsible for posting data to the master.
+     * @var $poster int
+     */
+    protected $poster;
+
+    protected $queueElement;
 
     protected function configure()
     {
@@ -89,28 +80,55 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->kernel = $this->getContainer()->get('kernel');
-        $this->logger = $this->getContainer()->get('logger');
+        $this->kernel     = $this->getContainer()->get('kernel');
+        $this->logger     = $this->getContainer()->get('logger');
+        $this->probeStore = $this->getContainer()->get('probe_store');
 
-        $this->queue            = new \SplQueue();
+        $this->queue = new \SplQueue();
+        $this->poster = null;
 
         $this->logger->info("Fireping Dispatcher Started.");
 
         $loop = Factory::create();
 
-        $this->probeStore = $this->getContainer()->get('probe_store');
-
-        // Configuration sync
-        $loop->addPeriodicTimer(60, function () {
-            $this->logger->info("ProbeStore Sync Started");
-            $this->probeStore->sync($this->logger);
-        });
-
-        // Main event loop
         $loop->addPeriodicTimer(1, function () {
+            $toSync = time() % 10 === 0 ? true : false;
+
+            if ($toSync) {
+                $this->logger->info("Starting config sync.");
+                try {
+                    $worker    = $this->getWorker();
+                    $workerPid = $worker->getPid();
+                    $input     = $this->getInput($workerPid);
+
+                    $instruction = array('type' => 'config-sync', 'delay_execution' => 0, 'etag' => $this->probeStore->getEtag());
+
+                    $input->write(json_encode($instruction));
+                } catch (\Exception $exception) {
+                    $this->logger->warning("There are no available workers, this slave is probably getting too much work.");
+                }
+            }
+
+            if (isset($this->poster)) {
+                if (!$this->queueLock) {
+                    $this->queueLock = true;
+                    if (!$this->queue->isEmpty()) {
+                        $this->queueElement = $this->queue->shift();
+                        $input = $this->getInput($this->poster);
+                        $instruction = array('type' => 'post-result', 'delay_execution' => 0, 'data' => json_decode($this->queueElement));
+                        $input->write(json_encode($instruction));
+                    }
+                    else {
+                        $this->queueLock = false;
+                        $this->releasePoster();
+                    }
+                }
+            }
+
             foreach ($this->probeStore->getProbes() as $probe) {
                 /* @var $probe ProbeDefinition */
-                $ready = time() % $probe->getStep() === 0 ? true : false;
+
+                $ready  = time() % $probe->getStep() === 0 ? true : false;
 
                 if ($ready) {
 
@@ -122,6 +140,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
                     /* @var $instructions Instruction */
                     foreach ($instructions->getChunks() as $instruction) {
+                        var_dump($instruction);
                         try {
                             $worker = $this->getWorker();
 
@@ -137,17 +156,6 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                             $instruction['delay_execution'] = $delay;
 
                             $instruction['guid'] = $this->generateRandomString(25);
-                            foreach ($instruction['targets'] as $target) {
-                                if ($target['id'] == 216) {
-                                    $this->trackingGuids[$workerPid] = $instruction['guid'];
-                                    $this->logger->info("Instruction sent to worker.", array(
-                                        'debug_mark' => 'STUPIDBUG',
-                                        'worker_pid' => $workerPid,
-                                        'guid' => $instruction['guid'],
-                                        'device_id' => 216,
-                                    ));
-                                }
-                            }
 
                             $instruction = json_encode($instruction);
 
@@ -164,8 +172,46 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             }
         });
 
-        // Queue processor
         $loop->addPeriodicTimer(60, function () {
+            $remaining = $this->queue->count();
+            $this->logger->info("Queue remaining $remaining");
+
+            if (!$this->queueLock) {
+
+                $this->queueLock = true;
+
+                if (!$this->queue->isEmpty()) {
+                    $this->reservePoster();
+                }
+                else {
+                    $this->logger->info("No results need to be posted.");
+                }
+
+                while (!$this->queue->isEmpty()) {
+                    try {
+                        $worker = $this->getWorker();
+                        $this->poster = $worker->getPid();
+                        $workerPid = $worker->getPid();
+                        $input = $this->getInput($workerPid);
+
+                        $data = $this->queue->shift();
+
+                        $command = array(
+                            'type' => 'post_results',
+                            'data' => $data,
+                            'delay_execution' => 0,
+                        );
+
+                        $input->write($command);
+                    } catch (\Exception $e) {
+                        $this->logger->critical("No workers available to post results.");
+                    }
+                }
+            }
+        });
+
+        // Queue processor
+        $loop->addPeriodicTimer(1200, function () {
             $remaining = $this->queue->count();
             $this->logger->info("Queue currently has $remaining items left to be processed.");
 
@@ -194,12 +240,6 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             }
         });
 
-        // Other Queue Processor
-//        $loop->addPeriodicTimer(1 * 30, function () {
-//            $this->logger->info("Processing queues.");
-//            $this->queueHandler->processQueues();
-//        });
-
         // Get worker responses
         $loop->addPeriodicTimer(0.1, function () {
             foreach ($this->processes as $pid => $process) {
@@ -210,7 +250,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                     }
                 } catch (ProcessTimedOutException $exception) {
                     if (in_array($pid, array_keys($this->trackingGuids))) {
-                        $this->logger->info("Process [$pid] timeout.", array('debug_mark' => 'STUPIDBUG'));
+                        $this->logger->info("Process [$pid] timeout.");
                     }
                     $this->cleanup($pid);
                     $this->logger->info("Worker $pid timed out; starting new one...");
@@ -219,8 +259,8 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             }
         });
 
-        $this->logger->info("Loading configuration for the first time.");
-        $this->probeStore->sync($this->logger);
+        //$this->logger->info("Loading configuration for the first time.");
+        //$this->probeStore->sync($this->logger);
 
         $this->logger->info("Starting " . $input->getOption('workers') . " workers.");
         for ($w = 0; $w < $input->getOption('workers'); $w++) {
@@ -233,9 +273,200 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         $loop->run();
     }
 
+    private function reservePoster()
+    {
+        try {
+            $worker = $this->getWorker();
+            $workerPid = $worker->getPid();
+            $this->poster = $workerPid;
+            $this->logger->info("Worker $workerPid reserved to post data.");
+        } catch (\Exception $e) {
+            $this->logger->critical("Could not reserve a worker to post data.");
+        }
+    }
+
+    private function releasePoster()
+    {
+        if (isset($this->poster)) {
+            $this->releaseWorker($this->poster);
+            $this->poster = -1;
+        }
+        else {
+            $this->logger->warning("Asked to release poster but none were reserved.");
+        }
+    }
+
+    private function handleResponse($type, $data)
+    {
+        $response = json_decode($data, true);
+
+        if (!$response) {
+            $this->logger->warning("Response from worker could not be decoded to JSON.");
+            return;
+        }
+
+        if (!isset(
+            $response['type'],
+            $response['status'],
+            $response['body']['timestamp'],
+            $response['body']['contents'],
+            $response['debug'])) {
+            $this->logger->error("Response ... was missing keys.");
+        }
+
+        $type = $response['type'];
+        $status = $response['status'];
+        $timestamp = $response['body']['timestamp'];
+        $contents = $response['body']['contents'];
+        $debug = $response['debug'];
+
+        switch ($type)
+        {
+            case 'exception':
+                $this->logger->alert("Response ($status) returned an exception.");
+                break;
+
+            case 'probe':
+                if ($status === 200) {
+
+                    $cleaned = array();
+
+                    foreach ($contents as $id => $content) {
+                        if (!isset($content['type'], $content['timestamp'], $content['targets'])) {
+                            // TODO: Good warning
+                            $this->logger->warning("Response missing keys...");
+                        }
+                        else {
+                            $cleaned[$id] = $content;
+                        }
+                    }
+
+                    $this->logger->info("Enqueueing the probe results.");
+                    $this->queue->enqueue($cleaned);
+                }
+                else {
+                    $this->logger->error('Response probe ...');
+                }
+                break;
+
+            case 'post-result':
+                if ($status === 200) {
+                    $this->logger->info("Response ($status) " . $this->queueElement . " saved.");
+                }
+                elseif ($status === 409) {
+                    $this->logger->warning("Response ($status) " . $this->queueElement . " discarded.");
+                }
+                else {
+                    $this->logger->warning("Response ($status) " . $this->queueElement . " retrying later.");
+                    $this->queue->unshift($this->queueElement);
+                    $this->queueElement = null;
+                    $this->releasePoster();
+                }
+                $this->queueLock = false;
+                break;
+
+            case 'config-sync':
+                if ($status === 200) {
+                    $etag = $response['headers']['etag'];
+                    $this->probeStore->updateConfig($contents, $etag);
+                    $this->logger->info("Response ($status) " . json_encode($contents) . " config applied");
+                } else {
+                    $this->logger->info("Response ($status) " . json_encode($contents) . " received");
+                }
+                break;
+        }
+    }
+
+    private function handleResponseOld($type, $data)
+    {
+        $decoded = json_decode($data, true);
+        $type = $decoded['body']['type'];
+
+        if ($type === 'post_result') {
+
+            $code = $decoded['body']['contents']['code'];
+
+            if ($code === 200) {
+                // OK - Results were saved - Proceed with the next one.
+                // Send the next instruction to the same worker.
+                $this->logger->info("Response ($code) " . $this->queueElement . " saved successfully.");
+            }
+            elseif ($code === 409) {
+                // NOK - Results were not saved because of conflict -> Discard data.
+                // Send the next instruction to the same worker.
+                $this->logger->warning("Response ($code) " . $this->queueElement . " conflict discarded.");
+            }
+            else {
+                // NOK - Something went wrong, we should retry at a later time.
+                // Abort - try again later.
+                $this->logger->warning("Response ($code) " . $this->queueElement . " retrying later.");
+                $this->queue->unshift($this->queueElement);
+                $this->queueElement = null;
+                $this->releasePoster();
+            }
+
+            $this->queueLock = false;
+            return;
+        }
+
+        if ($type === 'http') {
+            $pid = $decoded['body']['pid'];
+            if ($decoded['body']['contents']['code'] === 200) {
+                $this->probeStore->updateConfig($decoded['body']['contents']['contents'], $decoded['body']['contents']['etag']);
+            } else {
+                // TODO: Handle these other types of return traffic... i.e. clear the config.
+                $this->logger->info("Data received from HTTP probe: " . $data);
+            }
+            return;
+        }
+
+        if (isset($decoded['debug']) && in_array($decoded['debug']['request_data']['guid'], $this->trackingGuids)) {
+            $this->logger->info('Received data from worker');
+            if (isset($this->trackingGuids[$decoded['debug']['pid']])) {
+                $this->logger->info("Stopped tracking " . $decoded['debug']['request_data']['guid']);
+                unset($this->trackingGuids[$decoded['debug']['pid']]);
+            }
+            if (in_array(216, array_keys($decoded['body'][1]['targets']))) {
+                $this->logger->info('Received expected data from Worker.');
+            } else {
+                $this->logger->info('Received unexpected data from Worker - now cry.');
+            }
+        }
+
+        if (!$decoded) {
+            $this->logger->warning("$data could not be decoded to JSON.");
+            return;
+        }
+
+        if (!isset($decoded['status'], $decoded['message'], $decoded['body'])) {
+            $this->logger->warning('One more or required keys {status,message,body} are missing from worker response: ' . json_encode($decoded));
+            return;
+        }
+
+        if ($decoded['status'] == 500) {
+            //TODO: This is temporary!!
+            $this->logger->error($data);
+        } else {
+            // TODO: Handle different status codes.  Right now, we assume that only data is sent.
+            // TODO: Should also handle client and server errors.
+            $cleaned = array();
+            foreach ($decoded['body'] as $id => $message) {
+                if (!isset($message['type'], $message['timestamp'], $message['targets'])) {
+                    $this->logger->warning('One or more required keys {type, timestamp, targets} are missing from the response body: ' . json_encode($decoded));
+                    continue; // Do not attempt to post incomplete results.
+                }
+                $cleaned[$id] = $message;
+            }
+
+            $this->queue->enqueue($cleaned);
+        }
+    }
+
     private function getWorker()
     {
-        $this->logger->info("Dispatcher requests a worker.", array('available' => count($this->availableWorkers), 'inuse' => count($this->inUseWorkers), 'processes' => count($this->processes)));
+        $this->logger->info("Dispatcher requests a worker.",
+            array('available' => count($this->availableWorkers), 'inuse' => count($this->inUseWorkers), 'processes' => count($this->processes)));
+
         if (count($this->availableWorkers) > 0) {
 
             $pid = array_shift($this->availableWorkers);
@@ -311,49 +542,50 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
     }
 
     /**
-     * Dereferences old processes and inputs.
+     * Clean up tracking, inputs, processes and receive buffers.
      *
-     * @param $id
+     * @param $pid
      */
-    private function cleanup($id)
+    private function cleanup($pid)
     {
-        if (in_array($id, array_keys($this->trackingGuids))) {
-            $this->logger->info("Process [$id] cleanup started but no data received yet...", array('debug_mark' => 'STUPIDBUG'));
+        if (in_array($pid, array_keys($this->trackingGuids))) {
+            $this->logger->info("Process [$pid] cleanup started but no data received yet...");
         }
 
-        if (isset($this->processes[$id])) {
-            $this->processes[$id]->stop(3, SIGINT);
-            $this->processes[$id] = null;
-            unset($this->processes[$id]);
+        if (isset($this->processes[$pid])) {
+            $this->processes[$pid]->stop(3, SIGINT);
+            $this->processes[$pid] = null;
+            unset($this->processes[$pid]);
         }
 
-        if (isset($this->inputs[$id])) {
-            $this->inputs[$id] = null;
-            unset($this->inputs[$id]);
+        if (isset($this->inputs[$pid])) {
+            $this->inputs[$pid] = null;
+            unset($this->inputs[$pid]);
         }
 
-        if (isset($this->rcv_buffers[$id])) {
-            $this->rcv_buffers[$id] = null;
-            unset($this->rcv_buffers[$id]);
+        if (isset($this->rcv_buffers[$pid])) {
+            $this->rcv_buffers[$pid] = null;
+            unset($this->rcv_buffers[$pid]);
         }
     }
 
     private function startWorker()
     {
-        $this->logger->info("Starting new worker...");
+        $this->logger->info("Starting new worker.");
 
         $executable  = $this->kernel->getRootDir() . '/../bin/console';
         $environment = $this->kernel->getEnvironment();
         $process     = new Process("exec php $executable app:probe:worker --env=$environment -vvv");
+        $input       = new InputStream();
 
-        $input = new InputStream();
         $process->setInput($input);
         $process->setTimeout(3600);
         $process->setIdleTimeout(1200);
 
         $process->start(function ($type, $data) use ($process) {
+
             $pid = $process->getPid();
-            $this->logger->info("Worker $pid sends data: $data");
+            $this->logger->info("processing raw data for pid $pid: $data");
 
             if (isset($this->rcv_buffers[$pid])) {
                 $this->rcv_buffers[$pid] .= $data;
@@ -362,14 +594,15 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             }
 
             if (json_decode($this->rcv_buffers[$pid], true)) {
-                $this->logger->info("Buffer of worker $pid is readable, processing...");
                 $this->handleResponse($type, $this->rcv_buffers[$pid]);
-                $this->logger->info("Releasing worker $pid");
-                $this->releaseWorker($pid);
-            }
 
-            if (strlen($this->rcv_buffers[$pid]) > 300) {
-                $this->logger->info("WorkerData $pid looks like this after 300 characters: " .$this->rcv_buffers[$pid]);
+                $this->logger->info("Releasing $pid");
+                // TODO: (Note) Posters should be reserved until the queue is empty.
+                if ($pid != $this->poster) {
+                    $this->releaseWorker($pid);
+                } else {
+                    $this->logger->info("Should not clean up the poster!", array('pid' => $pid, 'poster' => $this->poster));
+                }
             }
         });
 
@@ -385,89 +618,12 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         return $process;
     }
 
-    private function handleResponse($type, $data)
-    {
-        $decoded = json_decode($data, true);
-
-        if (in_array($decoded['debug']['request_data']['guid'], $this->trackingGuids)) {
-            $this->logger->info('Received data from worker', array(
-                'debug_mark' => 'STUPIDBUG',
-                'guid' => $decoded['debug']['request_data']['guid'],
-                'worker_pid' => $decoded['debug']['pid'],
-                'req_dev' => $decoded['debug']['req_dev'],
-                'ret_dev' => $decoded['debug']['ret_dev'],
-            ));
-            if (isset($this->trackingGuids[$decoded['debug']['pid']])) {
-                $this->logger->info("Stopped tracking " . $decoded['debug']['request_data']['guid'],
-                    array(
-                        'worker_pid' => $decoded['debug']['pid'],
-                    ));
-                unset($this->trackingGuids[$decoded['debug']['pid']]);
-            }
-            if (in_array(216, array_keys($decoded['body'][1]['targets']))) {
-                $this->logger->info('Received expected data from Worker.', array(
-                    'debug_mark' => 'STUPIDBUG',
-                    'worker_pid' => $decoded['debug']['pid'],
-                    'guid' => $decoded['debug']['request_data']['guid'],
-                    'device_id' => 216,
-                ));
-            } else {
-                $this->logger->info('Received unexpected data from Worker - now cry.', array(
-                    'debug_mark' => 'STUPIDBUG',
-                    'worker_pid' => $decoded['debug']['pid'],
-                    'guid' => $decoded['debug']['request_data']['guid'],
-                    'device_id' => 216,
-                ));
-            }
-        }
-
-        if (!$decoded) {
-            $this->logger->warning("$data could not be decoded to JSON.", array('debug_mark', 'STUPIDBUG'));
-            return;
-        }
-
-        if (!isset($decoded['status'], $decoded['message'], $decoded['body'])) {
-            $this->logger->warning('One more or required keys {status,message,body} are missing from worker response: ' . json_encode($decoded));
-            return;
-        }
-
-        if ($decoded['status'] == 500) {
-            //TODO: This is temporary!!
-            $this->logger->error($data);
-        } else {
-            // TODO: Handle different status codes.  Right now, we assume that only data is sent.
-            // TODO: Should also handle client and server errors.
-            $cleaned = array();
-            foreach ($decoded['body'] as $id => $message) {
-                if (!isset($message['type'], $message['timestamp'], $message['targets'])) {
-                    $this->logger->warning('One or more required keys {type, timestamp, targets} are missing from the response body: ' . json_encode($decoded));
-                    continue; // Do not attempt to post incomplete results.
-                }
-                $cleaned[$id] = $message;
-            }
-//        if ($decoded['status'] == Message::MESSAGE_OK) {
-//            $this->logger->info("Adding message to data queue.");
-//            $this->queueHandler->addMessage('data', new Message(
-//                Message::MESSAGE_OK,
-//                'Message OK',
-//                $cleaned
-//            ));
-//        } else {
-//            $this->logger->info("Adding message to exceptions queue.");
-//            $this->queueHandler->addMessage('exceptions', new Message(
-//                Message::SERVER_ERROR,
-//                'An error...',
-//                $decoded
-//            ));
-//        }
-            $this->queue->enqueue($cleaned);
-        }
-    }
-
     private function releaseWorker($pid)
     {
         $this->logger->info("Starting release flow for worker $pid");
         $this->rcv_buffers[$pid] = "";
+
+        var_dump($this->inUseWorkers);
 
         foreach ($this->inUseWorkers as $index => $inUsePid) {
             if (intval($pid) === intval($inUsePid)) {
@@ -485,167 +641,5 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
         $this->logger->info("Marking worker $pid as available.");
         array_push($this->availableWorkers, $pid);
-    }
-
-    protected function executeOld(InputInterface $input, OutputInterface $output)
-    {
-        $this->kernel       = $this->getContainer()->get('kernel');
-        $this->logger       = $this->getContainer()->get('logger');
-        $id                 = $this->getContainer()->getParameter('slave.name');
-        $poster             = new EchoPoster("https://smokeping-dev.cegeka.be/api/slaves/$id/result");
-        $this->queueHandler = new MessageQueueHandler($poster);
-        $this->queueHandler->addQueue(new MessageQueue('data'));
-        $this->queueHandler->addQueue(new MessageQueue('exceptions'));
-
-        $this->workerLimit = $input->getOption('workers-limit');
-
-        $this->queue = new \SplQueue();
-        $pid         = getmypid();
-        $now         = date('l jS \of F Y h:i:s A');
-
-        $this->logger->info("Slave started at $now");
-
-        $loop = Factory::create();
-
-        $probeStore = $this->getContainer()->get('probe_store');
-
-        $loop->addPeriodicTimer(60, function () use ($pid, $probeStore) {
-            $this->logger->info("ProbeStore Sync Started");
-            $probeStore->sync($this->logger);
-        });
-
-        $loop->addPeriodicTimer(1, function () use ($probeStore) {
-            foreach ($probeStore->getProbes() as $probe) {
-                /* @var $probe ProbeDefinition */
-                $now       = time();
-                $remainder = $now % $probe->getStep();
-
-                if (!$remainder) {
-
-                    $instructionBuilder = $this->getContainer()->get('instruction_builder');
-                    $instructions       = $instructionBuilder->create($probe);
-
-                    // Keep track of how many processes are starting.
-                    $counter = 0;
-
-                    $step    = $probe->getStep();
-                    $samples = $probe->getSamples();
-                    $delay   = 0;
-
-                    /* @var $instructions Instruction */
-                    foreach ($instructions->getChunks() as $instruction) {
-                        try {
-                            $worker = $this->getWorker();
-                            // Cycle between 0-3 seconds delay before executing command (fping/traceroute) on the list of targets
-                            $delay   = intval($counter % ($step / $samples));
-                            $counter += 1;
-                        } catch (\Exception $exception) {
-                            $this->logger->warning("Workers limit has been reached.");
-                            $this->queueHandler->addMessage('exceptions', new Message(
-                                MESSAGE::SERVER_ERROR,
-                                'Workers limit reached.',
-                                array(
-                                    get_class($exception) => $exception->getMessage(),
-                                )
-                            ));
-                            break;
-                        }
-                        $workerPid = $worker->getPid();
-                        $input     = $this->getInput($workerPid);
-                        $this->logger->info("Worker/$workerPid is asked to delay execution by $delay seconds.");
-                        $instruction['delay_execution'] = $delay;
-                        $instruction                    = json_encode($instruction);
-                        $this->logger->info("Sending instruction to worker $workerPid");
-                        //$this->logger->info("Sending instruction to pid/$workerPid: $instruction");
-                        $input->write($instruction);
-                    }
-                }
-            }
-        });
-
-        $loop->addPeriodicTimer(1 * 60, function () {
-            $x = $this->queue->count();
-            $this->logger->info("Queue currently has $x items left to be processed.");
-            if (!$this->queueLock) {
-                $this->queueLock = true;
-                while (!$this->queue->isEmpty()) {
-                    $node = $this->queue->shift();
-                    try {
-                        $this->postResults($node);
-                    } catch (TransferException $exception) {
-                        $code = $exception->getCode();
-                        if ($code === 409) {
-                            // Conflict detected, discard the message.
-                            $this->logger->warning("Master tells us we are sending old data, discarding it.");
-                        } else {
-                            $this->logger->warning("Master indicated a problem on their end, retrying later.");
-                            $this->queue->unshift($node);
-                            $this->queueLock = false;
-                            break;
-                        }
-                    }
-                }
-                $this->queueLock = false;
-            } else {
-                $this->logger->warning("Queue is currently locked.");
-            }
-        });
-
-        $loop->addPeriodicTimer(1 * 30, function () {
-            $this->logger->info("Processing queues.");
-            $this->queueHandler->processQueues();
-        });
-
-        $loop->addPeriodicTimer(0.1, function () {
-            foreach ($this->processes as $pid => $process) {
-                try {
-                    if ($process) {
-                        $process->checkTimeout();
-                        $process->getIncrementalOutput();
-                    }
-                } catch (ProcessTimedOutException $exception) {
-                    $this->cleanup($pid);
-                }
-            }
-        });
-
-        $this->logger->info("Initializing ProbeStore.");
-        $probeStore->sync($this->logger);
-
-        $loop->run();
-    }
-
-    /**
-     * Get a new Worker process.
-     *
-     * @return Process
-     */
-    private function getWorkerOld()
-    {
-//        if (count($this->processes) > $this->workerLimit) {
-//            throw new \Exception("Worker limit reached.");
-//        }
-
-        $executable  = $this->kernel->getRootDir() . '/../bin/console';
-        $environment = $this->kernel->getEnvironment();
-        $process     = new Process("exec php $executable app:probe:worker --env=$environment -vvv");
-        $input       = new InputStream();
-        $process->setInput($input);
-        $process->setTimeout(180);
-        $process->setIdleTimeout(120);
-        $process->start(function ($type, $data) use ($process) {
-            $pid = $process->getPid();
-            $this->logger->info("Worker[$pid] returns data: $data");
-            $this->handleResponse($type, $data);
-            $this->logger->info("Killing Process/$pid");
-            $this->cleanup($pid);
-        });
-        $pid = $process->getPid();
-        $this->logger->info("Started Process/$pid");
-
-        $this->processes[$pid] = $process;
-        $this->inputs[$pid]    = $input;
-
-        return $process;
     }
 }
