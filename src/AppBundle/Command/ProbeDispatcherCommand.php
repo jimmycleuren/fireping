@@ -85,7 +85,6 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         $this->probeStore = $this->getContainer()->get('probe_store');
 
         $this->queue = new \SplQueue();
-        $this->poster = null;
 
         $this->logger->info("Fireping Dispatcher Started.");
 
@@ -109,20 +108,30 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                 }
             }
 
-            if (isset($this->poster)) {
+            if (isset($this->poster) && $this->poster != -1) {
+                $this->logger->info("QueueLock: " . ($this->queueLock === true ? "yes" : "no") . " | QueueItems: " . $this->queue->count() . " | Poster: " . $this->poster);
                 if (!$this->queueLock) {
-                    $this->queueLock = true;
                     if (!$this->queue->isEmpty()) {
+                        $this->queueLock = true;
+                        $name = $this->getContainer()->getParameter('slave.name');
                         $this->queueElement = $this->queue->shift();
                         $input = $this->getInput($this->poster);
-                        $instruction = array('type' => 'post-result', 'delay_execution' => 0, 'data' => json_decode($this->queueElement));
+
+                        $instruction = array(
+                            'type' => 'post-result',
+                            'delay_execution' => 0,
+                            'client' => 'guzzle.client.api_fireping',
+                            'method' => 'POST',
+                            'endpoint' => "/api/slaves/$name/result",
+                            'headers' => ['Content-Type' => 'application/json'],
+                            'body' => $this->queueElement,
+                        );
+
                         $input->write(json_encode($instruction));
                     }
-                    else {
-                        $this->queueLock = false;
-                        $this->releasePoster();
-                    }
                 }
+            } else {
+                $this->reservePoster();
             }
 
             foreach ($this->probeStore->getProbes() as $probe) {
@@ -159,8 +168,8 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
                             $instruction = json_encode($instruction);
 
-                            $this->logger->info("Sending instruction to worker $workerPid", array('available' => count($this->availableWorkers), 'inuse' => count($this->inUseWorkers), 'processes' => count($this->processes)));
-                            //$this->logger->info("Sending instruction to pid/$workerPid: $instruction", array('available' => count($this->availableWorkers), 'inuse' => count($this->inUseWorkers), 'processes' => count($this->processes)));
+                            //$this->logger->info("Sending instruction to worker $workerPid", array('available' => count($this->availableWorkers), 'inuse' => count($this->inUseWorkers), 'processes' => count($this->processes)));
+                            $this->logger->info("Sending instruction to pid/$workerPid: $instruction", array('available' => count($this->availableWorkers), 'inuse' => count($this->inUseWorkers), 'processes' => count($this->processes)));
 
                             $input->write($instruction);
                         } catch (\Exception $exception) {
@@ -172,13 +181,11 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             }
         });
 
-        $loop->addPeriodicTimer(60, function () {
+        /*$loop->addPeriodicTimer(60, function () {
             $remaining = $this->queue->count();
             $this->logger->info("Queue remaining $remaining");
 
             if (!$this->queueLock) {
-
-                $this->queueLock = true;
 
                 if (!$this->queue->isEmpty()) {
                     $this->reservePoster();
@@ -191,27 +198,16 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                     try {
                         $worker = $this->getWorker();
                         $this->poster = $worker->getPid();
-                        $workerPid = $worker->getPid();
-                        $input = $this->getInput($workerPid);
-
-                        $data = $this->queue->shift();
-
-                        $command = array(
-                            'type' => 'post_results',
-                            'data' => $data,
-                            'delay_execution' => 0,
-                        );
-
-                        $input->write($command);
+                        $this->logger->info("Reserving worker: " . $this->poster);
                     } catch (\Exception $e) {
                         $this->logger->critical("No workers available to post results.");
                     }
                 }
             }
-        });
+        });*/
 
         // Queue processor
-        $loop->addPeriodicTimer(1200, function () {
+        /*$loop->addPeriodicTimer(1200, function () {
             $remaining = $this->queue->count();
             $this->logger->info("Queue currently has $remaining items left to be processed.");
 
@@ -238,7 +234,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             } else {
                 $this->logger->warning("Queue is currently locked.");
             }
-        });
+        });*/
 
         // Get worker responses
         $loop->addPeriodicTimer(0.1, function () {
@@ -270,6 +266,8 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             sleep(2);
         }
 
+        $this->reservePoster();
+
         $loop->run();
     }
 
@@ -287,7 +285,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
     private function releasePoster()
     {
-        if (isset($this->poster)) {
+        if (isset($this->poster) && $this->poster != -1) {
             $this->releaseWorker($this->poster);
             $this->poster = -1;
         }
@@ -351,18 +349,20 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
             case 'post-result':
                 if ($status === 200) {
-                    $this->logger->info("Response ($status) " . $this->queueElement . " saved.");
+                    $this->logger->critical("Response ($status) " . json_encode($this->queueElement) . " saved.");
                 }
                 elseif ($status === 409) {
-                    $this->logger->warning("Response ($status) " . $this->queueElement . " discarded.");
+                    $this->logger->critical("Response ($status) " . json_encode($this->queueElement) . " discarded.");
                 }
                 else {
-                    $this->logger->warning("Response ($status) " . $this->queueElement . " retrying later.");
+                    $this->logger->critical("Response ($status) " . json_encode($this->queueElement) . " retrying later.");
                     $this->queue->unshift($this->queueElement);
                     $this->queueElement = null;
                     $this->releasePoster();
                 }
+                $this->logger->critical("Unlocking Queue");
                 $this->queueLock = false;
+                $this->logger->info("After Processing Result - QueueLock: " . ($this->queueLock === true ? "yes" : "no") . " | QueueItems: " . $this->queue->count() . " | Poster: " . $this->poster);
                 break;
 
             case 'config-sync':

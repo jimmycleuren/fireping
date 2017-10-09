@@ -205,6 +205,20 @@ class ProbeWorkerCommand extends ContainerAwareCommand
 
             switch ($data['type']) {
                 case 'post-result':
+                    $this->sendResponse(array(
+                        'type' => $data['type'],
+                        'status' => $shellOutput['code'],
+                        'headers' => array(),
+                        'body' => array(
+                            'timestamp' => $timestamp,
+                            'contents' => $shellOutput['contents'],
+                        ),
+                        'debug' => array(
+                            'runtime' => time() - $timestamp,
+                            'request' => $data,
+                            'pid' => getmypid(),
+                        ),
+                    ));
                     break;
 
                 case 'config-sync':

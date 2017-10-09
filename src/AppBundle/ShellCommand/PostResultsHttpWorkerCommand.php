@@ -12,7 +12,7 @@ use AppBundle\ShellCommand\CommandInterface;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Exception\TransferException;
 
-class PostResultsHttpConfigCommand implements CommandInterface
+class PostResultsHttpWorkerCommand implements CommandInterface
 {
     /* @var $arguments array */
     protected $arguments = [];
@@ -57,8 +57,23 @@ class PostResultsHttpConfigCommand implements CommandInterface
 
         $this->method   = $args['method'];
         $this->endpoint = $args['endpoint'];
-        $this->headers  = isset($args['headers']) ? $args['headers'] : [];
-        $this->body     = isset($args['body']) ? $args['body'] : null;
+        $this->headers  = isset($args['headers']) ? array_change_key_case($args['headers']) : [];
+
+        if ($this->isJsonRequest($this->headers)) {
+            $this->body = isset($args['body']) ? json_encode($args['body']) : "{}";
+        } else {
+            $this->body = isset($args['body']) ? $args['body'] : "";
+        }
+    }
+
+    private function isJsonRequest($headers)
+    {
+        if (in_array('content-type', array_keys($this->headers))) {
+            if (strtolower($this->headers['content-type']) === 'application/json') {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function execute()
@@ -74,6 +89,12 @@ class PostResultsHttpConfigCommand implements CommandInterface
             );
 
         } catch (TransferException $e) {
+            return array(
+                'code' => $e->getCode(),
+                'endpoint' => $this->endpoint,
+                'contents' => $e->getMessage(),
+            );
+        } catch (\Exception $e) {
             return array(
                 'code' => $e->getCode(),
                 'endpoint' => $this->endpoint,

@@ -15,7 +15,7 @@ class CommandFactory
         'mtr' => 'AppBundle\\ShellCommand\\MtrShellCommand',
         'traceroute' => 'AppBundle\\ShellCommand\\TracerouteShellCommand',
         'config-sync' => 'AppBundle\\ShellCommand\\GetConfigHttpWorkerCommand',
-        'post-result' => 'AppBundle\\ShellCommand\\PostResultHttpWorkerCommand',
+        'post-result' => 'AppBundle\\ShellCommand\\PostResultsHttpWorkerCommand',
     );
 
     public function create($command, $args)
