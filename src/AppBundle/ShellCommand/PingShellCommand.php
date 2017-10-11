@@ -17,8 +17,9 @@ class PingShellCommand extends ShellCommand
     protected $MAPPED_ARGUMENTS = array(
         'samples' => '-C',
         'packet_size' => '-s',
-        'minimum_wait_time' => '-i',
+        'interval' => '-i',
         'wait_time' => '-p',
+        'retries' => '-r',
     );
     protected $EXTRA_ARGUMENTS = array('-q');
     protected $REQUIRED_ARGUMENTS = array('-C');
