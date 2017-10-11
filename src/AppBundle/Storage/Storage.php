@@ -22,4 +22,6 @@ abstract class Storage
     }
 
     abstract function store(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data);
+
+    abstract function fetch(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $key, $function);
 }

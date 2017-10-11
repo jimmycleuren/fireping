@@ -20,6 +20,7 @@ class AppKernel extends Kernel
             new Nelmio\CorsBundle\NelmioCorsBundle(),
             new EightPoints\Bundle\GuzzleBundle\GuzzleBundle(),
             new Snc\RedisBundle\SncRedisBundle(),
+            new Ekino\Bundle\NewRelicBundle\EkinoNewRelicBundle(),
             new AppBundle\AppBundle(),
         ];
 

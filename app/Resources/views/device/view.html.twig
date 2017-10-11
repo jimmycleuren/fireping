@@ -9,8 +9,8 @@
             <h1 class="page-header">{{ device.name }} - {{ device.ip }}</h1>
 
             {% for probe in device.getAllProbes() %}
-                <h4>{{ probe.name }}</h4>
                 {% for slavegroup in device.getAllSlaveGroups() %}
+                    <h3><u>{{ probe.name }} - {{ slavegroup.name }}</u></h3>
                     <img style="width:1097px; height:301px;" class="graph" data-src-template="/api/graphs/detail/{{ device.id }}/{{ probe.id }}/{{ slavegroup.id }}{% verbatim %}?start={{start}}&end={{end}}{% endverbatim  %}" /><br/><br/>
                 {% endfor %}
             {% endfor %}

@@ -123,17 +123,41 @@ class SlaveController extends Controller
 
         $config = array();
 
+        $devices = array();
         if ($slave->getSlaveGroup()) {
             foreach ($slave->getSlaveGroup()->getDomains() as $domain) {
-                $this->getDomainDevices($domain, $config);
+                $devices = array_merge($devices, $this->getDomainDevices($domain));
             }
 
             $query = $this->em->createQuery("SELECT d, p FROM AppBundle:Device d LEFT JOIN d.probes p WHERE d in (:devices)")
                 ->setParameter("devices", $slave->getSlaveGroup()->getDevices())
                 ->useQueryCache(true)
             ;
-            $devices = $query->getResult();
-            foreach ($devices as $device) {
+
+            $devices = array_merge($devices, $query->getResult());
+
+            $slaves = $slave->getSlaveGroup()->getSlaves();
+            foreach ($slaves as $key => $value) {
+                if ($value->getLastContact() <  new \DateTime("10 minutes ago")) {
+                    unset($slaves[$key]);
+                }
+            }
+
+            $slavePosition = 0;
+            foreach($slaves as $key => $temp) {
+                if ($temp->getId() == $slave->getId()) {
+                    $slavePosition = $key;
+                }
+            }
+
+            $size = ceil(count($devices) / count($slaves));
+            if ($size > 0) {
+                $subset = array_chunk($devices, (int)$size)[$slavePosition];
+            } else {
+                $subset = array();
+            }
+
+            foreach ($subset as $device) {
                 $this->getDeviceProbes($device, $config);
             }
         }
@@ -191,10 +215,14 @@ class SlaveController extends Controller
                         case "ping":
                             $this->container->get('processor.ping')->storeResult($device, $probe, $slave->getSlaveGroup(), $timestamp, $targetData);
                             break;
+                        case "traceroute":
+                            $this->container->get('processor.traceroute')->storeResult($device, $probe, $slave->getSlaveGroup(), $timestamp, $targetData);
+                            break;
                     }
                 }
             }
         } catch (WrongTimestampRrdException $e) {
+            $this->logger->warning($e->getMessage());
             return new JsonResponse(array('code' => 409, 'message' => $e->getMessage()), 409);
         } catch (\Exception $e) {
             return new JsonResponse(array('code' => 500, 'message' => $e->getMessage()), 500);
@@ -219,20 +247,21 @@ class SlaveController extends Controller
         $this->logger->info("Error received from $slave");
     }
 
-    private function getDomainDevices($domain, &$config)
+    private function getDomainDevices($domain)
     {
+        $devices = array();
+
         foreach ($domain->getSubDomains() as $subdomain) {
-            $this->getDomainDevices($subdomain, $config);
+            $devices = array_merge($devices, $this->getDomainDevices($subdomain));
         }
 
         $query = $this->em->createQuery("SELECT d, p FROM AppBundle:Device d LEFT JOIN d.probes p WHERE d in (:devices)")
             ->setParameter("devices", $domain->getDevices())
             ->useQueryCache(true)
         ;
-        $devices = $query->getResult();
-        foreach ($devices as $device) {
-            $this->getDeviceProbes($device, $config);
-        }
+        $devices = $devices = array_merge($devices, $query->getResult());
+
+        return $devices;
     }
 
     private function getDeviceProbes($device, &$config)
@@ -241,6 +270,7 @@ class SlaveController extends Controller
             $config[$probe->getId()]['type'] = $probe->getType();
             $config[$probe->getId()]['step'] = $probe->getStep();
             $config[$probe->getId()]['samples'] = $probe->getSamples();
+            $config[$probe->getId()]['args'] = json_decode($probe->getArguments());
             $config[$probe->getId()]['targets'][$device->getId()] = $device->getIp();
         }
 
@@ -250,6 +280,7 @@ class SlaveController extends Controller
                 $config[$probe->getId()]['type'] = $probe->getType();
                 $config[$probe->getId()]['step'] = $probe->getStep();
                 $config[$probe->getId()]['samples'] = $probe->getSamples();
+                $config[$probe->getId()]['args'] = json_decode($probe->getArguments());
                 $config[$probe->getId()]['targets'][$device->getId()] = $device->getIp();
             }
             $parent = $parent->getParent();

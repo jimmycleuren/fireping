@@ -164,4 +164,13 @@ class RrdStorage extends Storage
             throw new RrdException(rrd_error());
         }
     }
+
+    public function fetch(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $key, $function)
+    {
+        $path = $this->getFilePath($device, $probe, $group);
+
+        $result = rrd_fetch($path, array($function, "--start", $timestamp - $probe->getStep()));
+
+        return reset($result['data'][$key]);
+    }
 }

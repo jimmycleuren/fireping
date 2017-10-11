@@ -29,7 +29,7 @@ class Slave
     /**
      * @var slavegroup
      *
-     * @ORM\ManyToOne(targetEntity="SlaveGroup")
+     * @ORM\ManyToOne(targetEntity="SlaveGroup", inversedBy="slaves")
      * @ORM\JoinColumn(name="slavegroup_id", referencedColumnName="id")
      * @Groups({"slave"})
      */

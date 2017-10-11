@@ -18,6 +18,10 @@ services:
         class: AppBundle\Processor\PingProcessor
         arguments: ["@service_container"]
 
+    processor.traceroute:
+        class: AppBundle\Processor\TracerouteProcessor
+        arguments: ["@service_container"]
+
     graph.ping:
         class: AppBundle\Graph\PingGraph
         arguments: ["@service_container"]

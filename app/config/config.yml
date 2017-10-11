@@ -37,6 +37,8 @@ framework:
 twig:
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
+    form_themes:
+        - 'bootstrap_3_layout.html.twig'
 
 # Doctrine Configuration
 doctrine:
@@ -115,12 +117,12 @@ snc_redis:
             type: predis
             alias: default
             dsn: redis://localhost
-            logging: '%kernel.debug%'
+            logging: false
         doctrine:
             type: predis
             alias: doctrine
             dsn: redis://localhost
-            logging: '%kernel.debug%'
+            logging: false
     # configure doctrine caching
     doctrine:
         metadata_cache:
@@ -137,3 +139,15 @@ snc_redis:
             client: doctrine
             entity_manager: default
             namespace: 'dslc:'
+
+ekino_new_relic:
+    enabled: true                         # Defaults to true
+    application_name: fireping            # default value in newrelic is "PHP Application", or whatever is set
+                                          # as php ini-value
+    api_key: b1dd886bc0478e47d46c549ec9eab45b2cc0f24e   # New Relic API
+    logging: false                         # If true, logs all New Relic interactions to the Symfony log
+    instrument: true                      # If true, uses enhanced New Relic RUM instrumentation (see below)
+    log_exceptions: true                  # If true, sends exceptions to New Relic
+    log_commands: true                    # If true, logs CLI commands to New Relic as Background jobs (>2.3 only)
+    transaction_naming: route             # route, controller or service (see below)
+    transaction_naming_service: ~         # Transaction naming service (see below)

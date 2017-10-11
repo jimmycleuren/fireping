@@ -28,7 +28,7 @@
                             <div class="panel-body">
                                 <ul>
                                 {% for alert in device.activeAlerts %}
-                                    <li>{{ alert.alertRule.name }}</li>
+                                    <li>{{ alert.alertRule.name }} from {{ alert.slaveGroup.name }}</li>
                                 {% endfor %}
                                 </ul>
                             </div>
