@@ -85,7 +85,7 @@ class PostResultsHttpWorkerCommand implements CommandInterface
             return array(
                 'code' => $response->getStatusCode(),
                 'endpoint' => $this->endpoint,
-                'contents' => $response->getBody()
+                'contents' => $response->getBody()->getContents(),
             );
 
         } catch (TransferException $e) {
