@@ -25,6 +25,8 @@ class ProbeWorkerCommand extends ContainerAwareCommand
 
     protected $rcv_buff;
 
+    protected $tmp;
+
     protected function configure()
     {
         $this
@@ -44,8 +46,9 @@ class ProbeWorkerCommand extends ContainerAwareCommand
         $read->on('data', function ($data) {
             $this->rcv_buff .= $data;
             if (json_decode($this->rcv_buff, true)) {
-                $this->process($this->rcv_buff);
+                $this->tmp = $this->rcv_buff;
                 $this->rcv_buff = "";
+                $this->process($this->tmp);
             }
         });
 
@@ -163,6 +166,8 @@ class ProbeWorkerCommand extends ContainerAwareCommand
             return;*/
         }
 
+        $this->getContainer()->get('logger')->info("STUPIDBUG: Worker " . getmypid() . " received a " . $data['type'] . " instruction from master.");
+
         $factory = new CommandFactory();
         $data['container'] = $this->getContainer();
         $command = null;
@@ -212,10 +217,11 @@ class ProbeWorkerCommand extends ContainerAwareCommand
                         'body' => array(
                             'timestamp' => $timestamp,
                             'contents' => $shellOutput['contents'],
+                            'raw' => $shellOutput,
                         ),
                         'debug' => array(
                             'runtime' => time() - $timestamp,
-                            'request' => $data,
+                            //'request' => $data,
                             'pid' => getmypid(),
                         ),
                     ));
@@ -235,7 +241,7 @@ class ProbeWorkerCommand extends ContainerAwareCommand
                         ),
                         'debug' => array(
                             'runtime' => time() - $timestamp,
-                            'request' => $data,
+                            //'request' => $data,
                             'pid' => getmypid(),
                         ),
                     ));
@@ -259,7 +265,7 @@ class ProbeWorkerCommand extends ContainerAwareCommand
                         ),
                         'debug' => array(
                             'runtime' => time() - $timestamp,
-                            'request' => $data,
+                            //'request' => $data,
                             'pid' => getmypid(),
                         ),
                     ));
@@ -340,6 +346,11 @@ class ProbeWorkerCommand extends ContainerAwareCommand
 
     protected function sendResponse($data)
     {
+        if ($data['type'] === 'post-result') {
+            $this->getContainer()->get('logger')->info("STUPIDBUG: Worker " . getmypid() . " sent a " . $data['type'] . " response: " . json_encode($data));
+        } else {
+            $this->getContainer()->get('logger')->info("STUPIDBUG: Worker " . getmypid() . " sent a " . $data['type'] . " response.");
+        }
         $json = json_encode($data);
         $this->output->writeln($json);
     }
