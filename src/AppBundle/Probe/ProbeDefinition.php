@@ -35,11 +35,6 @@ class ProbeDefinition
         // TODO: Move to arguments.
         $this->args['samples'] = $samples;
         $this->args['wait_time'] = intval($step / $samples) * 1000;
-
-        if ($type === 'ping') {
-            $this->args['interval'] = 10;
-            $this->args['retries'] = 0;
-        }
     }
 
     /**

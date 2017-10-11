@@ -76,22 +76,6 @@ class ProbeWorkerCommand extends ContainerAwareCommand
                 )
             );
             return;
-            /*$this->sendResponse(array(
-                'status' => 500,
-                'message' => 'NOK',
-                'body' => array(
-                    '_exception' => "No input data received",
-                    'runtime' => time() - $timestamp,
-                    'request_data' => $data,
-                    'pid' => getmypid(),
-                ),
-                'debug' => array(
-                    'runtime' => time() - $timestamp,
-                    'request_data' => $data,
-                    'pid' => getmypid(),
-                )
-            ));
-            return;*/
         }
 
         $data = json_decode($data, true);
@@ -113,22 +97,6 @@ class ProbeWorkerCommand extends ContainerAwareCommand
                 )
             );
             return;
-            /*$this->sendResponse(array(
-                'status' => 500,
-                'message' => 'NOK',
-                'body' => array(
-                    '_exception' => 'Invalid JSON received',
-                    'runtime' => time() - $timestamp,
-                    'request_data' => $data,
-                    'pid' => getmypid(),
-                ),
-                'debug' => array(
-                    'runtime' => time() - $timestamp,
-                    'request_data' => $data,
-                    'pid' => getmypid(),
-                )
-            ));
-            return;*/
         }
 
         if (!isset($data['type'])) {
@@ -148,25 +116,9 @@ class ProbeWorkerCommand extends ContainerAwareCommand
                 )
             );
             return;
-            /*$this->sendResponse(array(
-                'status' => 500,
-                'message' => 'NOK',
-                'body' => array(
-                    '_exception' => "Type key not set",
-                    'runtime' => time() - $timestamp,
-                    'request_data' => $data,
-                    'pid' => getmypid(),
-                ),
-                'debug' => array(
-                    'runtime' => time() - $timestamp,
-                    'request_data' => $data,
-                    'pid' => getmypid(),
-                )
-            ));
-            return;*/
         }
 
-        $this->getContainer()->get('logger')->info("STUPIDBUG: Worker " . getmypid() . " received a " . $data['type'] . " instruction from master.");
+        $this->getContainer()->get('logger')->info("COMMUNICATION_FLOW: Worker " . getmypid() . " received a " . $data['type'] . " instruction from master.");
 
         $factory = new CommandFactory();
         $data['container'] = $this->getContainer();
@@ -190,17 +142,6 @@ class ProbeWorkerCommand extends ContainerAwareCommand
                 )
             );
             return;
-            /*$this->sendResponse(array(
-                'status' => 500,
-                'message' => 'NOK',
-                'body' => array(
-                    '_exception' => $e->getMessage(),
-                    'runtime' => time() - $timestamp,
-                    'request_data' => $data,
-                    'pid' => getmypid(),
-                ),
-            ));
-            return;*/
         }
 
         sleep($data['delay_execution']);
@@ -272,43 +213,6 @@ class ProbeWorkerCommand extends ContainerAwareCommand
                     break;
             }
 
-            /*if ($data['type'] === 'http') {
-                $this->sendResponse(array(
-                    'status' => 200,
-                    'message' => 'Sync OK',
-                    'body' => array(
-                        'type' => $data['type'],
-                        'timestamp' => $timestamp,
-                        'contents' => $shellOutput,
-                        'request_data' => $data,
-                        'pid' => getmypid(),
-                    )
-                ));
-                return;
-
-            } else {
-                $this->sendResponse(array(
-                    'status' => 200,
-                    'message' => 'OK',
-                    'body' => array(
-                        $data['id'] => array(
-                            'type' => $data['type'],
-                            'timestamp' => $timestamp,
-                            'targets' => $shellOutput,
-                            'runtime' => time() - $timestamp,
-                            'request_data' => $data,
-                            'pid' => getmypid(),
-                        ),
-                    ),
-                    'debug' => array(
-                        'runtime' => time() - $timestamp,
-                        'request_data' => $data,
-                        'pid' => getmypid(),
-                    )
-                ));
-                return;
-            }*/
-
         } catch (\Exception $e) {
             $this->sendResponse(array(
                     'type' => 'exception',
@@ -326,31 +230,12 @@ class ProbeWorkerCommand extends ContainerAwareCommand
                 )
             );
             return;
-
-            /*$this->sendResponse(array(
-                'status' => 500,
-                'message' => 'NOK',
-                'body' => array(
-                    '_exception' => $e->getMessage(),
-                ),
-                'debug' => array(
-                    '_exception' => $e->getMessage(),
-                    'runtime' => time() - $timestamp,
-                    'request_data' => $data,
-                    'pid' => getmypid(),
-                )
-            ));
-            return;*/
         }
     }
 
     protected function sendResponse($data)
     {
-        if ($data['type'] === 'post-result') {
-            $this->getContainer()->get('logger')->info("STUPIDBUG: Worker " . getmypid() . " sent a " . $data['type'] . " response: " . json_encode($data));
-        } else {
-            $this->getContainer()->get('logger')->info("STUPIDBUG: Worker " . getmypid() . " sent a " . $data['type'] . " response.");
-        }
+        $this->getContainer()->get('logger')->info("COMMUNICATION_FLOW: Worker " . getmypid() . " sent a " . $data['type'] . " response.");
         $json = json_encode($data);
         $this->output->writeln($json);
     }

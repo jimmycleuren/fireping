@@ -118,17 +118,25 @@ class ProbeStore
         $this->deactivateAllDevices();
         foreach ($configuration as $id => $probeConfig) {
             // TODO: More checks to make sure all of this data is here?
+
             $type = $probeConfig['type'];
             $step = $probeConfig['step'];
             $samples = $probeConfig['samples'];
             $args = isset($probeConfig['args']) ? $probeConfig['args'] : null;
-            // TODO: Only type, step and targets needs to exist for operational.
-            // Anything else is custom configuration.
 
             $probe = $this->getProbe($id, $type, $step, $samples, $args);
             foreach ($probeConfig['targets'] as $hostname => $ip) {
                 $device = new DeviceDefinition($hostname, $ip);
                 $probe->addDevice($device);
+            }
+
+            // TODO: clean up, handle via master.
+            if ($type === 'ping') {
+                $probe->setArg('retries', 0);
+                $t_wait = intval($step / $samples) * 1000;
+                $n_devs = intval(count($probe->getDevices()));
+                $interval = $t_wait / $n_devs;
+                $probe->setArg('interval', $interval);
             }
         }
         $this->purgeAllInactiveDevices();

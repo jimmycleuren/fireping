@@ -102,7 +102,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
                     $instruction = array('type' => 'config-sync', 'delay_execution' => 0, 'etag' => $this->probeStore->getEtag());
 
-                    $this->logger->info("STUPIDBUG: Master sent config-sync instruction to $workerPid");
+                    $this->logger->info("COMMUNICATION_FLOW: Master sent config-sync instruction to $workerPid");
                     $input->write(json_encode($instruction));
                 } catch (\Exception $exception) {
                     $this->logger->warning("There are no available workers, this slave is probably getting too much work.");
@@ -127,9 +127,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                             'body' => $this->queueElement,
                         );
 
-                        $this->logger->info("WORKERBUG: " . json_encode($instruction));
-
-                        $this->logger->info("STUPIDBUG: Master sent post-result instruction to " . $this->poster);
+                        $this->logger->info("COMMUNICATION_FLOW: Master sent post-result instruction to " . $this->poster);
                         $input->write(json_encode($instruction));
                     }
                 }
@@ -167,7 +165,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
                             $instruction['guid'] = $this->generateRandomString(25);
 
-                            $this->logger->info("STUPIDBUG: Master sent probe(" . $instruction['type'] . ") instruction to $workerPid");
+                            $this->logger->info("COMMUNICATION_FLOW: Master sent probe(" . $instruction['type'] . ") instruction to $workerPid");
 
                             $instruction = json_encode($instruction);
 
@@ -244,7 +242,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         $response = json_decode($data, true);
 
         if (!$response) {
-            $this->logger->warning("STUPIDBUG Response from worker could not be decoded to JSON.");
+            $this->logger->warning("COMMUNICATION_FLOW: Response from worker could not be decoded to JSON.");
             return;
         }
 
@@ -254,7 +252,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             $response['body']['timestamp'],
             $response['body']['contents'],
             $response['debug'])) {
-            $this->logger->error("STUPIDBUG Response ... was missing keys.");
+            $this->logger->error("COMMUNICATION_FLOW: Response ... was missing keys.");
         }
 
         $type = $response['type'];
@@ -262,16 +260,18 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         $timestamp = $response['body']['timestamp'];
         $contents = $response['body']['contents'];
         $debug = $response['debug'];
+        $pid = $debug['pid'];
+        $runtime = $debug['runtime'];
+
+        $this->logger->info("COMMUNICATION_FLOW: Master received $type response from worker $pid with a runtime of $runtime.");
 
         switch ($type)
         {
             case 'exception':
-                $this->logger->info("STUPIDBUG: Master received " . $response['type'] . " response from worker " . $response['debug']['pid'] . " with a runtime of " . $response['debug']['runtime']);
-                $this->logger->alert("Response ($status) returned an exception.");
+                $this->logger->alert("Response ($status) from worker $pid returned an exception.");
                 break;
 
             case 'probe':
-                $this->logger->info("STUPIDBUG: Master received " . $response['type'] . " response from worker " . $response['debug']['pid'] . " with a runtime of " . $response['debug']['runtime']);
                 if ($status === 200) {
 
                     $cleaned = array();
@@ -279,60 +279,54 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                     foreach ($contents as $id => $content) {
                         if (!isset($content['type'], $content['timestamp'], $content['targets'])) {
                             // TODO: Good warning
-                            $this->logger->warning("STUPIDBUG Response missing keys...");
+                            $this->logger->warning("Response ($status) from worker $pid is missing either a type, timestamp or targets key.");
                         }
                         else {
                             $cleaned[$id] = $content;
                         }
                     }
 
-                    $this->logger->info("STUPIDBUG Enqueueing the probe results.");
+                    $this->logger->info("Enqueueing the response from worker $pid.");
                     $this->queue->enqueue($cleaned);
                 }
                 else {
-                    $this->logger->error('STUPIDBUG Response probe ...');
+                    $this->logger->error("Response ($status) from worker $pid unexpected.");
                 }
                 break;
 
             case 'post-result':
-                $this->logger->info("STUPIDBUG: Master received " . $response['type'] . " response from worker " . $response['debug']['pid'] . " with a runtime of " . $response['debug']['runtime']);
+
                 if ($status === 200) {
-                    $this->logger->critical("Response ($status) " . json_encode($this->queueElement) . " saved.");
-                    $this->logger->info("STUPIDBUG Response ($status) post-result saved.");
+                    $this->logger->info("Response ($status) from worker $pid for $type saved.");
                 }
                 elseif ($status === 409) {
-                    $this->logger->critical("Response ($status) " . json_encode($this->queueElement) . " discarded.");
-                    $this->logger->info("STUPIDBUG Response ($status) post-result discarded.");
+                    $this->logger->info("Response ($status) from worker $pid for $type discarded.");
                 }
                 else {
-                    $this->logger->critical("Response ($status) " . json_encode($this->queueElement) . " retrying later.");
-                    $this->logger->info("STUPIDBUG Response ($status) post-result retrying later.");
+                    $this->logger->info("Response ($status) from worker $pid for $type problem - retrying later.");
                     $this->queue->unshift($this->queueElement);
                     $this->queueElement = null;
                     $this->releasePoster();
                 }
-                $this->logger->critical("Unlocking Queue");
-                $this->logger->info("STUPIDBUG Unlocking Queue");
+
                 $this->queueLock = false;
-                $this->logger->info("After Processing Result - QueueLock: " . ($this->queueLock === true ? "yes" : "no") . " | QueueItems: " . $this->queue->count() . " | Poster: " . $this->poster);
-                $this->logger->info("STUPIDBUG Response ($status) post-result items remain: " . $this->queue->count() . ".");
+                $this->logger->info("COMMUNICATION_FLOW Response ($status) post-result items remain: " . $this->queue->count() . ".");
                 $this->rcv_buffers[$this->poster] = "";
                 break;
 
             case 'config-sync':
-                $this->logger->info("STUPIDBUG: Master received " . $response['type'] . " response from worker " . $response['debug']['pid'] . " with a runtime of " . $response['debug']['runtime']);
+                $this->logger->info("COMMUNICATION_FLOW: Master received " . $response['type'] . " response from worker " . $response['debug']['pid'] . " with a runtime of " . $response['debug']['runtime']);
                 if ($status === 200) {
                     $etag = $response['headers']['etag'];
                     $this->probeStore->updateConfig($contents, $etag);
-                    $this->logger->info("Response ($status) " . json_encode($contents) . " config applied");
+                    $this->logger->info("Response ($status) from worker $pid config applied");
                 } else {
-                    $this->logger->info("Response ($status) " . json_encode($contents) . " received");
+                    $this->logger->info("Response ($status) from worker $pid received");
                 }
                 break;
 
             default:
-                $this->logger->info("STUPIDBUG: Master received unknown type response from worker " . $response['debug']['pid'] . " with a runtime of " . $response['debug']['runtime']);
-                $this->logger->error("Could not decode response from worker.");
+                $this->logger->error("Response ($status) from worker $pid type $type is not supported by the response handler.");
         }
     }
 
