@@ -8,7 +8,7 @@ use AppBundle\Probe\PingResponseFormatter;
 use AppBundle\Probe\PingShellCommand;
 use AppBundle\Probe\MtrShellCommand;
 use AppBundle\Probe\WorkerResponse;
-use AppBundle\ShellCommand\ShellCommandFactory;
+use AppBundle\ShellCommand\CommandFactory;
 use React\EventLoop\Factory;
 use React\Stream\ReadableResourceStream;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -22,6 +22,10 @@ class ProbeWorkerCommand extends ContainerAwareCommand
      * @var OutputInterface
      */
     protected $output;
+
+    protected $rcv_buff;
+
+    protected $tmp;
 
     protected function configure()
     {
@@ -40,7 +44,12 @@ class ProbeWorkerCommand extends ContainerAwareCommand
         $read = new ReadableResourceStream(STDIN, $loop);
 
         $read->on('data', function ($data) {
-            $this->process($data);
+            $this->rcv_buff .= $data;
+            if (json_decode($this->rcv_buff, true)) {
+                $this->tmp = $this->rcv_buff;
+                $this->rcv_buff = "";
+                $this->process($this->tmp);
+            }
         });
 
         $loop->run();
@@ -51,49 +60,182 @@ class ProbeWorkerCommand extends ContainerAwareCommand
         $timestamp = time();
 
         if (!trim($data)) {
+            $this->sendResponse(array(
+                'type' => 'exception',
+                'status' => 400,
+                'body' => array(
+                    'timestamp' => $timestamp,
+                    'contents' => 'Input data not received.'
+                ),
+                'debug' =>
+                    array(
+                        'runtime' => time() - $timestamp,
+                        'request' => $data,
+                        'pid' => getmypid(),
+                    ),
+                )
+            );
             return;
         }
 
         $data = json_decode($data, true);
+
         if (!$data) {
+            $this->sendResponse(array(
+                    'type' => 'exception',
+                    'status' => 400,
+                    'body' => array(
+                        'timestamp' => $timestamp,
+                        'contents' => 'Invalid JSON Received.'
+                    ),
+                    'debug' =>
+                        array(
+                            'runtime' => time() - $timestamp,
+                            'request' => $data,
+                            'pid' => getmypid(),
+                        ),
+                )
+            );
             return;
         }
 
         if (!isset($data['type'])) {
+            $this->sendResponse(array(
+                    'type' => 'exception',
+                    'status' => 400,
+                    'body' => array(
+                        'timestamp' => $timestamp,
+                        'contents' => 'Command type missing.'
+                    ),
+                    'debug' =>
+                        array(
+                            'runtime' => time() - $timestamp,
+                            'request' => $data,
+                            'pid' => getmypid(),
+                        ),
+                )
+            );
             return;
         }
 
-        $factory = new ShellCommandFactory();
+        $this->getContainer()->get('logger')->info("COMMUNICATION_FLOW: Worker " . getmypid() . " received a " . $data['type'] . " instruction from master.");
+
+        $factory = new CommandFactory();
+        $data['container'] = $this->getContainer();
         $command = null;
         try {
             $command = $factory->create($data['type'], $data);
         } catch (\Exception $e) {
             $this->sendResponse(array(
-                'status' => 500,
-                'message' => 'NOK',
-                'body' => array(
-                    '_exception' => $e->getMessage(),
-                ),
-            ));
+                    'type' => 'exception',
+                    'status' => 400,
+                    'body' => array(
+                        'timestamp' => $timestamp,
+                        'contents' => $e->getMessage()
+                    ),
+                    'debug' =>
+                        array(
+                            'runtime' => time() - $timestamp,
+                            'request' => $data,
+                            'pid' => getmypid(),
+                        ),
+                )
+            );
+            return;
         }
 
-        $shellOutput = $command->execute();
+        sleep($data['delay_execution']);
 
-        $this->sendResponse(array(
-            'status' => 200,
-            'message' => 'OK',
-            'body' => array(
-                $data['id'] => array(
-                    'type' => $data['type'],
-                    'timestamp' => $timestamp,
-                    'targets' => $shellOutput,
-                ),
-            ),
-        ));
+        try {
+            $shellOutput = $command->execute();
+
+            switch ($data['type']) {
+                case 'post-result':
+                    $this->sendResponse(array(
+                        'type' => $data['type'],
+                        'status' => $shellOutput['code'],
+                        'headers' => array(),
+                        'body' => array(
+                            'timestamp' => $timestamp,
+                            'contents' => $shellOutput['contents'],
+                            'raw' => $shellOutput,
+                        ),
+                        'debug' => array(
+                            'runtime' => time() - $timestamp,
+                            //'request' => $data,
+                            'pid' => getmypid(),
+                        ),
+                    ));
+                    break;
+
+                case 'config-sync':
+                    // This is a request to get the latest configuration from the master.
+                    $this->sendResponse(array(
+                        'type' => $data['type'],
+                        'status' => $shellOutput['code'],
+                        'headers' => array(
+                            'etag' => $shellOutput['etag'],
+                        ),
+                        'body' => array(
+                            'timestamp' => $timestamp,
+                            'contents' => $shellOutput['contents'],
+                        ),
+                        'debug' => array(
+                            'runtime' => time() - $timestamp,
+                            //'request' => $data,
+                            'pid' => getmypid(),
+                        ),
+                    ));
+                    break;
+
+                case 'ping':
+                case 'mtr':
+                case 'traceroute':
+                    $this->sendResponse(array(
+                        'type' => 'probe',
+                        'status' => 200,
+                        'body' => array(
+                            'timestamp' => $timestamp,
+                            'contents' => array(
+                                $data['id'] => array(
+                                    'type' => $data['type'],
+                                    'timestamp' => $timestamp,
+                                    'targets' => $shellOutput,
+                                )
+                            ),
+                        ),
+                        'debug' => array(
+                            'runtime' => time() - $timestamp,
+                            //'request' => $data,
+                            'pid' => getmypid(),
+                        ),
+                    ));
+                    break;
+            }
+
+        } catch (\Exception $e) {
+            $this->sendResponse(array(
+                    'type' => 'exception',
+                    'status' => 500,
+                    'body' => array(
+                        'timestamp' => $timestamp,
+                        'contents' => $e->getMessage()
+                    ),
+                    'debug' =>
+                        array(
+                            'runtime' => time() - $timestamp,
+                            'request' => $data,
+                            'pid' => getmypid(),
+                        ),
+                )
+            );
+            return;
+        }
     }
 
     protected function sendResponse($data)
     {
+        $this->getContainer()->get('logger')->info("COMMUNICATION_FLOW: Worker " . getmypid() . " sent a " . $data['type'] . " response.");
         $json = json_encode($data);
         $this->output->writeln($json);
     }

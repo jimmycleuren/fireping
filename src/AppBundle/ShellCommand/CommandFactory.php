@@ -8,16 +8,14 @@
 
 namespace AppBundle\ShellCommand;
 
-use AppBundle\ShellCommand\PingShellCommand;
-use AppBundle\ShellCommand\MtrShellCommand;
-
-
-class ShellCommandFactory
+class CommandFactory
 {
     protected static $mappings = array(
         'ping' => 'AppBundle\\ShellCommand\\PingShellCommand',
         'mtr' => 'AppBundle\\ShellCommand\\MtrShellCommand',
         'traceroute' => 'AppBundle\\ShellCommand\\TracerouteShellCommand',
+        'config-sync' => 'AppBundle\\ShellCommand\\GetConfigHttpWorkerCommand',
+        'post-result' => 'AppBundle\\ShellCommand\\PostResultsHttpWorkerCommand',
     );
 
     public function create($command, $args)
