@@ -180,11 +180,11 @@ class PingGraph extends RrdGraph
             $options[] = sprintf("LINE1:%s%s", 'hwpredict', '#ff00ff');
         }
 
-        $options[] = "GPRINT:median:AVERAGE:median rtt\: %8.2lf ms avg";
-        $options[] = "GPRINT:median:MAX:%7.2lf ms max";
-        $options[] = "GPRINT:median:MIN:%7.2lf ms min";
-        $options[] = "GPRINT:median:LAST:%7.2lf ms now";
-        $options[] = "GPRINT:s2d0:AVERAGE:%7.2lf ms sd";
+        $options[] = "GPRINT:median:AVERAGE:median rtt\: %6.1lf ms avg";
+        $options[] = "GPRINT:median:MAX:%7.1lf ms max";
+        $options[] = "GPRINT:median:MIN:%7.1lf ms min";
+        $options[] = "GPRINT:median:LAST:%7.1lf ms now";
+        $options[] = "GPRINT:s2d0:AVERAGE:%7.1lf ms sd";
         $options[] = "COMMENT: \\n";
 
         $options[] = "GPRINT:loss_percent:AVERAGE:packet loss\: %6.2lf %% avg";
