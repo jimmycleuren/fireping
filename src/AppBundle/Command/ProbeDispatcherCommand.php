@@ -284,11 +284,11 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
     private function getWorker()
     {
-        if (count($this->availableWorkers) > $this->minimumAvailableWorkers) {
-            return $this->getWorkerInternal();
-        } elseif (count($this->availableWorkers) <= ($this->minimumAvailableWorkers + $this->workersNeeded)) {
-            $this->logger->warning("We do not have the minimum amount of available workers available.");
-            $this->workersNeeded += 1;
+        if (count($this->availableWorkers) > 0) {
+            if (count($this->availableWorkers) < $this->minimumAvailableWorkers) {
+                $this->logger->warning("We do not have the minimum amount of workers available, one will be created.");
+                $this->workersNeeded += 1;
+            }
             return $this->getWorkerInternal();
         } else {
             $this->workersNeeded += 1;
