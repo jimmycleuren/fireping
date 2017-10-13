@@ -359,8 +359,8 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         $input       = new InputStream();
 
         $process->setInput($input);
-        $process->setTimeout(300);
-        $process->setIdleTimeout(60);
+        $process->setTimeout(1500);
+        $process->setIdleTimeout(300);
 
         $process->start(function ($type, $data) use ($process) {
 
@@ -475,7 +475,6 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                 break;
 
             case 'config-sync':
-                $this->logger->info("COMMUNICATION_FLOW: Master received " . $response['type'] . " response from worker " . $response['debug']['pid'] . " with a runtime of " . $response['debug']['runtime']);
                 if ($status === 200) {
                     $etag = $response['headers']['etag'];
                     $this->probeStore->updateConfig($contents, $etag);
