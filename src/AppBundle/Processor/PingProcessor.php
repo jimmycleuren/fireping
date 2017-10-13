@@ -11,6 +11,7 @@ namespace AppBundle\Processor;
 use AppBundle\Entity\Device;
 use AppBundle\Entity\Probe;
 use AppBundle\Entity\SlaveGroup;
+use AppBundle\Exception\WrongTimestampRrdException;
 
 class PingProcessor extends Processor
 {
@@ -41,10 +42,14 @@ class PingProcessor extends Processor
             $datasources['median'] = $total / $success;
         }
 
-        $this->storage->store($device, $probe, $group, $timestamp, $datasources);
-        $datasources['failures'] = $this->storage->fetch($device, $probe, $group, $timestamp, 'median', 'FAILURES');
+        try {
+            $this->storage->store($device, $probe, $group, $timestamp, $datasources);
+            $datasources['failures'] = $this->storage->fetch($device, $probe, $group, $timestamp, 'median', 'FAILURES');
 
-        $this->cacheResults($device, $timestamp, $datasources);
-        $this->processAlertRules($device, $probe, $group, $timestamp);
+            $this->cacheResults($device, $timestamp, $datasources);
+            $this->processAlertRules($device, $probe, $group, $timestamp);
+        } catch (WrongTimestampRrdException $e) {
+            $this->logger->error($e->getMessage());
+        }
     }
 }
