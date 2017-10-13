@@ -21,25 +21,26 @@ class PingProcessor extends Processor
             throw new \Exception(count($data)." ping samples received, should have been ".$probe->getSamples());
         }
         $datasources = array();
-        $total = 0;
         $failed = 0;
         $success = 0;
 
+        $times = array();
         foreach ($data as $key => $result) {
             $datasources['ping'.($key+1)] = $result;
             if ($result != -1) {
-                $total += $result;
                 $success++;
+                $times[] = $result;
             } else {
                 $failed++;
             }
         }
 
+        sort($times);
         $datasources['loss'] = $failed / $probe->getSamples();
         if ($success == 0) {
             $datasources['median'] = "U";
         } else {
-            $datasources['median'] = $total / $success;
+            $datasources['median'] = $times[floor(count($times) / 2)];
         }
 
         try {

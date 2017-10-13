@@ -153,16 +153,19 @@ class PingGraph extends RrdGraph
             $options[] = sprintf("TICK:%s%s:%s", 'failures', '#fdd017', '1.0');
         }
 
-        $total = $probe->getSamples();
         $file = $this->storage->getFilePath($device, $probe, $slavegroup);
         for ($i = 1; $i <= $probe->getSamples(); $i++) {
             $options[] = "DEF:ping$i=$file:ping$i:AVERAGE";
             $options[] = "CDEF:cp$i=ping$i,$max,LT,ping$i,INF,IF";
         }
-        for ($i = 1; $i <= $probe->getSamples(); $i++) {
-            $options[] = "CDEF:smoke$i=cp$i,UN,UNKN,cp$total,cp$i,-,IF";
-            $options[] = "AREA:cp$i";
-            $options[] = "STACK:smoke$i#33333322";
+        $half = $probe->getSamples() / 2;
+        $itop = $probe->getSamples();
+        $ibot = 1;
+        for (; $itop > $ibot; $itop--, $ibot++) {
+            $color = (int)((190/$half) * ($half-$ibot))+50;
+            $options[] = "CDEF:smoke$ibot=cp$ibot,UN,UNKN,cp$itop,cp$ibot,-,IF";
+            $options[] = "AREA:cp$ibot";
+            $options[] = "STACK:smoke$ibot#".sprintf("%02x", $color).sprintf("%02x", $color).sprintf("%02x", $color);
         }
 
         if ($debug) {
@@ -182,10 +185,10 @@ class PingGraph extends RrdGraph
         $options[] = "GPRINT:s2d0:AVERAGE:%7.2lf ms sd";
         $options[] = "COMMENT: \\n";
 
-        $options[] = "GPRINT:loss:AVERAGE:packet loss\: %7.2lf %% avg";
-        $options[] = "GPRINT:loss:MAX:%8.2lf %% max";
-        $options[] = "GPRINT:loss:MIN:%8.2lf %% min";
-        $options[] = "GPRINT:loss:LAST:%8.2lf %% now";
+        $options[] = "GPRINT:loss_percent:AVERAGE:packet loss\: %7.2lf %% avg";
+        $options[] = "GPRINT:loss_percent:MAX:%8.2lf %% max";
+        $options[] = "GPRINT:loss_percent:MIN:%8.2lf %% min";
+        $options[] = "GPRINT:loss_percent:LAST:%8.2lf %% now";
         $options[] = "COMMENT: \\n";
 
         $options[] = "COMMENT:".$probe->getName()." (".$probe->getSamples()." probes of type ".$probe->getType()." in ".$probe->getStep()." seconds) from ".$slavegroup->getName();
