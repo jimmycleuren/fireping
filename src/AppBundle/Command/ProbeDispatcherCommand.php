@@ -56,6 +56,14 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
     protected $inUseWorkers = array();
 
+    protected $workersNeeded;
+
+    protected $initWorkers;
+    protected $minimumAvailableWorkers;
+    protected $maximumWorkers;
+    protected $highWorkersThreshold;
+    protected $inUsePeak;
+
     /**
      * This contains the process id of the worker process that is responsible for posting data to the master.
      * @var $poster int
@@ -73,8 +81,29 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                 'workers',
                 'w',
                 InputOption::VALUE_REQUIRED,
-                'Specifies the amount of workers to use.',
+                'Specifies the amount of workers to start out with.',
                 50
+            )
+            ->addOption(
+                'minimum-available-workers',
+                'min',
+                InputOption::VALUE_REQUIRED,
+                'Specifies the minimum amount of available workers at all times.',
+                5
+            )
+            ->addOption(
+                'maximum-workers',
+                'max',
+                InputOption::VALUE_REQUIRED,
+                'Specifies the maximum amount of workers that can ever be created.',
+                200
+            )
+            ->addOption(
+                'high-workers-threshold',
+                'high',
+                InputOption::VALUE_REQUIRED,
+                'Specifies when the master should alert if too many workers are needed. (Should be lower than maximum-workers.)',
+                150
             );
     }
 
@@ -84,6 +113,18 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         $this->logger     = $this->getContainer()->get('logger');
         $this->probeStore = $this->getContainer()->get('probe_store');
 
+        $this->initWorkers             = $input->getOption('workers');
+        $this->minimumAvailableWorkers = $input->getOption('minimum-available-workers');
+        $this->maximumWorkers = $input->getOption('maximum-workers');
+        $this->highWorkersThreshold    = $input->getOption('high-workers-threshold');
+
+        if ($this->highWorkersThreshold >= $this->maximumWorkers) {
+            throw new \Exception("High workers threshold value must be less than maximum workers value.");
+        }
+
+        $this->workersNeeded = 0;
+        $this->inUsePeak = 0;
+
         $this->queue = new \SplQueue();
 
         $this->logger->info("Fireping Dispatcher Started.");
@@ -91,7 +132,18 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         $loop = Factory::create();
 
         $loop->addPeriodicTimer(1, function () {
-            $toSync = time() % 120 === 0 ? true : false;
+            $toSync    = time() % 120 === 0 ? true : false;
+            $showDebug = time() % 10 === 0 ? true : false;
+
+            if ($showDebug) {
+                $this->logger->info(
+                    "Available: " . count($this->availableWorkers) .
+                    " In Use: " . count($this->inUseWorkers) .
+                    " Processes " . count($this->processes) .
+                    " Needed: " . $this->workersNeeded .
+                    " In Use (Peak): " . $this->inUsePeak
+                );
+            }
 
             if ($toSync) {
                 $this->logger->info("Starting config sync.");
@@ -112,10 +164,10 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             if (isset($this->poster) && $this->poster != -1) {
                 if (!$this->queueLock) {
                     if (!$this->queue->isEmpty()) {
-                        $this->queueLock = true;
-                        $name = $this->getContainer()->getParameter('slave.name');
+                        $this->queueLock    = true;
+                        $name               = $this->getContainer()->getParameter('slave.name');
                         $this->queueElement = $this->queue->shift();
-                        $input = $this->getInput($this->poster);
+                        $input              = $this->getInput($this->poster);
 
                         $instruction = array(
                             'type' => 'post-result',
@@ -138,7 +190,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             foreach ($this->probeStore->getProbes() as $probe) {
                 /* @var $probe ProbeDefinition */
 
-                $ready  = time() % $probe->getStep() === 0 ? true : false;
+                $ready = time() % $probe->getStep() === 0 ? true : false;
 
                 if ($ready) {
 
@@ -177,6 +229,25 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                     }
                 }
             }
+
+            while ((count($this->availableWorkers) + $this->workersNeeded) < $this->minimumAvailableWorkers) {
+                $this->workersNeeded += 1;
+            }
+
+            while ($this->workersNeeded != 0) {
+                if (count($this->processes) >= $this->maximumWorkers) {
+                    $this->logger->critical("Cannot create " . $this->workersNeeded . " more workers, hard limit (maximum-workers=" . $this->maximumWorkers . ") reached.");
+                    break;
+                }
+                else {
+                    if (count($this->processes) >= $this->highWorkersThreshold) {
+                        $this->logger->alert("Nearing the upper worker " . $this->highWorkersThreshold . " threshold, investigate high workload or tweak settings!");
+                    }
+                    $this->startWorker();
+                    $this->workersNeeded -= 1;
+                }
+            }
+
         });
 
         // Get worker responses
@@ -188,11 +259,8 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                         $process->getIncrementalOutput();
                     }
                 } catch (ProcessTimedOutException $exception) {
-                    if (in_array($pid, array_keys($this->trackingGuids))) {
-                        $this->logger->info("Process [$pid] timeout.");
-                    }
+                    $this->logger->info("Worker $pid timed out, restarting.");
                     $this->cleanup($pid);
-                    $this->logger->info("Worker $pid timed out; starting new one...");
                     $this->startWorker();
                 }
             }
@@ -214,139 +282,33 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         $loop->run();
     }
 
-    private function reservePoster()
-    {
-        try {
-            $worker = $this->getWorker();
-            $workerPid = $worker->getPid();
-            $this->poster = $workerPid;
-            $this->logger->info("Worker $workerPid reserved to post data.");
-        } catch (\Exception $e) {
-            $this->logger->critical("Could not reserve a worker to post data.");
-        }
-    }
-
-    private function releasePoster()
-    {
-        if (isset($this->poster) && $this->poster != -1) {
-            $this->releaseWorker($this->poster);
-            $this->poster = -1;
-        }
-        else {
-            $this->logger->warning("Asked to release poster but none were reserved.");
-        }
-    }
-
-    private function handleResponse($type, $data)
-    {
-        $response = json_decode($data, true);
-
-        if (!$response) {
-            $this->logger->warning("COMMUNICATION_FLOW: Response from worker could not be decoded to JSON.");
-            return;
-        }
-
-        if (!isset(
-            $response['type'],
-            $response['status'],
-            $response['body']['timestamp'],
-            $response['body']['contents'],
-            $response['debug'])) {
-            $this->logger->error("COMMUNICATION_FLOW: Response ... was missing keys.");
-        }
-
-        $type = $response['type'];
-        $status = $response['status'];
-        $timestamp = $response['body']['timestamp'];
-        $contents = $response['body']['contents'];
-        $debug = $response['debug'];
-        $pid = $debug['pid'];
-        $runtime = $debug['runtime'];
-
-        $this->logger->info("COMMUNICATION_FLOW: Master received $type response from worker $pid with a runtime of $runtime.");
-
-        switch ($type)
-        {
-            case 'exception':
-                $this->logger->alert("Response ($status) from worker $pid returned an exception.");
-                break;
-
-            case 'probe':
-                if ($status === 200) {
-
-                    $cleaned = array();
-
-                    foreach ($contents as $id => $content) {
-                        if (!isset($content['type'], $content['timestamp'], $content['targets'])) {
-                            // TODO: Good warning
-                            $this->logger->warning("Response ($status) from worker $pid is missing either a type, timestamp or targets key.");
-                        }
-                        else {
-                            $cleaned[$id] = $content;
-                        }
-                    }
-
-                    $this->logger->info("Enqueueing the response from worker $pid.");
-                    $this->queue->enqueue($cleaned);
-                }
-                else {
-                    $this->logger->error("Response ($status) from worker $pid unexpected.");
-                }
-                break;
-
-            case 'post-result':
-
-                if ($status === 200) {
-                    $this->logger->info("Response ($status) from worker $pid for $type saved.");
-                }
-                elseif ($status === 409) {
-                    $this->logger->info("Response ($status) from worker $pid for $type discarded.");
-                }
-                else {
-                    $this->logger->info("Response ($status) from worker $pid for $type problem - retrying later.");
-                    $this->queue->unshift($this->queueElement);
-                    $this->queueElement = null;
-                    $this->releasePoster();
-                }
-
-                $this->queueLock = false;
-                $this->logger->info("COMMUNICATION_FLOW Response ($status) post-result items remain: " . $this->queue->count() . ".");
-                $this->rcv_buffers[$this->poster] = "";
-                break;
-
-            case 'config-sync':
-                $this->logger->info("COMMUNICATION_FLOW: Master received " . $response['type'] . " response from worker " . $response['debug']['pid'] . " with a runtime of " . $response['debug']['runtime']);
-                if ($status === 200) {
-                    $etag = $response['headers']['etag'];
-                    $this->probeStore->updateConfig($contents, $etag);
-                    $this->logger->info("Response ($status) from worker $pid config applied");
-                } else {
-                    $this->logger->info("Response ($status) from worker $pid received");
-                }
-                break;
-
-            default:
-                $this->logger->error("Response ($status) from worker $pid type $type is not supported by the response handler.");
-        }
-    }
-
     private function getWorker()
     {
-        if (count($this->availableWorkers) > 0) {
-
-            $pid = array_shift($this->availableWorkers);
-            array_push($this->inUseWorkers, $pid);
-            $process = $this->processes[$pid];
-
-            $this->logger->info("Dispatcher received worker $pid.",
-                array('available' => count($this->availableWorkers), 'inuse' => count($this->inUseWorkers), 'processes' => count($this->processes)));
-
-            return $process;
-
+        if (count($this->availableWorkers) > $this->minimumAvailableWorkers) {
+            return $this->getWorkerInternal();
+        } elseif (count($this->availableWorkers) <= ($this->minimumAvailableWorkers + $this->workersNeeded)) {
+            $this->logger->warning("We do not have the minimum amount of available workers available.");
+            $this->workersNeeded += 1;
+            return $this->getWorkerInternal();
         } else {
-            $this->logger->critical("Dispatcher needed a worker but we ran out.  Resource issue!");
-            throw new \Exception("Dispatcher needed a worker but we ran out.  Resource issue!");
+            $this->workersNeeded += 1;
+            throw new \Exception("A worker was requested but none were available.");
         }
+    }
+
+    private function getWorkerInternal()
+    {
+        $pid = array_shift($this->availableWorkers);
+        array_push($this->inUseWorkers, $pid);
+        $process = $this->processes[$pid];
+
+        if (count($this->inUseWorkers) > $this->inUsePeak) {
+            $this->inUsePeak = count($this->inUseWorkers);
+        }
+
+        $this->logger->info("Marking worker $pid as in-use.");
+
+        return $process;
     }
 
     /**
@@ -368,6 +330,18 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         return $this->inputs[$pid];
     }
 
+    private function reservePoster()
+    {
+        try {
+            $worker       = $this->getWorker();
+            $workerPid    = $worker->getPid();
+            $this->poster = $workerPid;
+            $this->logger->info("Worker $workerPid reserved to post data.");
+        } catch (\Exception $e) {
+            $this->logger->critical("Could not reserve a worker to post data.");
+        }
+    }
+
     function generateRandomString($length = 10)
     {
         $characters       = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -377,42 +351,6 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             $randomString .= $characters[rand(0, $charactersLength - 1)];
         }
         return $randomString;
-    }
-
-    /**
-     * Clean up tracking, inputs, processes and receive buffers.
-     *
-     * @param $pid
-     */
-    private function cleanup($pid)
-    {
-        if (in_array($pid, array_keys($this->trackingGuids))) {
-            $this->logger->info("Process [$pid] cleanup started but no data received yet...");
-        }
-
-        if (isset($this->processes[$pid])) {
-            $this->processes[$pid]->stop(3, SIGINT);
-            $this->processes[$pid] = null;
-            unset($this->processes[$pid]);
-        }
-
-        if (isset($this->inputs[$pid])) {
-            $this->inputs[$pid] = null;
-            unset($this->inputs[$pid]);
-        }
-
-        if (isset($this->rcv_buffers[$pid])) {
-            $this->rcv_buffers[$pid] = null;
-            unset($this->rcv_buffers[$pid]);
-        }
-
-        if (($key = array_search($pid, $this->availableWorkers)) !== false) {
-            unset($this->availableWorkers[$key]);
-        }
-
-        if (($key = array_search($pid, $this->inUseWorkers)) !== false) {
-            unset($this->inUseWorkers[$key]);
-        }
     }
 
     private function startWorker()
@@ -463,6 +401,105 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         return $process;
     }
 
+    private function handleResponse($type, $data)
+    {
+        $response = json_decode($data, true);
+
+        if (!$response) {
+            $this->logger->warning("COMMUNICATION_FLOW: Response from worker could not be decoded to JSON.");
+            return;
+        }
+
+        if (!isset(
+            $response['type'],
+            $response['status'],
+            $response['body']['timestamp'],
+            $response['body']['contents'],
+            $response['debug'])
+        ) {
+            $this->logger->error("COMMUNICATION_FLOW: Response ... was missing keys.");
+        }
+
+        $type      = $response['type'];
+        $status    = $response['status'];
+        $timestamp = $response['body']['timestamp'];
+        $contents  = $response['body']['contents'];
+        $debug     = $response['debug'];
+        $pid       = $debug['pid'];
+        $runtime   = $debug['runtime'];
+
+        $this->logger->info("COMMUNICATION_FLOW: Master received $type response from worker $pid with a runtime of $runtime.");
+
+        switch ($type) {
+            case 'exception':
+                $this->logger->alert("Response ($status) from worker $pid returned an exception.");
+                break;
+
+            case 'probe':
+                if ($status === 200) {
+
+                    $cleaned = array();
+
+                    foreach ($contents as $id => $content) {
+                        if (!isset($content['type'], $content['timestamp'], $content['targets'])) {
+                            // TODO: Good warning
+                            $this->logger->warning("Response ($status) from worker $pid is missing either a type, timestamp or targets key.");
+                        } else {
+                            $cleaned[$id] = $content;
+                        }
+                    }
+
+                    $this->logger->info("Enqueueing the response from worker $pid.");
+                    $this->queue->enqueue($cleaned);
+                } else {
+                    $this->logger->error("Response ($status) from worker $pid unexpected.");
+                }
+                break;
+
+            case 'post-result':
+
+                if ($status === 200) {
+                    $this->logger->info("Response ($status) from worker $pid for $type saved.");
+                } elseif ($status === 409) {
+                    $this->logger->info("Response ($status) from worker $pid for $type discarded.");
+                } else {
+                    $this->logger->info("Response ($status) from worker $pid for $type problem - retrying later.");
+                    $this->queue->unshift($this->queueElement);
+                    $this->queueElement = null;
+                    $this->releasePoster();
+                }
+
+                $this->queueLock = false;
+                $this->logger->info("COMMUNICATION_FLOW Response ($status) post-result items remain: " . $this->queue->count() . ".");
+                $this->rcv_buffers[$this->poster] = "";
+                break;
+
+            case 'config-sync':
+                $this->logger->info("COMMUNICATION_FLOW: Master received " . $response['type'] . " response from worker " . $response['debug']['pid'] . " with a runtime of " . $response['debug']['runtime']);
+                if ($status === 200) {
+                    $etag = $response['headers']['etag'];
+                    $this->probeStore->updateConfig($contents, $etag);
+                    $this->logger->info("Response ($status) from worker $pid config applied");
+                } else {
+                    $this->logger->info("Response ($status) from worker $pid received");
+                }
+                break;
+
+            default:
+                $this->logger->error("Response ($status) from worker $pid type $type is not supported by the response handler.");
+        }
+    }
+
+    private function releasePoster()
+    {
+        if (isset($this->poster) && $this->poster != -1) {
+            $this->releaseWorker($this->poster);
+            $this->poster = -1;
+        } else {
+            $this->logger->warning("Asked to release poster but none were reserved.");
+        }
+    }
+
     private function releaseWorker($pid)
     {
         $this->rcv_buffers[$pid] = "";
@@ -482,5 +519,45 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
         $this->logger->info("Marking worker $pid as available.");
         array_push($this->availableWorkers, $pid);
+    }
+
+    /**
+     * Clean up tracking, inputs, processes and receive buffers.
+     *
+     * @param $pid
+     */
+    private function cleanup($pid)
+    {
+        if (in_array($pid, array_keys($this->trackingGuids))) {
+            $this->logger->info("Process [$pid] cleanup started but no data received yet...");
+        }
+
+        if (isset($this->processes[$pid])) {
+            $this->processes[$pid]->stop(3, SIGINT);
+            $this->processes[$pid] = null;
+            unset($this->processes[$pid]);
+        }
+
+        if (isset($this->inputs[$pid])) {
+            $this->inputs[$pid] = null;
+            unset($this->inputs[$pid]);
+        }
+
+        if (isset($this->rcv_buffers[$pid])) {
+            $this->rcv_buffers[$pid] = null;
+            unset($this->rcv_buffers[$pid]);
+        }
+
+        if (($key = array_search($pid, $this->availableWorkers)) !== false) {
+            unset($this->availableWorkers[$key]);
+        }
+
+        if (($key = array_search($pid, $this->inUseWorkers)) !== false) {
+            unset($this->inUseWorkers[$key]);
+        }
+
+        if ($pid === $this->poster) {
+            $this->poster = -1;
+        }
     }
 }
