@@ -58,7 +58,7 @@ abstract class Processor
                     }
                     $alert->setLastseen(new \DateTime());
                     $this->em->persist($alert);
-                    $this->em->flush();
+
                 } else {
                     $alert = $this->em->getRepository("AppBundle:Alert")->findOneBy(array(
                         'device' => $device,
@@ -69,11 +69,11 @@ abstract class Processor
                     if ($alert) {
                         $alert->setActive(0);
                         $this->em->persist($alert);
-                        $this->em->flush();
                     }
                 }
             }
         }
+        $this->em->flush();
     }
 
     protected function matchPattern($pattern, $value)
