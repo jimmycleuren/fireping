@@ -64,6 +64,9 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
     protected $highWorkersThreshold;
     protected $inUsePeak;
 
+    protected $startTimes      = array();
+    protected $expectedRuntime = array();
+
     /**
      * This contains the process id of the worker process that is responsible for posting data to the master.
      * @var $poster int
@@ -115,7 +118,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
         $this->initWorkers             = $input->getOption('workers');
         $this->minimumAvailableWorkers = $input->getOption('minimum-available-workers');
-        $this->maximumWorkers = $input->getOption('maximum-workers');
+        $this->maximumWorkers          = $input->getOption('maximum-workers');
         $this->highWorkersThreshold    = $input->getOption('high-workers-threshold');
 
         if ($this->highWorkersThreshold >= $this->maximumWorkers) {
@@ -123,7 +126,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         }
 
         $this->workersNeeded = 0;
-        $this->inUsePeak = 0;
+        $this->inUsePeak     = 0;
 
         $this->queue = new \SplQueue();
 
@@ -133,32 +136,11 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
         $loop->addPeriodicTimer(1, function () {
             $toSync    = time() % 120 === 0 ? true : false;
-            $showDebug = time() % 10 === 0 ? true : false;
-
-            if ($showDebug) {
-                $this->logger->info(
-                    "Available: " . count($this->availableWorkers) .
-                    " In Use: " . count($this->inUseWorkers) .
-                    " Processes " . count($this->processes) .
-                    " Needed: " . $this->workersNeeded .
-                    " In Use (Peak): " . $this->inUsePeak
-                );
-            }
 
             if ($toSync) {
                 $this->logger->info("Starting config sync.");
-                try {
-                    $worker    = $this->getWorker();
-                    $workerPid = $worker->getPid();
-                    $input     = $this->getInput($workerPid);
-
-                    $instruction = array('type' => 'config-sync', 'delay_execution' => 0, 'etag' => $this->probeStore->getEtag());
-
-                    $this->logger->info("COMMUNICATION_FLOW: Master sent config-sync instruction to $workerPid");
-                    $input->write(json_encode($instruction));
-                } catch (\Exception $exception) {
-                    $this->logger->warning("There are no available workers, this slave is probably getting too much work.");
-                }
+                $instruction = array('type' => 'config-sync', 'delay_execution' => 0, 'etag' => $this->probeStore->getEtag());
+                $this->sendInstruction($instruction);
             }
 
             if (isset($this->poster) && $this->poster != -1) {
@@ -167,7 +149,6 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                         $this->queueLock    = true;
                         $name               = $this->getContainer()->getParameter('slave.name');
                         $this->queueElement = $this->queue->shift();
-                        $input              = $this->getInput($this->poster);
 
                         $instruction = array(
                             'type' => 'post-result',
@@ -179,8 +160,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                             'body' => $this->queueElement,
                         );
 
-                        $this->logger->info("COMMUNICATION_FLOW: Master sent post-result instruction to " . $this->poster);
-                        $input->write(json_encode($instruction));
+                        $this->sendInstruction($instruction, $this->poster);
                     }
                 }
             } else {
@@ -202,30 +182,11 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
                     /* @var $instructions Instruction */
                     foreach ($instructions->getChunks() as $instruction) {
-                        try {
-                            $worker = $this->getWorker();
-
-                            // Cycle between 0-3 seconds delay before executing command (fping/traceroute) on the list of targets
-                            $delay   = intval($counter % ($probe->getStep() / $probe->getSamples()));
-                            $counter += 1;
-
-                            $workerPid = $worker->getPid();
-
-                            $input = $this->getInput($workerPid);
-
-                            $instruction['delay_execution'] = $delay;
-
-                            $instruction['guid'] = $this->generateRandomString(25);
-
-                            $this->logger->info("COMMUNICATION_FLOW: Master sent probe(" . $instruction['type'] . ") instruction to $workerPid");
-
-                            $instruction = json_encode($instruction);
-
-                            $input->write($instruction);
-                        } catch (\Exception $exception) {
-                            $this->logger->warning("There are no available workers, this slave is probably getting too much work.");
-                            continue;
-                        }
+                        $delay                          = intval($counter % ($probe->getStep() / $probe->getSamples()));
+                        $counter                        += 1;
+                        $instruction['delay_execution'] = $delay;
+                        $instruction['guid']            = $this->generateRandomString(25);
+                        $this->sendInstruction($instruction, null, $probe->getStep());
                     }
                 }
             }
@@ -238,8 +199,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                 if (count($this->processes) >= $this->maximumWorkers) {
                     $this->logger->critical("Cannot create " . $this->workersNeeded . " more workers, hard limit (maximum-workers=" . $this->maximumWorkers . ") reached.");
                     break;
-                }
-                else {
+                } else {
                     if (count($this->processes) >= $this->highWorkersThreshold) {
                         $this->logger->alert("Nearing the upper worker " . $this->highWorkersThreshold . " threshold, investigate high workload or tweak settings!");
                     }
@@ -255,7 +215,18 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             foreach ($this->processes as $pid => $process) {
                 try {
                     if ($process) {
-                        $process->checkTimeout();
+                        if (!in_array($pid, $this->inUseWorkers)) {
+                            $process->checkTimeout();
+                        } else {
+                            if (isset($this->startTimes[$pid], $this->expectedRuntime[$pid])) {
+                                $actualRuntime   = microtime(true) - $this->startTimes[$pid];
+                                $expectedRuntime = $this->expectedRuntime[$pid] + ($this->expectedRuntime[$pid] * 0.25);
+                                if ($actualRuntime > $expectedRuntime) {
+                                    $this->logger->info("Worker $pid has exceeded the expected runtime, terminating.");
+                                    $process->checkTimeout();
+                                }
+                            }
+                        }
                         $process->getIncrementalOutput();
                     }
                 } catch (ProcessTimedOutException $exception) {
@@ -265,9 +236,6 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                 }
             }
         });
-
-        //$this->logger->info("Loading configuration for the first time.");
-        //$this->probeStore->sync($this->logger);
 
         $this->logger->info("Starting " . $input->getOption('workers') . " workers.");
         for ($w = 0; $w < $input->getOption('workers'); $w++) {
@@ -280,6 +248,34 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         $this->reservePoster();
 
         $loop->run();
+    }
+
+    private function sendInstruction(array $instruction, $pid = null, $expectedRuntime = 60)
+    {
+        if ($pid === null) {
+            try {
+                $worker = $this->getWorker();
+                $pid    = $worker->getPid();
+            } catch (\Exception $e) {
+                $this->logger->critical($e->getMessage());
+                return;
+            }
+        }
+
+        if (json_encode($instruction) === false) {
+            $this->logger->critical("Could not send encode the instruction for worker $pid to json.");
+            return;
+        }
+
+        $json_instruction = json_encode($instruction);
+
+        $input = $this->getInput($pid);
+        $input->write($json_instruction);
+
+        $this->logger->info("COMMUNICATION_FLOW: Master sent " . $instruction['type'] . " instruction to worker $pid.");
+
+        $this->startTimes[$pid]      = microtime(true);
+        $this->expectedRuntime[$pid] = $expectedRuntime;
     }
 
     private function getWorker()
@@ -363,13 +359,12 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         $input       = new InputStream();
 
         $process->setInput($input);
-        $process->setTimeout(3600);
-        $process->setIdleTimeout(1200);
+        $process->setTimeout(300);
+        $process->setIdleTimeout(60);
 
         $process->start(function ($type, $data) use ($process) {
 
             $pid = $process->getPid();
-            //$this->logger->info("processing raw data for pid $pid: $data");
 
             if (isset($this->rcv_buffers[$pid])) {
                 $this->rcv_buffers[$pid] .= $data;
@@ -430,6 +425,10 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
         $this->logger->info("COMMUNICATION_FLOW: Master received $type response from worker $pid with a runtime of $runtime.");
 
+        if (!in_array($pid, array_keys($this->processes))) {
+            $this->logger->critical("Received a response from an unknown process...");
+        }
+
         switch ($type) {
             case 'exception':
                 $this->logger->alert("Response ($status) from worker $pid returned an exception.");
@@ -464,9 +463,8 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                     $this->logger->info("Response ($status) from worker $pid for $type discarded.");
                 } else {
                     $this->logger->info("Response ($status) from worker $pid for $type problem - retrying later.");
-                    $this->queue->unshift($this->queueElement);
-                    $this->queueElement = null;
                     $this->releasePoster();
+                    $this->retryPost();
                 }
 
                 $this->queueLock = false;
@@ -521,6 +519,15 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         array_push($this->availableWorkers, $pid);
     }
 
+    private function retryPost()
+    {
+        if (isset($this->queueElement)) {
+            $this->logger->info("Retrying " . json_encode($this->queueElement) . " at a later date.");
+            $this->queue->unshift($this->queueElement);
+            $this->queueElement = null;
+        }
+    }
+
     /**
      * Clean up tracking, inputs, processes and receive buffers.
      *
@@ -558,6 +565,18 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
         if ($pid === $this->poster) {
             $this->poster = -1;
+            $this->retryPost();
+            $this->queueLock = false;
+        }
+
+        if (isset($this->startTimes[$pid])) {
+            $this->startTimes[$pid] = null;
+            unset($this->startTimes[$pid]);
+        }
+
+        if (isset($this->expectedRuntime[$pid])) {
+            $this->expectedRuntime[$pid] = null;
+            unset($this->expectedRuntime[$pid]);
         }
     }
 }
