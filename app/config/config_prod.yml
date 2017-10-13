@@ -21,14 +21,3 @@ monolog:
             channels: [alert]
         console:
             type: console
-
-guzzle:
-    logging: true
-
-    clients:
-        api_fireping:
-            base_url: "https://smokeping-dev.cegeka.be"
-
-            options:
-                headers:
-                    Accept: "application/json"

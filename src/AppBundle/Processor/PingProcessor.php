@@ -26,7 +26,6 @@ class PingProcessor extends Processor
 
         $times = array();
         foreach ($data as $key => $result) {
-            $datasources['ping'.($key+1)] = $result;
             if ($result != -1) {
                 $success++;
                 $times[] = $result;
@@ -34,8 +33,22 @@ class PingProcessor extends Processor
                 $failed++;
             }
         }
-
         sort($times);
+
+        $lowerLoss = floor($failed / 2);
+        $upperLoss = $failed - $lowerLoss;
+
+        $datasourceCounter = 1;
+        for ($i = 0; $i < $lowerLoss; $i++) {
+            $datasources['ping'.$datasourceCounter++] = "U";
+        }
+        foreach ($times as $time) {
+            $datasources['ping'.$datasourceCounter++] = $time;
+        }
+        for ($i = 0; $i < $upperLoss; $i++) {
+            $datasources['ping'.$datasourceCounter++] = "U";
+        }
+
         $datasources['loss'] = $failed / $probe->getSamples();
         if ($success == 0) {
             $datasources['median'] = "U";
