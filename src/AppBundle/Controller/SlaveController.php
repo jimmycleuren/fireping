@@ -221,6 +221,10 @@ class SlaveController extends Controller
                     }
                 }
             }
+
+            //execute 1 flush at the end, not for every datapoint
+            $this->em->flush();
+
         } catch (WrongTimestampRrdException $e) {
             $this->logger->warning($e->getMessage());
             return new JsonResponse(array('code' => 409, 'message' => $e->getMessage()), 409);

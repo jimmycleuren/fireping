@@ -57,7 +57,7 @@ abstract class Processor
                         $alert->setFirstseen(new \DateTime());
                     }
                     $alert->setLastseen(new \DateTime());
-                    $this->em->persist($alert);
+                    $this->em->persist($alert); //flush will be done in slavecontroller
 
                 } else {
                     $alert = $this->em->getRepository("AppBundle:Alert")->findOneBy(array(
@@ -68,12 +68,11 @@ abstract class Processor
                     ));
                     if ($alert) {
                         $alert->setActive(0);
-                        $this->em->persist($alert);
+                        $this->em->persist($alert); //flush will be done in slavecontroller
                     }
                 }
             }
         }
-        $this->em->flush();
     }
 
     protected function matchPattern($pattern, $value)
