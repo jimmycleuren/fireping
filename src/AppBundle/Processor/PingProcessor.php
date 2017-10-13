@@ -49,7 +49,7 @@ class PingProcessor extends Processor
             $datasources['ping'.$datasourceCounter++] = "U";
         }
 
-        $datasources['loss'] = $failed / $probe->getSamples();
+        $datasources['loss'] = $failed;
         if ($success == 0) {
             $datasources['median'] = "U";
         } else {

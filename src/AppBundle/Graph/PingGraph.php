@@ -64,7 +64,7 @@ class PingGraph extends RrdGraph
             $options[] = sprintf("DEF:%s=%s:%s:%s", $slavegroup->getId() . '-median', $this->storage->getFilePath($device, $probe, $slavegroup), 'median', "AVERAGE");
             $options[] = sprintf("DEF:%s=%s:%s:%s", $slavegroup->getId() . '-loss', $this->storage->getFilePath($device, $probe, $slavegroup), 'loss', "AVERAGE");
             $options[] = "CDEF:" . $slavegroup->getId() . "-dm0=" . $slavegroup->getId()."-median,0,100000,LIMIT";
-            $options[] = sprintf("CDEF:%s=%s,%s,%s", $slavegroup->getId() . '-loss_percent', $slavegroup->getId() . "-loss", "100", "*");
+            $options[] = sprintf("CDEF:%s=%s,%s,%s,%s,%s", $slavegroup->getId() . '-loss_percent', $slavegroup->getId() . "-loss", $probe->getSamples(), "/", "100", "*");
             $this->calculateStdDev($options, $this->storage->getFilePath($device, $probe, $slavegroup), $probe->getSamples(), $slavegroup);
 
             $options[] = "CDEF:" . $slavegroup->getId() . "-dmlow0=" . $slavegroup->getId() . "-dm0," . $slavegroup->getId() . "-sdev0,2,/,-";
@@ -99,6 +99,16 @@ class PingGraph extends RrdGraph
 
     public function getDetailGraph(Device $device, Probe $probe, SlaveGroup $slavegroup, $start = -3600, $end = "now", $debug = false)
     {
+        $lossColors = array(
+            0 => array('0', '#26ff00'),
+            1 => array("1/".$probe->getSamples(), '#00b8ff'),
+            2 => array("2/".$probe->getSamples(), '#0059ff'),
+            3 => array("3/".$probe->getSamples(), '#5e00ff'),
+            4 => array("4/".$probe->getSamples(), '#7e00ff'),
+            floor($probe->getSamples() / 2) => array(floor($probe->getSamples() / 2)."/".$probe->getSamples(), '#dd00ff'),
+            $probe->getSamples() - 1 => array(($probe->getSamples() - 1)."/".$probe->getSamples(), '#ff0000')
+        );
+
         $file = $this->storage->getFilePath($device, $probe, $slavegroup);
         if (!file_exists($file)) {
             return dirname(__FILE__)."/../../../web/notfound.png";;
@@ -136,13 +146,9 @@ class PingGraph extends RrdGraph
         }
 
         $options[] = "CDEF:dm0=median,0,$max,LIMIT";
-        $options[] = sprintf("CDEF:%s=%s,%s,%s",'loss_percent', "loss", "100", "*");
+        $options[] = sprintf("CDEF:%s=%s,%s,%s,%s,%s",'loss_percent', "loss", $probe->getSamples(), "/", "100", "*");
         $this->calculateStdDev($options, $this->storage->getFilePath($device, $probe, $slavegroup), $probe->getSamples(), $slavegroup);
         $options[] = "CDEF:s2d0=".$slavegroup->getId()."-sdev0";
-
-        $options[] = "CDEF:lossred=loss,0.2,GT,median,UNKN,IF";
-        $options[] = "CDEF:lossorange=loss,0.05,GE,median,UNKN,IF";
-        $options[] = "CDEF:lossgreen=loss,0.05,LT,median,UNKN,IF";
 
         if ($debug) {
             $options[] = "CDEF:upper=hwpredict,devpredict,2,*,+";
@@ -174,21 +180,31 @@ class PingGraph extends RrdGraph
             $options[] = sprintf("LINE1:%s%s", 'hwpredict', '#ff00ff');
         }
 
-        $options[] = sprintf("%s:%s%s", 'LINE1', 'lossgreen', '#00ff00');
-        $options[] = sprintf("%s:%s%s", 'LINE1', 'lossorange', '#ff9900');
-        $options[] = sprintf("%s:%s%s", 'LINE1', 'lossred', '#ff0000');
-
-        $options[] = "GPRINT:median:AVERAGE:median rtt\: %7.2lf ms avg";
+        $options[] = "GPRINT:median:AVERAGE:median rtt\: %8.2lf ms avg";
         $options[] = "GPRINT:median:MAX:%7.2lf ms max";
         $options[] = "GPRINT:median:MIN:%7.2lf ms min";
         $options[] = "GPRINT:median:LAST:%7.2lf ms now";
         $options[] = "GPRINT:s2d0:AVERAGE:%7.2lf ms sd";
         $options[] = "COMMENT: \\n";
 
-        $options[] = "GPRINT:loss_percent:AVERAGE:packet loss\: %7.2lf %% avg";
+        $options[] = "GPRINT:loss_percent:AVERAGE:packet loss\: %6.2lf %% avg";
         $options[] = "GPRINT:loss_percent:MAX:%8.2lf %% max";
         $options[] = "GPRINT:loss_percent:MIN:%8.2lf %% min";
         $options[] = "GPRINT:loss_percent:LAST:%8.2lf %% now";
+        $options[] = "COMMENT: \\n";
+        $options[] = "COMMENT:loss color\:  ";
+
+        $swidth = $this->getMedianMax($start, $this->storage->getFilePath($device, $probe, $slavegroup)) / 200;
+        $last = -1;
+        foreach ($lossColors as $loss => $color) {
+            $options[] = "CDEF:me$loss=loss,$last,GT,loss,$loss,LE,*,1,UNKN,IF,median,*";
+            $options[] = "CDEF:meL$loss=me$loss,$swidth,-";
+            $options[] = "CDEF:meH$loss=me$loss,0,*,$swidth,2,*,+";
+            $options[] = "AREA:meL$loss";
+            $options[] = "STACK:meH$loss$color[1]:$color[0]";
+            $last = $loss;
+        }
+
         $options[] = "COMMENT: \\n";
 
         $options[] = "COMMENT:".$probe->getName()." (".$probe->getSamples()." probes of type ".$probe->getType()." in ".$probe->getStep()." seconds) from ".$slavegroup->getName();
