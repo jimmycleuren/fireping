@@ -459,12 +459,14 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
                 if ($status === 200) {
                     $this->logger->info("Response ($status) from worker $pid for $type saved.");
+                    $this->queueElement = null;
                 } elseif ($status === 409) {
                     $this->logger->info("Response ($status) from worker $pid for $type discarded.");
+                    $this->queueElement = null;
                 } else {
                     $this->logger->info("Response ($status) from worker $pid for $type problem - retrying later.");
-                    $this->releasePoster();
                     $this->retryPost();
+                    $this->releasePoster();
                 }
 
                 $this->queueLock = false;
