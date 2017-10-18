@@ -41,7 +41,6 @@ abstract class Processor
                 $cacheItem = $this->cache->getItem($key);
                 $value = $cacheItem->get();
                 if ($this->matchPattern($pattern, $value)) {
-                    $this->container->get("monolog.logger.alert")->info("ALERT: ".$alertRule->getName()." on $device");
                     $alert = $this->em->getRepository("AppBundle:Alert")->findOneBy(array(
                         'device' => $device,
                         'alertRule' => $alertRule,
@@ -55,6 +54,7 @@ abstract class Processor
                         $alert->setSlaveGroup($group);
                         $alert->setActive(1);
                         $alert->setFirstseen(new \DateTime());
+                        $this->container->get("monolog.logger.alert")->info("ALERT: ".$alertRule->getName()." on $device");
                     }
                     $alert->setLastseen(new \DateTime());
                     $this->em->persist($alert); //flush will be done in slavecontroller
