@@ -21,3 +21,6 @@ monolog:
             channels: [alert]
         console:
             type: console
+        syslog_handler:
+            type: syslog
+            level: alert
