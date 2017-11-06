@@ -59,11 +59,17 @@ class AlertRule
     private $pattern;
 
     /**
-     * Each rule can optionally have one parent rule.
+     * Each rule can optionally have a parent rule.
      *
-     * @ORM\OneToOne(targetEntity="AlertRule")
+     * @ORM\ManyToOne(targetEntity="AlertRule", inversedBy="children")
+     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
      */
     private $parent;
+
+    /**
+     * @ORM\OneToMany(targetEntity="AlertRule", mappedBy="parent")
+     */
+    private $children;
 
     /**
      * Get id
