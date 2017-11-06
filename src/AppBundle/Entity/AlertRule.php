@@ -58,6 +58,12 @@ class AlertRule
      */
     private $pattern;
 
+    /**
+     * Each rule can optionally have one parent rule.
+     *
+     * @ORM\OneToOne(targetEntity="AlertRule")
+     */
+    private $parent;
 
     /**
      * Get id
@@ -163,5 +169,29 @@ class AlertRule
     public function getProbe()
     {
         return $this->probe;
+    }
+
+    /**
+     * Set parent
+     *
+     * @param \AppBundle\Entity\AlertRule $probe
+     *
+     * @return AlertRule
+     */
+    public function setParent(\AppBundle\Entity\AlertRule $parent = null)
+    {
+        $this->parent = $parent;
+
+        return $this;
+    }
+
+    /**
+     * Get parent
+     *
+     * @return \AppBundle\Entity\AlertRule
+     */
+    public function getParent()
+    {
+        return $this->parent;
     }
 }
