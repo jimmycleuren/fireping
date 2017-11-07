@@ -23,4 +23,5 @@ monolog:
             type: console
         syslog_handler:
             type: syslog
-            level: alert
+            level: info
+            channels: [alert]
