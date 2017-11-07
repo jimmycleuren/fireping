@@ -13,6 +13,9 @@ use AppBundle\Entity\AlertRule;
 use AppBundle\Entity\Device;
 use AppBundle\Entity\Probe;
 use AppBundle\Entity\SlaveGroup;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\EntityManager;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
 
 abstract class Processor
@@ -32,47 +35,55 @@ abstract class Processor
         $this->cache = new RedisAdapter($connection, 'fireping', 3600 * 24);
     }
 
-    protected function processAlertRules(Device $device, Probe $probe, SlaveGroup $group, $timestamp)
+    private function handleAlertRules(Collection $rules, Device $device, Probe $probe, SlaveGroup $group, $timestamp, AlertRule $parent = null)
     {
-        foreach ($device->getAllAlertRules() as $alertRule) {
-            if ($alertRule->getProbe() == $probe) {
-                $pattern = explode(",", $alertRule->getPattern());
-                $key = $this->getCacheKey($device, $alertRule);
-                $cacheItem = $this->cache->getItem($key);
-                $value = $cacheItem->get();
-                if ($this->matchPattern($pattern, $value)) {
-                    $alert = $this->em->getRepository("AppBundle:Alert")->findOneBy(array(
-                        'device' => $device,
-                        'alertRule' => $alertRule,
-                        'slaveGroup' => $group,
-                        'active' => 1
-                    ));
-                    if (!$alert) {
-                        $alert = new Alert();
-                        $alert->setDevice($device);
-                        $alert->setAlertRule($alertRule);
-                        $alert->setSlaveGroup($group);
-                        $alert->setActive(1);
-                        $alert->setFirstseen(new \DateTime());
-                        $this->container->get("monolog.logger.alert")->info("ALERT: ".$alertRule->getName()." on $device");
-                    }
-                    $alert->setLastseen(new \DateTime());
-                    $this->em->persist($alert); //flush will be done in slavecontroller
-
-                } else {
-                    $alert = $this->em->getRepository("AppBundle:Alert")->findOneBy(array(
-                        'device' => $device,
-                        'alertRule' => $alertRule,
-                        'slaveGroup' => $group,
-                        'active' => 1
-                    ));
-                    if ($alert) {
-                        $alert->setActive(0);
+        foreach ($rules as $alertRule) {
+            if ($alertRule->getParent() == $parent) {
+                if ($alertRule->getProbe() == $probe) {
+                    $pattern   = explode(",", $alertRule->getPattern());
+                    $key       = $this->getCacheKey($device, $alertRule);
+                    $cacheItem = $this->cache->getItem($key);
+                    $value     = $cacheItem->get();
+                    if ($this->matchPattern($pattern, $value)) {
+                        $alert = $this->em->getRepository("AppBundle:Alert")->findOneBy(array(
+                            'device' => $device,
+                            'alertRule' => $alertRule,
+                            'slaveGroup' => $group,
+                            'active' => 1
+                        ));
+                        if (!$alert) {
+                            $alert = new Alert();
+                            $alert->setDevice($device);
+                            $alert->setAlertRule($alertRule);
+                            $alert->setSlaveGroup($group);
+                            $alert->setActive(1);
+                            $alert->setFirstseen(new \DateTime());
+                            $this->container->get("monolog.logger.alert")->info("ALERT: " . $alertRule->getName() . " on $device");
+                        }
+                        $alert->setLastseen(new \DateTime());
                         $this->em->persist($alert); //flush will be done in slavecontroller
+
+                    } else {
+                        $alert = $this->em->getRepository("AppBundle:Alert")->findOneBy(array(
+                            'device' => $device,
+                            'alertRule' => $alertRule,
+                            'slaveGroup' => $group,
+                            'active' => 1
+                        ));
+                        if ($alert) {
+                            $alert->setActive(0);
+                            $this->em->persist($alert); //flush will be done in slavecontroller
+                        }
+                        $this->handleAlertRules($rules, $device, $probe, $group, $timestamp, $alertRule);
                     }
                 }
             }
         }
+    }
+
+    protected function processAlertRules(Device $device, Probe $probe, SlaveGroup $group, $timestamp)
+    {
+        $this->handleAlertRules($device->getAllAlertRules(), $device, $probe, $group, $timestamp);
     }
 
     protected function matchPattern($pattern, $value)
