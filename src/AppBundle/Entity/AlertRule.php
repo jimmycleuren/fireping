@@ -200,4 +200,9 @@ class AlertRule
     {
         return $this->parent;
     }
+
+    public function getChildren()
+    {
+        return $this->children;
+    }
 }
