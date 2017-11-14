@@ -1,2 +1,15 @@
 imports:
     - { resource: config.yml }
+
+monolog:
+    handlers:
+        main:
+            type: stream
+            path: '%kernel.logs_dir%/%kernel.environment%.log'
+            level: info
+        console:
+            type: console
+        syslog_handler:
+            type: syslog
+            level: info
+            channels: [alert]
