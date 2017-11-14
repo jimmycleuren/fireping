@@ -227,7 +227,6 @@ class Device
      * Get slavegroups
      *
      * @return \Doctrine\Common\Collections\Collection
-     * @Groups({"device"})
      */
     public function getSlaveGroups()
     {
@@ -283,7 +282,6 @@ class Device
      * Get probes
      *
      * @return \Doctrine\Common\Collections\Collection
-     * @Groups({"device"})
      */
     public function getProbes()
     {
@@ -339,7 +337,6 @@ class Device
      * Get alert rules
      *
      * @return \Doctrine\Common\Collections\Collection
-     * @Groups({"device"})
      */
     public function getAlertRules()
     {
