@@ -1,0 +1,109 @@
+imports:
+    - { resource: config.yml }
+
+# Twig Configuration
+twig:
+    debug: '%kernel.debug%'
+    strict_variables: '%kernel.debug%'
+    form_themes:
+        - 'bootstrap_3_layout.html.twig'
+
+# Doctrine Configuration
+doctrine:
+    dbal:
+        driver: pdo_mysql
+        host: '%database_host%'
+        port: '%database_port%'
+        dbname: '%database_name%'
+        user: '%database_user%'
+        password: '%database_password%'
+        charset: UTF8
+        # if using pdo_sqlite as your database driver:
+        #   1. add the path in parameters.yml
+        #     e.g. database_path: "%kernel.root_dir%/../var/data/data.sqlite"
+        #   2. Uncomment database_path in parameters.yml.dist
+        #   3. Uncomment next line:
+        #path: '%database_path%'
+
+    orm:
+        auto_generate_proxy_classes: '%kernel.debug%'
+        naming_strategy: doctrine.orm.naming_strategy.underscore
+        auto_mapping: true
+        # enable metadata caching
+        metadata_cache_driver: redis
+        # enable query caching
+        query_cache_driver: redis
+        second_level_cache:
+            region_cache_driver:
+                type: service
+                id: snc_second_level_cache
+            enabled: true
+            region_lifetime: 86400
+
+
+# Swiftmailer Configuration
+swiftmailer:
+    transport: '%mailer_transport%'
+    host: '%mailer_host%'
+    username: '%mailer_user%'
+    password: '%mailer_password%'
+    spool: { type: memory }
+
+# Nelmio CORS
+nelmio_cors:
+    defaults:
+        allow_origin:   ["%cors_allow_origin%"]
+        allow_methods:  ["POST", "PUT", "GET", "DELETE", "OPTIONS"]
+        allow_headers:  ["content-type", "authorization"]
+        expose_headers: ["link"]
+        max_age:        3600
+    paths:
+        '^/': ~
+
+api_platform:
+    collection:
+        pagination:
+            enabled: false
+
+guzzle:
+    logging: true
+
+    clients:
+        api_fireping:
+            base_url: '%slave.url%'
+
+            options:
+                headers:
+                    Accept: "application/json"
+
+                timeout: 20
+
+snc_redis:
+    # configure predis as client
+    clients:
+        default:
+            type: predis
+            alias: default
+            dsn: redis://localhost
+            logging: false
+        doctrine:
+            type: predis
+            alias: doctrine
+            dsn: redis://localhost
+            logging: false
+    # configure doctrine caching
+    doctrine:
+        metadata_cache:
+            client: doctrine
+            entity_manager: default
+            document_manager: default
+        result_cache:
+            client: doctrine
+            entity_manager: [default]
+        query_cache:
+            client: doctrine
+            entity_manager: default
+        second_level_cache:
+            client: doctrine
+            entity_manager: default
+            namespace: 'dslc:'
