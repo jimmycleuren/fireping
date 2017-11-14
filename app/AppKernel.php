@@ -14,15 +14,18 @@ class AppKernel extends Kernel
             new Symfony\Bundle\MonologBundle\MonologBundle(),
             new Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
-            new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
-            new ApiPlatform\Core\Bridge\Symfony\Bundle\ApiPlatformBundle(),
-            new Nelmio\CorsBundle\NelmioCorsBundle(),
-            new EightPoints\Bundle\GuzzleBundle\GuzzleBundle(),
-            new Snc\RedisBundle\SncRedisBundle(),
             new Ekino\Bundle\NewRelicBundle\EkinoNewRelicBundle(),
             new AppBundle\AppBundle(),
         ];
+
+        if (in_array($this->getEnvironment(), ['prod', 'dev', 'test'], true)) {
+            $bundles[] = new Snc\RedisBundle\SncRedisBundle();
+            $bundles[] = new EightPoints\Bundle\GuzzleBundle\GuzzleBundle();
+            $bundles[] = new Nelmio\CorsBundle\NelmioCorsBundle();
+            $bundles[] = new ApiPlatform\Core\Bridge\Symfony\Bundle\ApiPlatformBundle();
+            $bundles[] = new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle();
+        }
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
