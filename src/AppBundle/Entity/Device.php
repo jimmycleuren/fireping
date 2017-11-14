@@ -61,7 +61,7 @@ class Device
     private $ip;
 
     /**
-     * @ORM\ManyToMany(targetEntity="SlaveGroup", inversedBy="devices")
+     * @ORM\ManyToMany(targetEntity="SlaveGroup", inversedBy="devices", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="device_slavegroups",
      *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="slavegroup_id", referencedColumnName="id")}
@@ -72,7 +72,7 @@ class Device
     private $slavegroups;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Probe")
+     * @ORM\ManyToMany(targetEntity="Probe", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="device_probes",
      *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="probe_id", referencedColumnName="id")}
@@ -83,7 +83,7 @@ class Device
     private $probes;
 
     /**
-     * @ORM\ManyToMany(targetEntity="AlertRule")
+     * @ORM\ManyToMany(targetEntity="AlertRule", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="device_alert_rules",
      *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="alert_rule_id", referencedColumnName="id")}
@@ -95,7 +95,7 @@ class Device
 
     /**
      * @var alerts
-     * @ORM\OneToMany(targetEntity="Alert", mappedBy="device")
+     * @ORM\OneToMany(targetEntity="Alert", mappedBy="device", fetch="EXTRA_LAZY")
      */
     private $alerts;
 
