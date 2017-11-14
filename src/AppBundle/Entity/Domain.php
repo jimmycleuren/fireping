@@ -6,13 +6,17 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * Domain
  *
  * @ORM\Table(name="domain")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\DomainRepository")
- * @ApiResource
+ * @ApiResource(attributes={
+ *     "normalization_context"={"groups"={"domain"}},
+ *     "denormalization_context"={"groups"={"domain"}}
+ * })
  * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  */
 class Domain
@@ -23,6 +27,7 @@ class Domain
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"domain"})
      */
     private $id;
 
@@ -32,6 +37,7 @@ class Domain
      * @ORM\ManyToOne(targetEntity="Domain", inversedBy="subdomains")
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id", nullable=true)
      * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
+     * @Groups({"domain"})
      */
     private $parent;
 
@@ -40,6 +46,7 @@ class Domain
      *
      * @ORM\Column(name="name", type="string", length=255, unique=true)
      * @Assert\NotBlank
+     * @Groups({"domain"})
      */
     private $name;
 
@@ -49,6 +56,7 @@ class Domain
      *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="slavegroup_id", referencedColumnName="id")}
      *      )
+     * @Groups({"domain"})
      */
     private $slavegroups;
 
@@ -58,6 +66,7 @@ class Domain
      *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="probe_id", referencedColumnName="id")}
      *      )
+     * @Groups({"domain"})
      */
     private $probes;
 
@@ -67,6 +76,7 @@ class Domain
      *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="alert_rule_id", referencedColumnName="id")}
      *      )
+     * @Groups({"domain"})
      */
     private $alertRules;
 
@@ -74,6 +84,7 @@ class Domain
      * @var device
      * @ORM\OneToMany(targetEntity="Device", mappedBy="domain")
      * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
+     * @Groups({"domain"})
      */
     private $devices;
 
@@ -82,6 +93,7 @@ class Domain
      * @ORM\OneToMany(targetEntity="Domain", mappedBy="parent")
      * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
      * @ORM\OrderBy({"name" = "asc"})
+     * @Groups({"domain"})
      */
     private $subdomains;
 
@@ -326,6 +338,7 @@ class Domain
     public function getActiveAlerts()
     {
         $activeAlerts = new ArrayCollection();
+
         foreach ($this->devices as $device) {
             foreach ($device->getActiveAlerts() as $alert) {
                 $activeAlerts->add($alert);

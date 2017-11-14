@@ -96,7 +96,6 @@ class Device
     /**
      * @var alerts
      * @ORM\OneToMany(targetEntity="Alert", mappedBy="device")
-     * @Groups({"device"})
      */
     private $alerts;
 
