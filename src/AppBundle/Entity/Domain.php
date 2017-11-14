@@ -34,7 +34,7 @@ class Domain
     /**
      * @var domain
      *
-     * @ORM\ManyToOne(targetEntity="Domain", inversedBy="subdomains")
+     * @ORM\ManyToOne(targetEntity="Domain", inversedBy="subdomains", fetch="EXTRA_LAZY")
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id", nullable=true)
      * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
      * @Groups({"domain"})
@@ -51,7 +51,7 @@ class Domain
     private $name;
 
     /**
-     * @ORM\ManyToMany(targetEntity="SlaveGroup", inversedBy="domains")
+     * @ORM\ManyToMany(targetEntity="SlaveGroup", inversedBy="domains", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="domain_slavegroups",
      *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="slavegroup_id", referencedColumnName="id")}
@@ -61,7 +61,7 @@ class Domain
     private $slavegroups;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Probe")
+     * @ORM\ManyToMany(targetEntity="Probe", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="domain_probes",
      *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="probe_id", referencedColumnName="id")}
@@ -71,7 +71,7 @@ class Domain
     private $probes;
 
     /**
-     * @ORM\ManyToMany(targetEntity="AlertRule")
+     * @ORM\ManyToMany(targetEntity="AlertRule", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="domain_alert_rules",
      *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="alert_rule_id", referencedColumnName="id")}
@@ -82,7 +82,7 @@ class Domain
 
     /**
      * @var device
-     * @ORM\OneToMany(targetEntity="Device", mappedBy="domain")
+     * @ORM\OneToMany(targetEntity="Device", mappedBy="domain", fetch="EXTRA_LAZY")
      * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
      * @Groups({"domain"})
      */
@@ -90,7 +90,7 @@ class Domain
 
     /**
      * @var domain
-     * @ORM\OneToMany(targetEntity="Domain", mappedBy="parent")
+     * @ORM\OneToMany(targetEntity="Domain", mappedBy="parent", fetch="EXTRA_LAZY")
      * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
      * @ORM\OrderBy({"name" = "asc"})
      * @Groups({"domain"})
