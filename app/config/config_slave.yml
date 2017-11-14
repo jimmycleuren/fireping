@@ -9,7 +9,3 @@ monolog:
             level: info
         console:
             type: console
-        syslog_handler:
-            type: syslog
-            level: info
-            channels: [alert]
