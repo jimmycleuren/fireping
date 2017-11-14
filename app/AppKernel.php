@@ -15,13 +15,13 @@ class AppKernel extends Kernel
             new Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
+            new EightPoints\Bundle\GuzzleBundle\GuzzleBundle(),
             new Ekino\Bundle\NewRelicBundle\EkinoNewRelicBundle(),
             new AppBundle\AppBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['prod', 'dev', 'test'], true)) {
             $bundles[] = new Snc\RedisBundle\SncRedisBundle();
-            $bundles[] = new EightPoints\Bundle\GuzzleBundle\GuzzleBundle();
             $bundles[] = new Nelmio\CorsBundle\NelmioCorsBundle();
             $bundles[] = new ApiPlatform\Core\Bridge\Symfony\Bundle\ApiPlatformBundle();
             $bundles[] = new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle();

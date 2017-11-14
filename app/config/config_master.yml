@@ -66,19 +66,6 @@ api_platform:
         pagination:
             enabled: false
 
-guzzle:
-    logging: true
-
-    clients:
-        api_fireping:
-            base_url: '%slave.url%'
-
-            options:
-                headers:
-                    Accept: "application/json"
-
-                timeout: 20
-
 snc_redis:
     # configure predis as client
     clients:
