@@ -26,7 +26,7 @@ class Alert
      * @var int
      *
      * @ORM\ManyToOne(targetEntity="Device", inversedBy="alerts")
-     * @ORM\JoinColumn(name="device_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="device_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $device;
 
@@ -34,7 +34,7 @@ class Alert
      * @var int
      *
      * @ORM\ManyToOne(targetEntity="AlertRule")
-     * @ORM\JoinColumn(name="alert_rule_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="alert_rule_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $alertRule;
 
@@ -42,7 +42,7 @@ class Alert
      * @var int
      *
      * @ORM\ManyToOne(targetEntity="SlaveGroup")
-     * @ORM\JoinColumn(name="slave_group_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="slave_group_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $slaveGroup;
 
