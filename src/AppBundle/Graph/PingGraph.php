@@ -32,12 +32,7 @@ class PingGraph extends RrdGraph
             ),
         );
 
-        $slavegroups = $device->getSlaveGroups()->toArray();
-        $domain = $device->getDomain();
-        do {
-            $slavegroups = array_merge($slavegroups, $domain->getSlaveGroups()->toArray());
-            $domain = $domain->getParent();
-        } while ($domain != null);
+        $slavegroups = $device->getActiveSlaveGroups()->toArray();
 
         $start = date("U") - 3600 * 12;
         $title = $device->getName();

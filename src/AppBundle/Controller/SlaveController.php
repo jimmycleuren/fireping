@@ -131,20 +131,31 @@ class SlaveController extends Controller
 
             $query = $this->em->createQuery("SELECT d, p FROM AppBundle:Device d LEFT JOIN d.probes p WHERE d in (:devices)")
                 ->setParameter("devices", $slave->getSlaveGroup()->getDevices())
-                ->useQueryCache(true)
-            ;
+                ->useQueryCache(true);
 
             $devices = array_merge($devices, $query->getResult());
 
+            //remove devices that were selected, but the current slavegroup is not active for the device
+            foreach ($devices as $key => $device) {
+                foreach ($device->getActiveSlaveGroups() as $slavegroup) {
+                    if ($slavegroup->getId() == $slave->getSlaveGroup()->getId()) {
+                        $found = true;
+                    }
+                }
+                if (!$found) {
+                    unset($devices[$key]);
+                }
+            }
+
             $slaves = $slave->getSlaveGroup()->getSlaves();
             foreach ($slaves as $key => $value) {
-                if ($value->getLastContact() <  new \DateTime("10 minutes ago")) {
+                if ($value->getLastContact() < new \DateTime("10 minutes ago")) {
                     unset($slaves[$key]);
                 }
             }
 
             $slavePosition = 0;
-            foreach($slaves as $key => $temp) {
+            foreach ($slaves as $key => $temp) {
                 if ($temp->getId() == $slave->getId()) {
                     $slavePosition = $key;
                 }

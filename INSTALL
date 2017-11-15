@@ -18,6 +18,9 @@ git clone https://github.com/jimmycleuren/fireping.git
 cd fireping
 composer install
 
+Slave configuration
+-------------------
+
 When asked for the initial parameters, you can leave everything as default except the following:
 
     slave.name: <give a name to this slave>
@@ -28,7 +31,7 @@ Configure supervisor
 vi /etc/supervisor/supervisord.conf and append the following
 
 [program:fireping-slave]
-command=php /opt/fireping/bin/console app:probe:dispatcher --env=prod
+command=php /opt/fireping/bin/console app:probe:dispatcher --env=slave
 process_name=%(process_num)d
 numprocs=1
 directory=/tmp

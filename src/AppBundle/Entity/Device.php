@@ -234,24 +234,24 @@ class Device
     }
 
     /**
-     * Get probes
+     * Get active slavegroups
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getAllSlaveGroups()
+    public function getActiveSlaveGroups()
     {
-        $result = new ArrayCollection();
-        foreach ($this->slavegroups as $slavegroup) {
-            $result->add($slavegroup);
-        }
-        $parent = $this->getDomain();
-        while ($parent != null) {
-            foreach ($parent->getSlaveGroups() as $slavegroup) {
-                $result->add($slavegroup);
+        if (count($this->slavegroups) > 0) {
+            return $this->slavegroups;
+        } else {
+            $parent = $this->getDomain();
+            while ($parent != null) {
+                if (count($parent->getSlaveGroups()) > 0) {
+                    return $parent->getSlaveGroups();
+                }
+                $parent = $parent->getParent();
             }
-            $parent = $parent->getParent();
         }
-        return $result;
+        return new ArrayCollection();
     }
 
     /**
@@ -289,24 +289,24 @@ class Device
     }
 
     /**
-     * Get probes
+     * Get active probes
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getAllProbes()
+    public function getActiveProbes()
     {
-        $result = new ArrayCollection();
-        foreach ($this->probes as $probe) {
-            $result->add($probe);
+        if (count($this->probes) > 0) {
+            return $this->probes;
+        } else {
+            $parent = $this->getDomain();
+            while ($parent != null) {
+                if (count($parent->getProbes()) > 0) {
+                    return $parent->getProbes();
+                }
+                $parent = $parent->getParent();
+            }
         }
-        $parent = $this->getDomain();
-        while ($parent != null) {
-              foreach ($parent->getProbes() as $probe) {
-                      $result->add($probe);
-                  }
-            $parent = $parent->getParent();
-        }
-        return $result;
+        return new ArrayCollection();
     }
 
     /**
@@ -344,24 +344,24 @@ class Device
     }
 
     /**
-     * Get alert rules
+     * Get active alert rules. Alert rules can be overridden on every level, so only the lowest level with alert rules configured will be used
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getAllAlertRules()
+    public function getActiveAlertRules()
     {
-        $result = new ArrayCollection();
-        foreach ($this->alertRules as $alertRule) {
-            $result->add($alertRule);
-        }
-        $parent = $this->getDomain();
-        while ($parent != null) {
-            foreach ($parent->getAlertRules() as $alertRule) {
-                $result->add($alertRule);
+        if (count($this->alertRules) > 0) {
+            return $this->alertRules;
+        } else {
+            $parent = $this->getDomain();
+            while ($parent != null) {
+                if (count($parent->getAlertRules()) > 0) {
+                    return $parent->getAlertRules();
+                }
+                $parent = $parent->getParent();
             }
-            $parent = $parent->getParent();
         }
-        return $result;
+        return new ArrayCollection();
     }
 
     public function getActiveAlerts()

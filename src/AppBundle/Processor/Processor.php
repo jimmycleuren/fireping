@@ -83,7 +83,7 @@ abstract class Processor
 
     protected function processAlertRules(Device $device, Probe $probe, SlaveGroup $group, $timestamp)
     {
-        $this->handleAlertRules($device->getAllAlertRules(), $device, $probe, $group, $timestamp);
+        $this->handleAlertRules($device->getActiveAlertRules(), $device, $probe, $group, $timestamp);
     }
 
     protected function matchPattern($pattern, $value)
@@ -122,7 +122,7 @@ abstract class Processor
 
     protected function cacheResults(Device $device, $timestamp, $datasources)
     {
-        foreach ($device->getAllAlertRules() as $alertRule) {
+        foreach ($device->getActiveAlertRules() as $alertRule) {
             $pattern = explode(",", $alertRule->getPattern());
             $key = $this->getCacheKey($device, $alertRule);
             $cacheItem = $this->cache->getItem($key);
