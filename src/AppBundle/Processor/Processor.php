@@ -58,7 +58,7 @@ abstract class Processor
                             $alert->setSlaveGroup($group);
                             $alert->setActive(1);
                             $alert->setFirstseen(new \DateTime());
-                            $this->container->get("monolog.logger.alert")->info("ALERT: " . $alertRule->getName() . " on $device");
+                            $this->container->get("monolog.logger.alert")->info("ALERT: " . $alertRule->getName() . " on $device from $group");
                         }
                         $alert->setLastseen(new \DateTime());
                         $this->em->persist($alert); //flush will be done in slavecontroller
@@ -73,6 +73,7 @@ abstract class Processor
                         if ($alert) {
                             $alert->setActive(0);
                             $this->em->persist($alert); //flush will be done in slavecontroller
+                            $this->container->get("monolog.logger.alert")->info("CLEAR: " . $alertRule->getName() . " on $device from $group");
                         }
                         $this->handleAlertRules($rules, $device, $probe, $group, $timestamp, $alertRule);
                     }

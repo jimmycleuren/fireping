@@ -137,6 +137,7 @@ class SlaveController extends Controller
 
             //remove devices that were selected, but the current slavegroup is not active for the device
             foreach ($devices as $key => $device) {
+                $found = false;
                 foreach ($device->getActiveSlaveGroups() as $slavegroup) {
                     if ($slavegroup->getId() == $slave->getSlaveGroup()->getId()) {
                         $found = true;

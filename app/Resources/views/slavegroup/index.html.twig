@@ -8,6 +8,7 @@
             <tr>
                 <th>Id</th>
                 <th>Name</th>
+                <th>Assigned slaves</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -16,6 +17,7 @@
             <tr>
                 <td><a href="{{ path('slavegroup_show', { 'id': slaveGroup.id }) }}">{{ slaveGroup.id }}</a></td>
                 <td>{{ slaveGroup.name }}</td>
+                <td>{{ slaveGroup.slaves|length }}</td>
                 <td>
                     <a href="{{ path('slavegroup_edit', { 'id': slaveGroup.id }) }}" class="btn btn-default btn-xs">edit</a>
                 </td>
