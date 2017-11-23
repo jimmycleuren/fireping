@@ -41,7 +41,7 @@ abstract class Processor
             if ($alertRule->getParent() == $parent) {
                 if ($alertRule->getProbe() == $probe) {
                     $pattern   = explode(",", $alertRule->getPattern());
-                    $key       = $this->getCacheKey($device, $alertRule);
+                    $key       = $this->getCacheKey($device, $alertRule, $group);
                     $cacheItem = $this->cache->getItem($key);
                     $value     = $cacheItem->get();
                     if ($this->matchPattern($pattern, $value)) {
@@ -121,11 +121,11 @@ abstract class Processor
         return $result;
     }
 
-    protected function cacheResults(Device $device, $timestamp, $datasources)
+    protected function cacheResults(Device $device, SlaveGroup $group, $timestamp, $datasources)
     {
         foreach ($device->getActiveAlertRules() as $alertRule) {
             $pattern = explode(",", $alertRule->getPattern());
-            $key = $this->getCacheKey($device, $alertRule);
+            $key = $this->getCacheKey($device, $alertRule, $group);
             $cacheItem = $this->cache->getItem($key);
             $value = $cacheItem->get();
             if (!is_array($value)) {
@@ -147,9 +147,9 @@ abstract class Processor
         }
     }
 
-    protected function getCacheKey(Device $device, AlertRule $alertRule)
+    protected function getCacheKey(Device $device, AlertRule $alertRule, SlaveGroup $group)
     {
-        return "pattern.".$device->getId().".".$alertRule->getProbe()->getId().".".$alertRule->getId();
+        return "pattern.".$device->getId().".".$alertRule->getProbe()->getId().".".$alertRule->getId().".".$group->getId();
     }
 
     abstract function storeResult(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data);
