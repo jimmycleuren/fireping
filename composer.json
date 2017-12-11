@@ -50,9 +50,10 @@
     },
     "require-dev": {
         "api-platform/schema-generator": "^1.2",
+        "doctrine/doctrine-fixtures-bundle": "^3.0",
+        "laravel/homestead": "^6.5",
         "sensio/generator-bundle": "^3.0",
-        "symfony/phpunit-bridge": "^3.0",
-        "laravel/homestead": "^6.5"
+        "symfony/phpunit-bridge": "^3.0"
     },
     "scripts": {
         "symfony-scripts": [

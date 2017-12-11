@@ -4,6 +4,15 @@ parameters:
     #parameter_name: value
 
 services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    AppBundle\:
+        resource: '../../src/AppBundle/*'
+        exclude: '../../src/AppBundle/{Command,Controller,DependencyInjection,Entity,Exception,Form,Graph,Instruction,OutputFormatter,Probe,Processor,Repository,ShellCommand,Storage,Tests}'
+
     #service_name:
     #    class: AppBundle\Directory\ClassName
     #    arguments: ['@another_service_name', 'plain_value', '%parameter_name%']
