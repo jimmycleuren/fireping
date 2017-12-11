@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class CreateUserCommandTest extends KernelTestCase
+class SecurityCheckerCommandTest extends KernelTestCase
 {
     public function testExecute()
     {
@@ -21,6 +21,7 @@ class CreateUserCommandTest extends KernelTestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
             'command'  => $command->getName(),
+            '--end-point' => 'http://security.sensiolabs.org/check_lock'
         ));
         $this->assertRegExp('/No packages have known vulnerabilities/', $commandTester->getDisplay());
     }
