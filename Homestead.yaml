@@ -1,0 +1,21 @@
+ip: 192.168.230.11
+memory: 2048
+cpus: 2
+provider: virtualbox
+authorize: C:\Users\jimmyc\Documents\Identity.pub
+#keys:
+#    - ~/.ssh/id_rsa
+folders:
+    -
+        map: C:\Users\jimmyc\PhpstormProjects\fireping
+        to: /home/vagrant/fireping
+        type: "nfs"
+sites:
+    -
+        map: nsportal.dev
+        to: /home/vagrant/fireping/web
+        type: symfony
+databases:
+    - fireping
+name: fireping
+hostname: fireping
