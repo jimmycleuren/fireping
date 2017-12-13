@@ -24,6 +24,6 @@ parameters:
     slave.instructions:
         ping: ~
         mtr: ~
-    slave.url: https://smokeping-dev.cegeka.be
+    slave.url: https://fireping.cegeka.com
     
     storage: rrd
