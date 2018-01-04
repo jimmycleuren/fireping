@@ -10,7 +10,7 @@ parameters:
 
 framework:
     #esi: ~
-    #translator: { fallbacks: ['%locale%'] }
+    translator: { fallbacks: [ "en" ] }
     secret: '%secret%'
     router:
         resource: '%kernel.root_dir%/config/routing.yml'
@@ -54,3 +54,35 @@ ekino_new_relic:
     log_commands: true                    # If true, logs CLI commands to New Relic as Background jobs (>2.3 only)
     transaction_naming: route             # route, controller or service (see below)
     transaction_naming_service: ~         # Transaction naming service (see below)
+
+easy_admin:
+    site_name: 'Fireping'
+    list:
+        max_results: 30
+        actions:
+            - { name: 'show', icon: 'search', label: '' }
+            - { name: 'edit', icon: 'pencil', label: '' }
+            - { name: 'delete', icon: 'remove', label: '' }
+    show:
+        max_results: 20
+    entities:
+        Domain:
+            class: AppBundle\Entity\Domain
+            list:
+                fields: ['id', 'name', 'parent']
+        Device:
+            class: AppBundle\Entity\Device
+            list:
+                fields: ['id', 'name', 'ip', 'domain']
+        Alert:
+            class: AppBundle\Entity\Alert
+            disabled_actions: ['new']
+        AlertRule:
+            class: AppBundle\Entity\AlertRule
+        Probe:
+            class: AppBundle\Entity\Probe
+        Slave:
+            class: AppBundle\Entity\Slave
+            disabled_actions: ['new']
+        SlaveGroup:
+            class: AppBundle\Entity\SlaveGroup

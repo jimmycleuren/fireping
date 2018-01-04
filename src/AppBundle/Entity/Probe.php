@@ -194,4 +194,9 @@ class Probe
     {
         return $this->arguments;
     }
+
+    public function __toString()
+    {
+        return $this->name;
+    }
 }
