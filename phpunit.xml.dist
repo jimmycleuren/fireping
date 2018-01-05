@@ -13,7 +13,7 @@
     </php>
 
     <testsuites>
-        <testsuite name="Project Test Suite">
+        <testsuite name="Fireping Test Suite">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
@@ -22,6 +22,7 @@
         <whitelist>
             <directory>src</directory>
             <exclude>
+                <directory>src/*Bundle/DataFixtures</directory>
                 <directory>src/*Bundle/Resources</directory>
                 <directory>src/*/*Bundle/Resources</directory>
                 <directory>src/*/Bundle/*Bundle/Resources</directory>

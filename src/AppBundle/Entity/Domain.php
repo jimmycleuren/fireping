@@ -97,6 +97,19 @@ class Domain
      */
     private $subdomains;
 
+    /**
+     * Set id
+     *
+     * @param int $id
+     *
+     * @return Domain
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
 
     /**
      * Get id

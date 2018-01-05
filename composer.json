@@ -1,6 +1,6 @@
 {
     "name": "jimmycleuren/fireping",
-    "license": "proprietary",
+    "license": "GPL-3.0",
     "type": "project",
     "autoload": {
         "psr-4": {

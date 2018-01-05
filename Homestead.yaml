@@ -12,9 +12,12 @@ folders:
         type: "nfs"
 sites:
     -
-        map: nsportal.dev
+        map: fireping.dev
         to: /home/vagrant/fireping/web
         type: symfony
+    -
+        map: fireping.coverage
+        to: /home/vagrant/fireping-coverage
 databases:
     - fireping
 name: fireping
