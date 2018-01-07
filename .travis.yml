@@ -21,11 +21,10 @@ matrix:
     - php: 7.0
     - php: 7.1
 
-before_script:
-  - pecl install rrd
-
 # Update composer
 before-install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y librrd-dev
   - composer self-update
 
 # Install composer dependencies,
@@ -36,6 +35,9 @@ install:
   - php bin/console doctrine:database:create --env=test
   - php bin/console doctrine:schema:create --env=test
   - php bin/console doctrine:fixtures:load -n --env=test
+
+before_script:
+  - pecl install rrd
 
 # Run script
 script:
