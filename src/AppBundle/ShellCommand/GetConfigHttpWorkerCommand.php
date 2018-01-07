@@ -22,6 +22,8 @@ class GetConfigHttpWorkerCommand implements CommandInterface
 
     protected $etag;
 
+    protected $arguments;
+
     function __construct($args)
     {
         $this->arguments = $args;

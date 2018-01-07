@@ -10,6 +10,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 class DomainController extends Controller
 {
+    private $em = null;
+
     /**
      * @Route("/domain/{id}")
      * @ParamConverter("domain", class="AppBundle:Domain")

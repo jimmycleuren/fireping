@@ -10,6 +10,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 class DeviceController extends Controller
 {
+    private $em = null;
+
     /**
      * @Route("/device/{id}")
      * @ParamConverter("device", class="AppBundle:Device")

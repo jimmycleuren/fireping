@@ -12,6 +12,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 class AlertController extends Controller
 {
+    private $em = null;
+
     /**
      * @Route("/alerts")
      */

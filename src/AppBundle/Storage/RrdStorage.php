@@ -16,7 +16,8 @@ use AppBundle\Exception\WrongTimestampRrdException;
 
 class RrdStorage extends Storage
 {
-    private $path;
+    private $logger = null;
+    private $path = null;
     private $archives = array(
         array(
             'function' => 'AVERAGE',
@@ -52,7 +53,8 @@ class RrdStorage extends Storage
 
     public function __construct($container)
     {
-        $this->container = $container;
+        parent::__construct($container);
+
         $this->logger = $container->get('logger');
         $this->path = $container->get('kernel')->getRootDir()."/../var/rrd/";
 

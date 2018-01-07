@@ -20,6 +20,9 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class SlaveController extends Controller
 {
+    private $em = null;
+    private $logger = null;
+
     /**
      * Lists all slave entities.
      *

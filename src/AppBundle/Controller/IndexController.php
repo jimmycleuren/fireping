@@ -8,6 +8,8 @@ use Symfony\Component\HttpFoundation\Request;
 
 class IndexController extends Controller
 {
+    private $em = null;
+
     /**
      * @Route("/", name="homepage")
      */

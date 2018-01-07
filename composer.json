@@ -53,6 +53,7 @@
         "api-platform/schema-generator": "^1.2",
         "doctrine/doctrine-fixtures-bundle": "^3.0",
         "laravel/homestead": "^6.5",
+        "phpstan/phpstan": "^0.9.1",
         "sensio/generator-bundle": "^3.0",
         "symfony/phpunit-bridge": "^3.0"
     },
@@ -70,7 +71,8 @@
         ],
         "post-update-cmd": [
             "@symfony-scripts"
-        ]
+        ],
+        "phpstan": "vendor/bin/phpstan analyse src --level=0"
     },
     "config": {
         "sort-packages": true

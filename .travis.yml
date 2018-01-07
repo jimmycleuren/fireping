@@ -37,6 +37,7 @@ install:
 # Run script
 script:
   - phpunit
+  - composer phpstan
 
 # After a build, send email notification with the build results
 notifications:

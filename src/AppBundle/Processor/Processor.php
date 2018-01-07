@@ -20,6 +20,9 @@ use Symfony\Component\Cache\Adapter\RedisAdapter;
 
 abstract class Processor
 {
+    protected $logger = null;
+    protected $em = null;
+
     protected $storage;
     protected $container;
     protected $cache;

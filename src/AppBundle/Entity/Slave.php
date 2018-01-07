@@ -36,7 +36,7 @@ class Slave
     private $slavegroup;
 
     /**
-     * @var datetime
+     * @var \Datetime
      *
      * @ORM\Column(name="last_contact", type="datetime")
      */
@@ -88,83 +88,6 @@ class Slave
     public function getLastContact()
     {
         return $this->lastContact;
-    }
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->devices = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->domains = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
-    /**
-     * Add device
-     *
-     * @param \AppBundle\Entity\Device $device
-     *
-     * @return Slave
-     */
-    public function addDevice(\AppBundle\Entity\Device $device)
-    {
-        $this->devices[] = $device;
-
-        return $this;
-    }
-
-    /**
-     * Remove device
-     *
-     * @param \AppBundle\Entity\Device $device
-     */
-    public function removeDevice(\AppBundle\Entity\Device $device)
-    {
-        $this->devices->removeElement($device);
-    }
-
-    /**
-     * Get devices
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getDevices()
-    {
-        return $this->devices;
-    }
-
-    /**
-     * Add domain
-     *
-     * @param \AppBundle\Entity\Domain $domain
-     *
-     * @return Slave
-     */
-    public function addDomain(\AppBundle\Entity\Domain $domain)
-    {
-        $this->domains[] = $domain;
-
-        return $this;
-    }
-
-    /**
-     * Remove domain
-     *
-     * @param \AppBundle\Entity\Domain $domain
-     */
-    public function removeDomain(\AppBundle\Entity\Domain $domain)
-    {
-        $this->domains->removeElement($domain);
-    }
-
-    /**
-     * Get domains
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getDomains()
-    {
-        return $this->domains;
     }
 
     /**

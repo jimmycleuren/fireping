@@ -94,7 +94,6 @@ class Device
     private $alertRules;
 
     /**
-     * @var alerts
      * @ORM\OneToMany(targetEntity="Alert", mappedBy="device", fetch="EXTRA_LAZY")
      */
     private $alerts;
