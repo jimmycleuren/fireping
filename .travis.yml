@@ -21,6 +21,9 @@ matrix:
     - php: 7.0
     - php: 7.1
 
+before_script:
+  - pecl install rrd
+
 # Update composer
 before-install:
   - composer self-update
