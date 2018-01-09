@@ -11,12 +11,13 @@ namespace AppBundle\Storage;
 use AppBundle\Entity\Device;
 use AppBundle\Entity\Probe;
 use AppBundle\Entity\SlaveGroup;
+use Psr\Container\ContainerInterface;
 
 abstract class Storage
 {
     protected $container;
 
-    public function __construct($container)
+    public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
     }

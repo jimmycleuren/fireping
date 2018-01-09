@@ -13,9 +13,11 @@ use AppBundle\Entity\AlertRule;
 use AppBundle\Entity\Device;
 use AppBundle\Entity\Probe;
 use AppBundle\Entity\SlaveGroup;
+use AppBundle\Storage\RrdStorage;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManager;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
 
 abstract class Processor
@@ -27,15 +29,18 @@ abstract class Processor
     protected $container;
     protected $cache;
 
-    public function __construct($container)
+    public function __construct(ContainerInterface $container, RrdStorage $rrdStorage)
     {
         $this->container = $container;
-        $this->storage = $container->get('storage.'.$container->getParameter('storage'));
         $this->logger = $container->get('logger');
         $this->em = $this->container->get('doctrine')->getManager();
 
         $connection = RedisAdapter::createConnection("redis://localhost");
         $this->cache = new RedisAdapter($connection, 'fireping', 3600 * 24);
+
+        if ($container->getParameter('storage') == "rrd") {
+            $this->storage = $rrdStorage;
+        }
     }
 
     private function handleAlertRules(Collection $rules, Device $device, Probe $probe, SlaveGroup $group, $timestamp, AlertRule $parent = null)

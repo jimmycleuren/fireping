@@ -13,6 +13,7 @@ use AppBundle\Entity\Probe;
 use AppBundle\Entity\SlaveGroup;
 use AppBundle\Exception\RrdException;
 use AppBundle\Exception\WrongTimestampRrdException;
+use Psr\Container\ContainerInterface;
 
 class RrdStorage extends Storage
 {
@@ -51,7 +52,7 @@ class RrdStorage extends Storage
         ),
     );
 
-    public function __construct($container)
+    public function __construct(ContainerInterface $container)
     {
         parent::__construct($container);
 

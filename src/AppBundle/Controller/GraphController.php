@@ -30,7 +30,7 @@ class GraphController extends Controller
      * @Route("/api/graphs/summary/{id}")
      * @ParamConverter("device", class="AppBundle:Device")
      */
-    public function summaryAction($device)
+    public function summaryAction($device, PingGraph $pingGraph)
     {
         $probes = array();
 
@@ -50,7 +50,7 @@ class GraphController extends Controller
 
         foreach ($probes as $probe) {
             if ($probe->getType() == "ping") {
-                $filename = $this->get('graph.ping')->getSummaryGraph($device, $probe);
+                $filename = $pingGraph->getSummaryGraph($device, $probe);
                 $response = new Response(file_get_contents($filename), 200);
                 $response->headers->set('Content-Type', 'image/png');
 
@@ -71,14 +71,14 @@ class GraphController extends Controller
      * @ParamConverter("probe", class="AppBundle:Probe", options={"id" = "probe_id"})
      * @ParamConverter("slavegroup", class="AppBundle:SlaveGroup", options={"id" = "slavegroup_id"})
      */
-    public function detailAction(Device $device, Probe $probe, SlaveGroup $slavegroup, Request $request)
+    public function detailAction(Device $device, Probe $probe, SlaveGroup $slavegroup, Request $request, PingGraph $pingGraph)
     {
         $start = $request->get('start');
         $end = $request->get('end');
         $debug = $this->container->get('session')->get('debug');
 
         if ($probe->getType() == "ping") {
-            $filename = $this->get('graph.ping')->getDetailGraph($device, $probe, $slavegroup, $start, $end, $debug);
+            $filename = $pingGraph->getDetailGraph($device, $probe, $slavegroup, $start, $end, $debug);
             $response = new Response(file_get_contents($filename), 200);
             $response->headers->set('Content-Type', 'image/png');
 
