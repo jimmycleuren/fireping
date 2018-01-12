@@ -78,8 +78,8 @@ class GraphController extends Controller
      */
     public function detailAction(Device $device, Probe $probe, SlaveGroup $slavegroup, Request $request, PingGraph $pingGraph)
     {
-        $start = $request->get('start');
-        $end = $request->get('end');
+        $start = $request->get('start') ?: -3600;
+        $end = $request->get('end') ?: date("U");
         $debug = $this->container->get('session')->get('debug');
 
         if ($probe->getType() == "ping") {

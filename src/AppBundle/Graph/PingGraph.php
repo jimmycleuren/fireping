@@ -92,8 +92,10 @@ class PingGraph extends RrdGraph
         return $imageFile;
     }
 
-    public function getDetailGraph(Device $device, Probe $probe, SlaveGroup $slavegroup, $start = -3600, $end = "now", $debug = false)
+    public function getDetailGraph(Device $device, Probe $probe, SlaveGroup $slavegroup, $start = -3600, $end = null, $debug = false)
     {
+        if (!$end) $end = date("U");
+
         $lossColors = array(
             0 => array('0', '#26ff00'),
             1 => array("1/".$probe->getSamples(), '#00b8ff'),

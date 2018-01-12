@@ -56,14 +56,10 @@ class PingProcessor extends Processor
             $datasources['median'] = $times[floor(count($times) / 2)];
         }
 
-        try {
-            $this->storage->store($device, $probe, $group, $timestamp, $datasources);
-            $datasources['failures'] = $this->storage->fetch($device, $probe, $group, $timestamp, 'median', 'FAILURES');
+        $this->storage->store($device, $probe, $group, $timestamp, $datasources);
+        $datasources['failures'] = $this->storage->fetch($device, $probe, $group, $timestamp, 'median', 'FAILURES');
 
-            $this->cacheResults($device, $group, $timestamp, $datasources);
-            $this->processAlertRules($device, $probe, $group, $timestamp);
-        } catch (WrongTimestampRrdException $e) {
-            $this->logger->error($e->getMessage());
-        }
+        $this->cacheResults($device, $group, $timestamp, $datasources);
+        $this->processAlertRules($device, $probe, $group, $timestamp);
     }
 }

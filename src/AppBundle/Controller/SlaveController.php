@@ -10,6 +10,8 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Slave;
 use AppBundle\Exception\WrongTimestampRrdException;
+use AppBundle\Processor\PingProcessor;
+use AppBundle\Processor\TracerouteProcessor;
 use AppBundle\Storage\RrdStorage;
 use Nette\Utils\Json;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -134,21 +136,25 @@ class SlaveController extends Controller
      *
      * Process new results from a slave
      */
-    public function resultAction(Slave $slave, Request $request)
+    public function resultAction(Slave $slave, Request $request, PingProcessor $pingProcessor, TracerouteProcessor $tracerouteProcessor)
     {
+        $this->em = $this->container->get('doctrine')->getManager();
+        $this->logger = $this->container->get('logger');
+
+        $slave->setLastContact(new \DateTime());
+        $this->em->persist($slave);
+        $this->em->flush();
+
+        $probeRepository = $this->em->getRepository("AppBundle:Probe");
+        $deviceRepository = $this->em->getRepository("AppBundle:Device");
+
+        $probes = json_decode($request->getContent());
+
+        if ($probes === null || count($probes) == 0) {
+            return new JsonResponse(array('code' => 400, 'message' => 'Invalid json input'), 400);
+        }
+
         try {
-            $this->em = $this->container->get('doctrine')->getManager();
-            $this->logger = $this->container->get('logger');
-
-            $slave->setLastContact(new \DateTime());
-            $this->em->persist($slave);
-            $this->em->flush();
-
-            $probeRepository = $this->em->getRepository("AppBundle:Probe");
-            $deviceRepository = $this->em->getRepository("AppBundle:Device");
-
-            $probes = json_decode($request->getContent());
-
             foreach ($probes as $probeId => $probeData) {
                 if (!isset($probeData->timestamp)) {
                     $this->logger->warning("Incorrect data received from slave");
@@ -167,10 +173,10 @@ class SlaveController extends Controller
                     $this->logger->debug("Updating data for probe " . $probe->getType() . " on " . $device->getName());
                     switch ($probe->getType()) {
                         case "ping":
-                            $this->container->get('processor.ping')->storeResult($device, $probe, $slave->getSlaveGroup(), $timestamp, $targetData);
+                            $pingProcessor->storeResult($device, $probe, $slave->getSlaveGroup(), $timestamp, $targetData);
                             break;
                         case "traceroute":
-                            $this->container->get('processor.traceroute')->storeResult($device, $probe, $slave->getSlaveGroup(), $timestamp, $targetData);
+                            $tracerouteProcessor->storeResult($device, $probe, $slave->getSlaveGroup(), $timestamp, $targetData);
                             break;
                     }
                 }
