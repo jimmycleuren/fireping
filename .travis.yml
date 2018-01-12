@@ -18,9 +18,9 @@ matrix:
   # Fast finish allows to set the build as "finished" even if the "allow_failures" matrix elements are not finished yet.
   fast_finish: true
   include:
-    - php: 7.1
     - php: 7.2
       env: 'HIGHEST_LOWEST="update"'
+    - php: 7.1
     - php: 7.0
       env: 'HIGHEST_LOWEST="update --prefer-lowest"'
 

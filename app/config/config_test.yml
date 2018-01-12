@@ -22,4 +22,3 @@ doctrine:
         user:    "test"
         path:    "%kernel.root_dir%/../var/data.sqlite"
         charset: UTF8
-        dbname: null
