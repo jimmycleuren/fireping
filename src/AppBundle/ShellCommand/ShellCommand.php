@@ -48,7 +48,7 @@ abstract class ShellCommand implements CommandInterface
     }
 
     /**
-     * @param mixed $outputFormatter
+     * @param OutputFormatterInterface $outputFormatter
      */
     public function setOutputFormatter(OutputFormatterInterface $outputFormatter)
     {

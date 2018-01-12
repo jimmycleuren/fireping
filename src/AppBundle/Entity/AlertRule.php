@@ -34,7 +34,7 @@ class AlertRule
     private $name;
 
     /**
-     * @var probe
+     * @var Probe
      *
      * @ORM\ManyToOne(targetEntity="Probe")
      * @ORM\JoinColumn(name="probe_id", referencedColumnName="id")
@@ -160,7 +160,7 @@ class AlertRule
      *
      * @return AlertRule
      */
-    public function setProbe(\AppBundle\Entity\Probe $probe = null)
+    public function setProbe(\AppBundle\Entity\Probe $probe)
     {
         $this->probe = $probe;
 
@@ -180,7 +180,7 @@ class AlertRule
     /**
      * Set parent
      *
-     * @param \AppBundle\Entity\AlertRule $probe
+     * @param \AppBundle\Entity\AlertRule $parent
      *
      * @return AlertRule
      */

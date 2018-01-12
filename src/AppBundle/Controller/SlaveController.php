@@ -11,6 +11,7 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Slave;
 use AppBundle\Exception\WrongTimestampRrdException;
 use AppBundle\Storage\RrdStorage;
+use Nette\Utils\Json;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -42,7 +43,7 @@ class SlaveController extends Controller
     }
 
     /**
-     * @param $id
+     * @param string $id
      * @return JsonResponse
      *
      * @Method("GET")
@@ -124,8 +125,8 @@ class SlaveController extends Controller
     }
 
     /**
-     * @param $id
-     * @return array
+     * @param Slave $slave
+     * @return JsonResponse
      *
      * @Method("POST")
      * @Route("/api/slaves/{id}/result")
@@ -133,7 +134,7 @@ class SlaveController extends Controller
      *
      * Process new results from a slave
      */
-    public function resultAction($slave, Request $request)
+    public function resultAction(Slave $slave, Request $request)
     {
         try {
             $this->em = $this->container->get('doctrine')->getManager();
@@ -190,8 +191,8 @@ class SlaveController extends Controller
     }
 
     /**
-     * @param $id
-     * @return array
+     * @param Slave $slave
+     * @return JsonResponse
      *
      * @Method("POST")
      * @Route("/api/slaves/{id}/error")

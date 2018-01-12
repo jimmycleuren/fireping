@@ -23,7 +23,7 @@ class Alert
     private $id;
 
     /**
-     * @var int
+     * @var Device
      *
      * @ORM\ManyToOne(targetEntity="Device", inversedBy="alerts")
      * @ORM\JoinColumn(name="device_id", referencedColumnName="id", onDelete="CASCADE")
@@ -31,7 +31,7 @@ class Alert
     private $device;
 
     /**
-     * @var int
+     * @var AlertRule
      *
      * @ORM\ManyToOne(targetEntity="AlertRule")
      * @ORM\JoinColumn(name="alert_rule_id", referencedColumnName="id", onDelete="CASCADE")
@@ -39,7 +39,7 @@ class Alert
     private $alertRule;
 
     /**
-     * @var int
+     * @var SlaveGroup
      *
      * @ORM\ManyToOne(targetEntity="SlaveGroup")
      * @ORM\JoinColumn(name="slave_group_id", referencedColumnName="id", onDelete="CASCADE")
@@ -47,7 +47,7 @@ class Alert
     private $slaveGroup;
 
     /**
-     * @var int
+     * @var integer
      *
      * @ORM\Column(name="active", type="integer")
      */
@@ -81,7 +81,7 @@ class Alert
     /**
      * Set device
      *
-     * @param integer $device
+     * @param Device $device
      *
      * @return Alert
      */
@@ -95,7 +95,7 @@ class Alert
     /**
      * Get device
      *
-     * @return int
+     * @return Device
      */
     public function getDevice()
     {
@@ -105,7 +105,7 @@ class Alert
     /**
      * Set alertRule
      *
-     * @param integer $alertRule
+     * @param AlertRule $alertRule
      *
      * @return Alert
      */
@@ -119,7 +119,7 @@ class Alert
     /**
      * Get alertRule
      *
-     * @return int
+     * @return AlertRule
      */
     public function getAlertRule()
     {
@@ -129,7 +129,7 @@ class Alert
     /**
      * Set slave group
      *
-     * @param integer $slaveGroup
+     * @param SlaveGroup $slaveGroup
      *
      * @return Alert
      */
@@ -143,7 +143,7 @@ class Alert
     /**
      * Get slave group
      *
-     * @return int
+     * @return SlaveGroup
      */
     public function getSlaveGroup()
     {
@@ -167,7 +167,7 @@ class Alert
     /**
      * Get active
      *
-     * @return int
+     * @return integer
      */
     public function getActive()
     {

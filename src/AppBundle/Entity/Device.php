@@ -33,7 +33,7 @@ class Device
     private $id;
 
     /**
-     * @var domain
+     * @var Domain|null
      *
      * @ORM\ManyToOne(targetEntity="Domain", inversedBy="devices")
      * @ORM\JoinColumn(name="domain_id", referencedColumnName="id")
@@ -190,7 +190,7 @@ class Device
     /**
      * Get domain
      *
-     * @return \AppBundle\Entity\Domain
+     * @return \AppBundle\Entity\Domain|null
      * @Groups({"device"})
      */
     public function getDomain()

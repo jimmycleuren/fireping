@@ -23,14 +23,15 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 class GraphController extends Controller
 {
     /**
-     * @param $id
+     * @param Device $device
+     * @param PingGraph $pingGraph
      * @return Response
      *
      * @Method("GET")
      * @Route("/api/graphs/summary/{id}")
      * @ParamConverter("device", class="AppBundle:Device")
      */
-    public function summaryAction($device, PingGraph $pingGraph)
+    public function summaryAction(Device $device, PingGraph $pingGraph)
     {
         $probes = array();
 
@@ -62,7 +63,11 @@ class GraphController extends Controller
     }
 
     /**
-     * @param $id
+     * @param Device $device
+     * @param Probe $probe
+     * @param SlaveGroup $slavegroup
+     * @param Request $request
+     * @param PingGraph $pingGraph
      * @return Response
      *
      * @Method("GET")

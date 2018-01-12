@@ -32,7 +32,7 @@ class Domain
     private $id;
 
     /**
-     * @var domain
+     * @var Domain|null
      *
      * @ORM\ManyToOne(targetEntity="Domain", inversedBy="subdomains", fetch="EXTRA_LAZY")
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id", nullable=true)
@@ -81,7 +81,7 @@ class Domain
     private $alertRules;
 
     /**
-     * @var device
+     * @var ArrayCollection
      * @ORM\OneToMany(targetEntity="Device", mappedBy="domain", fetch="EXTRA_LAZY")
      * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
      * @Groups({"domain"})
@@ -89,7 +89,7 @@ class Domain
     private $devices;
 
     /**
-     * @var domain
+     * @var ArrayCollection
      * @ORM\OneToMany(targetEntity="Domain", mappedBy="parent", fetch="EXTRA_LAZY")
      * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
      * @ORM\OrderBy({"name" = "asc"})
@@ -171,7 +171,7 @@ class Domain
     /**
      * Get parent
      *
-     * @return \AppBundle\Entity\Domain
+     * @return \AppBundle\Entity\Domain|null
      */
     public function getParent()
     {

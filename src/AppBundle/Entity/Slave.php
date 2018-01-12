@@ -27,7 +27,7 @@ class Slave
     private $id;
 
     /**
-     * @var slavegroup
+     * @var SlaveGroup|null
      *
      * @ORM\ManyToOne(targetEntity="SlaveGroup", inversedBy="slaves")
      * @ORM\JoinColumn(name="slavegroup_id", referencedColumnName="id")
@@ -36,7 +36,7 @@ class Slave
     private $slavegroup;
 
     /**
-     * @var \Datetime
+     * @var \DateTime
      *
      * @ORM\Column(name="last_contact", type="datetime")
      */
@@ -59,7 +59,7 @@ class Slave
     /**
      * Get id
      *
-     * @return int
+     * @return string
      */
     public function getId()
     {
@@ -69,7 +69,7 @@ class Slave
     /**
      * Set lastContact
      *
-     * @param string $lastContact
+     * @param \DateTime $lastContact
      *
      * @return Slave
      */
@@ -83,7 +83,7 @@ class Slave
     /**
      * Get lastcontact
      *
-     * @return string
+     * @return \DateTime
      */
     public function getLastContact()
     {
@@ -108,7 +108,7 @@ class Slave
     /**
      * Get slavegroup
      *
-     * @return \AppBundle\Entity\SlaveGroup
+     * @return \AppBundle\Entity\SlaveGroup|null
      * @Groups({"slave"})
      */
     public function getSlaveGroup()

@@ -69,7 +69,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
     /**
      * This contains the process id of the worker process that is responsible for posting data to the master.
-     * @var $poster int
+     * @var int $poster
      */
     protected $poster;
 
@@ -310,7 +310,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
     /**
      * Get or create a new InputStream for a given $id.
      *
-     * @param $pid
+     * @param int $pid
      * @return mixed
      */
     private function getInput($pid)
@@ -532,7 +532,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
     /**
      * Clean up tracking, inputs, processes and receive buffers.
      *
-     * @param $pid
+     * @param int $pid
      */
     private function cleanup($pid)
     {
