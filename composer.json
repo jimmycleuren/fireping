@@ -50,7 +50,7 @@
         "twig/twig": "^1.0||^2.0"
     },
     "require-dev": {
-        "api-platform/schema-generator": "^1.2",
+        "api-platform/schema-generator": "^1.2|^2.0",
         "codeclimate/php-test-reporter": "^0.4.4",
         "doctrine/doctrine-fixtures-bundle": "^3.0",
         "laravel/homestead": "^6.5",
