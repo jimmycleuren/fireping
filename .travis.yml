@@ -21,14 +21,11 @@ matrix:
     - php: 7.0
     - php: 7.1
 
-# Update composer
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get install -y librrd-dev
   - composer self-update
 
-# Install composer dependencies,
-# Create database, schema and fixtures
 install:
   - composer install
   - cp app/config/parameters.yml.dist app/config/parameters.yml
@@ -39,11 +36,18 @@ install:
 before_script:
   - pecl install rrd
 
-# Run script
 script:
   - phpunit
   - composer phpstan
 
+after_script:
+  - vendor/bin/test-reporter
+
 # After a build, send email notification with the build results
 notifications:
   email: jimmy.cleuren@gmail.com
+
+addons:
+  code_climate:
+    repo_token:
+      secure: "NGv8okHZXnDE1nRejftKuomkD9MB/sW7WKAD3XWT8nU/1pov/jwkHdpVtthI1LL33cZH/rXUb3pMHWOKw2nykCPqdsvzPm3wwVaU5XU0MMv5EyNVi0kM5Dm+Xf0678cdErvcg1CilwJqzIjA9CpYfFSENnxaW70ANDvyegZRr1Dgt0K8J/s1o+XnNab1NmfnXXlKAVRIlgmYF2O7UMfHf5IchZ3tRbQS+JrkgM4FSOG07Glhrft/fugSetzH7zkFANXlRVevBVEx5VIJNRHvCqswYvp+7VhQoGaY0UOfYP4ZYDMBgpkr+ETW2DY+AigM1JLE14F6b8hi/mT2FZrQwCPe2C707IOZyKcyzmVJ4fzCGn+d8LeviAPrmpnKxQJUONj42naxy4DS5ut+bFjwZFhftmhkZrrZ6HcEoB1AKtkD+rFlwXAwspeifpBghVpZY25k6wYXICnh9wAJ0c1BJq+IORAwBVUGcEkr5jQZ1h+IbDRxYfiNA1rMaNC4j7hrSQIC3qTKeSaTh5nFMJDFrUzsbsE23Ku5IF+6rbfcFV1B/2Xp3XCWDYRFDm3vgtdD08pK/X3VNPTyxLSpfr61HwX2Dp64vJmVtzNyLUkc/590u5wOMV/4K26xltvBZYRsolM//HJnon2X7hGGb/1mKLKGqMCGxZFgmS6pjhaeS+4="
