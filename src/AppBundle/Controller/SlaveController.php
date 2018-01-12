@@ -42,68 +42,6 @@ class SlaveController extends Controller
     }
 
     /**
-     * Displays a form to edit an existing slaveGroup entity.
-     *
-     * @Route("/slaves/{id}/edit", name="slave_edit")
-     * @Method({"GET", "POST"})
-     */
-    public function editAction(Request $request, Slave $slave)
-    {
-        $deleteForm = $this->createDeleteForm($slave);
-        $editForm = $this->createForm('AppBundle\Form\SlaveType', $slave);
-        $editForm->handleRequest($request);
-
-        if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-
-            return $this->redirectToRoute('slave_edit', array('id' => $slave->getId()));
-        }
-
-        return $this->render('slave/edit.html.twig', array(
-            'slaveGroup' => $slave,
-            'edit_form' => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
-            'active_menu' => 'slave',
-        ));
-    }
-
-    /**
-     * Deletes a slave entity.
-     *
-     * @Route("/slaves/{id}", name="slave_delete")
-     * @Method("DELETE")
-     */
-    public function deleteAction(Request $request, Slave $slave)
-    {
-        $form = $this->createDeleteForm($slave);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($slave);
-            $em->flush();
-        }
-
-        return $this->redirectToRoute('slave_index');
-    }
-
-    /**
-     * Creates a form to delete a slave entity.
-     *
-     * @param Slave $slave The slave entity
-     *
-     * @return \Symfony\Component\Form\Form The form
-     */
-    private function createDeleteForm(Slave $slave)
-    {
-        return $this->createFormBuilder()
-            ->setAction($this->generateUrl('slave_delete', array('id' => $slave->getId())))
-            ->setMethod('DELETE')
-            ->getForm()
-            ;
-    }
-
-    /**
      * @param $id
      * @return JsonResponse
      *
@@ -263,8 +201,12 @@ class SlaveController extends Controller
      */
     public function errorAction($slave, Request $request)
     {
+        $this->logger = $this->container->get('logger');
+
         //TODO: implement slave error handling
         $this->logger->info("Error received from $slave");
+
+        return new JsonResponse(array('code' => 200));
     }
 
     private function getDomainDevices($domain)

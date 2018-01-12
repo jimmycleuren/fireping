@@ -9,7 +9,6 @@
             <th>Id</th>
             <th>Slavegroup</th>
             <th>Last contact</th>
-            <th>Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -18,9 +17,6 @@
                 <td>{{ slave.id }}</td>
                 <td>{{ slave.slavegroup }}</td>
                 <td>{{ slave.lastContact|date("d-m-Y H:i:s") }}</td>
-                <td>
-                    <a href="{{ path('slave_edit', { 'id': slave.id }) }}" class="btn btn-default btn-xs">edit</a>
-                </td>
             </tr>
         {% endfor %}
         </tbody>

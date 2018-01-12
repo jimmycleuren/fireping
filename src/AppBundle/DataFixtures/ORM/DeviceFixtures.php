@@ -22,16 +22,31 @@ class DeviceFixtures extends Fixture implements DependentFixtureInterface
         $device->setIp('8.8.8.8');
         $device->setDomain($this->getReference('domain-1'));
         $manager->persist($device);
+        $this->addReference('device-1', $device);
+
+        $device = new Device();
+        $device->setName('Device 2');
+        $device->setIp('8.8.4.4');
+        $device->setDomain($this->getReference('subdomain-2'));
+        $device->addProbe($this->getReference('probe-ping'));
+        $manager->persist($device);
+        $this->addReference('device-2', $device);
+
+        $device = new Device();
+        $device->setName('Device 3');
+        $device->setIp('8.8.8.8');
+        $device->setDomain($this->getReference('domain-3'));
+        $manager->persist($device);
+        $this->addReference('device-3', $device);
 
         $manager->flush();
-
-        $this->addReference('device-1', $device);
     }
 
     public function getDependencies()
     {
         return array(
             DomainFixtures::class,
+            ProbeFixtures::class,
         );
     }
 }

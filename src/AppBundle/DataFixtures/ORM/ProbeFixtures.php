@@ -23,9 +23,17 @@ class ProbeFixtures extends Fixture
         $probe->setType('ping');
         $probe->setArguments("");
         $manager->persist($probe);
+        $this->addReference('probe-ping', $probe);
+
+        $probe = new Probe();
+        $probe->setName("Dummy");
+        $probe->setStep(60);
+        $probe->setSamples(15);
+        $probe->setType('dummy');
+        $probe->setArguments("");
+        $manager->persist($probe);
+        $this->addReference('probe-dummy', $probe);
 
         $manager->flush();
-
-        $this->addReference('probe-ping', $probe);
     }
 }

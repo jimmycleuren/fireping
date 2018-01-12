@@ -115,4 +115,12 @@ class Slave
     {
         return $this->slavegroup;
     }
+
+    /*
+     * toString
+     */
+    public function __toString()
+    {
+        return $this->id;
+    }
 }
