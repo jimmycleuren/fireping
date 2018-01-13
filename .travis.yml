@@ -22,7 +22,9 @@ matrix:
       env: 'HIGHEST_LOWEST="update"'
     - php: 7.1
     - php: 7.0
-      env: 'HIGHEST_LOWEST="update --prefer-lowest"'
+  allow_failures:
+    - php: 7.2
+      env: 'HIGHEST_LOWEST="update"'
 
 before_install:
   - sudo apt-get -qq update
