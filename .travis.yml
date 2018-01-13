@@ -49,7 +49,7 @@ script:
 after_script:
   - vendor/bin/test-reporter
 
-after_failure: "cat //home/travis/build/jimmycleuren/fireping/var/logs/test/log"
+after_failure: "cat /home/travis/build/jimmycleuren/fireping/var/logs/test.log"
 
 # After a build, send email notification with the build results
 notifications:
