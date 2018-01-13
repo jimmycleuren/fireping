@@ -150,7 +150,7 @@ class SlaveController extends Controller
 
         $probes = json_decode($request->getContent());
 
-        if ($probes === null || count($probes) == 0) {
+        if ($probes === null || (is_array($probes) && count($probes) == 0)) {
             return new JsonResponse(array('code' => 400, 'message' => 'Invalid json input'), 400);
         }
 
