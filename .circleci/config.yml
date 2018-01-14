@@ -9,7 +9,7 @@ jobs:
     steps:
       - run:
           name: Install system packages
-          command: apt-get update && apt-get -y install git libzip-dev
+          command: apt-get update && apt-get -y install git libzip-dev redis-server
       - run:
           name: Install PHP extensions
           command: docker-php-ext-install pdo zip
@@ -32,6 +32,15 @@ jobs:
       - run:
           name: Install project dependencies
           command: php composer.phar install --prefer-dist
+      - run:
+          name: Create database
+          command: php bin/console doctrine:database:create --env=test
+      - run:
+          name: Create schema
+          command: php bin/console doctrine:schema:create --env=test
+      - run:
+          name: Load fixtures
+          command: php bin/console doctrine:fixtures:load -n --env=test
       - run:
           name: Run Unit tests
           command: vendor/bin/phpunit
