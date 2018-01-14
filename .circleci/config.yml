@@ -27,6 +27,9 @@ jobs:
             php -v
             php composer.phar --version
       - run:
+          name: Copy parameters
+          command: cp app/config/parameters.yml.dist app/config/parameters.yml
+      - run:
           name: Install project dependencies
           command: php composer.phar install
       - run:
