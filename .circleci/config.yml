@@ -31,7 +31,7 @@ jobs:
           command: cp app/config/parameters.yml.dist app/config/parameters.yml
       - run:
           name: Install project dependencies
-          command: php composer.phar install
+          command: php composer.phar install --prefer-dist
       - run:
           name: Run Unit tests
           command: vendor/bin/phpunit
