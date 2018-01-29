@@ -57,3 +57,6 @@ GRANT ALL PRIVILEGES ON fireping . * TO 'fireping'@'localhost';
 FLUSH PRIVILEGES;
 
 php bin/console doctrine:migrations:migrate
+
+# Remember to update the parameters.yml file to reflect any changes to database usernames or passwords.
+# Also set your hosts file to 192.168.230.11 fireping.test on Windows for any master deployments.
