@@ -24,28 +24,33 @@ Slave configuration
 When asked for the initial parameters, you can leave everything as default except the following:
 
     slave.name: <give a name to this slave>
+    slave.secret: <TODO: how to actually hand out slaves accurately.>
     slave.url: <the base url for the fireping master>
 
-Configure supervisor
+Supervisor
 --------------------
-vi /etc/supervisor/supervisord.conf and append the following
 
-[program:fireping-slave]
-command=php /opt/fireping/bin/console app:probe:dispatcher --env=slave
-process_name=%(process_num)d
-numprocs=1
-directory=/tmp
-autostart=true
-autorestart=true
-startsecs=5
-startretries=20
-redirect_stderr=false
-stdout_logfile=/var/log/supervisor/fireping-slave.out.log
-stdout_capture_maxbytes=1MB
-stdout_logfile_backups=3
-stderr_logfile=/var/log/supervisor/fireping-slave.error.log
-stderr_capture_maxbytes=1MB
-stderr_logfile_backups=3
+Supervisor will be the process manager used to start your slave and to keep it running.
+
+- `/etc/supervisor/supervisord.conf` is the main configuration file used for supervisor.
+- make sure that the [include] directive is configured to include the `.conf` files from the `conf.d/` directory:
+```
+[include]
+files = /etc/supervisor/conf.d/*.conf
+```
+- copy the `fireping-slave.conf` file from `/opt/fireping/app/config/supervisord/fireping-slave.conf` to `/etc/supervisord/conf.d/`
+- `supervisorctl` to start the supervisor front-end interface
+- `reread` in supervisorctl to reread the configuration file (will not restart any existing processes)
+```
+supervisor> reread
+fireping-slave: available
+```
+- `add fireping-slave` to add it to the manager
+```
+supervisor> add fireping-slave
+fireping-slave: added process group
+```
+- your slave will now start.
 
 Extra steps master
 ------------------
