@@ -15,13 +15,6 @@ use Psr\Container\ContainerInterface;
 
 abstract class Storage
 {
-    protected $container;
-
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
-    }
-
     abstract function store(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data);
 
     abstract function fetch(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $key, $function);

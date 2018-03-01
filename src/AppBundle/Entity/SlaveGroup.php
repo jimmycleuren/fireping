@@ -57,6 +57,20 @@ class SlaveGroup
 
 
     /**
+     * Set id
+     *
+     * @param string $id
+     *
+     * @return SlaveGroup
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
      * Get id
      *
      * @return int

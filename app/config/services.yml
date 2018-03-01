@@ -9,9 +9,14 @@ services:
         autoconfigure: true
         public: false
 
+
+
     AppBundle\:
         resource: '../../src/AppBundle/*'
         exclude: '../../src/AppBundle/{Command,DependencyInjection,Entity,Exception,Form,Instruction,OutputFormatter,Probe,Processor,Repository,ShellCommand,Tests}'
+
+    AppBundle\Storage\RrdStorage:
+        arguments:  ['%storage.path%']
 
     #service_name:
     #    class: AppBundle\Directory\ClassName

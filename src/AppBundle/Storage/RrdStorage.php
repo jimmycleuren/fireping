@@ -13,7 +13,7 @@ use AppBundle\Entity\Probe;
 use AppBundle\Entity\SlaveGroup;
 use AppBundle\Exception\RrdException;
 use AppBundle\Exception\WrongTimestampRrdException;
-use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 
 class RrdStorage extends Storage
 {
@@ -52,12 +52,10 @@ class RrdStorage extends Storage
         ),
     );
 
-    public function __construct(ContainerInterface $container)
+    public function __construct($path, LoggerInterface $logger)
     {
-        parent::__construct($container);
-
-        $this->logger = $container->get('logger');
-        $this->path = $container->get('kernel')->getRootDir()."/../var/rrd/";
+        $this->logger = $logger;
+        $this->path = $path;
 
         if (!file_exists($this->path)) {
             mkdir($this->path);
