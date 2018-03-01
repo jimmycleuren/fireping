@@ -27,3 +27,4 @@ parameters:
     slave.url: https://fireping.cegeka.com
     
     storage: rrd
+    storage.path: '%kernel.root_dir%/../var/rrd/'
