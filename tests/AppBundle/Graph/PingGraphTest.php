@@ -26,6 +26,8 @@ class PingGraphTest extends TestCase
 
         $probe = new Probe();
         $probe->setId(1);
+        $probe->setName('ping');
+        $probe->setType('ping');
         $probe->setSamples(15);
         $probe->setStep(60);
 
@@ -35,6 +37,7 @@ class PingGraphTest extends TestCase
         $device = new Device();
         $device->setId(1);
         $device->setName("device1");
+        $device->setIp('8.8.8.8');
         $device->addSlaveGroup($slavegroup);
 
         $graph = new PingGraph($storage->reveal());
@@ -48,6 +51,8 @@ class PingGraphTest extends TestCase
 
         $probe = new Probe();
         $probe->setId(1);
+        $probe->setName('ping');
+        $probe->setType('ping');
         $probe->setSamples(15);
         $probe->setStep(60);
 
@@ -57,6 +62,7 @@ class PingGraphTest extends TestCase
         $device = new Device();
         $device->setId(2);
         $device->setName("device2");
+        $device->setIp('8.8.8.8');
         $device->addSlaveGroup($slavegroup);
 
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
@@ -85,6 +91,8 @@ class PingGraphTest extends TestCase
 
         $probe = new Probe();
         $probe->setId(1);
+        $probe->setName('ping');
+        $probe->setType('ping');
         $probe->setSamples(15);
         $probe->setStep(60);
 
@@ -94,6 +102,7 @@ class PingGraphTest extends TestCase
         $device = new Device();
         $device->setId(3);
         $device->setName("device3");
+        $device->setIp('8.8.8.8');
         $device->addSlaveGroup($slavegroup);
 
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
@@ -119,6 +128,8 @@ class PingGraphTest extends TestCase
 
         $probe = new Probe();
         $probe->setId(1);
+        $probe->setName('ping');
+        $probe->setType('ping');
         $probe->setSamples(15);
         $probe->setStep(60);
 
@@ -128,6 +139,7 @@ class PingGraphTest extends TestCase
         $device = new Device();
         $device->setId(4);
         $device->setName("device4");
+        $device->setIp('8.8.8.8');
         $device->addSlaveGroup($slavegroup);
 
         $graph = new PingGraph($storage->reveal());
@@ -141,6 +153,8 @@ class PingGraphTest extends TestCase
 
         $probe = new Probe();
         $probe->setId(1);
+        $probe->setName('ping');
+        $probe->setType('ping');
         $probe->setSamples(15);
         $probe->setStep(60);
 
@@ -150,6 +164,7 @@ class PingGraphTest extends TestCase
         $device = new Device();
         $device->setId(5);
         $device->setName("device5");
+        $device->setIp('8.8.8.8');
         $device->addSlaveGroup($slavegroup);
 
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
@@ -178,6 +193,8 @@ class PingGraphTest extends TestCase
 
         $probe = new Probe();
         $probe->setId(1);
+        $probe->setName('ping');
+        $probe->setType('ping');
         $probe->setSamples(15);
         $probe->setStep(60);
 
@@ -187,6 +204,7 @@ class PingGraphTest extends TestCase
         $device = new Device();
         $device->setId(6);
         $device->setName("device6");
+        $device->setIp('8.8.8.8');
         $device->addSlaveGroup($slavegroup);
 
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
