@@ -20,7 +20,7 @@
         ]
     },
     "require": {
-        "php": "^7.0",
+        "php": "^7.1",
         "api-platform/api-platform": "^2.0",
         "doctrine/doctrine-bundle": "^1.6",
         "doctrine/doctrine-cache-bundle": "^1.2",
