@@ -96,3 +96,35 @@ snc_redis:
             client: doctrine
             entity_manager: default
             namespace: 'dslc:'
+
+easy_admin:
+    site_name: 'Fireping'
+    list:
+        max_results: 30
+        actions:
+            - { name: 'show', icon: 'search', label: '' }
+            - { name: 'edit', icon: 'pencil', label: '' }
+            - { name: 'delete', icon: 'remove', label: '' }
+    show:
+        max_results: 20
+    entities:
+        Domain:
+            class: AppBundle\Entity\Domain
+            list:
+                fields: ['id', 'name', 'parent']
+        Device:
+            class: AppBundle\Entity\Device
+            list:
+                fields: ['id', 'name', 'ip', 'domain']
+        Alert:
+            class: AppBundle\Entity\Alert
+            disabled_actions: ['new']
+        AlertRule:
+            class: AppBundle\Entity\AlertRule
+        Probe:
+            class: AppBundle\Entity\Probe
+        Slave:
+            class: AppBundle\Entity\Slave
+            disabled_actions: ['new']
+        SlaveGroup:
+            class: AppBundle\Entity\SlaveGroup
