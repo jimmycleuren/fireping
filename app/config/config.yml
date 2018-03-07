@@ -33,7 +33,7 @@ framework:
     php_errors:
         log: true
 
-guzzle:
+eight_points_guzzle:
     logging: true
     clients:
         api_fireping:

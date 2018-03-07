@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "cc7bc8d27740e37af0c0cca2bd622f88",
+    "content-hash": "483c741ee814b991a37d1bad6e3d7fa3",
     "packages": [
         {
             "name": "api-platform/api-platform",
@@ -1267,37 +1267,34 @@
         },
         {
             "name": "eightpoints/guzzle-bundle",
-            "version": "v5.3.0",
-            "target-dir": "EightPoints/Bundle/GuzzleBundle",
+            "version": "7.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/8p/EightPointsGuzzleBundle.git",
-                "reference": "59f0b3079954716a3be32a8537003be2540ad156"
+                "reference": "1b663153f860214f18a18d8df6bf5f0592689550"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/8p/EightPointsGuzzleBundle/zipball/59f0b3079954716a3be32a8537003be2540ad156",
-                "reference": "59f0b3079954716a3be32a8537003be2540ad156",
+                "url": "https://api.github.com/repos/8p/EightPointsGuzzleBundle/zipball/1b663153f860214f18a18d8df6bf5f0592689550",
+                "reference": "1b663153f860214f18a18d8df6bf5f0592689550",
                 "shasum": ""
             },
             "require": {
-                "eightpoints/guzzle-wsse-middleware": "~4.0",
                 "guzzlehttp/guzzle": "~6.0",
-                "php": ">=5.6",
+                "php": ">=7.0",
                 "psr/log": "~1.0",
-                "symfony/dependency-injection": "~2.3|~3.0",
-                "symfony/event-dispatcher": "~2.3|~3.0",
-                "symfony/expression-language": "~2.3|~3.0",
-                "symfony/http-kernel": "~2.3|~3.0"
+                "symfony/expression-language": "~2.7|~3.0|~4.0",
+                "symfony/framework-bundle": "~2.7|~3.0|~4.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "~5.4",
-                "symfony/config": "2.3|~3.0"
+                "phpunit/phpunit": "~6.1",
+                "symfony/var-dumper": "~2.7|~3.0|~4.0",
+                "twig/twig": "~1.5|~2.0"
             },
             "type": "symfony-bundle",
             "autoload": {
-                "psr-0": {
-                    "EightPoints\\Bundle\\GuzzleBundle": ""
+                "psr-4": {
+                    "EightPoints\\Bundle\\GuzzleBundle\\": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -1315,7 +1312,7 @@
                     "homepage": "https://github.com/florianpreusner"
                 }
             ],
-            "description": "Integrates Guzzle into Symfony2, comes with WSSE Plugin for RESTful Interfaces",
+            "description": "Integrates Guzzle 6.x, a PHP HTTP Client, into Symfony 2/3/4. Comes with easy and powerful configuration options and optional plugins.",
             "homepage": "https://github.com/8p/GuzzleBundle",
             "keywords": [
                 "Guzzle",
@@ -1327,62 +1324,7 @@
                 "symfony",
                 "web service"
             ],
-            "time": "2016-12-30T13:35:37+00:00"
-        },
-        {
-            "name": "eightpoints/guzzle-wsse-middleware",
-            "version": "v4.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/8p/guzzle-wsse-middleware.git",
-                "reference": "3998dae6fed29f2d3384024764046b63a764ddda"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/8p/guzzle-wsse-middleware/zipball/3998dae6fed29f2d3384024764046b63a764ddda",
-                "reference": "3998dae6fed29f2d3384024764046b63a764ddda",
-                "shasum": ""
-            },
-            "require": {
-                "guzzlehttp/guzzle": ">=6.0",
-                "php": ">=5.5"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "EightPoints\\Guzzle": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Florian Preusner",
-                    "email": "florian.preusner@8points.de",
-                    "homepage": "https://github.com/florianpreusner"
-                },
-                {
-                    "name": "Community",
-                    "homepage": "https://github.com/eightpoints/guzzle-wsse-middleware/contributors"
-                }
-            ],
-            "description": "WSSE Middleware for Guzzle, a PHP HTTP client library and framework for building RESTful web service clients",
-            "homepage": "https://github.com/8p/guzzle-wsse-middleware",
-            "keywords": [
-                "client",
-                "curl",
-                "framework",
-                "http",
-                "http client",
-                "middleware",
-                "plugin",
-                "rest",
-                "web service",
-                "wsse"
-            ],
-            "time": "2016-06-03T14:03:33+00:00"
+            "time": "2018-01-14T20:52:44+00:00"
         },
         {
             "name": "evenement/evenement",
