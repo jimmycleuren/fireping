@@ -51,11 +51,12 @@
     "require-dev": {
         "codeclimate/php-test-reporter": "^0.4.4",
         "doctrine/doctrine-fixtures-bundle": "^3.0",
-        "laravel/homestead": "^6.5",
+        "laravel/homestead": "^7.0",
         "phpstan/phpstan": "^0.9.1",
+        "phpunit/phpunit": "^7.0",
         "sensio/generator-bundle": "^3.0",
-        "symfony/phpunit-bridge": "^3.0",
-        "phpunit/phpunit": "^6.5"
+        "sllh/composer-versions-check": "^2.0",
+        "symfony/phpunit-bridge": "^3.0"
     },
     "scripts": {
         "symfony-scripts": [
