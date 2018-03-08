@@ -164,7 +164,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                         $instruction = array(
                             'type' => 'post-result',
                             'delay_execution' => 0,
-                            'client' => 'guzzle.client.api_fireping',
+                            'client' => 'eight_points_guzzle.client.api_fireping',
                             'method' => 'POST',
                             'endpoint' => "/api/slaves/$name/result",
                             'headers' => ['Content-Type' => 'application/json'],
@@ -450,7 +450,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
         switch ($type) {
             case 'exception':
-                $this->logger->alert("Response ($status) from worker $pid returned an exception.");
+                $this->logger->alert("Response ($status) from worker $pid returned an exception: ".$contents);
                 break;
 
             case 'probe':

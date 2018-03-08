@@ -34,7 +34,7 @@ class GetConfigHttpWorkerCommand implements CommandInterface
     function execute()
     {
         /** @var \GuzzleHttp\Client $client */
-        $client = $this->container->get('guzzle.client.api_fireping');
+        $client = $this->container->get('eight_points_guzzle.client.api_fireping');
 
         $id       = $this->container->getParameter('slave.name');
         $endpoint = "/api/slaves/$id/config";
