@@ -43,7 +43,7 @@ before_script:
   - pecl install rrd
 
 script:
-  - phpunit
+  - vendor/bin/phpunit
   - composer phpstan
 
 after_script:
