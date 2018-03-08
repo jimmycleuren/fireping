@@ -63,6 +63,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
     protected $maximumWorkers;
     protected $highWorkersThreshold;
     protected $inUsePeak;
+    protected $maxRuntime;
 
     protected $startTimes      = array();
     protected $expectedRuntime = array();
@@ -74,6 +75,8 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
     protected $poster;
 
     protected $queueElement;
+
+    protected $loop;
 
     protected function configure()
     {
