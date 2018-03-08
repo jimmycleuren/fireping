@@ -94,6 +94,16 @@ class Device
     private $alertRules;
 
     /**
+     * @ORM\ManyToMany(targetEntity="AlertDestination", fetch="EXTRA_LAZY")
+     * @ORM\JoinTable(name="device_alert_destinations",
+     *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="alert_destination_id", referencedColumnName="id")}
+     *      )
+     * @Groups({"device"})
+     */
+    private $alertDestinations;
+
+    /**
      * @ORM\OneToMany(targetEntity="Alert", mappedBy="device", fetch="EXTRA_LAZY")
      */
     private $alerts;
@@ -183,6 +193,7 @@ class Device
         $this->slavegroups = new \Doctrine\Common\Collections\ArrayCollection();
         $this->probes = new \Doctrine\Common\Collections\ArrayCollection();
         $this->alertRules = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->alertDestinations = new \Doctrine\Common\Collections\ArrayCollection();
         $this->alerts = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
@@ -370,6 +381,61 @@ class Device
             while ($parent != null) {
                 if (count($parent->getAlertRules()) > 0) {
                     return $parent->getAlertRules();
+                }
+                $parent = $parent->getParent();
+            }
+        }
+        return new ArrayCollection();
+    }
+
+    /**
+     * Add alert destination
+     *
+     * @param \AppBundle\Entity\AlertDestination $alertDestination
+     *
+     * @return Domain
+     */
+    public function addAlertDestination(\AppBundle\Entity\AlertDestination $alertDestination)
+    {
+        $this->alertDestinations[] = $alertDestination;
+
+        return $this;
+    }
+
+    /**
+     * Remove alert destination
+     *
+     * @param \AppBundle\Entity\AlertDestination $alertDestination
+     */
+    public function removeAlertDestination(\AppBundle\Entity\AlertDestination $alertDestination)
+    {
+        $this->alertDestinations->removeElement($alertDestination);
+    }
+
+    /**
+     * Get alert destinations
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAlertDestinations()
+    {
+        return $this->alertDestinations;
+    }
+
+    /**
+     * Get active alert destinations. Alert destinations can be overridden on every level, so only the lowest level with alert destinations configured will be used
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getActiveAlertDestinations()
+    {
+        if (count($this->alertDestinations) > 0) {
+            return $this->alertDestinations;
+        } else {
+            $parent = $this->getDomain();
+            while ($parent != null) {
+                if (count($parent->alertDestinations()) > 0) {
+                    return $parent->alertDestinations();
                 }
                 $parent = $parent->getParent();
             }

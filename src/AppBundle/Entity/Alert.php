@@ -4,10 +4,11 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
+
 /**
  * Alert
  *
- * @ORM\Table(name="alert")
+ * @ORM\Table(name="alert", indexes={@ORM\Index(name="slaveresult", columns={"device_id", "alert_rule_id", "slave_group_id", "active"})})
  * @ORM\Entity(repositoryClass="AppBundle\Repository\AlertRepository")
  * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  */
