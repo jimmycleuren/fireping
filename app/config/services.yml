@@ -9,29 +9,33 @@ services:
         autoconfigure: true
         public: false
 
-
-
     AppBundle\:
         resource: '../../src/AppBundle/*'
-        exclude: '../../src/AppBundle/{Command,DependencyInjection,Entity,Exception,Form,Instruction,OutputFormatter,Probe,Processor,Repository,ShellCommand,Tests}'
+        exclude: '../../src/AppBundle/{Command,Entity,Exception,Form,Instruction,OutputFormatter,Probe,Processor,Repository,ShellCommand,Tests}'
+
+    AppBundle\Controller\:
+        resource: '../../src/AppBundle/Controller'
+        tags: ['controller.service_arguments']
 
     AppBundle\Storage\RrdStorage:
         arguments:  ['%storage.path%']
 
-    #service_name:
-    #    class: AppBundle\Directory\ClassName
-    #    arguments: ['@another_service_name', 'plain_value', '%parameter_name%']
     probe_store:
         class:      AppBundle\DependencyInjection\ProbeStore
         arguments:  ["@service_container"]
+        public: true
+
     instruction_builder:
         class:      AppBundle\DependencyInjection\InstructionBuilderService
         arguments:  ["@service_container"]
+        public: true
 
     processor.ping:
         class: AppBundle\Processor\PingProcessor
         arguments: ["@service_container"]
+        public: true
 
     processor.traceroute:
         class: AppBundle\Processor\TracerouteProcessor
         arguments: ["@service_container"]
+        public: true

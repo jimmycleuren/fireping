@@ -107,6 +107,13 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                 InputOption::VALUE_REQUIRED,
                 'Specifies when the master should alert if too many workers are needed. (Should be lower than maximum-workers.)',
                 150
+            )
+            ->addOption(
+                'max-runtime',
+                'runtime',
+                InputOption::VALUE_REQUIRED,
+                'The amount of seconds the command can run before terminating itself',
+                0
             );
     }
 
@@ -120,6 +127,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         $this->minimumAvailableWorkers = $input->getOption('minimum-available-workers');
         $this->maximumWorkers          = $input->getOption('maximum-workers');
         $this->highWorkersThreshold    = $input->getOption('high-workers-threshold');
+        $this->maxRuntime              = $input->getOption('max-runtime');
 
         if ($this->highWorkersThreshold >= $this->maximumWorkers) {
             throw new \Exception("High workers threshold value must be less than maximum workers value.");
@@ -132,9 +140,9 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
         $this->logger->info("Fireping Dispatcher Started.");
 
-        $loop = Factory::create();
+        $this->loop = Factory::create();
 
-        $loop->addPeriodicTimer(1, function () {
+        $this->loop->addPeriodicTimer(1, function () {
             $toSync    = time() % 120 === 0 ? true : false;
 
             if ($toSync) {
@@ -211,7 +219,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         });
 
         // Get worker responses
-        $loop->addPeriodicTimer(0.1, function () {
+        $this->loop->addPeriodicTimer(0.1, function () {
             foreach ($this->processes as $pid => $process) {
                 try {
                     if ($process) {
@@ -237,6 +245,14 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             }
         });
 
+        if ($this->maxRuntime > 0) {
+            $this->logger->info("Running for ".$this->maxRuntime." seconds");
+            $this->loop->addTimer($this->maxRuntime, function() use ($output) {
+                $output->writeln("Max runtime reached");
+                $this->loop->stop();
+            });
+        }
+
         $this->logger->info("Starting " . $input->getOption('workers') . " workers.");
         for ($w = 0; $w < $input->getOption('workers'); $w++) {
             $worker    = $this->startWorker();
@@ -247,7 +263,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
         $this->reservePoster();
 
-        $loop->run();
+        $this->loop->run();
     }
 
     private function sendInstruction(array $instruction, $pid = null, $expectedRuntime = 60)
