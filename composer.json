@@ -73,7 +73,7 @@
         ],
         "phpstan": "vendor/bin/phpstan analyse src --level=1",
         "test": [
-            "rm var/data.sqlite",
+            "rm -f var/data.sqlite",
             "/usr/bin/php bin/console doctrine:database:create --env=test",
             "/usr/bin/php bin/console doctrine:schema:create --env=test",
             "/usr/bin/php bin/console doctrine:fixtures:load -n --env=test",
