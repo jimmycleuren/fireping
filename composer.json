@@ -20,18 +20,15 @@
         ]
     },
     "require": {
-        "php": "^7.0",
+        "php": "^7.1",
         "api-platform/api-platform": "^2.0",
         "doctrine/doctrine-bundle": "^1.6",
         "doctrine/doctrine-cache-bundle": "^1.2",
         "doctrine/doctrine-migrations-bundle": "^1.2",
         "doctrine/orm": "^2.5",
-        "eightpoints/guzzle-bundle": "^5.3",
-        "eightpoints/guzzle-wsse-middleware": "^4.2",
-        "ekino/newrelic-bundle": "^1.3",
-        "guzzlehttp/guzzle": "~6.0",
+        "eightpoints/guzzle-bundle": "^7.0",
         "incenteev/composer-parameter-handler": "^2.0",
-        "javiereguiluz/easyadmin-bundle": "^1.17",
+        "easycorp/easyadmin-bundle": "^1.17",
         "nelmio/api-doc-bundle": "^2.13",
         "nelmio/cors-bundle": "^1.5",
         "predis/predis": "^1.1",
@@ -52,11 +49,12 @@
     "require-dev": {
         "codeclimate/php-test-reporter": "^0.4.4",
         "doctrine/doctrine-fixtures-bundle": "^3.0",
-        "laravel/homestead": "^6.5",
+        "laravel/homestead": "^7.0",
         "phpstan/phpstan": "^0.9.1",
+        "phpunit/phpunit": "^7.0",
         "sensio/generator-bundle": "^3.0",
-        "symfony/phpunit-bridge": "^3.0",
-        "phpunit/phpunit": "^6.5"
+        "sllh/composer-versions-check": "^2.0",
+        "symfony/phpunit-bridge": "^3.0"
     },
     "scripts": {
         "symfony-scripts": [

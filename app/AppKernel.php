@@ -15,9 +15,7 @@ class AppKernel extends Kernel
             new Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
-            new EightPoints\Bundle\GuzzleBundle\GuzzleBundle(),
-            new Ekino\Bundle\NewRelicBundle\EkinoNewRelicBundle(),
-            new EasyCorp\Bundle\EasyAdminBundle\EasyAdminBundle(),
+            new EightPoints\Bundle\GuzzleBundle\EightPointsGuzzleBundle(),
             new AppBundle\AppBundle(),
         ];
 
@@ -26,6 +24,7 @@ class AppKernel extends Kernel
             $bundles[] = new Nelmio\CorsBundle\NelmioCorsBundle();
             $bundles[] = new ApiPlatform\Core\Bridge\Symfony\Bundle\ApiPlatformBundle();
             $bundles[] = new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle();
+            $bundles[] = new EasyCorp\Bundle\EasyAdminBundle\EasyAdminBundle();
         }
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
