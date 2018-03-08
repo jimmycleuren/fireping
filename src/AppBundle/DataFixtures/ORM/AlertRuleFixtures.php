@@ -23,10 +23,17 @@ class AlertRuleFixtures extends Fixture implements DependentFixtureInterface
         $alertrule->setPattern(">0,>0");
         $alertrule->setProbe($this->getReference('probe-ping'));
         $manager->persist($alertrule);
+        $this->addReference('alertrule-1', $alertrule);
+
+        $alertrule = new AlertRule();
+        $alertrule->setName('Alertrule 2');
+        $alertrule->setDatasource('loss');
+        $alertrule->setPattern(">0");
+        $alertrule->setProbe($this->getReference('probe-ping'));
+        $manager->persist($alertrule);
+        $this->addReference('alertrule-2', $alertrule);
 
         $manager->flush();
-
-        $this->addReference('alertrule-1', $alertrule);
     }
 
     public function getDependencies()
