@@ -11,7 +11,7 @@ services:
 
     AppBundle\:
         resource: '../../src/AppBundle/*'
-        exclude: '../../src/AppBundle/{Command,Entity,Exception,Form,Instruction,OutputFormatter,Probe,Processor,Repository,ShellCommand,Tests}'
+        exclude: '../../src/AppBundle/{Command,Entity,Exception,Form,Instruction,OutputFormatter,Probe,Repository,ShellCommand,Tests}'
 
     AppBundle\Controller\:
         resource: '../../src/AppBundle/Controller'
@@ -29,6 +29,12 @@ services:
         arguments: ["@eight_points_guzzle.client.alert"]
         public: true
 
+    AppBundle\Processor\PingProcessor:
+        arguments: ["@service_container"]
+
+    AppBundle\Processor\TracerouteProcessor:
+        arguments: ["@service_container"]
+
     AppBundle\Storage\RrdStorage:
         arguments:  ['%storage.path%']
 
@@ -40,14 +46,4 @@ services:
     instruction_builder:
         class:      AppBundle\DependencyInjection\InstructionBuilderService
         arguments:  ["@service_container"]
-        public: true
-
-    processor.ping:
-        class: AppBundle\Processor\PingProcessor
-        arguments: ["@service_container"]
-        public: true
-
-    processor.traceroute:
-        class: AppBundle\Processor\TracerouteProcessor
-        arguments: ["@service_container"]
         public: true

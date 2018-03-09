@@ -17,6 +17,7 @@ class DomainFixtures extends Fixture implements DependentFixtureInterface
         $domain->addProbe($this->getReference('probe-ping'));
         $domain->addProbe($this->getReference('probe-dummy'));
         $domain->addSlaveGroup($this->getReference('slavegroup-1'));
+        $domain->addAlertRule($this->getReference('alertrule-2'));
         $manager->persist($domain);
         $this->addReference('domain-1', $domain);
 
@@ -43,6 +44,7 @@ class DomainFixtures extends Fixture implements DependentFixtureInterface
         return array(
             ProbeFixtures::class,
             SlaveGroupFixtures::class,
+            AlertRuleFixtures::class,
         );
     }
 }
