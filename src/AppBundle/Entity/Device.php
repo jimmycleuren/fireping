@@ -434,8 +434,8 @@ class Device
         } else {
             $parent = $this->getDomain();
             while ($parent != null) {
-                if (count($parent->alertDestinations()) > 0) {
-                    return $parent->alertDestinations();
+                if (count($parent->getAlertDestinations()) > 0) {
+                    return $parent->getAlertDestinations();
                 }
                 $parent = $parent->getParent();
             }
