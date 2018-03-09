@@ -264,12 +264,12 @@ class Device
      */
     public function getActiveSlaveGroups()
     {
-        if (count($this->slavegroups) > 0) {
+        if ($this->slavegroups->count() > 0) {
             return $this->slavegroups;
         } else {
             $parent = $this->getDomain();
             while ($parent != null) {
-                if (count($parent->getSlaveGroups()) > 0) {
+                if ($parent->getSlaveGroups()->count() > 0) {
                     return $parent->getSlaveGroups();
                 }
                 $parent = $parent->getParent();
@@ -319,12 +319,12 @@ class Device
      */
     public function getActiveProbes()
     {
-        if (count($this->probes) > 0) {
+        if ($this->probes->count() > 0) {
             return $this->probes;
         } else {
             $parent = $this->getDomain();
             while ($parent != null) {
-                if (count($parent->getProbes()) > 0) {
+                if ($parent->getProbes()->count() > 0) {
                     return $parent->getProbes();
                 }
                 $parent = $parent->getParent();
@@ -374,12 +374,12 @@ class Device
      */
     public function getActiveAlertRules()
     {
-        if (count($this->alertRules) > 0) {
+        if ($this->alertRules->count() > 0) {
             return $this->alertRules;
         } else {
             $parent = $this->getDomain();
             while ($parent != null) {
-                if (count($parent->getAlertRules()) > 0) {
+                if ($parent->getAlertRules()->count() > 0) {
                     return $parent->getAlertRules();
                 }
                 $parent = $parent->getParent();
@@ -429,12 +429,12 @@ class Device
      */
     public function getActiveAlertDestinations()
     {
-        if (count($this->alertDestinations) > 0) {
+        if ($this->alertDestinations->count() > 0) {
             return $this->alertDestinations;
         } else {
             $parent = $this->getDomain();
             while ($parent != null) {
-                if (count($parent->getAlertDestinations()) > 0) {
+                if ($parent->getAlertDestinations()->count() > 0) {
                     return $parent->getAlertDestinations();
                 }
                 $parent = $parent->getParent();
