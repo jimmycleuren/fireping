@@ -17,6 +17,18 @@ services:
         resource: '../../src/AppBundle/Controller'
         tags: ['controller.service_arguments']
 
+    AppBundle\AlertDestination\:
+        resource: '../../src/AppBundle/AlertDestination'
+        public: true
+
+    AppBundle\AlertDestination\Monolog:
+        arguments: ["@monolog.logger.alert"]
+        public: true
+
+    AppBundle\AlertDestination\Http:
+        arguments: ["@eight_points_guzzle.client.alert"]
+        public: true
+
     AppBundle\Processor\PingProcessor:
         arguments: ["@service_container"]
 

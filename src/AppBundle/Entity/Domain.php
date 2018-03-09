@@ -81,6 +81,16 @@ class Domain
     private $alertRules;
 
     /**
+     * @ORM\ManyToMany(targetEntity="AlertDestination", fetch="EXTRA_LAZY")
+     * @ORM\JoinTable(name="domain_alert_destinations",
+     *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="alert_destination_id", referencedColumnName="id")}
+     *      )
+     * @Groups({"domain"})
+     */
+    private $alertDestinations;
+
+    /**
      * @var ArrayCollection
      * @ORM\OneToMany(targetEntity="Device", mappedBy="domain", fetch="EXTRA_LAZY")
      * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
@@ -152,6 +162,7 @@ class Domain
         $this->slavegroups = new \Doctrine\Common\Collections\ArrayCollection();
         $this->probes = new \Doctrine\Common\Collections\ArrayCollection();
         $this->alertRules = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->alertDestinations = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -278,6 +289,40 @@ class Domain
     public function getAlertRules()
     {
         return $this->alertRules;
+    }
+
+    /**
+     * Add alert destination
+     *
+     * @param \AppBundle\Entity\AlertDestination $alertDestination
+     *
+     * @return Domain
+     */
+    public function addAlertDestination(\AppBundle\Entity\AlertDestination $alertDestination)
+    {
+        $this->alertDestinations[] = $alertDestination;
+
+        return $this;
+    }
+
+    /**
+     * Remove alert destination
+     *
+     * @param \AppBundle\Entity\AlertDestination $alertDestination
+     */
+    public function removeAlertDestination(\AppBundle\Entity\AlertDestination $alertDestination)
+    {
+        $this->alertDestinations->removeElement($alertDestination);
+    }
+
+    /**
+     * Get alert destinations
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAlertDestinations()
+    {
+        return $this->alertDestinations;
     }
 
     /**

@@ -8,6 +8,7 @@
 
 namespace AppBundle\Processor;
 
+use AppBundle\AlertDestination\AlertDestinationFactory;
 use AppBundle\Entity\Alert;
 use AppBundle\Entity\AlertRule;
 use AppBundle\Entity\Device;
@@ -24,16 +25,18 @@ abstract class Processor
 {
     protected $logger = null;
     protected $em = null;
+    protected $alertDestinationFactory = null;
 
     protected $storage;
     protected $container;
     protected $cache;
 
-    public function __construct(ContainerInterface $container, RrdStorage $rrdStorage)
+    public function __construct(ContainerInterface $container, RrdStorage $rrdStorage, AlertDestinationFactory $alertDestinationFactory)
     {
         $this->container = $container;
         $this->logger = $container->get('logger');
         $this->em = $this->container->get('doctrine')->getManager();
+        $this->alertDestinationFactory = $alertDestinationFactory;
 
         $connection = RedisAdapter::createConnection("redis://localhost");
         $this->cache = new RedisAdapter($connection, 'fireping', 3600 * 24);
@@ -66,6 +69,10 @@ abstract class Processor
                             $alert->setSlaveGroup($group);
                             $alert->setActive(1);
                             $alert->setFirstseen(new \DateTime());
+                            $destinations = $device->getActiveAlertDestinations();
+                            foreach ($destinations as $destination) {
+                                $this->alertDestinationFactory->create($destination)->trigger($alert);
+                            }
                             $this->container->get("monolog.logger.alert")->info("ALERT: " . $alertRule->getName() . " on $device from $group");
                         }
                         $alert->setLastseen(new \DateTime());
@@ -81,6 +88,10 @@ abstract class Processor
                         if ($alert) {
                             $alert->setActive(0);
                             $this->em->persist($alert); //flush will be done in slavecontroller
+                            $destinations = $device->getActiveAlertDestinations();
+                            foreach ($destinations as $destination) {
+                                $this->alertDestinationFactory->create($destination)->clear($alert);
+                            }
                             $this->container->get("monolog.logger.alert")->info("CLEAR: " . $alertRule->getName() . " on $device from $group");
                         }
                         $this->handleAlertRules($rules, $device, $probe, $group, $timestamp, $alertRule);

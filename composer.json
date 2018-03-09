@@ -71,7 +71,14 @@
         "post-update-cmd": [
             "@symfony-scripts"
         ],
-        "phpstan": "vendor/bin/phpstan analyse src --level=1"
+        "phpstan": "vendor/bin/phpstan analyse src --level=1",
+        "test": [
+            "rm -f var/data.sqlite",
+            "/usr/bin/php bin/console doctrine:database:create --env=test",
+            "/usr/bin/php bin/console doctrine:schema:create --env=test",
+            "/usr/bin/php bin/console doctrine:fixtures:load -n --env=test",
+            "vendor/bin/phpunit --coverage-html ../fireping-coverage"
+        ]
     },
     "config": {
         "sort-packages": true
