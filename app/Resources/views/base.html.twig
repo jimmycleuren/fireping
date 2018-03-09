@@ -85,8 +85,12 @@
                         <li {% if active_menu is defined and active_menu == "alerts" %}class="active"{% endif %}><a href="{{ path('app_alert_index') }}">Alerts</a></li>
                         <li {% if active_menu is defined and active_menu == "admin" %}class="active"{% endif %}><a href="{{ path('admin') }}">Admin</a></li>
                     </ul>
-                    <div style="float:right; margin:14px 0px;">
-                        <a class="label {% if app.session.get('debug') %}label-success{% else %}label-danger{% endif %}" href="{{ path('debug') }}">Debug mode</a>
+                    <div style="float:right; margin:7px 0px;">
+                        <form class="form-inline" action="{{ path('app_search_index') }}">
+                            <input class="form-control" type="search" placeholder="Search" aria-label="Search" name="q">
+                            <a class="label {% if app.session.get('debug') %}label-success{% else %}label-danger{% endif %}" href="{{ path('debug') }}">Debug mode</a>
+                        </form>
+
                     </div>
                 </div><!--/.nav-collapse -->
             </div>
