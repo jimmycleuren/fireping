@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -64,6 +65,12 @@ class Probe
      */
     private $arguments;
 
+    /**
+     * @var ArrayCollection
+     * @ORM\OneToMany(targetEntity="ProbeArchive", mappedBy="probe", fetch="EXTRA_LAZY")
+     * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
+     */
+    private $archives;
 
     /**
      * Set id
@@ -207,6 +214,22 @@ class Probe
     public function getArguments()
     {
         return $this->arguments;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getArchives()
+    {
+        return $this->archives;
+    }
+
+    /**
+     * @param ArrayCollection $archives
+     */
+    public function setArchives($archives): void
+    {
+        $this->archives = $archives;
     }
 
     public function __toString()

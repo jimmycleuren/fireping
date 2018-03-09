@@ -115,6 +115,8 @@ easy_admin:
             class: AppBundle\Entity\AlertDestination
         Probe:
             class: AppBundle\Entity\Probe
+        ProbeArchive:
+            class: AppBundle\Entity\ProbeArchive
         Slave:
             class: AppBundle\Entity\Slave
             disabled_actions: ['new']

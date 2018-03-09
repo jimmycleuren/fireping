@@ -19,28 +19,6 @@ class RrdStorage extends Storage
 {
     private $logger = null;
     private $path = null;
-    private $archives = array(
-        array(
-            'function' => 'AVERAGE',
-            'steps' => 1,
-            'rows' => 1008
-        ),
-        array(
-            'function' => 'AVERAGE',
-            'steps' => 12,
-            'rows' => 4320
-        ),
-        array(
-            'function' => 'MIN',
-            'steps' => 12,
-            'rows' => 4320
-        ),
-        array(
-            'function' => 'MAX',
-            'steps' => 12,
-            'rows' => 4320
-        )
-    );
 
     private $predictions = array(
         array(
@@ -89,7 +67,7 @@ class RrdStorage extends Storage
         $this->update($path, $probe, $timestamp, $data);
     }
 
-    private function create($filename, $probe, $timestamp, $data)
+    private function create($filename, Probe $probe, $timestamp, $data)
     {
         $start = $timestamp - 1;
 
@@ -108,12 +86,12 @@ class RrdStorage extends Storage
             );
         }
 
-        foreach ($this->archives as $value) {
+        foreach ($probe->getArchives() as $archive) {
             $options[] = sprintf(
                 "RRA:%s:0.5:%s:%s",
-                strtoupper($value['function']),
-                $value['steps'],
-                $value['rows']
+                strtoupper($archive->getFunction()),
+                $archive->getSteps(),
+                $archive->getRows()
             );
         }
 
