@@ -73,6 +73,14 @@ class Probe
     private $archives;
 
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->archives = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
      * Set id
      *
      * @param string $id
@@ -225,11 +233,27 @@ class Probe
     }
 
     /**
-     * @param ArrayCollection $archives
+     * Add ProbeArchive
+     *
+     * @param \AppBundle\Entity\ProbeArchive $probeArchive
+     *
+     * @return Domain
      */
-    public function setArchives($archives): void
+    public function addArchive(\AppBundle\Entity\ProbeArchive $archive)
     {
-        $this->archives = $archives;
+        $this->archives[] = $archive;
+
+        return $this;
+    }
+
+    /**
+     * Remove ProbeArchive
+     *
+     * @param \AppBundle\Entity\ProbeArchive $probeArchive
+     */
+    public function removeArchive(\AppBundle\Entity\ProbeArchive $archive)
+    {
+        $this->archives->removeElement($archive);
     }
 
     public function __toString()

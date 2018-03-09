@@ -21,14 +21,7 @@ class ProbeArchiveFixtures extends Fixture implements DependentFixtureInterface
         $probeArchive = new ProbeArchive();
         $probeArchive->setFunction("AVERAGE");
         $probeArchive->setSteps(1);
-        $probeArchive->setRows(1000);
-        $probeArchive->setProbe($this->getReference('probe-ping'));
-        $manager->persist($probeArchive);
-
-        $probeArchive = new ProbeArchive();
-        $probeArchive->setFunction("AVERAGE");
-        $probeArchive->setSteps(12);
-        $probeArchive->setRows(1000);
+        $probeArchive->setRows(1440);
         $probeArchive->setProbe($this->getReference('probe-ping'));
         $manager->persist($probeArchive);
 

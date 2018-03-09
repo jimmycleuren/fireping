@@ -10,6 +10,7 @@ namespace Tests\AppBundle\Graph;
 
 use AppBundle\Entity\Device;
 use AppBundle\Entity\Probe;
+use AppBundle\Entity\ProbeArchive;
 use AppBundle\Entity\SlaveGroup;
 use AppBundle\Exception\RrdException;
 use AppBundle\Storage\RrdStorage;
@@ -49,12 +50,18 @@ class PingGraphTest extends TestCase
     {
         @unlink('/tmp/2/1/1.rrd');
 
+        $archive = new ProbeArchive();
+        $archive->setFunction('AVERAGE');
+        $archive->setSteps(1);
+        $archive->setRows(1008);
+
         $probe = new Probe();
         $probe->setId(1);
         $probe->setName('ping');
         $probe->setType('ping');
         $probe->setSamples(15);
         $probe->setStep(60);
+        $probe->addArchive($archive);
 
         $slavegroup = new SlaveGroup();
         $slavegroup->setId(1);
@@ -151,12 +158,18 @@ class PingGraphTest extends TestCase
     {
         @unlink('/tmp/5/1/1.rrd');
 
+        $archive = new ProbeArchive();
+        $archive->setFunction('AVERAGE');
+        $archive->setSteps(1);
+        $archive->setRows(1008);
+
         $probe = new Probe();
         $probe->setId(1);
         $probe->setName('ping');
         $probe->setType('ping');
         $probe->setSamples(15);
         $probe->setStep(60);
+        $probe->addArchive($archive);
 
         $slavegroup = new SlaveGroup();
         $slavegroup->setId(1);
