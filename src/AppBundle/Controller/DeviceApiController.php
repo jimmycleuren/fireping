@@ -51,14 +51,12 @@ class DeviceApiController extends Controller
         $loss = $this->storage->fetch($device, $selectedProbe, $slavegroups[0], date("U"), 'loss', 'AVERAGE');
         $median = $this->storage->fetch($device, $selectedProbe, $slavegroups[0], date("U"), 'median', 'AVERAGE');
 
-        if ($loss === null) {
-            $status = "unknown";
-        } elseif ($loss == 0) {
-            $status = "up";
-        } elseif ($loss < 1) {
-            $status = "warning";
-        } else {
+        if ($median == "U") {
             $status = "down";
+        } elseif ($median > 0) {
+            $status = "up";
+        } else {
+            $status = "unknown";
         }
 
         return new JsonResponse(array(
