@@ -27,11 +27,16 @@ class Http extends AlertDestinationInterface
 
     public function setParameters($parameters)
     {
-        $this->url = json_decode($parameters)->url;
+        if ($parameters && json_decode($parameters)) {
+            $this->url = json_decode($parameters)->url;
+        }
     }
 
     public function trigger(Alert $alert)
     {
+        if (!$this->url) {
+            return;
+        }
         try {
             $this->client->post($this->url, array(RequestOptions::JSON => $this->getData($alert, 'triggered')));
         } catch (\Exception $e) {
@@ -41,6 +46,9 @@ class Http extends AlertDestinationInterface
 
     public function clear(Alert $alert)
     {
+        if (!$this->url) {
+            return;
+        }
         try {
             $this->client->post($this->url, array(RequestOptions::JSON => $this->getData($alert, 'cleared')));
         } catch (\Exception $e) {
