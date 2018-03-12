@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            {% include 'menu/menu.html.twig' %}
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            {% if search_domains|length > 0 %}
+                <h2 class="page-header">Domain results for "{{ q }}"</h2>
+
+                {% for domain in search_domains %}
+                    <h4><a href="{{ path('app_domain_get', {id: domain.id}) }}">{{ domain.name }}</a></h4>
+                {% endfor %}
+                <br/>
+            {% endif %}
+            {% if search_devices|length > 0 %}
+                <h2 class="page-header">Device results for "{{ q }}"</h2>
+
+                {% for device in search_devices %}
+                    <h4>{{ device.name }} - {{ device.ip }}</h4>
+                    <a href="{{ path('app_device_get', {id: device.id}) }}"><img src="{{ path('app_graph_summary', {id: device.id}) }}" /></a><br/>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
