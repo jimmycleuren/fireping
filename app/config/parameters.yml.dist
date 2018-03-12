@@ -20,11 +20,9 @@ parameters:
 
     cors_allow_origin: 'http://localhost'
 
-    slave.name: ~
     slave.instructions:
         ping: ~
         mtr: ~
-    slave.url: https://fireping.cegeka.com
     
     storage: rrd
     storage.path: '%kernel.root_dir%/../var/rrd/'

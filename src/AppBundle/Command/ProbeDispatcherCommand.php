@@ -136,12 +136,21 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             throw new \Exception("High workers threshold value must be less than maximum workers value.");
         }
 
+        if ( !getenv('SLAVE_NAME')) {
+            throw new \Exception('SLAVE_NAME environment variable not set');
+        }
+        if ( !getenv('SLAVE_URL')) {
+            throw new \Exception('SLAVE_URL environment variable not set');
+        }
+
         $this->workersNeeded = 0;
         $this->inUsePeak     = 0;
 
         $this->queue = new \SplQueue();
 
         $this->logger->info("Fireping Dispatcher Started.");
+        $this->logger->info("Slave name is ".getenv('SLAVE_NAME'));
+        $this->logger->info("Slave url is ".getenv('SLAVE_URL'));
 
         $this->loop = Factory::create();
 
@@ -158,7 +167,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                 if (!$this->queueLock) {
                     if (!$this->queue->isEmpty()) {
                         $this->queueLock    = true;
-                        $name               = $this->getContainer()->getParameter('slave.name');
+                        $name               = getenv('SLAVE_NAME');
                         $this->queueElement = $this->queue->shift();
 
                         $instruction = array(

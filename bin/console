@@ -23,6 +23,9 @@ if ($debug) {
     Debug::enable();
 }
 
+if (file_exists(__DIR__.'/../.env')) {
+    (new \Symfony\Component\Dotenv\Dotenv())->load(__DIR__ . '/../.env');
+}
 $kernel = new AppKernel($env, $debug);
 $application = new Application($kernel);
 $application->run($input);

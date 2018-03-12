@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -64,6 +65,20 @@ class Probe
      */
     private $arguments;
 
+    /**
+     * @var ArrayCollection
+     * @ORM\OneToMany(targetEntity="ProbeArchive", mappedBy="probe", fetch="EXTRA_LAZY")
+     * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
+     */
+    private $archives;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->archives = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * Set id
@@ -207,6 +222,38 @@ class Probe
     public function getArguments()
     {
         return $this->arguments;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getArchives()
+    {
+        return $this->archives;
+    }
+
+    /**
+     * Add ProbeArchive
+     *
+     * @param \AppBundle\Entity\ProbeArchive $probeArchive
+     *
+     * @return Domain
+     */
+    public function addArchive(\AppBundle\Entity\ProbeArchive $archive)
+    {
+        $this->archives[] = $archive;
+
+        return $this;
+    }
+
+    /**
+     * Remove ProbeArchive
+     *
+     * @param \AppBundle\Entity\ProbeArchive $probeArchive
+     */
+    public function removeArchive(\AppBundle\Entity\ProbeArchive $archive)
+    {
+        $this->archives->removeElement($archive);
     }
 
     public function __toString()
