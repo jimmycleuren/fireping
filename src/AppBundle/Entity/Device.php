@@ -17,6 +17,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ApiResource(attributes={
  *     "normalization_context"={"groups"={"device"}},
  *     "denormalization_context"={"groups"={"device"}}
+ * },
+ * itemOperations={
+ *     "get",
+ *     "put",
+ *     "delete",
+ *     "status"={"route_name"="api_devices_status"},
  * })
  * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  */

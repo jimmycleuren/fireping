@@ -17,6 +17,10 @@ services:
         resource: '../../src/AppBundle/Controller'
         tags: ['controller.service_arguments']
 
+    AppBundle\Controller\DeviceApiController:
+        arguments: ["%storage%"]
+        tags: ['controller.service_arguments']
+
     AppBundle\AlertDestination\:
         resource: '../../src/AppBundle/AlertDestination'
         public: true
