@@ -10,30 +10,50 @@ namespace AppBundle\AlertDestination;
 
 use AppBundle\Entity\Alert;
 use GuzzleHttp\Client;
+use GuzzleHttp\RequestOptions;
+use Psr\Log\LoggerInterface;
 
 class Http extends AlertDestinationInterface
 {
     protected $client;
     protected $url;
+    protected $logger;
 
-    public function __construct(Client $client)
+    public function __construct(Client $client, LoggerInterface $logger)
     {
         $this->client = $client;
+        $this->logger = $logger;
     }
 
     public function setParameters($parameters)
     {
-        $this->url = $parameters['url'];
+        if ($parameters && json_decode($parameters)) {
+            $this->url = json_decode($parameters)->url;
+        }
     }
 
     public function trigger(Alert $alert)
     {
-        $this->client->request('POST', $this->url, array('body' => $this->getData($alert, 'triggered')));
+        if (!$this->url) {
+            return;
+        }
+        try {
+            $this->client->post($this->url, array(RequestOptions::JSON => $this->getData($alert, 'triggered')));
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+        }
     }
 
     public function clear(Alert $alert)
     {
-        $this->client->request('POST', $this->url, array('body' => $this->getData($alert, 'cleared')));
+        if (!$this->url) {
+            return;
+        }
+        try {
+            $this->client->post($this->url, array(RequestOptions::JSON => $this->getData($alert, 'cleared')));
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+        }
     }
 
     protected function getData(Alert $alert, $state)

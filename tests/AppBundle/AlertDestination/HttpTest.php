@@ -22,9 +22,11 @@ class HttpTest extends TestCase
     public function testTrigger()
     {
         $guzzle = $this->prophesize('GuzzleHttp\\Client');
-        $guzzle->request("POST", "url", Argument::any())->shouldBeCalledTimes(1);
-        $http = new Http($guzzle->reveal());
-        $http->setParameters(array('url' => 'url'));
+        $guzzle->post("url", Argument::any())->shouldBeCalledTimes(1);
+        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
+
+        $http = new Http($guzzle->reveal(), $logger->reveal());
+        $http->setParameters(json_encode(array('url' => 'url')));
 
         $device = new Device();
         $device->setName('device');
@@ -43,9 +45,11 @@ class HttpTest extends TestCase
     public function testClear()
     {
         $guzzle = $this->prophesize('GuzzleHttp\\Client');
-        $guzzle->request("POST", "url", Argument::any())->shouldBeCalledTimes(1);
-        $http = new Http($guzzle->reveal());
-        $http->setParameters(array('url' => 'url'));
+        $guzzle->post("url", Argument::any())->shouldBeCalledTimes(1);
+        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
+
+        $http = new Http($guzzle->reveal(), $logger->reveal());
+        $http->setParameters(json_encode(array('url' => 'url')));
 
         $device = new Device();
         $device->setName('device');

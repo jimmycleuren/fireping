@@ -30,7 +30,7 @@ services:
         public: true
 
     AppBundle\AlertDestination\Http:
-        arguments: ["@eight_points_guzzle.client.alert"]
+        arguments: ["@eight_points_guzzle.client.alert", "@monolog.logger"]
         public: true
 
     AppBundle\Processor\PingProcessor:
