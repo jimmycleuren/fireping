@@ -71,6 +71,6 @@ Docker slave
 sudo docker run \
 -e SLAVE_NAME='myslave' \
 -e SLAVE_URL='https://my.master.com' \
--v /app/var/logs:/tmp/logs \
+-v /tmp/logs:/app/var/logs \
 --name fireping
 jimmycleuren/fireping
