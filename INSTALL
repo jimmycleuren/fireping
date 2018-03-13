@@ -73,4 +73,4 @@ sudo docker run \
 -e SLAVE_URL='https://my.master.com' \
 -v /app/var/logs:/tmp/logs \
 --name fireping
-jimmycleuren/librenms
+jimmycleuren/fireping
