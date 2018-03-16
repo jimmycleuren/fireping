@@ -14,6 +14,8 @@ use AppBundle\Entity\SlaveGroup;
 use AppBundle\Exception\RrdException;
 use AppBundle\Exception\WrongTimestampRrdException;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Process\ExecutableFinder;
+use Symfony\Component\Process\Process;
 
 class RrdStorage extends Storage
 {
@@ -155,5 +157,88 @@ class RrdStorage extends Storage
         }
 
         return reset($result['data'][$key]);
+    }
+
+    public function validate(Device $device, Probe $probe, SlaveGroup $group)
+    {
+        $filename = $this->getFilePath($device, $probe, $group);
+
+        $finder = new ExecutableFinder();
+        if (!$rrdtool = $finder->find("rrdtool")) {
+            throw new \Exception("rrdtool is not installed on this system.");
+        }
+
+        $info = rrd_info($filename);
+
+        if (!$info || !$info['step']) {
+            $this->logger->warning("Could not read info from $filename");
+            return;
+        }
+
+        if ($info['step'] != $probe->getStep()) {
+            $this->logger->info("Running rrdtune to change step from ".$info['step']." to ".$probe->getStep());
+        }
+
+        $rra = $this->readArchives($filename);
+
+        //add new rra's
+        foreach ($probe->getArchives() as $archive) {
+            $found = false;
+            foreach($rra as $key => $item) {
+                if ($item['cf'] == $archive->getFunction() && $item['rows'] == $archive->getRows() && $item['pdp_per_row'] == $archive->getSteps()) {
+                    $found = true;
+                    unset($rra[$key]);
+                }
+            }
+            if (!$found) {
+                $this->logger->info("Adding $archive");
+                $rradef = sprintf(
+                    "RRA:%s:0.5:%s:%s",
+                    strtoupper($archive->getFunction()),
+                    $archive->getSteps(),
+                    $archive->getRows()
+                );
+                $process = new Process("rrdtool tune $filename $rradef");
+                $process->run();
+            }
+        }
+
+        $rra = $this->readArchives($filename);
+
+        //delete obsolete rra's
+        for($i = count($rra) - 1; $i >=0; $i--) {
+            $item = $rra[$i];
+            $found = false;
+            foreach ($probe->getArchives() as $archive) {
+                if ($item['cf'] == $archive->getFunction() && $item['rows'] == $archive->getRows() && $item['pdp_per_row'] == $archive->getSteps()) {
+                    $found = true;
+                }
+            }
+            if (!$found && in_array($item['cf'], array("AVERAGE", "MIN", "MAX"))) {
+                $this->logger->info("Removing #$i " . $item['cf'] . "-" . $item['pdp_per_row'] . "-" . $item['rows']);
+                $process = new Process("rrdtool tune $filename DELRRA:$i");
+                $process->run();
+            }
+        }
+    }
+
+    private function readArchives($filename)
+    {
+        $info = rrd_info($filename);
+
+        if (!$info || !$info['step']) {
+            $this->logger->warning("Could not read info from $filename");
+            return;
+        }
+
+        $rra = array();
+        foreach ($info as $key => $item) {
+            if (substr($key, 0, 3) == "rra") {
+                preg_match("/rra\[([\d]+)\]\.([\w\_]+)/", $key, $matches);
+                $rra[$matches[1]][$matches[2]] = $item;
+            }
+        }
+
+        return $rra;
     }
 }
