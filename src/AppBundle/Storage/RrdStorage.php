@@ -169,6 +169,12 @@ class RrdStorage extends Storage
         }
 
         $info = rrd_info($filename);
+
+        if (!$info || !$info['step']) {
+            $this->logger->warning("Could not read info from $filename");
+            return;
+        }
+
         if ($info['step'] != $probe->getStep()) {
             $this->logger->info("Running rrdtune to change step from ".$info['step']." to ".$probe->getStep());
         }
@@ -219,6 +225,11 @@ class RrdStorage extends Storage
     private function readArchives($filename)
     {
         $info = rrd_info($filename);
+
+        if (!$info || !$info['step']) {
+            $this->logger->warning("Could not read info from $filename");
+            return;
+        }
 
         $rra = array();
         foreach ($info as $key => $item) {

@@ -10,6 +10,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ValidateRrdCommand extends Command
 {
+    private $em = null;
+    private $storage = null;
+
     public function __construct(EntityManagerInterface $em, RrdStorage $storage)
     {
         $this->em = $em;
