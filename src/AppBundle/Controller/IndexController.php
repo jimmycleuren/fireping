@@ -8,18 +8,11 @@ use Symfony\Component\HttpFoundation\Request;
 
 class IndexController extends Controller
 {
-    private $em = null;
-
     /**
      * @Route("/", name="homepage")
      */
-    public function indexAction(Request $request)
+    public function indexAction()
     {
-        $this->em = $this->container->get('doctrine')->getManager();
-        $domains = $this->em->getRepository("AppBundle:Domain")->findBy(array('parent' => null), array('name' => 'ASC'));
-
-        return $this->render('default/index.html.twig', array(
-            'domains' => $domains
-        ));
+        return $this->render('default/index.html.twig');
     }
 }

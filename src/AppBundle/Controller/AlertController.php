@@ -20,8 +20,6 @@ class AlertController extends Controller
     public function indexAction(Request $request)
     {
         $this->em = $this->container->get('doctrine')->getManager();
-        $domains = $this->em->getRepository("AppBundle:Domain")->findBy(array('parent' => null));
-
         $alertDomains = array();
         $alerts = $this->em->getRepository("AppBundle:Alert")->findBy(array('active' => 1));
         foreach($alerts as $alert) {
@@ -32,7 +30,6 @@ class AlertController extends Controller
         }
 
         return $this->render('alert/index.html.twig', array(
-            'domains' => $domains,
             'alertDomains' => $alertDomains,
             'alerts' => $alerts,
         ));
@@ -45,11 +42,9 @@ class AlertController extends Controller
     public function domainAction(Domain $domain, Request $request)
     {
         $this->em = $this->container->get('doctrine')->getManager();
-        $domains = $this->em->getRepository("AppBundle:Domain")->findBy(array('parent' => null));
         $alertDomains = $this->em->getRepository("AppBundle:Domain")->findBy(array('parent' => $domain));
 
         return $this->render('alert/domain.html.twig', array(
-            'domains' => $domains,
             'domain' => $domain,
             'alertDomains' => $alertDomains,
         ));
