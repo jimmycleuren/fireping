@@ -1,3 +1,7 @@
+{% if current_domain is not defined %}
+    {% set current_domain = null %}
+{% endif %}
+
 <ul style="padding:0px;">
     {% for domain in menu %}
         <li style="display:block; padding:2px 10px 2px 10px;">
