@@ -29,6 +29,10 @@ class ProbeWorkerCommand extends ContainerAwareCommand
 
     protected $tmp;
 
+    protected $logger;
+    protected $loop;
+    protected $maxRunime;
+
     public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
