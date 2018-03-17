@@ -3,6 +3,3 @@ services:
         class: '%snc_redis.doctrine_cache_predis.class%'
         arguments:
             - '@snc_redis.default'
-
-    AppBundle\Twig\:
-        resource: '../../src/AppBundle/Twig'

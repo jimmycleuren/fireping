@@ -11,7 +11,7 @@ services:
 
     AppBundle\:
         resource: '../../src/AppBundle/*'
-        exclude: '../../src/AppBundle/{Entity,Exception,Form,Instruction,OutputFormatter,Probe,Repository,ShellCommand,Tests,Twig}'
+        exclude: '../../src/AppBundle/{Entity,Exception,Form,Instruction,OutputFormatter,Probe,Repository,ShellCommand,Tests}'
 
     AppBundle\Controller\:
         resource: '../../src/AppBundle/Controller'
