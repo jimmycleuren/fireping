@@ -14,6 +14,7 @@ use React\EventLoop\Factory;
 use React\Stream\ReadableResourceStream;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\ExecutableFinder;
 
@@ -40,16 +41,24 @@ class ProbeWorkerCommand extends ContainerAwareCommand
         $this
             ->setName('app:probe:worker')
             ->setDescription('Start the probe worker.')
+            ->addOption(
+                'max-runtime',
+                'runtime',
+                InputOption::VALUE_REQUIRED,
+                'The amount of seconds the command can run before terminating itself',
+                0
+            );
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->output = $output;
+        $this->maxRuntime              = $input->getOption('max-runtime');
 
-        $loop = Factory::create();
+        $this->loop = Factory::create();
 
-        $read = new ReadableResourceStream(STDIN, $loop);
+        $read = new ReadableResourceStream(STDIN, $this->loop);
 
         $read->on('data', function ($data) {
             $this->rcv_buff .= $data;
@@ -60,7 +69,15 @@ class ProbeWorkerCommand extends ContainerAwareCommand
             }
         });
 
-        $loop->run();
+        if ($this->maxRuntime > 0) {
+            $this->logger->info("Running for ".$this->maxRuntime." seconds");
+            $this->loop->addTimer($this->maxRuntime, function() use ($output) {
+                $output->writeln("Max runtime reached");
+                $this->loop->stop();
+            });
+        }
+
+        $this->loop->run();
     }
 
     protected function process($data)

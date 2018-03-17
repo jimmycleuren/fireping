@@ -4,87 +4,43 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "4412bc49a965a7797aa5cfe3e51fbec6",
+    "content-hash": "997c177b758fd8f1664fb83ad1a202d1",
     "packages": [
         {
-            "name": "api-platform/api-platform",
-            "version": "v2.1.6",
+            "name": "api-platform/api-pack",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/api-platform/api-platform.git",
-                "reference": "c795295807397c33a4e8d408c4f4f4717be6739b"
+                "url": "https://github.com/api-platform/api-pack.git",
+                "reference": "33ade8a1dc23868828788fe1bf3e54291ce54843"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/api-platform/api-platform/zipball/c795295807397c33a4e8d408c4f4f4717be6739b",
-                "reference": "c795295807397c33a4e8d408c4f4f4717be6739b",
+                "url": "https://api.github.com/repos/api-platform/api-pack/zipball/33ade8a1dc23868828788fe1bf3e54291ce54843",
+                "reference": "33ade8a1dc23868828788fe1bf3e54291ce54843",
                 "shasum": ""
             },
             "require": {
                 "api-platform/core": "^2.1",
+                "doctrine/annotations": "^1.0",
                 "doctrine/doctrine-bundle": "^1.6",
-                "doctrine/orm": "^2.5",
-                "guzzlehttp/guzzle": "^6.0",
-                "incenteev/composer-parameter-handler": "^2.0",
-                "nelmio/cors-bundle": "^1.4",
-                "php": ">=7.0",
-                "phpdocumentor/reflection-docblock": "^3.0",
-                "sensio/distribution-bundle": "^5.0.19",
-                "sensio/framework-extra-bundle": "^3.0.2",
-                "symfony/monolog-bundle": "^3.1.0",
-                "symfony/swiftmailer-bundle": "^2.3.10",
-                "symfony/symfony": "3.4.*",
-                "twig/twig": "^1.0 || ^2.0"
+                "doctrine/orm": "^2.4.5",
+                "nelmio/cors-bundle": "^1.5",
+                "php": "^7.0",
+                "phpdocumentor/reflection-docblock": "^3.0 || ^4.0",
+                "symfony/asset": "^3.0 || ^4.0",
+                "symfony/expression-language": "^3.0 || ^4.0",
+                "symfony/security-bundle": "^3.0 || ^4.0",
+                "symfony/twig-bundle": "^3.0 || ^4.0",
+                "symfony/validator": "^3.0 || ^4.0"
             },
-            "require-dev": {
-                "api-platform/schema-generator": "^1.0 || ^2.0",
-                "behat/behat": "^3.1",
-                "behat/mink": "^1.7",
-                "behat/mink-browserkit-driver": "^1.3.1",
-                "behat/mink-extension": "^2.2",
-                "behat/symfony2-extension": "^2.1",
-                "behatch/contexts": "^2.5",
-                "sensio/generator-bundle": "^3.0",
-                "symfony/phpunit-bridge": "^3.0"
-            },
-            "type": "project",
-            "extra": {
-                "symfony-app-dir": "app",
-                "symfony-bin-dir": "bin",
-                "symfony-var-dir": "var",
-                "symfony-web-dir": "web",
-                "symfony-tests-dir": "tests",
-                "symfony-assets-install": "hard",
-                "incenteev-parameters": {
-                    "file": "app/config/parameters.yml"
-                },
-                "branch-alias": {
-                    "dev-master": "2.1-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "": "src/"
-                },
-                "classmap": [
-                    "app/AppKernel.php",
-                    "app/AppCache.php"
-                ]
-            },
+            "type": "symfony-pack",
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
-            "authors": [
-                {
-                    "name": "Kévin Dunglas",
-                    "email": "dunglas@gmail.com",
-                    "homepage": "https://dunglas.fr"
-                }
-            ],
-            "description": "The API Platform framework",
-            "homepage": "https://api-platform.com",
-            "time": "2018-02-12T14:31:11+00:00"
+            "description": "A pack for API Platform",
+            "time": "2018-02-09T13:21:13+00:00"
         },
         {
             "name": "api-platform/core",
@@ -2263,29 +2219,35 @@
         },
         {
             "name": "phpdocumentor/reflection-docblock",
-            "version": "3.3.2",
+            "version": "4.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpDocumentor/ReflectionDocBlock.git",
-                "reference": "bf329f6c1aadea3299f08ee804682b7c45b326a2"
+                "reference": "94fd0001232e47129dd3504189fa1c7225010d08"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/bf329f6c1aadea3299f08ee804682b7c45b326a2",
-                "reference": "bf329f6c1aadea3299f08ee804682b7c45b326a2",
+                "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/94fd0001232e47129dd3504189fa1c7225010d08",
+                "reference": "94fd0001232e47129dd3504189fa1c7225010d08",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.6 || ^7.0",
+                "php": "^7.0",
                 "phpdocumentor/reflection-common": "^1.0.0",
                 "phpdocumentor/type-resolver": "^0.4.0",
                 "webmozart/assert": "^1.0"
             },
             "require-dev": {
-                "mockery/mockery": "^0.9.4",
-                "phpunit/phpunit": "^4.4"
+                "doctrine/instantiator": "~1.0.5",
+                "mockery/mockery": "^1.0",
+                "phpunit/phpunit": "^6.4"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.x-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "phpDocumentor\\Reflection\\": [
@@ -2304,7 +2266,7 @@
                 }
             ],
             "description": "With this component, a library can provide support for annotations via DocBlocks or otherwise retrieve information that is embedded in a DocBlock.",
-            "time": "2017-11-10T14:09:06+00:00"
+            "time": "2017-11-30T07:14:17+00:00"
         },
         {
             "name": "phpdocumentor/type-resolver",
@@ -3244,60 +3206,6 @@
             "time": "2017-12-01T10:40:06+00:00"
         },
         {
-            "name": "swiftmailer/swiftmailer",
-            "version": "v5.4.9",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/swiftmailer/swiftmailer.git",
-                "reference": "7ffc1ea296ed14bf8260b6ef11b80208dbadba91"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/7ffc1ea296ed14bf8260b6ef11b80208dbadba91",
-                "reference": "7ffc1ea296ed14bf8260b6ef11b80208dbadba91",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.3"
-            },
-            "require-dev": {
-                "mockery/mockery": "~0.9.1",
-                "symfony/phpunit-bridge": "~3.2"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "5.4-dev"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "lib/swift_required.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Chris Corbyn"
-                },
-                {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                }
-            ],
-            "description": "Swiftmailer, free feature-rich PHP mailer",
-            "homepage": "https://swiftmailer.symfony.com",
-            "keywords": [
-                "email",
-                "mail",
-                "mailer"
-            ],
-            "time": "2018-01-23T07:37:21+00:00"
-        },
-        {
             "name": "symfony/dotenv",
             "version": "v4.0.6",
             "source": {
@@ -3756,65 +3664,6 @@
                 "shim"
             ],
             "time": "2018-01-31T18:08:44+00:00"
-        },
-        {
-            "name": "symfony/swiftmailer-bundle",
-            "version": "v2.6.7",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/swiftmailer-bundle.git",
-                "reference": "c4808f5169efc05567be983909d00f00521c53ec"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/swiftmailer-bundle/zipball/c4808f5169efc05567be983909d00f00521c53ec",
-                "reference": "c4808f5169efc05567be983909d00f00521c53ec",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.2",
-                "swiftmailer/swiftmailer": "~4.2|~5.0",
-                "symfony/config": "~2.7|~3.0",
-                "symfony/dependency-injection": "~2.7|~3.0",
-                "symfony/http-kernel": "~2.7|~3.0"
-            },
-            "require-dev": {
-                "symfony/console": "~2.7|~3.0",
-                "symfony/framework-bundle": "~2.7|~3.0",
-                "symfony/phpunit-bridge": "~3.3@dev",
-                "symfony/yaml": "~2.7|~3.0"
-            },
-            "suggest": {
-                "psr/log": "Allows logging"
-            },
-            "type": "symfony-bundle",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.6-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Symfony\\Bundle\\SwiftmailerBundle\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Symfony Community",
-                    "homepage": "http://symfony.com/contributors"
-                },
-                {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                }
-            ],
-            "description": "Symfony SwiftmailerBundle",
-            "homepage": "http://symfony.com",
-            "time": "2017-10-19T01:06:41+00:00"
         },
         {
             "name": "symfony/symfony",

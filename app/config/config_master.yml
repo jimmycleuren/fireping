@@ -36,15 +36,6 @@ doctrine:
         # enable query caching
         query_cache_driver: redis
 
-
-# Swiftmailer Configuration
-swiftmailer:
-    transport: '%mailer_transport%'
-    host: '%mailer_host%'
-    username: '%mailer_user%'
-    password: '%mailer_password%'
-    spool: { type: memory }
-
 # Nelmio CORS
 nelmio_cors:
     defaults:
