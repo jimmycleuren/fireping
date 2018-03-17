@@ -25,3 +25,9 @@ monolog:
             type: syslog
             level: info
             channels: [alert]
+doctrine:
+    orm:
+         # enable metadata caching
+         metadata_cache_driver: redis
+         # enable query caching
+         query_cache_driver: redis
