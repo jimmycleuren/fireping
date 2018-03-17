@@ -20,9 +20,6 @@ class PostResultsHttpWorkerCommand implements CommandInterface
     /* @var $container \Symfony\Component\DependencyInjection\ContainerInterface */
     protected $container;
 
-    /* @var $logger \Psr\Log\LoggerInterface */
-    protected $logger;
-
     /* @var $client \GuzzleHttp\Client */
     protected $client;
 
@@ -45,7 +42,6 @@ class PostResultsHttpWorkerCommand implements CommandInterface
     {
         $this->arguments = $args;
         $this->container = $args['container'];
-        $this->logger    = $this->container->get('logger');
 
         if (isset($args['client'])) {
             $this->client = $this->container->get($args['client']);

@@ -78,6 +78,13 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
     protected $loop;
 
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+
+        parent::__construct();
+    }
+
     protected function configure()
     {
         $this
@@ -123,7 +130,6 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->kernel     = $this->getContainer()->get('kernel');
-        $this->logger     = $this->getContainer()->get('logger');
         $this->probeStore = $this->getContainer()->get('probe_store');
 
         $this->initWorkers             = $input->getOption('workers');

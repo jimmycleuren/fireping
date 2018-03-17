@@ -3,6 +3,7 @@
 namespace Tests\AppBundle\Command;
 
 use AppBundle\Command\ProbeDispatcherCommand;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -14,7 +15,8 @@ class ProbeDispatcherCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $application->add(new ProbeDispatcherCommand());
+        $logger = $this->prophesize("Psr\Log\LoggerInterface");
+        $application->add(new ProbeDispatcherCommand($logger->reveal()));
 
         $command = $application->find('app:probe:dispatcher');
         $commandTester = new CommandTester($command);

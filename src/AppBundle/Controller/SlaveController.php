@@ -14,6 +14,7 @@ use AppBundle\Processor\PingProcessor;
 use AppBundle\Processor\TracerouteProcessor;
 use AppBundle\Storage\RrdStorage;
 use Nette\Utils\Json;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -136,10 +137,10 @@ class SlaveController extends Controller
      *
      * Process new results from a slave
      */
-    public function resultAction(Slave $slave, Request $request, PingProcessor $pingProcessor, TracerouteProcessor $tracerouteProcessor)
+    public function resultAction(Slave $slave, Request $request, PingProcessor $pingProcessor, TracerouteProcessor $tracerouteProcessor, LoggerInterface $logger)
     {
         $this->em = $this->container->get('doctrine')->getManager();
-        $this->logger = $this->container->get('logger');
+        $this->logger = $logger;
 
         $slave->setLastContact(new \DateTime());
         $this->em->persist($slave);
@@ -206,9 +207,9 @@ class SlaveController extends Controller
      *
      * Process errors from a slave
      */
-    public function errorAction($slave, Request $request)
+    public function errorAction($slave, Request $request, LoggerInterface $logger)
     {
-        $this->logger = $this->container->get('logger');
+        $this->logger = $logger;
 
         //TODO: implement slave error handling
         $this->logger->info("Error received from $slave");

@@ -9,6 +9,7 @@ use AppBundle\Probe\PingShellCommand;
 use AppBundle\Probe\MtrShellCommand;
 use AppBundle\Probe\WorkerResponse;
 use AppBundle\ShellCommand\CommandFactory;
+use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
 use React\Stream\ReadableResourceStream;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -26,6 +27,13 @@ class ProbeWorkerCommand extends ContainerAwareCommand
     protected $rcv_buff;
 
     protected $tmp;
+
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+
+        parent::__construct();
+    }
 
     protected function configure()
     {
@@ -118,7 +126,7 @@ class ProbeWorkerCommand extends ContainerAwareCommand
             return;
         }
 
-        $this->getContainer()->get('logger')->info("COMMUNICATION_FLOW: Worker " . getmypid() . " received a " . $data['type'] . " instruction from master.");
+        $this->logger->info("COMMUNICATION_FLOW: Worker " . getmypid() . " received a " . $data['type'] . " instruction from master.");
 
         $factory = new CommandFactory();
         $data['container'] = $this->getContainer();
@@ -235,7 +243,7 @@ class ProbeWorkerCommand extends ContainerAwareCommand
 
     protected function sendResponse($data)
     {
-        $this->getContainer()->get('logger')->info("COMMUNICATION_FLOW: Worker " . getmypid() . " sent a " . $data['type'] . " response.");
+        $this->logger->info("COMMUNICATION_FLOW: Worker " . getmypid() . " sent a " . $data['type'] . " response.");
         $json = json_encode($data);
         $this->output->writeln($json);
     }
