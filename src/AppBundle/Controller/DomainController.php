@@ -10,19 +10,13 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 class DomainController extends Controller
 {
-    private $em = null;
-
     /**
      * @Route("/domain/{id}")
      * @ParamConverter("domain", class="AppBundle:Domain")
      */
-    public function getAction(Domain $domain, Request $request)
+    public function getAction(Domain $domain)
     {
-        $this->em = $this->container->get('doctrine')->getManager();
-        $domains = $this->em->getRepository("AppBundle:Domain")->findBy(array('parent' => null));
-
         return $this->render('domain/view.html.twig', array(
-            'domains' => $domains,
             'domain' => $domain,
             'current_domain' => $domain
         ));

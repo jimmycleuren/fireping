@@ -1,11 +1,33 @@
-<ul class="nav nav-sidebar">
-    {% for domain in domains %}
-        <li {% if current_domain is defined and current_domain.id == domain.id %}class="active"{% endif %}><a href="{{ path('app_domain_get', {id: domain.id}) }}">{{ domain.name }}</a></li>
-        {% for subdomain in domain.subdomains %}
-            <li {% if current_domain is defined and current_domain.id == subdomain.id %}class="active"{% endif %}><a href="{{ path('app_domain_get', {id: subdomain.id}) }}"> - {{ subdomain.name }}</a></li>
-            {% for subsubdomain in subdomain.subdomains %}
-                <li {% if current_domain is defined and current_domain.id == subsubdomain.id %}class="active"{% endif %}><a href="{{ path('app_domain_get', {id: subsubdomain.id}) }}"> -- {{ subsubdomain.name }}</a></li>
-            {% endfor %}
-        {% endfor %}
+{% if current_domain is not defined %}
+    {% set current_domain = null %}
+{% endif %}
+
+<ul style="padding:0px;">
+    {% for domain in menu %}
+        <li style="display:block; padding:2px 10px 2px 10px;">
+            <a href="{{ path("app_domain_get", {id: domain.id}) }}" style="display:inline;">{{ domain.name }}</a>
+            <a href="#toggle{{ domain.id }}" data-toggle="collapse" style="float:right;"><span class="caret"></span></a>
+
+            <div class="collapse{% if menuActive(domain, current_domain) %} in{% endif %}" id="toggle{{ domain.id }}">
+                <ul style="padding:0px;">
+                {% for subdomain in domain.subdomains %}
+                    <li style="display:block; padding:2px 0px 2px 10px;">
+                        <a href="{{ path("app_domain_get", {id: subdomain.id}) }}" style="display:inline;">{{ subdomain.name }}</a>
+                        <a href="#toggle{{ subdomain.id }}" data-toggle="collapse" style="float:right;"><span class="caret"></span></a>
+
+                        <div class="collapse{% if menuActive(subdomain, current_domain) %} in{% endif %}" id="toggle{{ subdomain.id }}">
+                            <ul style="padding:0px;">
+                                {% for subsubdomain in subdomain.subdomains %}
+                                    <li style="display:block; padding:2px 0px 2px 10px;">
+                                        <a href="{{ path('app_domain_get', {id: subsubdomain.id}) }}">{{ subsubdomain.name }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </li>
+                {% endfor %}
+                </ul>
+            </div>
+        </li>
     {% endfor %}
 </ul>
