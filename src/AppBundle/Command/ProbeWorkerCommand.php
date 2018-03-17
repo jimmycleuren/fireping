@@ -31,7 +31,7 @@ class ProbeWorkerCommand extends ContainerAwareCommand
 
     protected $logger;
     protected $loop;
-    protected $maxRunime;
+    protected $maxRuntime;
 
     public function __construct(LoggerInterface $logger)
     {
