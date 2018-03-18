@@ -19,6 +19,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManager;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
 
 abstract class Processor
@@ -31,10 +32,10 @@ abstract class Processor
     protected $container;
     protected $cache;
 
-    public function __construct(ContainerInterface $container, RrdStorage $rrdStorage, AlertDestinationFactory $alertDestinationFactory)
+    public function __construct(ContainerInterface $container, RrdStorage $rrdStorage, AlertDestinationFactory $alertDestinationFactory, LoggerInterface $logger)
     {
         $this->container = $container;
-        $this->logger = $container->get('logger');
+        $this->logger = $logger;
         $this->em = $this->container->get('doctrine')->getManager();
         $this->alertDestinationFactory = $alertDestinationFactory;
 

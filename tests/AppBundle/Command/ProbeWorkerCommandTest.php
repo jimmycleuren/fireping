@@ -2,13 +2,13 @@
 
 namespace Tests\AppBundle\Command;
 
-use AppBundle\Command\ProbeDispatcherCommand;
+use AppBundle\Command\ProbeWorkerCommand;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class ProbeDispatcherCommandTest extends KernelTestCase
+class ProbeWorkerCommandTest extends KernelTestCase
 {
     public function testExecute()
     {
@@ -16,15 +16,14 @@ class ProbeDispatcherCommandTest extends KernelTestCase
         $application = new Application($kernel);
 
         $logger = $this->prophesize("Psr\Log\LoggerInterface");
-        $application->add(new ProbeDispatcherCommand($logger->reveal()));
+        $application->add(new ProbeWorkerCommand($logger->reveal()));
 
-        $command = $application->find('app:probe:dispatcher');
+        $command = $application->find('app:probe:worker');
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
             'command'  => $command->getName(),
             '--env' => 'slave',
-            '--max-runtime' => 20,
-            '--workers' => 5,
+            '--max-runtime' => 20
         ));
 
         $output = $commandTester->getDisplay();

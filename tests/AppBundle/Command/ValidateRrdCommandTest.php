@@ -2,32 +2,30 @@
 
 namespace Tests\AppBundle\Command;
 
-use AppBundle\Command\ProbeDispatcherCommand;
+use AppBundle\Command\ValidateRrdCommand;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class ProbeDispatcherCommandTest extends KernelTestCase
+class ValidateRrdCommandTest extends KernelTestCase
 {
     public function testExecute()
     {
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $logger = $this->prophesize("Psr\Log\LoggerInterface");
-        $application->add(new ProbeDispatcherCommand($logger->reveal()));
+        $storage = $this->prophesize("AppBundle\Storage\RrdStorage");
 
-        $command = $application->find('app:probe:dispatcher');
+        $application->add(new ValidateRrdCommand($kernel->getContainer()->get('doctrine')->getManager(), $storage->reveal()));
+
+        $command = $application->find('app:rrd:validate');
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
             'command'  => $command->getName(),
-            '--env' => 'slave',
-            '--max-runtime' => 20,
-            '--workers' => 5,
+            '--env' => 'slave'
         ));
 
-        $output = $commandTester->getDisplay();
-        $this->assertContains("Max runtime reached", $output);
+        $this->assertEquals(0, $commandTester->getStatusCode());
     }
 }
