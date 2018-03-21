@@ -222,4 +222,12 @@ class Alert
     {
         return $this->lastseen;
     }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->alertRule->getName()." on ".$this->device->getName()." from ".$this->slaveGroup->getName();
+    }
 }

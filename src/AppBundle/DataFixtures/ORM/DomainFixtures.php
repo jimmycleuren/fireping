@@ -18,6 +18,7 @@ class DomainFixtures extends Fixture implements DependentFixtureInterface
         $domain->addProbe($this->getReference('probe-dummy'));
         $domain->addSlaveGroup($this->getReference('slavegroup-1'));
         $domain->addAlertRule($this->getReference('alertrule-2'));
+        $domain->addAlertDestination($this->getReference('alertdestination-mail'));
         $manager->persist($domain);
         $this->addReference('domain-1', $domain);
 
