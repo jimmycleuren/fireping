@@ -16,6 +16,8 @@ class Mail extends AlertDestinationInterface
 {
     protected $recipient;
     protected $mailer;
+    protected $templating;
+    protected $logger;
 
     public function __construct(\Swift_Mailer $mailer, LoggerInterface $logger, TwigEngine $templating)
     {
