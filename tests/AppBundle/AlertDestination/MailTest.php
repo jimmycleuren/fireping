@@ -12,6 +12,21 @@ use Prophecy\Argument;
 
 class MailTest extends TestCase
 {
+    public function testTriggerNoSender()
+    {
+        $mailer = $this->prophesize('Swift_Mailer');
+        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
+        $logger->error('MAILER_FROM env variable is not set')->shouldBeCalledTimes(1);
+        $templating = $this->prophesize('Symfony\\Bundle\\TwigBundle\\TwigEngine');
+
+        $mail = new Mail($mailer->reveal(), $logger->reveal(), $templating->reveal());
+
+        $original = getenv('MAILER_FROM');
+        putenv('MAILER_FROM');
+        $mail->trigger(new Alert());
+        putenv('MAILER_FROM='.$original);
+    }
+
     public function testTrigger()
     {
         $mailer = $this->prophesize('Swift_Mailer');
@@ -60,6 +75,21 @@ class MailTest extends TestCase
         $alert->setAlertRule($alertRule);
 
         $mail->trigger($alert);
+    }
+
+    public function testClearNoSender()
+    {
+        $mailer = $this->prophesize('Swift_Mailer');
+        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
+        $logger->error('MAILER_FROM env variable is not set')->shouldBeCalledTimes(1);
+        $templating = $this->prophesize('Symfony\\Bundle\\TwigBundle\\TwigEngine');
+
+        $mail = new Mail($mailer->reveal(), $logger->reveal(), $templating->reveal());
+
+        $original = getenv('MAILER_FROM');
+        putenv('MAILER_FROM');
+        $mail->clear(new Alert());
+        putenv('MAILER_FROM='.$original);
     }
 
     public function testClear()
