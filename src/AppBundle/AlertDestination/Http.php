@@ -25,10 +25,10 @@ class Http extends AlertDestinationInterface
         $this->logger = $logger;
     }
 
-    public function setParameters($parameters)
+    public function setParameters(array $parameters)
     {
-        if ($parameters && json_decode($parameters)) {
-            $this->url = json_decode($parameters)->url;
+        if ($parameters) {
+            $this->url = $parameters['url'];
         }
     }
 

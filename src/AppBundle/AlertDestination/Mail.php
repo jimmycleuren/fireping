@@ -12,6 +12,10 @@ use AppBundle\Entity\Alert;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\TwigBundle\TwigEngine;
 
+/**
+ * Class Mail
+ * @package AppBundle\AlertDestination
+ */
 class Mail extends AlertDestinationInterface
 {
     protected $recipient;
@@ -19,6 +23,12 @@ class Mail extends AlertDestinationInterface
     protected $templating;
     protected $logger;
 
+    /**
+     * Mail constructor.
+     * @param \Swift_Mailer $mailer
+     * @param LoggerInterface $logger
+     * @param TwigEngine $templating
+     */
     public function __construct(\Swift_Mailer $mailer, LoggerInterface $logger, TwigEngine $templating)
     {
         $this->mailer = $mailer;
@@ -26,13 +36,19 @@ class Mail extends AlertDestinationInterface
         $this->templating = $templating;
     }
 
-    public function setParameters($parameters)
+    /**
+     * @param array $parameters
+     */
+    public function setParameters(array $parameters)
     {
         if ($parameters) {
             $this->recipient = $parameters['recipient'];
         }
     }
 
+    /**
+     * @param Alert $alert
+     */
     public function trigger(Alert $alert)
     {
         if (!getenv('MAILER_FROM')) {
@@ -47,6 +63,9 @@ class Mail extends AlertDestinationInterface
         $this->sendMail($this->recipient, "ALERT: " . $alertRule->getName() . " on $device from $group", $alert);
     }
 
+    /**
+     * @param Alert $alert
+     */
     public function clear(Alert $alert)
     {
         if (!getenv('MAILER_FROM')) {
@@ -61,20 +80,31 @@ class Mail extends AlertDestinationInterface
         $this->sendMail($this->recipient, "CLEAR: " . $alertRule->getName() . " on $device from $group", $alert);
     }
 
-    private function sendMail($to, $subject, $alert)
+    /**
+     * @param string $to
+     * @param string $subject
+     * @param Alert $alert
+     * @throws \Twig\Error\Error
+     */
+    private function sendMail(string $to, string $subject, Alert $alert)
     {
-        $message = (new \Swift_Message($subject))
-            ->setFrom(getenv('MAILER_FROM'))
-            ->setTo($to)
-            ->setBody(
-                $this->templating->render(
-                    'emails/alert.html.twig',
-                    array('alert' => $alert)
-                ),
-                'text/html'
-            )
-        ;
+        try {
+            $message = (new \Swift_Message($subject))
+                ->setFrom(getenv('MAILER_FROM'))
+                ->setTo($to)
+                ->setBody(
+                    $this->templating->render(
+                        'emails/alert.html.twig',
+                        array('alert' => $alert)
+                    ),
+                    'text/html'
+                );
 
-        $this->mailer->send($message);
+            if (!$this->mailer->send($message)) {
+                $this->logger->warning("Mail to $to could not be sent");
+            }
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+        }
     }
 }

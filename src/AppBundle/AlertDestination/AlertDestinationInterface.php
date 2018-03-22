@@ -12,7 +12,7 @@ use AppBundle\Entity\Alert;
 
 abstract class AlertDestinationInterface
 {
-    public function setParameters($parameters)
+    public function setParameters(array $parameters)
     {
 
     }
