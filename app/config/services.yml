@@ -33,6 +33,10 @@ services:
         arguments: ["@eight_points_guzzle.client.alert", "@monolog.logger"]
         public: true
 
+    AppBundle\AlertDestination\Mail:
+        arguments: ["@swiftmailer.mailer.default", "@monolog.logger", "@templating"]
+        public: true
+
     AppBundle\Processor\PingProcessor:
         arguments: ["@service_container"]
 

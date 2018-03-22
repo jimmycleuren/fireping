@@ -156,7 +156,13 @@ class RrdStorage extends Storage
             return null;
         }
 
-        return reset($result['data'][$key]);
+        $value = reset($result['data'][$key]);
+
+        if (is_nan($value)) {
+            return null;
+        }
+
+        return $value;
     }
 
     public function validate(Device $device, Probe $probe, SlaveGroup $group)

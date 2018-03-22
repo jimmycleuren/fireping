@@ -26,7 +26,7 @@ class HttpTest extends TestCase
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
 
         $http = new Http($guzzle->reveal(), $logger->reveal());
-        $http->setParameters(json_encode(array('url' => 'url')));
+        $http->setParameters(array('url' => 'url'));
 
         $device = new Device();
         $device->setName('device');
@@ -49,7 +49,7 @@ class HttpTest extends TestCase
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
 
         $http = new Http($guzzle->reveal(), $logger->reveal());
-        $http->setParameters(json_encode(array('url' => 'url')));
+        $http->setParameters(array('url' => 'url'));
 
         $device = new Device();
         $device->setName('device');
