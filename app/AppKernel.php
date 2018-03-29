@@ -25,6 +25,7 @@ class AppKernel extends Kernel
             $bundles[] = new ApiPlatform\Core\Bridge\Symfony\Bundle\ApiPlatformBundle();
             $bundles[] = new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle();
             $bundles[] = new EasyCorp\Bundle\EasyAdminBundle\EasyAdminBundle();
+            $bundles[] = new CL\Bundle\SlackBundle\CLSlackBundle();
         }
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
