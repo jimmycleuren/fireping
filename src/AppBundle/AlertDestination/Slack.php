@@ -11,6 +11,7 @@ class Slack extends AlertDestinationInterface
 {
     protected $client;
     protected $channel;
+    protected $token;
     protected $logger;
 
     public function __construct(ApiClient $client, LoggerInterface $logger)
