@@ -190,7 +190,7 @@ class SlaveController extends Controller
             $this->logger->warning($e->getMessage());
             return new JsonResponse(array('code' => 409, 'message' => $e->getMessage()), 409);
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
+            $this->logger->error($e->getMessage()." ".$e->getFile().":".$e->getLine());
             return new JsonResponse(array('code' => 500, 'message' => $e->getMessage()), 500);
         }
 

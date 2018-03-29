@@ -22,9 +22,17 @@ class AlertDestinationFixtures extends Fixture
         $alertDestination->setType('syslog');
         $alertDestination->setParameters(array());
         $manager->persist($alertDestination);
+        $this->addReference('alertdestination-1', $alertDestination);
+
+        $alertDestination = new AlertDestination();
+        $alertDestination->setName('mail');
+        $alertDestination->setType('mail');
+        $alertDestination->setParameters(array('recipient' => 'test@test.com'));
+        $manager->persist($alertDestination);
+        $this->addReference('alertdestination-mail', $alertDestination);
 
         $manager->flush();
 
-        $this->addReference('alertdestination-1', $alertDestination);
+
     }
 }

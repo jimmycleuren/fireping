@@ -12,6 +12,7 @@
         <env name="KERNEL_CLASS" value="AppKernel" />
         <env name="SLAVE_NAME" value="phpunit-slave" />
         <env name="SLAVE_URL" value="http://localhost" />
+        <env name="MAILER_FROM" value="test@test.com" />
     </php>
 
     <testsuites>
