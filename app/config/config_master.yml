@@ -77,8 +77,20 @@ easy_admin:
             class: AppBundle\Entity\AlertRule
         AlertDestination:
             class: AppBundle\Entity\AlertDestination
+            form:
+                fields:
+                    - name
+                    - { property: 'type', type: 'choice', type_options: { choices: { 'http': 'http', 'mail': 'mail', 'monolog': 'monolog', 'slack': 'slack' } } }
         Probe:
             class: AppBundle\Entity\Probe
+            form:
+                fields:
+                    - name
+                    - { property: 'type', type: 'choice', type_options: { choices: { 'ping': 'ping' } } }
+                    - step
+                    - samples
+                    - arguments
+                    - archives
         ProbeArchive:
             class: AppBundle\Entity\ProbeArchive
         Slave:
