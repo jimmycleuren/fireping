@@ -39,7 +39,7 @@ class Slack extends AlertDestinationInterface
             $data = array(
                 'text' => "Alert: ".$alert,
                 'username' => "fireping",
-                'icon_emoji' => ":heavy_exclamation:"
+                'icon_emoji' => ":heavy_exclamation_mark:"
             );
             if ($this->channel) {
                 $data['channel'] = "#".$this->channel;
