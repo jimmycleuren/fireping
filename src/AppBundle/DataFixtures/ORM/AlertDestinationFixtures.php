@@ -31,6 +31,13 @@ class AlertDestinationFixtures extends Fixture
         $manager->persist($alertDestination);
         $this->addReference('alertdestination-mail', $alertDestination);
 
+        $alertDestination = new AlertDestination();
+        $alertDestination->setName('slack');
+        $alertDestination->setType('slack');
+        $alertDestination->setParameters(array('token' => 'token', 'channel' => 'general'));
+        $manager->persist($alertDestination);
+        $this->addReference('alertdestination-slack', $alertDestination);
+
         $manager->flush();
 
 

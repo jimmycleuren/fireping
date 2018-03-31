@@ -22,6 +22,7 @@
     "require": {
         "php": "^7.1",
         "api-platform/api-pack": "^1.0",
+        "cleentfaar/slack-bundle": "^0.20.1",
         "doctrine/doctrine-bundle": "^1.6",
         "doctrine/doctrine-cache-bundle": "^1.2",
         "doctrine/doctrine-migrations-bundle": "^1.2",
