@@ -67,6 +67,7 @@ class AlertRule
     private $parent;
 
     /**
+     * @var ArrayCollection
      * @ORM\OneToMany(targetEntity="AlertRule", mappedBy="parent")
      */
     private $children;
@@ -201,9 +202,23 @@ class AlertRule
         return $this->parent;
     }
 
+    /**
+     * @return ArrayCollection
+     */
     public function getChildren()
     {
         return $this->children;
+    }
+
+    /**
+     * @param $children
+     * @return $this
+     */
+    public function setChildren($children)
+    {
+        $this->children = $children;
+
+        return $this;
     }
 
     public function __toString()
