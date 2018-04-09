@@ -18,17 +18,21 @@ monolog:
             type: stream
             path: '%kernel.logs_dir%/%kernel.environment%.log'
             level: info
+            formatter: monolog.formatter.standard
         alert:
             type: stream
             path:  "%kernel.logs_dir%/alert.%kernel.environment%.log"
             level: info
             channels: [alert]
+            formatter: monolog.formatter.standard
         console:
             type: console
+            formatter: monolog.formatter.standard
         syslog_handler:
             type: syslog
             level: info
             channels: [alert]
+            formatter: monolog.formatter.standard
 doctrine:
     orm:
          # enable metadata caching

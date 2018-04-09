@@ -19,19 +19,23 @@ monolog:
             path: '%kernel.logs_dir%/%kernel.environment%.log'
             level: info
             channels: ['!event']
+            formatter: monolog.formatter.standard
         alert:
             type: stream
             path:  "%kernel.logs_dir%/alert.%kernel.environment%.log"
             level: info
             channels: [alert]
+            formatter: monolog.formatter.standard
         console:
             type: console
             channels: ['!event', '!doctrine']
             level: info
+            formatter: monolog.formatter.standard
         syslog_handler:
             type: syslog
             level: info
             channels: [alert]
+            formatter: monolog.formatter.standard
         # uncomment to get logging in your browser
         # you may have to allow bigger header sizes in your Web server configuration
         #firephp:
