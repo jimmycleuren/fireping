@@ -3,18 +3,18 @@
 namespace AppBundle\AlertDestination;
 
 use AppBundle\Entity\Alert;
-use CL\Slack\Payload\ChatPostMessagePayload;
-use CL\Slack\Transport\ApiClient;
+use GuzzleHttp\Client;
+use GuzzleHttp\RequestOptions;
 use Psr\Log\LoggerInterface;
 
 class Slack extends AlertDestinationInterface
 {
     protected $client;
     protected $channel;
-    protected $token;
+    protected $url;
     protected $logger;
 
-    public function __construct(ApiClient $client, LoggerInterface $logger)
+    public function __construct(Client $client, LoggerInterface $logger)
     {
         $this->client = $client;
         $this->logger = $logger;
@@ -25,23 +25,26 @@ class Slack extends AlertDestinationInterface
         if ($parameters && isset($parameters['channel'])) {
             $this->channel = $parameters['channel'];
         }
-        if ($parameters && isset($parameters['token'])) {
-            $this->token = $parameters['token'];
+        if ($parameters && isset($parameters['url'])) {
+            $this->url = $parameters['url'];
         }
     }
 
     public function trigger(Alert $alert)
     {
-        if (!$this->channel) {
+        if (!$this->url) {
             return false;
         }
         try {
-            $payload = new ChatPostMessagePayload();
-            $payload->setChannel('#'.$this->channel);
-            $payload->setText("Triggered: ".$alert);
-            $payload->setUsername('fireping');
-
-            $this->client->send($payload, $this->token);
+            $data = array(
+                'text' => "Alert: ".$alert,
+                'username' => "fireping",
+                'icon_emoji' => ":heavy_exclamation_mark:"
+            );
+            if ($this->channel) {
+                $data['channel'] = "#".$this->channel;
+            }
+            $this->client->post($this->url, array(RequestOptions::JSON => $data));
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
         }
@@ -49,16 +52,19 @@ class Slack extends AlertDestinationInterface
 
     public function clear(Alert $alert)
     {
-        if (!$this->channel) {
+        if (!$this->url) {
             return false;
         }
         try {
-            $payload = new ChatPostMessagePayload();
-            $payload->setChannel('#'.$this->channel);
-            $payload->setText("Cleared: ".$alert);
-            $payload->setUsername('fireping');
-
-            $this->client->send($payload, $this->token);
+            $data = array(
+                'text' => "Clear: ".$alert,
+                'username' => "fireping",
+                'icon_emoji' => ":heavy_check_mark:"
+            );
+            if ($this->channel) {
+                $data['channel'] = "#".$this->channel;
+            }
+            $this->client->post($this->url, array(RequestOptions::JSON => $data));
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
         }
