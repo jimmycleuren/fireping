@@ -15,9 +15,7 @@ use AppBundle\Entity\Device;
 use AppBundle\Entity\Probe;
 use AppBundle\Entity\SlaveGroup;
 use AppBundle\Storage\RrdStorage;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\EntityManager;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
@@ -42,7 +40,7 @@ abstract class Processor
         $connection = RedisAdapter::createConnection("redis://localhost");
         $this->cache = new RedisAdapter($connection, 'fireping', 3600 * 24);
 
-        if ($container->getParameter('storage') == "rrd") {
+        if ($container->getParameter('storage') === "rrd") {
             $this->storage = $rrdStorage;
         }
     }
@@ -74,7 +72,6 @@ abstract class Processor
                             foreach ($destinations as $destination) {
                                 $this->alertDestinationFactory->create($destination)->trigger($alert);
                             }
-                            $this->container->get("monolog.logger.alert")->info("ALERT: " . $alertRule->getName() . " on $device from $group");
                         }
                         $alert->setLastseen(new \DateTime());
                         $this->em->persist($alert); //flush will be done in slavecontroller
@@ -93,7 +90,6 @@ abstract class Processor
                             foreach ($destinations as $destination) {
                                 $this->alertDestinationFactory->create($destination)->clear($alert);
                             }
-                            $this->container->get("monolog.logger.alert")->info("CLEAR: " . $alertRule->getName() . " on $device from $group");
                         }
                         $this->handleAlertRules($rules, $device, $probe, $group, $timestamp, $alertRule);
                     }
