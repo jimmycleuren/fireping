@@ -48,8 +48,8 @@ class DeviceApiController extends Controller
             return new JsonResponse(array('message' => 'No slavegroup assigned'), 500);
         }
 
-        $loss = $this->storage->fetch($device, $selectedProbe, $slavegroups[0], date("U"), 'loss', 'AVERAGE');
-        $median = $this->storage->fetch($device, $selectedProbe, $slavegroups[0], date("U"), 'median', 'AVERAGE');
+        $loss = $this->storage->fetch($device, $selectedProbe, $slavegroups[0], date("U") - $selectedProbe->getStep(), 'loss', 'AVERAGE');
+        $median = $this->storage->fetch($device, $selectedProbe, $slavegroups[0], date("U") - $selectedProbe->getStep(), 'median', 'AVERAGE');
 
         if ($median == "U") {
             $status = "down";
