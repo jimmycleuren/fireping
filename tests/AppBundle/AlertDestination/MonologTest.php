@@ -21,7 +21,7 @@ class MonologTest extends TestCase
     public function testTrigger()
     {
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
-        $logger->warning(Argument::is('ALERT: rule on device from group'))->shouldBeCalledTimes(1);
+        $logger->warning(Argument::is('FIREPING.ALERT: rule on device from group'))->shouldBeCalledTimes(1);
         $monolog = new Monolog($logger->reveal());
 
         $device = new Device();
@@ -41,7 +41,7 @@ class MonologTest extends TestCase
     public function testClear()
     {
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
-        $logger->warning(Argument::is('CLEAR: rule on device from group'))->shouldBeCalledTimes(1);
+        $logger->warning(Argument::is('FIREPING.CLEAR: rule on device from group'))->shouldBeCalledTimes(1);
         $monolog = new Monolog($logger->reveal());
 
         $device = new Device();
