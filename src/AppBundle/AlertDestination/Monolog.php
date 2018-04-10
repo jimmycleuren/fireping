@@ -26,7 +26,7 @@ class Monolog extends AlertDestinationInterface
         $device = $alert->getDevice()->getName();
         $group = $alert->getSlaveGroup()->getName();
 
-        $this->logger->warning("ALERT: " . $alertRule->getName() . " on $device from $group");
+        $this->logger->warning("FIREPING.ALERT: " . $alertRule->getName() . " on $device from $group");
     }
 
     public function clear(Alert $alert)
@@ -35,6 +35,6 @@ class Monolog extends AlertDestinationInterface
         $device = $alert->getDevice()->getName();
         $group = $alert->getSlaveGroup()->getName();
 
-        $this->logger->warning("CLEAR: " . $alertRule->getName() . " on $device from $group");
+        $this->logger->warning("FIREPING.CLEAR: " . $alertRule->getName() . " on $device from $group");
     }
 }

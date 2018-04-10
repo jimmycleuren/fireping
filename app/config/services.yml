@@ -9,11 +9,6 @@ services:
         autoconfigure: true
         public: false
 
-    monolog.formatter.standard:
-        class: Monolog\Formatter\LineFormatter
-        arguments:
-            - "[%%datetime%%] FIREPING %%channel%%.%%level_name%%: %%message%%\n"
-
     AppBundle\:
         resource: '../../src/AppBundle/*'
         exclude: '../../src/AppBundle/{Exception,Form,Instruction,OutputFormatter,Probe,Repository,ShellCommand,Tests}'
