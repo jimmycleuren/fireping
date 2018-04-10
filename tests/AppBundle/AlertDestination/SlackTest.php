@@ -21,7 +21,7 @@ class SlackTest extends TestCase
 {
     public function testNoArguments()
     {
-        $client = $this->prophesize('CL\\Slack\\Transport\\ApiClient');
+        $client = $this->prophesize('GuzzleHttp\\Client');
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
 
         $slack = new Slack($client->reveal(), $logger->reveal());
@@ -43,15 +43,15 @@ class SlackTest extends TestCase
 
     public function testException()
     {
-        $token = 'abc123';
+        $url = 'http://slack.com';
 
-        $client = $this->prophesize('CL\\Slack\\Transport\\ApiClient');
-        $client->send(Argument::any(), $token)->shouldBeCalledTimes(2)->willThrow(new \Exception('test'));
+        $client = $this->prophesize('GuzzleHttp\\Client');
+        $client->post($url, Argument::any())->shouldBeCalledTimes(2)->willThrow(new \Exception('test'));
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
         $logger->error(Argument::type('string'))->shouldBeCalledTimes(2);
 
         $slack = new Slack($client->reveal(), $logger->reveal());
-        $slack->setParameters(array('token' => $token, 'channel' => 'general'));
+        $slack->setParameters(array('url' => $url, 'channel' => 'general'));
 
         $device = new Device();
         $device->setName('device');
@@ -70,14 +70,14 @@ class SlackTest extends TestCase
 
     public function testTrigger()
     {
-        $token = 'abc123';
+        $url = 'http://slack.com';
 
-        $client = $this->prophesize('CL\\Slack\\Transport\\ApiClient');
-        $client->send(Argument::any(), $token)->shouldBeCalledTimes(1);
+        $client = $this->prophesize('GuzzleHttp\\Client');
+        $client->post($url, Argument::any())->shouldBeCalledTimes(1);
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
 
         $slack = new Slack($client->reveal(), $logger->reveal());
-        $slack->setParameters(array('token' => $token, 'channel' => 'general'));
+        $slack->setParameters(array('url' => $url, 'channel' => 'general'));
 
         $device = new Device();
         $device->setName('device');
@@ -95,14 +95,14 @@ class SlackTest extends TestCase
 
     public function testClear()
     {
-        $token = 'abc123';
+        $url = 'http://slack.com';
 
-        $client = $this->prophesize('CL\\Slack\\Transport\\ApiClient');
-        $client->send(Argument::any(), $token)->shouldBeCalledTimes(1);
+        $client = $this->prophesize('GuzzleHttp\\Client');
+        $client->post($url, Argument::any())->shouldBeCalledTimes(1);
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
 
         $slack = new Slack($client->reveal(), $logger->reveal());
-        $slack->setParameters(array('token' => $token, 'channel' => 'general'));
+        $slack->setParameters(array('url' => $url, 'channel' => 'general'));
 
         $device = new Device();
         $device->setName('device');
