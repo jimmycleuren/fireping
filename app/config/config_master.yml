@@ -65,7 +65,7 @@ easy_admin:
         Domain:
             class: AppBundle\Entity\Domain
             list:
-                fields: ['id', 'name', 'parent']
+                fields: ['id', 'name', 'parent', 'subdomains']
         Device:
             class: AppBundle\Entity\Device
             list:

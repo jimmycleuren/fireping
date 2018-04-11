@@ -4,10 +4,9 @@ namespace AppBundle\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Device
@@ -42,7 +41,7 @@ class Device
      * @var Domain|null
      *
      * @ORM\ManyToOne(targetEntity="Domain", inversedBy="devices")
-     * @ORM\JoinColumn(name="domain_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="domain_id", referencedColumnName="id", onDelete="CASCADE")
      * @Assert\NotBlank
      * @Groups({"device"})
      */
