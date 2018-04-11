@@ -5,16 +5,13 @@ namespace AppBundle\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\Index;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Domain
  *
- * @ORM\Table(name="domain", indexes={
- *      @Index(name="search_idx", columns={"id", "name"})
- * })
+ * @ORM\Table(name="domain")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\DomainRepository")
  * @ApiResource(attributes={
  *     "normalization_context"={"groups"={"domain"}},
