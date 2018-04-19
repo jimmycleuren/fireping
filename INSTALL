@@ -51,6 +51,22 @@ fireping-slave: added process group
 ```
 - your slave will now start.
 
+Logrotate
+---------
+
+Slaves will generate a significant amount of logging. In order to mitigate disk usage somewhat, do the following:
+```
+(sudo) cp /opt/fireping/app/config/logrotate/fireping-slave /etc/logrotate.d/
+```
+Then edit the file and adjust the path if necessary
+```
+(sudo) vi /etc/logrotate.d/fireping-slave
+```
+Then, if you're doing this retroactively, you can force the logrotate to run now:
+```
+(sudo) logrotate --force /etc/logrotate.d/fireping-slave
+```
+
 Extra steps master
 ------------------
 sudo apt-get install mariadb-server php-mysql nginx php-fpm redis-server acl php-rrd
