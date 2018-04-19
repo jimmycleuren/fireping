@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="AppBundle\Repository\DomainRepository")
  * @ApiResource(attributes={
  *     "normalization_context"={"groups"={"domain"}},
- *     "denormalization_context"={"groups"={"domain"}}
+ *     "denormalization_context"={"groups"={"write"}}
  * })
  * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  */
@@ -28,7 +28,7 @@ class Domain
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"domain"})
+     * @Groups({"domain", "write"})
      */
     private $id;
 
@@ -39,6 +39,7 @@ class Domain
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id", nullable=true, onDelete="CASCADE")
      * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
      * @ApiSubresource()
+     * @Groups({"write"})
      */
     private $parent;
 
@@ -47,7 +48,7 @@ class Domain
      *
      * @ORM\Column(name="name", type="string", length=255)
      * @Assert\NotBlank
-     * @Groups({"domain"})
+     * @Groups({"domain", "write"})
      */
     private $name;
 
@@ -57,7 +58,7 @@ class Domain
      *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="slavegroup_id", referencedColumnName="id")}
      *      )
-     * @Groups({"domain"})
+     * @Groups({"domain", "write"})
      */
     private $slavegroups;
 
@@ -67,7 +68,7 @@ class Domain
      *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="probe_id", referencedColumnName="id")}
      *      )
-     * @Groups({"domain"})
+     * @Groups({"domain", "write"})
      */
     private $probes;
 
@@ -77,7 +78,7 @@ class Domain
      *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="alert_rule_id", referencedColumnName="id")}
      *      )
-     * @Groups({"domain"})
+     * @Groups({"domain", "write"})
      */
     private $alertRules;
 
@@ -87,7 +88,7 @@ class Domain
      *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="alert_destination_id", referencedColumnName="id")}
      *      )
-     * @Groups({"domain"})
+     * @Groups({"domain", "write"})
      */
     private $alertDestinations;
 
@@ -95,7 +96,7 @@ class Domain
      * @var ArrayCollection
      * @ORM\OneToMany(targetEntity="Device", mappedBy="domain", fetch="EXTRA_LAZY")
      * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
-     * @Groups({"domain"})
+     * @Groups({"domain", "write"})
      */
     private $devices;
 
@@ -104,7 +105,7 @@ class Domain
      * @ORM\OneToMany(targetEntity="Domain", mappedBy="parent", fetch="EXTRA_LAZY")
      * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
      * @ORM\OrderBy({"name" = "asc"})
-     * @Groups({"domain"})
+     * @Groups({"domain", "write"})
      */
     private $subdomains;
 
