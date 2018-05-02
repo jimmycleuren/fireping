@@ -35,26 +35,22 @@
         "react/event-loop": "^0.4.3",
         "react/socket": "^0.8",
         "react/stream": "^0.7.1",
-        "sensio/distribution-bundle": "^5.0",
         "sensio/framework-extra-bundle": "^3.0.2",
         "snc/redis-bundle": "^2.0",
-        "symfony/cache": "^3.3",
-        "symfony/dotenv": "^4.0",
         "symfony/monolog-bundle": "^3.0.2",
         "symfony/polyfill-apcu": "^1.0",
         "symfony/swiftmailer-bundle": "^3.2",
-        "symfony/symfony": "3.4.*",
-        "symfony/web-server-bundle": "^3.3",
+        "symfony/symfony": "^4.0",
         "twig/twig": "^1.0||^2.0"
     },
     "require-dev": {
-        "codeclimate/php-test-reporter": "^0.4.4",
         "doctrine/doctrine-fixtures-bundle": "^3.0",
         "laravel/homestead": "^7.0",
         "phpstan/phpstan": "^0.9.1",
         "phpunit/phpunit": "^7.0",
+        "sensiolabs/security-checker": "^4.1",
         "sllh/composer-versions-check": "^2.0",
-        "symfony/phpunit-bridge": "^3.0"
+        "symfony/phpunit-bridge": "^4.0"
     },
     "scripts": {
         "symfony-scripts": [
