@@ -207,7 +207,7 @@ class SlaveController extends Controller
      *
      * Process errors from a slave
      */
-    public function errorAction($slave, Request $request, LoggerInterface $logger)
+    public function errorAction(Slave $slave, Request $request, LoggerInterface $logger)
     {
         $this->logger = $logger;
 

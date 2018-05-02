@@ -76,7 +76,7 @@ class GraphController extends Controller
      * @ParamConverter("probe", class="AppBundle:Probe", options={"id" = "probe_id"})
      * @ParamConverter("slavegroup", class="AppBundle:SlaveGroup", options={"id" = "slavegroup_id"})
      */
-    public function detailAction(Device $device, Probe $probe, SlaveGroup $slavegroup, Request $request, PingGraph $pingGraph)
+    public function detailAction(Device $device = null, Probe $probe = null, SlaveGroup $slavegroup = null, Request $request, PingGraph $pingGraph)
     {
         $start = $request->get('start') ?: -3600;
         $end = $request->get('end') ?: date("U");

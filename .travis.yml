@@ -56,6 +56,8 @@ script:
   - php bin/console cache:warmup --env=slave
   - vendor/bin/phpunit --coverage-text --coverage-clover build/logs/clover.xml
   - composer phpstan
+
+after_script:
   - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
 
 after_failure: "cat /home/travis/build/jimmycleuren/fireping/var/logs/test.log"

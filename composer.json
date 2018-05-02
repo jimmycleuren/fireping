@@ -35,7 +35,7 @@
         "react/event-loop": "^0.4.3",
         "react/socket": "^0.8",
         "react/stream": "^0.7.1",
-        "sensio/framework-extra-bundle": "^3.0.2",
+        "sensio/framework-extra-bundle": "^5.0",
         "snc/redis-bundle": "^2.0",
         "symfony/monolog-bundle": "^3.0.2",
         "symfony/polyfill-apcu": "^1.0",
@@ -45,9 +45,9 @@
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.0",
-        "laravel/homestead": "^7.0",
-        "phpstan/phpstan": "^0.9.1",
-        "phpunit/phpunit": "^7.0",
+        "laravel/homestead": "^7.4",
+        "phpstan/phpstan": "^0.9",
+        "phpunit/phpunit": "^7.1",
         "sensiolabs/security-checker": "^4.1",
         "sllh/composer-versions-check": "^2.0",
         "symfony/phpunit-bridge": "^4.0"
