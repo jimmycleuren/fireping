@@ -1,0 +1,8 @@
+monolog:
+    channels: ["alert"]
+    handlers:
+        main:
+            type: stream
+            path: "%kernel.logs_dir%/%kernel.environment%.log"
+            level: debug
+            channels: ["!event"]

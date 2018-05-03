@@ -1,0 +1,21 @@
+monolog:
+    channels: ["alert"]
+    handlers:
+        main:
+            type: stream
+            path: '%kernel.logs_dir%/%kernel.environment%.log'
+            level: info
+            channels: ['!event']
+        alert:
+            type: stream
+            path:  "%kernel.logs_dir%/alert.%kernel.environment%.log"
+            level: info
+            channels: [alert]
+        console:
+            type: console
+            channels: ['!event', '!doctrine']
+            level: info
+        syslog_handler:
+            type: syslog
+            level: info
+            channels: [alert]
