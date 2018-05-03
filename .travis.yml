@@ -41,9 +41,6 @@ before_install:
 
 install:
   - 'composer -n ${HIGHEST_LOWEST-install} --prefer-dist'
-  - php bin/console doctrine:database:create --env=test
-  - php bin/console doctrine:schema:create --env=test
-  - php bin/console doctrine:fixtures:load -n --env=test
 
 before_script:
   - pecl install rrd
