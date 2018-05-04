@@ -13,8 +13,8 @@ folders:
 sites:
     -
         map: fireping.test
-        to: /home/vagrant/fireping/web
-        type: symfony
+        to: /home/vagrant/fireping/public
+        type: symfony4
     -
         map: fireping.coverage
         to: /home/vagrant/fireping-coverage

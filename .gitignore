@@ -1,20 +1,20 @@
-/app/config/parameters.yml
 /build/
-/phpunit.xml
-/var/*
-!/var/cache
-/var/cache/*
-!var/cache/.gitkeep
-!/var/logs
-/var/logs/*
-!var/logs/.gitkeep
-!/var/sessions
-/var/sessions/*
-!var/sessions/.gitkeep
-!var/SymfonyRequirements.php
-/vendor/
-/web/bundles/
 /.idea
 /.vagrant
 /Homestead.yaml
 /.env
+###> symfony/framework-bundle ###
+/.env
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+###< phpunit/phpunit ###
+
+###> symfony/phpunit-bridge ###
+.phpunit
+/phpunit.xml
+###< symfony/phpunit-bridge ###
