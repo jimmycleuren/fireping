@@ -39,6 +39,7 @@ class Slave
      * @var \DateTime
      *
      * @ORM\Column(name="last_contact", type="datetime")
+     * @Groups({"slave"})
      */
     private $lastContact;
 
