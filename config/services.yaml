@@ -1,0 +1,73 @@
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+    locale: 'en'
+    storage: rrd
+    storage.path: '%kernel.root_dir%/../var/rrd/'
+    slave.instructions:
+        ping: null
+        mtr: null
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        public: false       # Allows optimizing the container by removing unused services; this also means
+                            # fetching services directly from the container via $container->get() won't work.
+                            # The best practice is to be explicit about your dependencies anyway.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/*'
+        exclude: '../src/{Entity,Migrations,Tests,Kernel.php}'
+
+    # controllers are imported separately to make sure services can be injected
+    # as action arguments even if you don't extend any base controller class
+    App\Controller\:
+        resource: '../src/Controller'
+        tags: ['controller.service_arguments']
+
+    App\Controller\DeviceApiController:
+        arguments: ["%storage%"]
+        tags: ['controller.service_arguments']
+
+    App\AlertDestination\:
+        resource: '../src/AlertDestination'
+        public: true
+
+    App\AlertDestination\Monolog:
+        arguments: ["@monolog.logger.alert"]
+        public: true
+
+    App\AlertDestination\Http:
+        arguments: ["@eight_points_guzzle.client.alert", "@monolog.logger"]
+        public: true
+
+    App\AlertDestination\Slack:
+        arguments: ["@eight_points_guzzle.client.alert", "@monolog.logger"]
+        public: true
+
+    App\AlertDestination\Mail:
+        arguments: ["@swiftmailer.mailer.default", "@monolog.logger", "@templating"]
+        public: true
+
+    App\Processor\PingProcessor:
+        arguments: ["@service_container"]
+
+    App\Processor\TracerouteProcessor:
+        arguments: ["@service_container"]
+
+    App\Storage\RrdStorage:
+        arguments:  ['%storage.path%']
+
+    probe_store:
+        class:      App\DependencyInjection\ProbeStore
+        arguments:  ["@service_container"]
+        public: true
+
+    instruction_builder:
+        class:      App\DependencyInjection\InstructionBuilderService
+        arguments:  ["@service_container"]
+        public: true
