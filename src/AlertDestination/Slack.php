@@ -42,7 +42,7 @@ class Slack extends AlertDestinationInterface
                     array(
                         "fallback" => "Alert: ".$alert,
                         "color" => "#ff0000",
-                        "text" => $alert
+                        "text" => "".$alert
                     )
                 )
             );
@@ -67,7 +67,7 @@ class Slack extends AlertDestinationInterface
                     array(
                         "fallback" => "Clear: ".$alert,
                         "color" => "#00ff00",
-                        "text" => $alert
+                        "text" => "".$alert
                     )
                 )
             );
