@@ -32,7 +32,8 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
     /** @var array */
     protected $inputs = array();
 
-    protected $queue;
+    protected $numberOfQueues = 10;
+    protected $queues;
 
     protected $workerLimit;
 
@@ -141,7 +142,10 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         $this->workersNeeded = 0;
         $this->inUsePeak     = 0;
 
-        $this->queue = new Queue($this, 1, getenv('SLAVE_NAME'), $this->logger);
+        for($i = 0; $i < $this->numberOfQueues; $i++) {
+            $this->queues[$i] = new Queue($this, $i, getenv('SLAVE_NAME'), $this->logger);
+        }
+
 
         $this->logger->info("Fireping Dispatcher Started.");
         $this->logger->info("Slave name is ".getenv('SLAVE_NAME'));
@@ -158,7 +162,9 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                 $this->sendInstruction($instruction);
             }
 
-            $this->queue->loop();
+            foreach($this->queues as $queue) {
+                $queue->loop();
+            }
 
             foreach ($this->probeStore->getProbes() as $probe) {
                 /* @var $probe ProbeDefinition */
@@ -431,7 +437,13 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                     }
 
                     $this->logger->info("Enqueueing the response from worker $pid.");
-                    $this->queue->enqueue($cleaned);
+
+                    $items = $this->expandProbeResult($cleaned);
+                    foreach($items as $key => $item) {
+                        $queue = $this->queues[$key%$this->numberOfQueues];
+                        $queue->enqueue($item);
+                    }
+
                 } else {
                     $this->logger->error("Response ($status) from worker $pid unexpected.");
                 }
@@ -439,9 +451,18 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
             case 'post-result':
 
-                $this->queue->result($status);
+                $found = false;
+                foreach($this->queues as $queue) {
+                    if ($queue->getWorker() == $pid) {
+                        $queue->result($status);
+                        $this->rcv_buffers[$queue->getWorker()] = "";
+                        $found = true;
+                    }
+                }
+                if (!$found) {
+                    $this->logger->warning("Could not find the queue for worker $pid");
+                }
 
-                $this->rcv_buffers[$this->queue->getWorker()] = "";
                 break;
 
             case 'config-sync':
@@ -527,5 +548,25 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             $this->expectedRuntime[$pid] = null;
             unset($this->expectedRuntime[$pid]);
         }
+    }
+
+    private function expandProbeResult($result)
+    {
+        $items = array();
+        foreach($result as $probeId => $probe) {
+            foreach ($probe['targets'] as $key => $target) {
+                $items[$key] = array(
+                    $probeId => array(
+                        'type' => $probe['type'],
+                        'timestamp' => $probe['timestamp'],
+                        'targets' => array(
+                            $key => $target
+                        )
+                    )
+                );
+            }
+        }
+
+        return $items;
     }
 }

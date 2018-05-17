@@ -15,6 +15,7 @@ class Queue
     private $logger;
     private $id;
     private $dispatcher;
+    private $targetsPerPacket = 50;
 
     public function __construct(ProbeDispatcherCommand $dispatcher, int $id, string $slaveName, LoggerInterface $logger)
     {
@@ -40,7 +41,7 @@ class Queue
                         $this->reservePoster();
                     }
                     $this->lock = true;
-                    $this->current = $this->queue->shift();
+                    $this->current = $this->getNextPacket();
 
                     $instruction = array(
                         'type' => 'post-result',
@@ -55,10 +56,35 @@ class Queue
                     $this->dispatcher->sendInstruction($instruction, $this->worker);
                 } catch (\Exception $e) {
                     $this->lock = false;
-                    $this->logger->warning($e->getMessage());
+                    $this->logger->warning($e->getMessage()." at ".$e->getFile().":".$e->getLine());
                 }
             }
         }
+    }
+
+    private function getNextPacket()
+    {
+        $first = $this->queue->shift();
+        $firstProbeId = array_keys($first)[0];
+
+        $counter = count($first[$firstProbeId]['targets']);
+        $stop = false;
+        while($counter < $this->targetsPerPacket && !$this->queue->isEmpty() && !$stop) {
+            $next = $this->queue->shift();
+            $nextProbeId = array_keys($next)[0];
+
+            if($firstProbeId == $nextProbeId && $first[$firstProbeId]['timestamp'] == $next[$nextProbeId]['timestamp'] && $first[$firstProbeId]['type'] == $next[$nextProbeId]['type']) {
+                $nextTargetId = array_keys($next[$nextProbeId]['targets'])[0];
+                $first[$firstProbeId]['targets'][$nextTargetId] = $next[$nextProbeId]['targets'][$nextTargetId];
+            } else {
+                $stop = true;
+            }
+            $counter++;
+        }
+
+        $this->logger->info("Queue $this->id will send $counter items");
+
+        return $first;
     }
 
     public function result($status)
