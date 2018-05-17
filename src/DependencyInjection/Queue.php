@@ -28,7 +28,6 @@ class Queue
 
     public function enqueue($data)
     {
-        $this->logger->info("Enqueueing in queue $this->id, items in queue: ".$this->queue->count());
         $this->queue->enqueue($data);
     }
 
@@ -77,6 +76,7 @@ class Queue
                 $nextTargetId = array_keys($next[$nextProbeId]['targets'])[0];
                 $first[$firstProbeId]['targets'][$nextTargetId] = $next[$nextProbeId]['targets'][$nextTargetId];
             } else {
+                $this->queue->unshift($next);
                 $stop = true;
             }
             $counter++;
