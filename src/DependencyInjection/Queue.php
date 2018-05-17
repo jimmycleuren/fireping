@@ -94,7 +94,7 @@ class Queue
     private function retryPost()
     {
         if (isset($this->current)) {
-            $this->logger->info("Retrying " . json_encode($this->queueElement) . " at a later date.");
+            $this->logger->info("Retrying " . json_encode($this->current) . " at a later date.");
             $this->queue->unshift($this->current);
             $this->current = null;
         }
