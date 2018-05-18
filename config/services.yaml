@@ -59,6 +59,9 @@ services:
     App\Storage\RrdStorage:
         arguments:  ['%storage.path%']
 
+    App\Storage\RrdCachedStorage:
+        arguments:  ['%storage.path%']
+
     probe_store:
         class:      App\DependencyInjection\ProbeStore
         arguments:  ["@service_container"]
