@@ -19,10 +19,10 @@ use Symfony\Component\Process\Process;
 
 class RrdStorage extends Storage
 {
-    private $logger = null;
-    private $path = null;
+    protected $logger = null;
+    protected $path = null;
 
-    private $predictions = array(
+    protected $predictions = array(
         array(
             'function' => 'HWPREDICT',
             'rows' => 51840,
@@ -69,7 +69,7 @@ class RrdStorage extends Storage
         $this->update($path, $probe, $timestamp, $data);
     }
 
-    private function create($filename, Probe $probe, $timestamp, $data)
+    protected function create($filename, Probe $probe, $timestamp, $data)
     {
         $start = $timestamp - 1;
 
@@ -115,7 +115,7 @@ class RrdStorage extends Storage
         }
     }
 
-    private function update($filename, $probe, $timestamp, $data)
+    protected function update($filename, $probe, $timestamp, $data)
     {
         $info = rrd_info($filename);
         $update = rrd_lastupdate($filename);
@@ -228,7 +228,7 @@ class RrdStorage extends Storage
         }
     }
 
-    private function readArchives($filename)
+    protected function readArchives($filename)
     {
         $info = rrd_info($filename);
 

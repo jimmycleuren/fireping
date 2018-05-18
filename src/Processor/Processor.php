@@ -14,7 +14,7 @@ use App\Entity\AlertRule;
 use App\Entity\Device;
 use App\Entity\Probe;
 use App\Entity\SlaveGroup;
-use App\Storage\RrdStorage;
+use App\Storage\RrdCachedStorage;
 use Doctrine\Common\Collections\Collection;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
@@ -30,7 +30,7 @@ abstract class Processor
     protected $container;
     protected $cache;
 
-    public function __construct(ContainerInterface $container, RrdStorage $rrdStorage, AlertDestinationFactory $alertDestinationFactory, LoggerInterface $logger)
+    public function __construct(ContainerInterface $container, RrdCachedStorage $rrdStorage, AlertDestinationFactory $alertDestinationFactory, LoggerInterface $logger)
     {
         $this->container = $container;
         $this->logger = $logger;
