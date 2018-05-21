@@ -21,6 +21,8 @@ class AlertRuleFixtures extends Fixture implements DependentFixtureInterface
         $alertrule->setName('Alertrule 1');
         $alertrule->setDatasource('loss');
         $alertrule->setPattern(">0,>0");
+        $alertrule->setMessageUp("Device up");
+        $alertrule->setMessageDown("Device down");
         $alertrule->setProbe($this->getReference('probe-ping'));
         $manager->persist($alertrule);
         $this->addReference('alertrule-1', $alertrule);
@@ -29,6 +31,8 @@ class AlertRuleFixtures extends Fixture implements DependentFixtureInterface
         $alertrule->setName('Alertrule 2');
         $alertrule->setDatasource('loss');
         $alertrule->setPattern(">0");
+        $alertrule->setMessageUp("Device up");
+        $alertrule->setMessageDown("Device down");
         $alertrule->setProbe($this->getReference('probe-ping'));
         $manager->persist($alertrule);
         $this->addReference('alertrule-2', $alertrule);
