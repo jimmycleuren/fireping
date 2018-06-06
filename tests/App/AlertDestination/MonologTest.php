@@ -21,7 +21,7 @@ class MonologTest extends TestCase
     public function testTrigger()
     {
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
-        $logger->warning(Argument::is('FIREPING.ALERT: rule on device from group'))->shouldBeCalledTimes(1);
+        $logger->warning(Argument::is('FIREPING.ALERT: Device down: device from group'))->shouldBeCalledTimes(1);
         $monolog = new Monolog($logger->reveal());
 
         $device = new Device();
@@ -30,7 +30,10 @@ class MonologTest extends TestCase
         $slaveGroup->setName('group');
         $alertRule = new AlertRule();
         $alertRule->setName('rule');
+        $alertRule->setMessageUp("Device up");
+        $alertRule->setMessageDown("Device down");
         $alert = new Alert();
+        $alert->setActive(1);
         $alert->setDevice($device);
         $alert->setSlaveGroup($slaveGroup);
         $alert->setAlertRule($alertRule);
@@ -41,7 +44,7 @@ class MonologTest extends TestCase
     public function testClear()
     {
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
-        $logger->warning(Argument::is('FIREPING.CLEAR: rule on device from group'))->shouldBeCalledTimes(1);
+        $logger->warning(Argument::is('FIREPING.CLEAR: Device up: device from group'))->shouldBeCalledTimes(1);
         $monolog = new Monolog($logger->reveal());
 
         $device = new Device();
@@ -50,6 +53,8 @@ class MonologTest extends TestCase
         $slaveGroup->setName('group');
         $alertRule = new AlertRule();
         $alertRule->setName('rule');
+        $alertRule->setMessageUp("Device up");
+        $alertRule->setMessageDown("Device down");
         $alert = new Alert();
         $alert->setDevice($device);
         $alert->setSlaveGroup($slaveGroup);

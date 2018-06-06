@@ -60,6 +60,20 @@ class AlertRule
     private $pattern;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255)
+     */
+    private $messageUp;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255)
+     */
+    private $messageDown;
+
+    /**
      * Each rule can optionally have a parent rule.
      *
      * @ORM\ManyToOne(targetEntity="AlertRule", inversedBy="children")
@@ -220,6 +234,54 @@ class AlertRule
         $this->children = $children;
 
         return $this;
+    }
+
+    /**
+     * Set messageUp
+     *
+     * @param string $messageUp
+     *
+     * @return AlertRule
+     */
+    public function setMessageUp($messageUp)
+    {
+        $this->messageUp = $messageUp;
+
+        return $this;
+    }
+
+    /**
+     * Get messageUp
+     *
+     * @return string
+     */
+    public function getMessageUp()
+    {
+        return $this->messageUp;
+    }
+
+    /**
+     * Set messageDown
+     *
+     * @param string $messageUp
+     *
+     * @return AlertRule
+     */
+    public function setMessageDown($messageDown)
+    {
+        $this->messageDown = $messageDown;
+
+        return $this;
+    }
+
+    /**
+     * Get messageDown
+     *
+     * @return string
+     */
+    public function getMessageDown()
+    {
+        return $this->messageDown;
     }
 
     public function __toString()
