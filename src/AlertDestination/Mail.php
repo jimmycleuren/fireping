@@ -60,7 +60,7 @@ class Mail extends AlertDestinationInterface
         $device = $alert->getDevice()->getName();
         $group = $alert->getSlaveGroup()->getName();
 
-        $this->sendMail($this->recipient, "ALERT: " . $alertRule->getName() . " on $device from $group", $alert);
+        $this->sendMail($this->recipient, $this->getAlertMessage($alert), $alert);
     }
 
     /**
@@ -77,7 +77,7 @@ class Mail extends AlertDestinationInterface
         $device = $alert->getDevice()->getName();
         $group = $alert->getSlaveGroup()->getName();
 
-        $this->sendMail($this->recipient, "CLEAR: " . $alertRule->getName() . " on $device from $group", $alert);
+        $this->sendMail($this->recipient, $this->getAlertMessage($alert), $alert);
     }
 
     /**
