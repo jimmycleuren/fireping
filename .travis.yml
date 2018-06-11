@@ -27,7 +27,6 @@ matrix:
     - php: 7.2
       env: 'HIGHEST_LOWEST="update"'
     - php: 7.2
-    - php: 7.1
   allow_failures:
     - php: master
     - php: 7.2
