@@ -42,7 +42,7 @@ class AlertDestination
     private $type;
 
     /**
-     * @var string
+     * @var array
      *
      * @ORM\Column(name="parameters", type="json", nullable=true)
      */
@@ -89,7 +89,7 @@ class AlertDestination
     }
 
     /**
-     * @return string
+     * @return array
      */
     public function getParameters()
     {
@@ -97,7 +97,7 @@ class AlertDestination
     }
 
     /**
-     * @param string $parameters
+     * @param array $parameters
      */
     public function setParameters($parameters): void
     {
