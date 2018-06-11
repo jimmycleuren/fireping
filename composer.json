@@ -71,7 +71,7 @@
         "post-update-cmd": [
             "@symfony-scripts"
         ],
-        "phpstan": "vendor/bin/phpstan analyse src --level=1",
+        "phpstan": "vendor/bin/phpstan --level=1 --configuration=phpstan.neon analyse src",
         "test": "vendor/bin/phpunit --coverage-html ../fireping-coverage",
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
