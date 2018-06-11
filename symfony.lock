@@ -107,9 +107,6 @@
     "evenement/evenement": {
         "version": "v3.0.1"
     },
-    "fig/link-util": {
-        "version": "1.0.0"
-    },
     "guzzlehttp/guzzle": {
         "version": "6.3.3"
     },
@@ -236,9 +233,6 @@
             "ref": "c276fa48d4713de91eb410289b3b1834acb7e403"
         }
     },
-    "phpunit/phpunit-mock-objects": {
-        "version": "6.1.1"
-    },
     "predis/predis": {
         "version": "v1.1.1"
     },
@@ -250,9 +244,6 @@
     },
     "psr/http-message": {
         "version": "1.0.1"
-    },
-    "psr/link": {
-        "version": "1.0.0"
     },
     "psr/log": {
         "version": "1.0.2"
@@ -459,6 +450,9 @@
         }
     },
     "symfony/polyfill-apcu": {
+        "version": "v1.8.0"
+    },
+    "symfony/polyfill-ctype": {
         "version": "v1.8.0"
     },
     "symfony/polyfill-intl-icu": {
