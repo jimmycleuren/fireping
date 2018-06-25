@@ -42,7 +42,8 @@
         "symfony/translation": "^4.0",
         "symfony/twig-bundle": "^4.0",
         "symfony/validator": "^4.0",
-        "twig/twig": "^1.0||^2.0"
+        "twig/twig": "^1.0||^2.0",
+        "symfony/config": "<4.1"
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.0",

@@ -236,9 +236,6 @@
             "ref": "c276fa48d4713de91eb410289b3b1834acb7e403"
         }
     },
-    "phpunit/phpunit-mock-objects": {
-        "version": "6.1.1"
-    },
     "predis/predis": {
         "version": "v1.1.1"
     },
