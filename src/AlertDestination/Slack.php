@@ -37,9 +37,14 @@ class Slack extends AlertDestinationInterface
         }
         try {
             $data = array(
-                'text' => "Alert: ".$alert,
                 'username' => "fireping",
-                'icon_emoji' => ":heavy_exclamation_mark:"
+                'attachments' => array(
+                    array(
+                        "fallback" => $this->getAlertMessage($alert),
+                        "color" => "#FF4136",
+                        "text" => $this->getAlertMessage($alert)
+                    )
+                )
             );
             if ($this->channel) {
                 $data['channel'] = "#".$this->channel;
@@ -57,9 +62,14 @@ class Slack extends AlertDestinationInterface
         }
         try {
             $data = array(
-                'text' => "Clear: ".$alert,
                 'username' => "fireping",
-                'icon_emoji' => ":heavy_check_mark:"
+                'attachments' => array(
+                    array(
+                        "fallback" => $this->getAlertMessage($alert),
+                        "color" => "#2ECC40",
+                        "text" => $this->getAlertMessage($alert)
+                    )
+                )
             );
             if ($this->channel) {
                 $data['channel'] = "#".$this->channel;

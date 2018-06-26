@@ -13,7 +13,7 @@
         }
     },
     "require": {
-        "php": "^7.1",
+        "php": "^7.2",
         "api-platform/api-pack": "^1.0",
         "doctrine/doctrine-bundle": "^1.6",
         "doctrine/doctrine-cache-bundle": "^1.2",
@@ -22,8 +22,6 @@
         "easycorp/easyadmin-bundle": "^1.17",
         "eightpoints/guzzle-bundle": "^7.0",
         "incenteev/composer-parameter-handler": "^2.0",
-        "nelmio/api-doc-bundle": "^2.13",
-        "nelmio/cors-bundle": "^1.5",
         "predis/predis": "^1.1",
         "react/event-loop": "^0.4.3",
         "react/socket": "^0.8",
@@ -71,7 +69,7 @@
         "post-update-cmd": [
             "@symfony-scripts"
         ],
-        "phpstan": "vendor/bin/phpstan analyse src --level=1",
+        "phpstan": "vendor/bin/phpstan --level=1 --configuration=phpstan.neon analyse src",
         "test": "vendor/bin/phpunit --coverage-html ../fireping-coverage",
         "auto-scripts": {
             "cache:clear": "symfony-cmd",

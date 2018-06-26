@@ -44,6 +44,8 @@ class AlertRuleApiTest extends WebTestCase
                 'pattern' => '=0,>0,>0',
                 'probe' => '/api/probes/1',
                 'parent' => '/api/alert_rules/1',
+                'messageUp' => 'Device up',
+                'messageDown' => 'Device down'
             ))
         );
 
