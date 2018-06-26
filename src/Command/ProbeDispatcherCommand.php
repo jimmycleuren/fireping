@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\DependencyInjection\ProbeStore;
+use App\DependencyInjection\Queue;
 use App\Instruction\Instruction;
 
 use App\Probe\ProbeDefinition;
@@ -31,11 +32,8 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
     /** @var array */
     protected $inputs = array();
 
-    /** @var \SplQueue */
-    protected $queue;
-
-    /** @var boolean */
-    protected $queueLock;
+    protected $numberOfQueues = 10;
+    protected $queues;
 
     protected $workerLimit;
 
@@ -67,14 +65,6 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
     protected $startTimes      = array();
     protected $expectedRuntime = array();
-
-    /**
-     * This contains the process id of the worker process that is responsible for posting data to the master.
-     * @var int $poster
-     */
-    protected $poster;
-
-    protected $queueElement;
 
     protected $loop;
 
@@ -152,7 +142,10 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         $this->workersNeeded = 0;
         $this->inUsePeak     = 0;
 
-        $this->queue = new \SplQueue();
+        for($i = 0; $i < $this->numberOfQueues; $i++) {
+            $this->queues[$i] = new Queue($this, $i, getenv('SLAVE_NAME'), $this->logger);
+        }
+
 
         $this->logger->info("Fireping Dispatcher Started.");
         $this->logger->info("Slave name is ".getenv('SLAVE_NAME'));
@@ -169,28 +162,8 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                 $this->sendInstruction($instruction);
             }
 
-            if (isset($this->poster) && $this->poster != -1) {
-                if (!$this->queueLock) {
-                    if (!$this->queue->isEmpty()) {
-                        $this->queueLock    = true;
-                        $name               = getenv('SLAVE_NAME');
-                        $this->queueElement = $this->queue->shift();
-
-                        $instruction = array(
-                            'type' => 'post-result',
-                            'delay_execution' => 0,
-                            'client' => 'eight_points_guzzle.client.api_fireping',
-                            'method' => 'POST',
-                            'endpoint' => "/api/slaves/$name/result",
-                            'headers' => ['Content-Type' => 'application/json'],
-                            'body' => $this->queueElement,
-                        );
-
-                        $this->sendInstruction($instruction, $this->poster);
-                    }
-                }
-            } else {
-                $this->reservePoster();
+            foreach($this->queues as $queue) {
+                $queue->loop();
             }
 
             foreach ($this->probeStore->getProbes() as $probe) {
@@ -279,12 +252,10 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             sleep(2);
         }
 
-        $this->reservePoster();
-
         $this->loop->run();
     }
 
-    private function sendInstruction(array $instruction, $pid = null, $expectedRuntime = 60)
+    public function sendInstruction(array $instruction, $pid = null, $expectedRuntime = 60)
     {
         if ($pid === null) {
             try {
@@ -312,7 +283,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         $this->expectedRuntime[$pid] = $expectedRuntime;
     }
 
-    private function getWorker()
+    public function getWorker()
     {
         if (count($this->availableWorkers) > 0) {
             if (count($this->availableWorkers) < $this->minimumAvailableWorkers) {
@@ -360,18 +331,6 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         return $this->inputs[$pid];
     }
 
-    private function reservePoster()
-    {
-        try {
-            $worker       = $this->getWorker();
-            $workerPid    = $worker->getPid();
-            $this->poster = $workerPid;
-            $this->logger->info("Worker $workerPid reserved to post data.");
-        } catch (\Exception $e) {
-            $this->logger->critical("Could not reserve a worker to post data.");
-        }
-    }
-
     function generateRandomString($length = 10)
     {
         $characters       = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -409,12 +368,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             if (json_decode($this->rcv_buffers[$pid], true)) {
                 $this->handleResponse($type, $this->rcv_buffers[$pid]);
 
-                // TODO: (Note) Posters should be reserved until the queue is empty.
-                if ($pid != $this->poster) {
-                    $this->releaseWorker($pid);
-                } else {
-                    $this->logger->info("Should not clean up the poster!", array('pid' => $pid, 'poster' => $this->poster));
-                }
+                $this->releaseWorker($pid);
             }
         });
 
@@ -483,7 +437,13 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                     }
 
                     $this->logger->info("Enqueueing the response from worker $pid.");
-                    $this->queue->enqueue($cleaned);
+
+                    $items = $this->expandProbeResult($cleaned);
+                    foreach($items as $key => $item) {
+                        $queue = $this->queues[$key%$this->numberOfQueues];
+                        $queue->enqueue($item);
+                    }
+
                 } else {
                     $this->logger->error("Response ($status) from worker $pid unexpected.");
                 }
@@ -491,21 +451,18 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
             case 'post-result':
 
-                if ($status === 200) {
-                    $this->logger->info("Response ($status) from worker $pid for $type saved.");
-                    $this->queueElement = null;
-                } elseif ($status === 409) {
-                    $this->logger->info("Response ($status) from worker $pid for $type discarded.");
-                    $this->queueElement = null;
-                } else {
-                    $this->logger->info("Response ($status) from worker $pid for $type problem - retrying later.");
-                    $this->retryPost();
-                    $this->releasePoster();
+                $found = false;
+                foreach($this->queues as $queue) {
+                    if ($queue->getWorker() == $pid) {
+                        $queue->result($status);
+                        $this->rcv_buffers[$queue->getWorker()] = "";
+                        $found = true;
+                    }
+                }
+                if (!$found) {
+                    $this->logger->warning("Could not find the queue for worker $pid");
                 }
 
-                $this->queueLock = false;
-                $this->logger->info("COMMUNICATION_FLOW Response ($status) post-result items remain: " . $this->queue->count() . ".");
-                $this->rcv_buffers[$this->poster] = "";
                 break;
 
             case 'config-sync':
@@ -520,16 +477,6 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
             default:
                 $this->logger->error("Response ($status) from worker $pid type $type is not supported by the response handler.");
-        }
-    }
-
-    private function releasePoster()
-    {
-        if (isset($this->poster) && $this->poster != -1) {
-            $this->releaseWorker($this->poster);
-            $this->poster = -1;
-        } else {
-            $this->logger->warning("Asked to release poster but none were reserved.");
         }
     }
 
@@ -550,17 +497,11 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             }
         }
 
+        unset($this->startTimes[$pid]);
+        unset($this->expectedRuntime[$pid]);
+
         $this->logger->info("Marking worker $pid as available.");
         array_push($this->availableWorkers, $pid);
-    }
-
-    private function retryPost()
-    {
-        if (isset($this->queueElement)) {
-            $this->logger->info("Retrying " . json_encode($this->queueElement) . " at a later date.");
-            $this->queue->unshift($this->queueElement);
-            $this->queueElement = null;
-        }
     }
 
     /**
@@ -598,12 +539,6 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             unset($this->inUseWorkers[$key]);
         }
 
-        if ($pid === $this->poster) {
-            $this->poster = -1;
-            $this->retryPost();
-            $this->queueLock = false;
-        }
-
         if (isset($this->startTimes[$pid])) {
             $this->startTimes[$pid] = null;
             unset($this->startTimes[$pid]);
@@ -613,5 +548,25 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             $this->expectedRuntime[$pid] = null;
             unset($this->expectedRuntime[$pid]);
         }
+    }
+
+    private function expandProbeResult($result)
+    {
+        $items = array();
+        foreach($result as $probeId => $probe) {
+            foreach ($probe['targets'] as $key => $target) {
+                $items[$key] = array(
+                    $probeId => array(
+                        'type' => $probe['type'],
+                        'timestamp' => $probe['timestamp'],
+                        'targets' => array(
+                            $key => $target
+                        )
+                    )
+                );
+            }
+        }
+
+        return $items;
     }
 }
