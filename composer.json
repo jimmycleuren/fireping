@@ -22,8 +22,6 @@
         "easycorp/easyadmin-bundle": "^1.17",
         "eightpoints/guzzle-bundle": "^7.0",
         "incenteev/composer-parameter-handler": "^2.0",
-        "nelmio/api-doc-bundle": "^2.13",
-        "nelmio/cors-bundle": "^1.5",
         "predis/predis": "^1.1",
         "react/event-loop": "^0.4.3",
         "react/socket": "^0.8",
