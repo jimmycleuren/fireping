@@ -159,7 +159,7 @@ class RrdStorage extends Storage
         $value = reset($result['data'][$key]);
 
         if (is_nan($value)) {
-            return null;
+            return "U";
         }
 
         return $value;

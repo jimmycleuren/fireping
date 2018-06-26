@@ -41,7 +41,7 @@ class AlertDestinationApiTest extends WebTestCase
             json_encode(array(
                 'name' => "syslogtest",
                 'type' => 'syslog',
-                'parameters' => json_encode(array()),
+                'parameters' => array(),
             ))
         );
 

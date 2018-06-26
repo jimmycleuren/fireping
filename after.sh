@@ -10,7 +10,7 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get --assume-yes update
 # load any extensions you like here
 sudo DEBIAN_FRONTEND=noninteractive apt-get --assume-yes install php-mcrypt php-rrd
 
-sudo service php7.1-fpm restart
+sudo service php7.2-fpm restart
 
 mysql -u homestead -e "CREATE USER 'fireping'@'localhost' IDENTIFIED BY 'fireping';"
 mysql -u homestead -e "GRANT ALL PRIVILEGES ON fireping.* TO 'fireping'@'localhost';"
