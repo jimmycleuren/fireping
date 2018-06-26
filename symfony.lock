@@ -128,23 +128,11 @@
     "laravel/homestead": {
         "version": "v7.4.1"
     },
-    "michelf/php-markdown": {
-        "version": "1.8.0"
-    },
     "monolog/monolog": {
         "version": "1.23.0"
     },
     "myclabs/deep-copy": {
         "version": "1.7.0"
-    },
-    "nelmio/api-doc-bundle": {
-        "version": "2.13",
-        "recipe": {
-            "repo": "github.com/symfony/recipes-contrib",
-            "branch": "master",
-            "version": "2.13",
-            "ref": "d13bb99357ebcd2ffb6fe808a64961f5bc1c7546"
-        }
     },
     "nelmio/cors-bundle": {
         "version": "1.5",
