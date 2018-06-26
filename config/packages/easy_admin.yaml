@@ -17,6 +17,15 @@ easy_admin:
                class: App\Entity\Device
                list:
                    fields: ['id', 'name', 'ip', 'domain']
+               form:
+                   fields:
+                       - name
+                       - domain
+                       - ip
+                       - slavegroups
+                       - probes
+                       - alertRules
+                       - alertDestinations
            Alert:
                class: App\Entity\Alert
                disabled_actions: ['new']
