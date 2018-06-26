@@ -30,10 +30,6 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
-    App\Controller\DeviceApiController:
-        arguments: ["%storage%"]
-        tags: ['controller.service_arguments']
-
     App\AlertDestination\:
         resource: '../src/AlertDestination'
         public: true
