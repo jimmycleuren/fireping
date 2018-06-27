@@ -1,22 +1,18 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Command;
 
-use App\Probe\DeviceDefinition;
-use App\Probe\Message;
-use App\Probe\MtrResponseFormatter;
-use App\Probe\PingResponseFormatter;
-use App\Probe\PingShellCommand;
-use App\Probe\MtrShellCommand;
-use App\Probe\WorkerResponse;
 use App\ShellCommand\CommandFactory;
+use Exception;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
+use React\EventLoop\LoopInterface;
 use React\Stream\ReadableResourceStream;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\ExecutableFinder;
 
 class ProbeWorkerCommand extends ContainerAwareCommand
 {
@@ -25,14 +21,38 @@ class ProbeWorkerCommand extends ContainerAwareCommand
      */
     protected $output;
 
-    protected $rcv_buff;
+    /**
+     * @var string
+     */
+    protected $receiveBuffer;
 
-    protected $tmp;
+    /**
+     * @var string
+     */
+    protected $temporaryBuffer;
 
+    /**
+     * @var LoggerInterface
+     */
     protected $logger;
+
+    /**
+     * @var LoopInterface
+     */
     protected $loop;
+
+    /**
+     * @var int
+     */
     protected $maxRuntime;
 
+    /**
+     * ProbeWorkerCommand constructor.
+     *
+     * @param LoggerInterface $logger
+     *
+     * @throws \Symfony\Component\Console\Exception\LogicException
+     */
     public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
@@ -40,7 +60,11 @@ class ProbeWorkerCommand extends ContainerAwareCommand
         parent::__construct();
     }
 
-    protected function configure()
+    /**
+     *
+     * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
+     */
+    protected function configure(): void
     {
         $this
             ->setName('app:probe:worker')
@@ -52,31 +76,40 @@ class ProbeWorkerCommand extends ContainerAwareCommand
                 'The amount of seconds the command can run before terminating itself',
                 0
             );
-        ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    /**
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     *
+     * @return int|null|void
+     * @throws \LogicException
+     * @throws \RuntimeException
+     * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
+     * @throws \InvalidArgumentException
+     */
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $this->output = $output;
-        $this->maxRuntime              = $input->getOption('max-runtime');
+        $this->maxRuntime = $input->getOption('max-runtime');
 
         $this->loop = Factory::create();
 
         $read = new ReadableResourceStream(STDIN, $this->loop);
 
         $read->on('data', function ($data) {
-            $this->rcv_buff .= $data;
-            if (json_decode($this->rcv_buff, true)) {
-                $this->tmp = $this->rcv_buff;
-                $this->rcv_buff = "";
-                $this->process($this->tmp);
+            $this->receiveBuffer .= $data;
+            if (json_decode($this->receiveBuffer, true)) {
+                $this->temporaryBuffer = $this->receiveBuffer;
+                $this->receiveBuffer = '';
+                $this->process($this->temporaryBuffer);
             }
         });
 
         if ($this->maxRuntime > 0) {
-            $this->logger->info("Running for ".$this->maxRuntime." seconds");
-            $this->loop->addTimer($this->maxRuntime, function() use ($output) {
-                $output->writeln("Max runtime reached");
+            $this->logger->info("Running for {$this->maxRuntime} seconds");
+            $this->loop->addTimer($this->maxRuntime, function () use ($output) {
+                $output->writeln('Max runtime reached');
                 $this->loop->stop();
             });
         }
@@ -84,25 +117,30 @@ class ProbeWorkerCommand extends ContainerAwareCommand
         $this->loop->run();
     }
 
-    protected function process($data)
+    /**
+     * @param $data
+     *
+     * @throws \LogicException
+     */
+    protected function process(string $data)
     {
         $timestamp = time();
 
         if (!trim($data)) {
-            $this->sendResponse(array(
-                'type' => 'exception',
-                'status' => 400,
-                'body' => array(
-                    'timestamp' => $timestamp,
-                    'contents' => 'Input data not received.'
-                ),
-                'debug' =>
-                    array(
+            $this->sendResponse(
+                [
+                    'type' => 'exception',
+                    'status' => 400,
+                    'body' => [
+                        'timestamp' => $timestamp,
+                        'contents' => 'Input data not received.'
+                    ],
+                    'debug' => [
                         'runtime' => time() - $timestamp,
                         'request' => $data,
-                        'pid' => getmypid(),
-                    ),
-                )
+                        'pid' => getmypid()
+                    ]
+                ]
             );
             return;
         }
@@ -110,65 +148,67 @@ class ProbeWorkerCommand extends ContainerAwareCommand
         $data = json_decode($data, true);
 
         if (!$data) {
-            $this->sendResponse(array(
+            $this->sendResponse(
+                [
                     'type' => 'exception',
                     'status' => 400,
-                    'body' => array(
+                    'body' => [
                         'timestamp' => $timestamp,
                         'contents' => 'Invalid JSON Received.'
-                    ),
-                    'debug' =>
-                        array(
-                            'runtime' => time() - $timestamp,
-                            'request' => $data,
-                            'pid' => getmypid(),
-                        ),
-                )
+                    ],
+                    'debug' => [
+                        'runtime' => time() - $timestamp,
+                        'request' => $data,
+                        'pid' => getmypid()
+                    ]
+                ]
             );
             return;
         }
 
         if (!isset($data['type'])) {
-            $this->sendResponse(array(
+            $this->sendResponse(
+                [
                     'type' => 'exception',
                     'status' => 400,
-                    'body' => array(
+                    'body' => [
                         'timestamp' => $timestamp,
                         'contents' => 'Command type missing.'
-                    ),
-                    'debug' =>
-                        array(
-                            'runtime' => time() - $timestamp,
-                            'request' => $data,
-                            'pid' => getmypid(),
-                        ),
-                )
+                    ],
+                    'debug' => [
+                        'runtime' => time() - $timestamp,
+                        'request' => $data,
+                        'pid' => getmypid()
+                    ]
+                ]
             );
             return;
         }
 
-        $this->logger->info("COMMUNICATION_FLOW: Worker " . getmypid() . " received a " . $data['type'] . " instruction from master.");
+        $str = 'COMMUNICATION_FLOW: Worker ' . getmypid() . ' received a ' .
+            $data['type'] . ' instruction from master.';
+        $this->logger->info($str);
 
         $factory = new CommandFactory();
         $data['container'] = $this->getContainer();
         $command = null;
         try {
             $command = $factory->create($data['type'], $data);
-        } catch (\Exception $e) {
-            $this->sendResponse(array(
+        } catch (Exception $e) {
+            $this->sendResponse(
+                [
                     'type' => 'exception',
                     'status' => 400,
-                    'body' => array(
+                    'body' => [
                         'timestamp' => $timestamp,
                         'contents' => $e->getMessage()
-                    ),
-                    'debug' =>
-                        array(
+                    ],
+                    'debug' => [
                             'runtime' => time() - $timestamp,
                             'request' => $data,
-                            'pid' => getmypid(),
-                        ),
-                )
+                            'pid' => getmypid()
+                    ]
+                ]
             );
             return;
         }
@@ -180,91 +220,91 @@ class ProbeWorkerCommand extends ContainerAwareCommand
 
             switch ($data['type']) {
                 case 'post-result':
-                    $this->sendResponse(array(
+                    $this->sendResponse([
                         'type' => $data['type'],
                         'status' => $shellOutput['code'],
-                        'headers' => array(),
-                        'body' => array(
+                        'headers' => [],
+                        'body' => [
                             'timestamp' => $timestamp,
                             'contents' => $shellOutput['contents'],
-                            'raw' => $shellOutput,
-                        ),
-                        'debug' => array(
+                            'raw' => $shellOutput
+                        ],
+                        'debug' => [
                             'runtime' => time() - $timestamp,
-                            //'request' => $data,
-                            'pid' => getmypid(),
-                        ),
-                    ));
+                            'pid' => getmypid()
+                        ]
+                    ]);
                     break;
 
                 case 'config-sync':
                     // This is a request to get the latest configuration from the master.
-                    $this->sendResponse(array(
+                    $this->sendResponse([
                         'type' => $data['type'],
                         'status' => $shellOutput['code'],
-                        'headers' => array(
-                            'etag' => $shellOutput['etag'],
-                        ),
-                        'body' => array(
+                        'headers' => [
+                            'etag' => $shellOutput['etag']
+                        ],
+                        'body' => [
                             'timestamp' => $timestamp,
-                            'contents' => $shellOutput['contents'],
-                        ),
-                        'debug' => array(
+                            'contents' => $shellOutput['contents']
+                        ],
+                        'debug' => [
                             'runtime' => time() - $timestamp,
-                            //'request' => $data,
-                            'pid' => getmypid(),
-                        ),
-                    ));
+                            'pid' => getmypid()
+                        ]
+                    ]);
                     break;
 
                 case 'ping':
                 case 'mtr':
                 case 'traceroute':
-                    $this->sendResponse(array(
+                    $this->sendResponse([
                         'type' => 'probe',
                         'status' => 200,
-                        'body' => array(
+                        'body' => [
                             'timestamp' => $timestamp,
-                            'contents' => array(
-                                $data['id'] => array(
+                            'contents' => [
+                                $data['id'] => [
                                     'type' => $data['type'],
                                     'timestamp' => $timestamp,
-                                    'targets' => $shellOutput,
-                                )
-                            ),
-                        ),
-                        'debug' => array(
+                                    'targets' => $shellOutput
+                                ]
+                            ]
+                        ],
+                        'debug' => [
                             'runtime' => time() - $timestamp,
                             //'request' => $data,
-                            'pid' => getmypid(),
-                        ),
-                    ));
+                            'pid' => getmypid()
+                        ]
+                    ]);
                     break;
             }
-
-        } catch (\Exception $e) {
-            $this->sendResponse(array(
+        } catch (Exception $e) {
+            $this->sendResponse(
+                [
                     'type' => 'exception',
                     'status' => 500,
-                    'body' => array(
+                    'body' => [
                         'timestamp' => $timestamp,
                         'contents' => $e->getMessage()
-                    ),
-                    'debug' =>
-                        array(
-                            'runtime' => time() - $timestamp,
-                            'request' => $data,
-                            'pid' => getmypid(),
-                        ),
-                )
+                    ],
+                    'debug' => [
+                        'runtime' => time() - $timestamp,
+                        'request' => $data,
+                        'pid' => getmypid()
+                    ]
+                ]
             );
             return;
         }
     }
 
-    protected function sendResponse($data)
+    /**
+     * @param $data
+     */
+    protected function sendResponse($data): void
     {
-        $this->logger->info("COMMUNICATION_FLOW: Worker " . getmypid() . " sent a " . $data['type'] . " response.");
+        $this->logger->info('COMMUNICATION_FLOW: Worker ' . getmypid() . ' sent a ' . $data['type'] . ' response.');
         $json = json_encode($data);
         $this->output->writeln($json);
     }
