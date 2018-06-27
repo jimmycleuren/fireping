@@ -128,6 +128,9 @@
     "laravel/homestead": {
         "version": "v7.4.1"
     },
+    "mi-schi/phpmd-extension": {
+        "version": "4.2.1"
+    },
     "monolog/monolog": {
         "version": "1.23.0"
     },
@@ -173,6 +176,9 @@
     "pagerfanta/pagerfanta": {
         "version": "v1.1.0"
     },
+    "pdepend/pdepend": {
+        "version": "2.5.2"
+    },
     "phar-io/manifest": {
         "version": "1.0.1"
     },
@@ -187,6 +193,9 @@
     },
     "phpdocumentor/type-resolver": {
         "version": "0.4.0"
+    },
+    "phpmd/phpmd": {
+        "version": "2.6.0"
     },
     "phpspec/prophecy": {
         "version": "1.7.6"
@@ -322,6 +331,9 @@
             "version": "2.0",
             "ref": "e9c58bfc414cfb7f06e8e5ae9f589868498f5d6a"
         }
+    },
+    "squizlabs/php_codesniffer": {
+        "version": "3.3.0"
     },
     "swiftmailer/swiftmailer": {
         "version": "v6.0.2"
