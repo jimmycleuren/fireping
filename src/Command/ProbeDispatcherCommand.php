@@ -203,7 +203,6 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
     /**
      * ProbeDispatcherCommand constructor.
      *
-     * @param KernelInterface    $kernel     F
      * @param ProbeStore         $probeStore P
      * @param LoggerInterface    $logger     Instance used to log information about
      *                                       the state of our program.
@@ -213,13 +212,11 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
      * @throws \Symfony\Component\Console\Exception\LogicException
      */
     public function __construct(
-        KernelInterface $kernel,
         ProbeStore $probeStore,
         LoggerInterface $logger,
         InstructionBuilder $instructionBuilder
     ) {
         $this->logger = $logger;
-        $this->kernel = $kernel;
         $this->probeStore = $probeStore;
         $this->instructionBuilder = $instructionBuilder;
         parent::__construct();
@@ -281,6 +278,8 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
      */
     private function setUp(InputInterface $input)
     {
+        $this->kernel = $this->getContainer()->get('kernel');
+
         $this->initWorkers = $input->getOption('workers');
         $this->minimumIdleWorkers = $input->getOption('minimum-available-workers');
         $this->maximumWorkers = $input->getOption('maximum-workers');
