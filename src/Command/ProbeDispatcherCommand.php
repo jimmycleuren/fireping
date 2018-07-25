@@ -540,7 +540,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
      * @return InputStream
      * @throws Exception
      */
-    private function getInput(int $pid): InputStream
+    private function getInput(?int $pid): InputStream
     {
         if (!isset($this->processes[$pid])) {
             throw new RuntimeException("Process for PID=$pid not found.");
