@@ -17,6 +17,7 @@ use React\EventLoop\Factory;
 use React\EventLoop\LoopInterface;
 use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -228,7 +229,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
      * Configure our command
      *
      * @return void
-     * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function configure(): void
     {
@@ -273,14 +274,12 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
     }
 
     /**
+     * @param InputInterface $input
      *
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     *
-     * @return int|null|void
-     * @throws Exception
+     * @throws \RuntimeException
+     * @throws InvalidArgumentException
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    private function setUp(InputInterface $input)
     {
         $this->initWorkers = $input->getOption('workers');
         $this->minimumIdleWorkers = $input->getOption('minimum-available-workers');
@@ -293,11 +292,10 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             throw new RuntimeException($str);
         }
 
-        if (!getenv('SLAVE_NAME')) {
-            throw new RuntimeException('SLAVE_NAME environment variable not set');
-        }
-        if (!getenv('SLAVE_URL')) {
-            throw new RuntimeException('SLAVE_URL environment variable not set');
+        foreach (['SLAVE_NAME', 'SLAVE_URL'] as $item) {
+            if (!getenv($item)) {
+                throw new \RuntimeException("$item environment variable not set.");
+            }
         }
 
         $this->workersNeeded = 0;
@@ -311,7 +309,19 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                 $this->logger
             );
         }
+    }
 
+    /**
+     *
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     *
+     * @return int|null|void
+     * @throws Exception
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $this->setUp($input);
 
         $this->logger->info('Fireping Dispatcher Started.');
         $this->logger->info('Slave name is ' . getenv('SLAVE_NAME'));
