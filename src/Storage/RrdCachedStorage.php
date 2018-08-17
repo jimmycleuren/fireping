@@ -39,7 +39,9 @@ class RrdCachedStorage extends RrdStorage
 
         $this->send("UPDATE $filename ".implode(":", $values));
         $message = $this->read();
-        $this->logger->info($message);
+        if (!stristr($message, "0 errors")) {
+            $this->logger->warning($message);
+        }
     }
 
     private function getLastUpdate($filename)
