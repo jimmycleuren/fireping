@@ -30,7 +30,7 @@ abstract class Processor
     protected $storage;
     protected $cache;
 
-    public function __construct(StorageFactory $factory, AlertDestinationFactory $alertDestinationFactory, LoggerInterface $logger, Cache $cache)
+    public function __construct(StorageFactory $factory, AlertDestinationFactory $alertDestinationFactory, LoggerInterface $logger, EntityManagerInterface $entityManager, Cache $cache)
     {
         $this->logger = $logger;
         $this->em = $entityManager;
