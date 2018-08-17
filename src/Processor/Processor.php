@@ -14,9 +14,9 @@ use App\Entity\AlertRule;
 use App\Entity\Device;
 use App\Entity\Probe;
 use App\Entity\SlaveGroup;
-use App\Storage\RrdCachedStorage;
+use App\Storage\StorageFactory;
 use Doctrine\Common\Collections\Collection;
-use Psr\Container\ContainerInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
 
@@ -27,22 +27,18 @@ abstract class Processor
     protected $alertDestinationFactory = null;
 
     protected $storage;
-    protected $container;
     protected $cache;
 
-    public function __construct(ContainerInterface $container, RrdCachedStorage $rrdStorage, AlertDestinationFactory $alertDestinationFactory, LoggerInterface $logger)
+    public function __construct(StorageFactory $factory, AlertDestinationFactory $alertDestinationFactory, LoggerInterface $logger, EntityManagerInterface $entityManager)
     {
-        $this->container = $container;
         $this->logger = $logger;
-        $this->em = $this->container->get('doctrine')->getManager();
+        $this->em = $entityManager;
         $this->alertDestinationFactory = $alertDestinationFactory;
 
         $connection = RedisAdapter::createConnection("redis://localhost");
         $this->cache = new RedisAdapter($connection, 'fireping', 3600 * 24);
 
-        if ($container->getParameter('storage') === "rrd") {
-            $this->storage = $rrdStorage;
-        }
+        $this->storage = $factory->create();
     }
 
     private function handleAlertRules(Collection $rules, Device $device, Probe $probe, SlaveGroup $group, $timestamp, AlertRule $parent = null)
