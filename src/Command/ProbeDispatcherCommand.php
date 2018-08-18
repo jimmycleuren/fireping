@@ -190,7 +190,9 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                 }
             }
 
-            while ((count($this->availableWorkers) + $this->workersNeeded) < $this->minimumAvailableWorkers) {
+            //stay 1 above the minimum so no warning is triggered when calling getWorker
+            while ((count($this->availableWorkers) + $this->workersNeeded) <= $this->minimumAvailableWorkers ) {
+                $this->logger->info("Creating extra worker");
                 $this->workersNeeded += 1;
             }
 
@@ -229,8 +231,8 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                         $process->getIncrementalOutput();
                     }
                 } catch (ProcessTimedOutException $exception) {
-                    $this->logger->info("Worker $pid timed out, restarting.");
                     $this->cleanup($pid);
+                    $this->logger->info("Worker[$pid] timed out.", array('available' => count($this->availableWorkers), 'inuse' => count($this->inUseWorkers), 'processes' => count($this->processes)));
                 }
             }
         });
