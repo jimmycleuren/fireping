@@ -14,11 +14,11 @@ use App\Entity\AlertRule;
 use App\Entity\Device;
 use App\Entity\Probe;
 use App\Entity\SlaveGroup;
-use App\Storage\RrdStorage;
+use App\Storage\Cache;
+use App\Storage\StorageFactory;
 use Doctrine\Common\Collections\Collection;
-use Psr\Container\ContainerInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Cache\Adapter\RedisAdapter;
 
 abstract class Processor
 {
@@ -27,22 +27,17 @@ abstract class Processor
     protected $alertDestinationFactory = null;
 
     protected $storage;
-    protected $container;
     protected $cache;
 
-    public function __construct(ContainerInterface $container, RrdStorage $rrdStorage, AlertDestinationFactory $alertDestinationFactory, LoggerInterface $logger)
+    public function __construct(StorageFactory $factory, AlertDestinationFactory $alertDestinationFactory, LoggerInterface $logger, EntityManagerInterface $entityManager, Cache $cache)
     {
-        $this->container = $container;
         $this->logger = $logger;
-        $this->em = $this->container->get('doctrine')->getManager();
+        $this->em = $entityManager;
         $this->alertDestinationFactory = $alertDestinationFactory;
 
-        $connection = RedisAdapter::createConnection("redis://localhost");
-        $this->cache = new RedisAdapter($connection, 'fireping', 3600 * 24);
+        $this->cache = $cache;
 
-        if ($container->getParameter('storage') === "rrd") {
-            $this->storage = $rrdStorage;
-        }
+        $this->storage = $factory->create();
     }
 
     private function handleAlertRules(Collection $rules, Device $device, Probe $probe, SlaveGroup $group, $timestamp, AlertRule $parent = null)
@@ -51,9 +46,7 @@ abstract class Processor
             if ($alertRule->getParent() == $parent) {
                 if ($alertRule->getProbe() == $probe) {
                     $pattern   = explode(",", $alertRule->getPattern());
-                    $key       = $this->getCacheKey($device, $alertRule, $group);
-                    $cacheItem = $this->cache->getItem($key);
-                    $value     = $cacheItem->get();
+                    $value = $this->cache->getPatternValues($device, $alertRule, $group);
                     if ($this->matchPattern($pattern, $value)) {
                         $alert = $this->em->getRepository("App:Alert")->findOneBy(array(
                             'device' => $device,
@@ -141,9 +134,7 @@ abstract class Processor
     {
         foreach ($device->getActiveAlertRules() as $alertRule) {
             $pattern = explode(",", $alertRule->getPattern());
-            $key = $this->getCacheKey($device, $alertRule, $group);
-            $cacheItem = $this->cache->getItem($key);
-            $value = $cacheItem->get();
+            $value = $this->cache->getPatternValues($device, $alertRule, $group);
             if (!is_array($value)) {
                 $value = array();
             }
@@ -158,14 +149,8 @@ abstract class Processor
                 unset($value[key($value)]);
             }
 
-            $cacheItem->set($value);
-            $this->cache->save($cacheItem);
+            $this->cache->setPatternValues($device, $alertRule, $group, $value);
         }
-    }
-
-    protected function getCacheKey(Device $device, AlertRule $alertRule, SlaveGroup $group)
-    {
-        return "pattern.".$device->getId().".".$alertRule->getProbe()->getId().".".$alertRule->getId().".".$group->getId();
     }
 
     abstract function storeResult(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data);

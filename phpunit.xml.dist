@@ -43,6 +43,8 @@
         <!-- Delivery is disabled by default via "null://localhost" -->
         <env name="MAILER_URL" value="null://localhost"/>
         <!-- ###- symfony/swiftmailer-bundle ### -->
+
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak_vendors" />
     </php>
 
     <testsuites>

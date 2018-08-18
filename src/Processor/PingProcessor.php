@@ -56,6 +56,9 @@ class PingProcessor extends Processor
             $datasources['median'] = $times[floor(count($times) / 2)];
         }
 
+        $this->cache->store($device, $probe, $group, 'median', $datasources['median']);
+        $this->cache->store($device, $probe, $group, 'loss', $datasources['loss']);
+
         $this->storage->store($device, $probe, $group, $timestamp, $datasources);
         $datasources['failures'] = $this->storage->fetch($device, $probe, $group, $timestamp, 'median', 'FAILURES');
 

@@ -9,26 +9,17 @@
 namespace App\Controller;
 
 use App\Entity\Device;
-use App\Storage\RrdStorage;
+use App\Storage\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
 class DeviceApiController extends Controller
 {
-    protected $storage;
-
-    public function __construct($storageType, RrdStorage $rrdStorage)
-    {
-        if ($storageType == "rrd") {
-            $this->storage = $rrdStorage;
-        }
-    }
-
     /**
      * @Route("/api/devices/{id}/status.json", name="api_devices_status")
      */
-    public function statusAction(Device $device)
+    public function statusAction(Device $device, Cache $cache)
     {
         $selectedProbe = null;
         $probes = $device->getActiveProbes();
@@ -48,8 +39,8 @@ class DeviceApiController extends Controller
             return new JsonResponse(array('message' => 'No slavegroup assigned'), 500);
         }
 
-        $loss = $this->storage->fetch($device, $selectedProbe, $slavegroups[0], date("U") - $selectedProbe->getStep(), 'loss', 'AVERAGE');
-        $median = $this->storage->fetch($device, $selectedProbe, $slavegroups[0], date("U") - $selectedProbe->getStep(), 'median', 'AVERAGE');
+        $loss = $cache->fetch($device, $selectedProbe, $slavegroups[0], 'loss');
+        $median = $cache->fetch($device, $selectedProbe, $slavegroups[0], 'median');
 
         if ($median == "U") {
             $status = "down";
