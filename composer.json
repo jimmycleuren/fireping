@@ -46,10 +46,13 @@
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.0",
         "laravel/homestead": "^7.4",
+        "mi-schi/phpmd-extension": "^4.2",
+        "phpmd/phpmd": "^2.6",
         "phpstan/phpstan": "^0.9",
         "phpunit/phpunit": "^7.1",
         "sensiolabs/security-checker": "^4.1",
         "sllh/composer-versions-check": "^2.0",
+        "squizlabs/php_codesniffer": "^3.3",
         "symfony/browser-kit": "^4.0",
         "symfony/css-selector": "^4.0",
         "symfony/dotenv": "^4.0",
