@@ -19,7 +19,6 @@ use App\Storage\StorageFactory;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Cache\Adapter\RedisAdapter;
 
 abstract class Processor
 {
