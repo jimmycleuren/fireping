@@ -378,11 +378,9 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                     }
                 }
 
-                //always have 1 worker more as the minumum needed to avoid warnings
-                $this->workersNeeded = max(
-                    $this->minimumIdleWorkers - count($this->availableWorkers) - $this->workersNeeded + 1,
-                    0
-                );
+            while ((count($this->availableWorkers) + $this->workersNeeded) < $this->minimumAvailableWorkers) {
+                $this->workersNeeded += 1;
+            }
 
                 while ($this->workersNeeded !== 0) {
                     if (count($this->processes) >= $this->maximumWorkers) {
