@@ -231,7 +231,6 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                 } catch (ProcessTimedOutException $exception) {
                     $this->logger->info("Worker $pid timed out, restarting.");
                     $this->cleanup($pid);
-                    $this->startWorker();
                 }
             }
         });
