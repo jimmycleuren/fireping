@@ -16,7 +16,6 @@ use App\Storage\RrdStorage;
 use Nette\Utils\Json;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,8 +29,7 @@ class SlaveController extends Controller
     /**
      * Lists all slave entities.
      *
-     * @Route("/slaves", name="slave_index")
-     * @Method("GET")
+     * @Route("/slaves", name="slave_index", methods={"GET"})
      */
     public function indexAction()
     {
@@ -49,8 +47,7 @@ class SlaveController extends Controller
      * @param string $id
      * @return JsonResponse
      *
-     * @Method("GET")
-     * @Route("/api/slaves/{id}/config")
+     * @Route("/api/slaves/{id}/config", methods={"GET"})
      */
     public function configAction($id, Request $request)
     {
@@ -131,8 +128,7 @@ class SlaveController extends Controller
      * @param Slave $slave
      * @return JsonResponse
      *
-     * @Method("POST")
-     * @Route("/api/slaves/{id}/result")
+     * @Route("/api/slaves/{id}/result", methods={"POST"})
      * @ParamConverter("slave", class="App:Slave")
      *
      * Process new results from a slave
@@ -201,8 +197,7 @@ class SlaveController extends Controller
      * @param Slave $slave
      * @return JsonResponse
      *
-     * @Method("POST")
-     * @Route("/api/slaves/{id}/error")
+     * @Route("/api/slaves/{id}/error", methods={"POST"})
      * @ParamConverter("slave", class="App:Slave")
      *
      * Process errors from a slave
