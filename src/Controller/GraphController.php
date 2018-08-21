@@ -16,7 +16,6 @@ use App\Graph\PingGraph;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
@@ -27,8 +26,7 @@ class GraphController extends Controller
      * @param PingGraph $pingGraph
      * @return Response
      *
-     * @Method("GET")
-     * @Route("/api/graphs/summary/{id}")
+     * @Route("/api/graphs/summary/{id}", methods={"GET"})
      * @ParamConverter("device", class="App:Device")
      */
     public function summaryAction(Device $device, PingGraph $pingGraph)
@@ -70,8 +68,7 @@ class GraphController extends Controller
      * @param PingGraph $pingGraph
      * @return Response
      *
-     * @Method("GET")
-     * @Route("/api/graphs/detail/{device_id}/{probe_id}/{slavegroup_id}")
+     * @Route("/api/graphs/detail/{device_id}/{probe_id}/{slavegroup_id}", methods={"GET"})
      * @ParamConverter("device", class="App:Device", options={"id" = "device_id"})
      * @ParamConverter("probe", class="App:Probe", options={"id" = "probe_id"})
      * @ParamConverter("slavegroup", class="App:SlaveGroup", options={"id" = "slavegroup_id"})
