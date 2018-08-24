@@ -55,7 +55,7 @@ script:
 after_script:
   - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
 
-after_failure: "cat var/log/*.log"
+after_failure: "ls; ls var/; ls var/log; cat var/log/*.log"
 
 # After a build, send email notification with the build results
 notifications:
