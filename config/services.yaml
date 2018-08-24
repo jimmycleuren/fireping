@@ -2,7 +2,6 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: 'en'
-    storage: rrd
     storage.path: '%kernel.root_dir%/../var/rrd/'
     slave.instructions:
         ping: null

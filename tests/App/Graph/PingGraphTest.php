@@ -23,7 +23,11 @@ class PingGraphTest extends TestCase
     public function testSummaryGraphWithoutRrd()
     {
         $storage = $this->prophesize('App\\Storage\\RrdStorage');
+        $storage->fileExists("/tmp/unknown.rrd")->shouldBeCalledTimes(1);
         $storage->getFilePath(Argument::any(), Argument::any(), Argument::any())->willReturn('/tmp/unknown.rrd')->shouldBeCalledTimes(1);
+
+        $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
+        $storageFactory->create()->willReturn($storage->reveal())->shouldBeCalledTimes(1);
 
         $probe = new Probe();
         $probe->setId(1);
@@ -41,7 +45,7 @@ class PingGraphTest extends TestCase
         $device->setIp('8.8.8.8');
         $device->addSlaveGroup($slavegroup);
 
-        $graph = new PingGraph($storage->reveal());
+        $graph = new PingGraph($storageFactory->reveal());
         $image = $graph->getSummaryGraph($device, $probe);
         $this->assertNotNull($image);
     }
@@ -84,7 +88,10 @@ class PingGraphTest extends TestCase
 
         $storage->store($device, $probe, $slavegroup, date("U"), $data);
 
-        $graph = new PingGraph($storage);
+        $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
+        $storageFactory->create()->willReturn($storage)->shouldBeCalledTimes(1);
+
+        $graph = new PingGraph($storageFactory->reveal());
         $image = $graph->getSummaryGraph($device, $probe);
         $this->assertNotNull($image);
     }
@@ -124,14 +131,21 @@ class PingGraphTest extends TestCase
 
         $storage->store($device, $probe, $slavegroup, date("U"), $data);
 
-        $graph = new PingGraph($storage);
+        $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
+        $storageFactory->create()->willReturn($storage)->shouldBeCalledTimes(1);
+
+        $graph = new PingGraph($storageFactory->reveal());
         $graph->getSummaryGraph($device, $probe);
     }
 
     public function testDetailGraphWithoutRrd()
     {
         $storage = $this->prophesize('App\\Storage\\RrdStorage');
+        $storage->fileExists("/tmp/unknown.rrd")->shouldBeCalledTimes(1);
         $storage->getFilePath(Argument::any(), Argument::any(), Argument::any())->willReturn('/tmp/unknown.rrd')->shouldBeCalledTimes(1);
+
+        $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
+        $storageFactory->create()->willReturn($storage->reveal())->shouldBeCalledTimes(1);
 
         $probe = new Probe();
         $probe->setId(1);
@@ -149,7 +163,7 @@ class PingGraphTest extends TestCase
         $device->setIp('8.8.8.8');
         $device->addSlaveGroup($slavegroup);
 
-        $graph = new PingGraph($storage->reveal());
+        $graph = new PingGraph($storageFactory->reveal());
         $image = $graph->getDetailGraph($device, $probe, $slavegroup, -3600, null, true);
         $this->assertNotNull($image);
     }
@@ -192,7 +206,10 @@ class PingGraphTest extends TestCase
 
         $storage->store($device, $probe, $slavegroup, date("U"), $data);
 
-        $graph = new PingGraph($storage);
+        $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
+        $storageFactory->create()->willReturn($storage)->shouldBeCalledTimes(1);
+
+        $graph = new PingGraph($storageFactory->reveal());
         $image = $graph->getDetailGraph($device, $probe, $slavegroup, -3600, null, true);
         $this->assertNotNull($image);
     }
@@ -232,7 +249,10 @@ class PingGraphTest extends TestCase
 
         $storage->store($device, $probe, $slavegroup, date("U"), $data);
 
-        $graph = new PingGraph($storage);
+        $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
+        $storageFactory->create()->willReturn($storage)->shouldBeCalledTimes(1);
+
+        $graph = new PingGraph($storageFactory->reveal());
         $image = $graph->getDetailGraph($device, $probe, $slavegroup, -3600, null, true);
         $this->assertNotNull($image);
     }

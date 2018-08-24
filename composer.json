@@ -14,6 +14,7 @@
     },
     "require": {
         "php": "^7.2",
+        "ext-rrd": "*",
         "api-platform/api-pack": "^1.0",
         "doctrine/doctrine-bundle": "^1.6",
         "doctrine/doctrine-cache-bundle": "^1.2",
@@ -21,6 +22,7 @@
         "doctrine/orm": "^2.5",
         "easycorp/easyadmin-bundle": "^1.17",
         "eightpoints/guzzle-bundle": "^7.0",
+        "flexihash/flexihash": "^2.0",
         "incenteev/composer-parameter-handler": "^2.0",
         "predis/predis": "^1.1",
         "react/event-loop": "^0.4.3",
@@ -32,6 +34,7 @@
         "symfony/cache": "^4.1",
         "symfony/flex": "^1.0",
         "symfony/form": "^4.0",
+        "symfony/maker-bundle": "^1.6",
         "symfony/monolog-bundle": "^3.2",
         "symfony/orm-pack": "^1.0",
         "symfony/polyfill-apcu": "^1.0",
@@ -48,7 +51,7 @@
         "laravel/homestead": "^7.4",
         "mi-schi/phpmd-extension": "^4.2",
         "phpmd/phpmd": "^2.6",
-        "phpstan/phpstan": "^0.9",
+        "phpstan/phpstan": "^0.10",
         "phpunit/phpunit": "^7.1",
         "sensiolabs/security-checker": "^4.1",
         "sllh/composer-versions-check": "^2.0",
@@ -75,7 +78,8 @@
         }
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "process-timeout": 0
     },
     "conflict": {
         "symfony/symfony": "*"

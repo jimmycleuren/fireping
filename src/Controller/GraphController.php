@@ -49,8 +49,8 @@ class GraphController extends Controller
 
         foreach ($probes as $probe) {
             if ($probe->getType() == "ping") {
-                $filename = $pingGraph->getSummaryGraph($device, $probe);
-                $response = new Response(file_get_contents($filename), 200);
+                $graph = $pingGraph->getSummaryGraph($device, $probe);
+                $response = new Response($graph, 200);
                 $response->headers->set('Content-Type', 'image/png');
 
                 return $response;
@@ -80,8 +80,8 @@ class GraphController extends Controller
         $debug = $this->container->get('session')->get('debug');
 
         if ($probe->getType() == "ping") {
-            $filename = $pingGraph->getDetailGraph($device, $probe, $slavegroup, $start, $end, $debug);
-            $response = new Response(file_get_contents($filename), 200);
+            $graph = $pingGraph->getDetailGraph($device, $probe, $slavegroup, $start, $end, $debug);
+            $response = new Response($graph, 200);
             $response->headers->set('Content-Type', 'image/png');
 
             return $response;

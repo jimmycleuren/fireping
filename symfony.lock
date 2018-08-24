@@ -14,6 +14,9 @@
     "composer/ca-bundle": {
         "version": "1.1.1"
     },
+    "composer/xdebug-handler": {
+        "version": "1.2.0"
+    },
     "doctrine/annotations": {
         "version": "1.0",
         "recipe": {
@@ -115,6 +118,9 @@
     },
     "evenement/evenement": {
         "version": "v3.0.1"
+    },
+    "flexihash/flexihash": {
+        "version": "v2.0.2"
     },
     "guzzlehttp/guzzle": {
         "version": "6.3.3"
@@ -430,6 +436,15 @@
     },
     "symfony/intl": {
         "version": "v4.0.9"
+    },
+    "symfony/maker-bundle": {
+        "version": "1.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "1.0",
+            "ref": "fadbfe33303a76e25cb63401050439aa9b1a9c7f"
+        }
     },
     "symfony/monolog-bridge": {
         "version": "v4.0.9"

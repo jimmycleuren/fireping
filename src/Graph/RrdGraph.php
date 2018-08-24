@@ -12,11 +12,12 @@ use App\Entity\Device;
 use App\Entity\Probe;
 use App\Exception\RrdException;
 use App\Storage\RrdStorage;
+use App\Storage\StorageFactory;
 
 abstract class RrdGraph extends Graph
 {
-    public function __construct(RrdStorage $rrdStorage)
+    public function __construct(StorageFactory $storageFactory)
     {
-        $this->storage = $rrdStorage;
+        $this->storage = $storageFactory->create();
     }
 }

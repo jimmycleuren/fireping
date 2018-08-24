@@ -54,3 +54,5 @@ easy_admin:
                disabled_actions: ['new']
            SlaveGroup:
                class: App\Entity\SlaveGroup
+           StorageNode:
+               class: App\Entity\StorageNode
