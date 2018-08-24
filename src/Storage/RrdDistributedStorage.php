@@ -13,10 +13,12 @@ use Psr\Log\LoggerInterface;
 class RrdDistributedStorage extends RrdCachedStorage
 {
     private $storageNodes;
+    private $hash;
 
     public function __construct(LoggerInterface $logger, StorageNodeRepository $storageNodeRepository)
     {
-        $this->logger = $logger;
+        parent::__construct(null, $logger);
+
         $this->hash = new Flexihash();
 
         $temp = $storageNodeRepository->findBy(['status' => StorageNode::STATUS_ACTIVE], ['id' => 'ASC']);
@@ -35,7 +37,7 @@ class RrdDistributedStorage extends RrdCachedStorage
         parent::store($device, $probe, $group, $timestamp, $data, $daemon);
     }
 
-    public function fetch(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $key, $function)
+    public function fetch(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $key, $function, $daemon = null)
     {
         $node = $this->getStorageNode($device);
         $daemon  = $node->getIp().":42217";

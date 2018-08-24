@@ -15,6 +15,7 @@ class StorageFactory
     private $container;
     private $rrdStorage;
     private $rrdCachedStorage;
+    private $rrdDistributedStorage;
 
     public function __construct(ContainerInterface $container, RrdStorage $rrdStorage, RrdCachedStorage $rrdCachedStorage, RrdDistributedStorage $rrdDistributedStorage)
     {

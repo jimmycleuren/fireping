@@ -200,6 +200,42 @@ class RrdCachedStorage extends RrdStorage
         return $return;
     }
 
+    /**
+     * TODO: implement further
+     * @param Device $device
+     * @param Probe $probe
+     * @param SlaveGroup $group
+     * @param $timestamp
+     * @param $key
+     * @param $function
+     * @param null $daemon
+     * @return mixed|null|string|void
+     */
+    public function fetch(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $key, $function, $daemon = null)
+    {
+        if (!$daemon) {
+            $daemon = $this->daemon;
+        }
+
+        /*
+        $path = $this->getFilePath($device, $probe, $group);
+
+        $result = rrd_fetch($path, array($function, "--start", $timestamp - $probe->getStep()));
+
+        if (!$result) {
+            return null;
+        }
+
+        $value = reset($result['data'][$key]);
+
+        if (is_nan($value)) {
+            return "U";
+        }
+
+        return $value;
+        */
+    }
+
     public function getGraphValue($options, $daemon = null)
     {
         if (!$daemon) {

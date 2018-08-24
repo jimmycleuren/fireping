@@ -37,7 +37,7 @@ class RrdStorage extends Storage
         $this->logger = $logger;
         $this->path = $path;
 
-        if (!file_exists($this->path)) {
+        if ($path && !file_exists($this->path)) {
             mkdir($this->path);
         }
     }

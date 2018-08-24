@@ -37,12 +37,12 @@ before_install:
   - sudo apt-get install -y librrd-dev
   - composer self-update
   - mkdir build
+  - pecl install rrd
 
 install:
   - 'composer -n ${HIGHEST_LOWEST-install} --prefer-dist'
 
 before_script:
-  - pecl install rrd
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
