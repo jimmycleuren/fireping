@@ -29,13 +29,13 @@ class RrdCachedStorage extends RrdStorage
     {
         $path = $this->getFilePath($device, $probe, $group);
 
-        if (!$this->fileExists($path, $daemon)) {
+        if (!$this->fileExists($device, $path, $daemon)) {
             $this->create($path, $probe, $timestamp, $data, $daemon);
         }
         $this->update($path, $probe, $timestamp, $data, $daemon);
     }
 
-    public function fileExists($path, $daemon = null)
+    public function fileExists(Device $device, $path, $daemon = null)
     {
         if (!$daemon) {
             $daemon = $this->daemon;
@@ -174,7 +174,7 @@ class RrdCachedStorage extends RrdStorage
         return $sources;
     }
 
-    public function graph($options, $daemon = null)
+    public function graph(Device $device, $options, $daemon = null)
     {
         if (!$daemon) {
             $daemon = $this->daemon;
@@ -236,7 +236,7 @@ class RrdCachedStorage extends RrdStorage
         */
     }
 
-    public function getGraphValue($options, $daemon = null)
+    public function getGraphValue(Device $device, $options, $daemon = null)
     {
         if (!$daemon) {
             $daemon = $this->daemon;

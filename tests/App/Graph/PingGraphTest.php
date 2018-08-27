@@ -23,7 +23,7 @@ class PingGraphTest extends TestCase
     public function testSummaryGraphWithoutRrd()
     {
         $storage = $this->prophesize('App\\Storage\\RrdStorage');
-        $storage->fileExists("/tmp/unknown.rrd")->shouldBeCalledTimes(1);
+        $storage->fileExists(Argument::type(Device::class), "/tmp/unknown.rrd")->shouldBeCalledTimes(1);
         $storage->getFilePath(Argument::any(), Argument::any(), Argument::any())->willReturn('/tmp/unknown.rrd')->shouldBeCalledTimes(1);
 
         $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
@@ -141,7 +141,7 @@ class PingGraphTest extends TestCase
     public function testDetailGraphWithoutRrd()
     {
         $storage = $this->prophesize('App\\Storage\\RrdStorage');
-        $storage->fileExists("/tmp/unknown.rrd")->shouldBeCalledTimes(1);
+        $storage->fileExists(Argument::type(Device::class), "/tmp/unknown.rrd")->shouldBeCalledTimes(1);
         $storage->getFilePath(Argument::any(), Argument::any(), Argument::any())->willReturn('/tmp/unknown.rrd')->shouldBeCalledTimes(1);
 
         $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');

@@ -51,7 +51,7 @@ class PingGraph extends RrdGraph
         foreach ($slavegroups as $slavegroup) {
 
             $file = $this->storage->getFilePath($device, $probe, $slavegroup);
-            if (!$this->storage->fileExists($file)) {
+            if (!$this->storage->fileExists($device, $file)) {
                 continue;
             }
 
@@ -82,7 +82,7 @@ class PingGraph extends RrdGraph
 
         $options[] = "COMMENT:".date("D M j H\\\:i\\\:s Y")." \\r";
 
-        return $this->storage->graph($options);
+        return $this->storage->graph($device, $options);
     }
 
     public function getDetailGraph(Device $device, Probe $probe, SlaveGroup $slavegroup, $start = -3600, $end = null, $debug = false)
@@ -100,7 +100,7 @@ class PingGraph extends RrdGraph
         );
 
         $file = $this->storage->getFilePath($device, $probe, $slavegroup);
-        if (!$this->storage->fileExists($file)) {
+        if (!$this->storage->fileExists($device, $file)) {
             return file_get_contents(dirname(__FILE__)."/../../public/notfound.png");
         }
 
@@ -119,7 +119,7 @@ class PingGraph extends RrdGraph
             "--title=$title",
             "--vertical-label=ms",
             "--lower-limit=0",
-            "--upper-limit=".$this->getMedianMax($start, $this->storage->getFilePath($device, $probe, $slavegroup)),
+            "--upper-limit=".$this->getMedianMax($device, $start, $this->storage->getFilePath($device, $probe, $slavegroup)),
             "--rigid",
             "--width=1000",
             "--height=200",
@@ -183,7 +183,7 @@ class PingGraph extends RrdGraph
         $options[] = "COMMENT: \\n";
         $options[] = "COMMENT:loss color\:  ";
 
-        $swidth = $this->getMedianMax($start, $this->storage->getFilePath($device, $probe, $slavegroup)) / 200;
+        $swidth = $this->getMedianMax($device, $start, $this->storage->getFilePath($device, $probe, $slavegroup)) / 200;
         $last = -1;
         foreach ($lossColors as $loss => $color) {
             $options[] = "CDEF:me$loss=loss,$last,GT,loss,$loss,LE,*,1,UNKN,IF,median,*";
@@ -199,7 +199,7 @@ class PingGraph extends RrdGraph
         $options[] = "COMMENT:".$probe->getName()." (".$probe->getSamples()." probes of type ".$probe->getType()." in ".$probe->getStep()." seconds) from ".$slavegroup->getName()."";
         $options[] = "COMMENT:ending on ".date("D M j H\\\:i\\\:s Y", $end)."";
 
-        return $this->storage->graph($options);
+        return $this->storage->graph($device, $options);
     }
 
     private function calculateStdDev(&$options, $file, $pings, $slavegroup)
@@ -223,7 +223,7 @@ class PingGraph extends RrdGraph
         $options[] = "CDEF:".$slavegroup->getId()."sdev0=".$slavegroup->getId()."p0p1,".$slavegroup->getId()."m0,-,DUP,*,".implode(",", $temp3).",".$slavegroup->getId()."pings0,/,SQRT";
     }
 
-    private function getMedianMax($start, $file)
+    private function getMedianMax(Device $device, $start, $file)
     {
         $options = array(
             "--start", $start,
@@ -232,7 +232,7 @@ class PingGraph extends RrdGraph
             "PRINT:maxping:MAX:%le"
         );
 
-        $maxMedian = $this->storage->getGraphValue($options);
+        $maxMedian = $this->storage->getGraphValue($device, $options);
 
         return $maxMedian * 1.2;
     }

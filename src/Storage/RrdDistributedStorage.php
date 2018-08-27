@@ -7,19 +7,23 @@ use App\Entity\Probe;
 use App\Entity\SlaveGroup;
 use App\Entity\StorageNode;
 use App\Repository\StorageNodeRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Flexihash\Flexihash;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Process\Process;
 
 class RrdDistributedStorage extends RrdCachedStorage
 {
+    private $entityManager;
     private $storageNodes;
     private $hash;
 
-    public function __construct(LoggerInterface $logger, StorageNodeRepository $storageNodeRepository)
+    public function __construct(LoggerInterface $logger, StorageNodeRepository $storageNodeRepository, EntityManagerInterface $entityManager)
     {
         parent::__construct(null, $logger);
 
         $this->hash = new Flexihash();
+        $this->entityManager = $entityManager;
 
         $temp = $storageNodeRepository->findBy(['status' => StorageNode::STATUS_ACTIVE], ['id' => 'ASC']);
         foreach($temp as $node) {
@@ -45,30 +49,64 @@ class RrdDistributedStorage extends RrdCachedStorage
         parent::fetch($device, $probe, $group, $timestamp, $key, $function, $daemon);
     }
 
-    public function fileExists($path, $daemon = null)
+    public function fileExists(Device $device, $path, $daemon = null)
     {
-        $daemon = "127.0.0.1:42217";
+        $node = $this->getStorageNode($device);
+        $daemon  = $node->getIp().":42217";
 
-        return parent::fileExists($path, $daemon);
+        return parent::fileExists($device, $path, $daemon);
     }
 
-    public function graph($options, $daemon = null)
+    public function graph(Device $device, $options, $daemon = null)
     {
-        $daemon = "127.0.0.1:42217";
+        $node = $this->getStorageNode($device);
+        $daemon  = $node->getIp().":42217";
 
-        return parent::graph($options, $daemon);
+        return parent::graph($device, $options, $daemon);
     }
 
-    public function getGraphValue($options, $daemon = null)
+    public function getGraphValue(Device $device, $options, $daemon = null)
     {
-        $daemon = "127.0.0.1:42217";
+        $node = $this->getStorageNode($device);
+        $daemon  = $node->getIp().":42217";
 
-        return parent::getGraphValue($options, $daemon);
+        return parent::getGraphValue($device, $options, $daemon);
     }
 
     private function getStorageNode(Device $device) : StorageNode
     {
         $id = $this->hash->lookup($device->getId());
-        return $this->storageNodes[$id];
+        $node = $this->storageNodes[$id];
+
+        if ($node != $device->getStorageNode()) {
+            $this->logger->warning("Storage node for $device incorrect");
+            if ($device->getStorageNode() != null) {
+                $this->logger->warning("Trying to copy existing data for $device from " . $device->getStorageNode() . " to " . $node);
+                $this->copyRrdFiles($device, $device->getStorageNode(), $node);
+            } else {
+                $this->logger->warning("No previous storage node defined for $device");
+            }
+            $device->setStorageNode($node);
+            $this->entityManager->persist($device);
+            $this->entityManager->flush();
+        }
+
+        return $node;
+    }
+
+    private function copyRrdFiles(Device $device, StorageNode $from, StorageNode $to)
+    {
+        $src = 'fireping@'.$from->getIp().':/opt/fireping/var/rrd/'.$device->getId().'/';
+        $dst = 'fireping@'.$to->getIp().':/opt/fireping/var/rrd/'.$device->getId().'/';
+        $process = new Process("scp -r $src $dst");
+        $process->run();
+
+        $output = $process->getOutput();
+        $error = $process->getErrorOutput();
+
+        $this->logger->info($output);
+        if ($error) {
+            throw new \RuntimeException($error);
+        }
     }
 }

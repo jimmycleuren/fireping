@@ -12,14 +12,12 @@ use Psr\Container\ContainerInterface;
 
 class StorageFactory
 {
-    private $container;
     private $rrdStorage;
     private $rrdCachedStorage;
     private $rrdDistributedStorage;
 
-    public function __construct(ContainerInterface $container, RrdStorage $rrdStorage, RrdCachedStorage $rrdCachedStorage, RrdDistributedStorage $rrdDistributedStorage)
+    public function __construct(RrdStorage $rrdStorage, RrdCachedStorage $rrdCachedStorage, RrdDistributedStorage $rrdDistributedStorage)
     {
-        $this->container = $container;
         $this->rrdStorage = $rrdStorage;
         $this->rrdCachedStorage = $rrdCachedStorage;
         $this->rrdDistributedStorage = $rrdDistributedStorage;

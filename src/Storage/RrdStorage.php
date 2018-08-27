@@ -63,13 +63,13 @@ class RrdStorage extends Storage
     {
         $path = $this->getFilePath($device, $probe, $group);
 
-        if (!$this->fileExists($path)) {
+        if (!$this->fileExists($device, $path)) {
             $this->create($path, $probe, $timestamp, $data);
         }
         $this->update($path, $probe, $timestamp, $data);
     }
 
-    public function fileExists($path)
+    public function fileExists(Device $device, $path)
     {
         return file_exists($path);
     }
@@ -253,7 +253,7 @@ class RrdStorage extends Storage
         return $rra;
     }
 
-    public function graph($options)
+    public function graph(Device $device, $options)
     {
         $imageFile = tempnam("/tmp", 'image');
 
@@ -268,7 +268,7 @@ class RrdStorage extends Storage
         return $return;
     }
 
-    public function getGraphValue($options)
+    public function getGraphValue(Device $device, $options)
     {
         $tempFile = tempnam("/tmp", 'temp');
 
