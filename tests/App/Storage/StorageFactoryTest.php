@@ -8,6 +8,7 @@ use App\Storage\RrdCachedStorage;
 use App\Storage\RrdDistributedStorage;
 use App\Storage\RrdStorage;
 use App\Storage\StorageFactory;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Psr\Log\LoggerInterface;
@@ -22,9 +23,11 @@ class StorageFactoryTest extends TestCase
         $storageNodeRepository->findBy(Argument::any(), Argument::any())->willReturn([new StorageNode()])->shouldBeCalledTimes(1);
         $storageNodeRepository = $storageNodeRepository->reveal();
 
+        $entityManager = $this->prophesize(EntityManagerInterface::class)->reveal();
+
         $rrdStorage = new RrdStorage("", $logger);
         $rrdCachedStorage = new RrdCachedStorage("", $logger);
-        $rrdDistributedStorage = new RrdDistributedStorage($logger, $storageNodeRepository);
+        $rrdDistributedStorage = new RrdDistributedStorage($logger, $storageNodeRepository, $entityManager);
 
         $factory = new StorageFactory($rrdStorage, $rrdCachedStorage, $rrdDistributedStorage);
 
@@ -49,9 +52,11 @@ class StorageFactoryTest extends TestCase
         $storageNodeRepository->findBy(Argument::any(), Argument::any())->willReturn([])->shouldBeCalledTimes(1);
         $storageNodeRepository = $storageNodeRepository->reveal();
 
+        $entityManager = $this->prophesize(EntityManagerInterface::class)->reveal();
+
         $rrdStorage = new RrdStorage("", $logger);
         $rrdCachedStorage = new RrdCachedStorage("", $logger);
-        $rrdDistributedStorage = new RrdDistributedStorage($logger, $storageNodeRepository);
+        $rrdDistributedStorage = new RrdDistributedStorage($logger, $storageNodeRepository, $entityManager);
 
         $factory = new StorageFactory($rrdStorage, $rrdCachedStorage, $rrdDistributedStorage);
 
