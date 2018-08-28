@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Storage nodes{% endblock %}
+
+{% block body %}
+    <h1>Storage nodes</h1>
+    <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>IP</th>
+            <th>Rrdcached</th>
+            <th>SSH</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in nodes %}
+        <tr>
+            <td>{{ row.node.name }}</td>
+            <td>{{ row.node.ip }}</td>
+            <td>{% if row.rrdcached %}<span class="label label-success">OK</span>{% else %}<span class="label label-danger">Failed</span>{% endif %}</td>
+            <td>{% if row.ssh %}<span class="label label-success">OK</span>{% else %}<span class="label label-danger">Failed</span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
