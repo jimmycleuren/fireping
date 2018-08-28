@@ -96,18 +96,38 @@ class RrdDistributedStorage extends RrdCachedStorage
 
     private function copyRrdFiles(Device $device, StorageNode $from, StorageNode $to)
     {
+        //first delete the folder in the destination node
+        $process = new Process("ssh fireping@".$to->getIp()." 'rm -rf /opt/fireping/var/rrd/".$device->getId()."'");
+        $process->run();
+
+        $error = $process->getErrorOutput();
+
+        if ($error) {
+            throw new \RuntimeException($error);
+        }
+
+        //next, copy the rrd files
         $src = 'fireping@'.$from->getIp().':/opt/fireping/var/rrd/'.$device->getId().'/';
         $dst = 'fireping@'.$to->getIp().':/opt/fireping/var/rrd/'.$device->getId().'/';
         $process = new Process("scp -3 -r $src $dst");
         $process->run();
 
-        $output = $process->getOutput();
         $error = $process->getErrorOutput();
 
         if ($error) {
             throw new \RuntimeException($error);
         } else {
             $this->logger->info("Data for $device copied from " . $from . " to " . $to);
+        }
+
+        //last, remove the rrd files from the original node to clean up space
+        $process = new Process("ssh fireping@".$from->getIp()." 'rm -rf /opt/fireping/var/rrd/".$device->getId()."'");
+        $process->run();
+
+        $error = $process->getErrorOutput();
+
+        if ($error) {
+            throw new \RuntimeException($error);
         }
     }
 }
