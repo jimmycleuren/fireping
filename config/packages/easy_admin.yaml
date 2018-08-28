@@ -56,3 +56,8 @@ easy_admin:
                class: App\Entity\SlaveGroup
            StorageNode:
                class: App\Entity\StorageNode
+               form:
+                   fields:
+                       - 'name'
+                       - 'ip'
+                       - { property: 'status', type: 'choice', type_options: { choices: { 'active': 'active', 'inactive': 'inactive' } } }

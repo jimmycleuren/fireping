@@ -104,7 +104,7 @@ class RrdDistributedStorage extends RrdCachedStorage
         $output = $process->getOutput();
         $error = $process->getErrorOutput();
 
-        $this->logger->info($output);
+        $this->logger->info("Data for $device copied from " . $from . " to " . $to);
         if ($error) {
             throw new \RuntimeException($error);
         }
