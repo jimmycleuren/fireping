@@ -98,15 +98,16 @@ class RrdDistributedStorage extends RrdCachedStorage
     {
         $src = 'fireping@'.$from->getIp().':/opt/fireping/var/rrd/'.$device->getId().'/';
         $dst = 'fireping@'.$to->getIp().':/opt/fireping/var/rrd/'.$device->getId().'/';
-        $process = new Process("scp -r $src $dst");
+        $process = new Process("scp -3 -r $src $dst");
         $process->run();
 
         $output = $process->getOutput();
         $error = $process->getErrorOutput();
 
-        $this->logger->info("Data for $device copied from " . $from . " to " . $to);
         if ($error) {
             throw new \RuntimeException($error);
+        } else {
+            $this->logger->info("Data for $device copied from " . $from . " to " . $to);
         }
     }
 }
