@@ -25,6 +25,11 @@ class RrdCachedStorage extends RrdStorage
         }
     }
 
+    public function getFilePath(Device $device, Probe $probe, SlaveGroup $group)
+    {
+        return $device->getId()."/".$probe->getId()."/".$group->getId().'.rrd';
+    }
+
     public function store(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data, $daemon = null)
     {
         $path = $this->getFilePath($device, $probe, $group);
