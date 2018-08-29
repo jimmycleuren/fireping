@@ -29,7 +29,7 @@ class RrdCachedStorage extends RrdStorage
     private function connect($daemon)
     {
         $socket = stristr($daemon, "unix://") ? $daemon : "tcp://$daemon";
-        if(!$this->connections[$daemon]) {
+        if(!isset($this->connections[$daemon]) || !$this->connections[$daemon]) {
             $this->connections[$daemon] = stream_socket_client($socket, $errno, $errstr, 5);
             stream_set_timeout($this->connections[$daemon], 5);
         }
@@ -37,7 +37,7 @@ class RrdCachedStorage extends RrdStorage
 
     private function send($command, $daemon)
     {
-        if(!fwrite($this->socket, $command.PHP_EOL)) {
+        if(!fwrite($this->connections[$daemon], $command.PHP_EOL)) {
             throw new RrdException("Could not write to rrdcached");
         }
     }
@@ -193,8 +193,8 @@ class RrdCachedStorage extends RrdStorage
         $this->connect($daemon);
 
         $sources = array();
-        $this->send("INFO $filename");
-        $message = $this->read();
+        $this->send("INFO $filename", $daemon);
+        $message = $this->read($daemon);
         $message = explode("\n", $message);
         foreach($message as $line) {
             if(preg_match("/ds\[([\w]+)\]/", $line, $match)) {
