@@ -85,16 +85,14 @@ class RrdCachedStorage extends RrdStorage
             $daemon = $this->daemon;
         }
 
-        $process = new Process("rrdtool info $path -d ".$daemon);
-        $process->run();
-        $output = $process->getOutput();
-        $error = $process->getErrorOutput();
+        $this->connect($daemon);
 
-        if (trim($error) != "") {
-            return false;
+        $this->send("INFO $path", $daemon);
+        $message = $this->read($daemon);
+        if (stristr($message, "rrd_version")) {
+            return true;
         }
-
-        return true;
+        return false;
     }
 
     protected function create($filename, Probe $probe, $timestamp, $data, $daemon = null)
