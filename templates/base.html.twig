@@ -77,12 +77,13 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="{{ path('homepage') }}">Fireping</a>
+                    <a class="navbar-brand" href="{{ path('home') }}">Fireping</a>
                 </div>
                 <div id="navbar" class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
                         <li {% if active_menu is defined and active_menu == "slave" %}class="active"{% endif %}><a href="{{ path('slave_index') }}">Slaves</a></li>
                         <li {% if active_menu is defined and active_menu == "alerts" %}class="active"{% endif %}><a href="{{ path('app_alert_index') }}">Alerts</a></li>
+                        <li {% if active_menu is defined and active_menu == "storagenodes" %}class="active"{% endif %}><a href="{{ path('storagenode') }}">Storage nodes</a></li>
                         <li {% if active_menu is defined and active_menu == "admin" %}class="active"{% endif %}><a href="{{ path('admin') }}">Admin</a></li>
                     </ul>
                     <div style="float:right; margin:7px 0px;">

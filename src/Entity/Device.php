@@ -113,6 +113,11 @@ class Device
      */
     private $alerts;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\StorageNode", inversedBy="devices")
+     */
+    private $storageNode;
+
 
     /**
      * Set id
@@ -510,5 +515,17 @@ class Device
             $domain = $domain->getParent();
         }
         return $domain;
+    }
+
+    public function getStorageNode(): ?StorageNode
+    {
+        return $this->storageNode;
+    }
+
+    public function setStorageNode(?StorageNode $storageNode): self
+    {
+        $this->storageNode = $storageNode;
+
+        return $this;
     }
 }

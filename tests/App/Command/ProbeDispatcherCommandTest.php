@@ -25,6 +25,7 @@ class ProbeDispatcherCommandTest extends KernelTestCase
 
         $probeStore = $this->prophesize(ProbeStore::class);
         $probeStore->getProbes()->willReturn([]);
+        $probeStore->getEtag()->willReturn("etag");
         $probeStore         = $probeStore->reveal();
 
         $logger             = $this->prophesize(LoggerInterface::class)->reveal();

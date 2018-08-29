@@ -37,7 +37,7 @@ class RrdStorage extends Storage
         $this->logger = $logger;
         $this->path = $path;
 
-        if (!file_exists($this->path)) {
+        if ($path && !file_exists($this->path)) {
             mkdir($this->path);
         }
     }
@@ -63,10 +63,15 @@ class RrdStorage extends Storage
     {
         $path = $this->getFilePath($device, $probe, $group);
 
-        if (!file_exists($path)) {
+        if (!$this->fileExists($device, $path)) {
             $this->create($path, $probe, $timestamp, $data);
         }
-        $this->update($path, $probe, $timestamp, $data);
+        $this->update($device, $path, $probe, $timestamp, $data);
+    }
+
+    public function fileExists(Device $device, $path)
+    {
+        return file_exists($path);
     }
 
     protected function create($filename, Probe $probe, $timestamp, $data)
@@ -115,7 +120,7 @@ class RrdStorage extends Storage
         }
     }
 
-    protected function update($filename, $probe, $timestamp, $data)
+    protected function update(Device $device, $filename, $probe, $timestamp, $data)
     {
         $info = rrd_info($filename);
         $update = rrd_lastupdate($filename);
@@ -246,5 +251,35 @@ class RrdStorage extends Storage
         }
 
         return $rra;
+    }
+
+    public function graph(Device $device, $options)
+    {
+        $imageFile = tempnam("/tmp", 'image');
+
+        $ret = rrd_graph($imageFile, $options);
+        if (!$ret) {
+            throw new RrdException(rrd_error());
+        }
+
+        $return = file_get_contents($imageFile);
+        unlink($imageFile);
+
+        return $return;
+    }
+
+    public function getGraphValue(Device $device, $options)
+    {
+        $tempFile = tempnam("/tmp", 'temp');
+
+        $data = rrd_graph($tempFile, $options);
+
+        if (!$data) {
+            throw new RrdException(rrd_error());
+        }
+
+        unlink($tempFile);
+
+        return (float)$data['calcpr'][0];
     }
 }

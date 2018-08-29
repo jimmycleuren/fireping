@@ -34,15 +34,15 @@ matrix:
 
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y librrd-dev
+  - sudo apt-get install -y librrd-dev rrdtool
   - composer self-update
   - mkdir build
+  - pecl install rrd
 
 install:
   - 'composer -n ${HIGHEST_LOWEST-install} --prefer-dist'
 
 before_script:
-  - pecl install rrd
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
@@ -55,7 +55,7 @@ script:
 after_script:
   - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
 
-after_failure: "cat /home/travis/build/jimmycleuren/fireping/var/logs/test.log"
+after_failure: "cat var/log/*.log"
 
 # After a build, send email notification with the build results
 notifications:
