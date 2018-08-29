@@ -37,7 +37,6 @@ class RrdDistributedStorage extends RrdCachedStorage
         $node = $this->getStorageNode($device);
         $daemon  = $node->getIp().":42217";
 
-        $this->logger->info("Storing $device on $daemon");
         parent::store($device, $probe, $group, $timestamp, $data, $daemon);
     }
 
