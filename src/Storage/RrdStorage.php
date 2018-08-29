@@ -66,7 +66,7 @@ class RrdStorage extends Storage
         if (!$this->fileExists($device, $path)) {
             $this->create($path, $probe, $timestamp, $data);
         }
-        $this->update($path, $probe, $timestamp, $data);
+        $this->update($device, $path, $probe, $timestamp, $data);
     }
 
     public function fileExists(Device $device, $path)
@@ -120,7 +120,7 @@ class RrdStorage extends Storage
         }
     }
 
-    protected function update($filename, $probe, $timestamp, $data)
+    protected function update(Device $device, $filename, $probe, $timestamp, $data)
     {
         $info = rrd_info($filename);
         $update = rrd_lastupdate($filename);

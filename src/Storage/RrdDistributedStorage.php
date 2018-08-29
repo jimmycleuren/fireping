@@ -57,6 +57,14 @@ class RrdDistributedStorage extends RrdCachedStorage
         return parent::fileExists($device, $path, $daemon);
     }
 
+    public function getLastUpdate(Device $device, $filename, $daemon = null)
+    {
+        $node = $this->getStorageNode($device);
+        $daemon  = $node->getIp().":42217";
+
+        return parent::getLastUpdate($device, $filename, $daemon);
+    }
+
     public function graph(Device $device, $options, $daemon = null)
     {
         $node = $this->getStorageNode($device);

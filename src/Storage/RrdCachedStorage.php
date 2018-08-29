@@ -37,7 +37,7 @@ class RrdCachedStorage extends RrdStorage
         if (!$this->fileExists($device, $path, $daemon)) {
             $this->create($path, $probe, $timestamp, $data, $daemon);
         }
-        $this->update($path, $probe, $timestamp, $data, $daemon);
+        $this->update($device, $path, $probe, $timestamp, $data, $daemon);
     }
 
     public function fileExists(Device $device, $path, $daemon = null)
@@ -110,13 +110,13 @@ class RrdCachedStorage extends RrdStorage
         }
     }
 
-    protected function update($filename, $probe, $timestamp, $data, $daemon = null)
+    protected function update(Device $device, $filename, $probe, $timestamp, $data, $daemon = null)
     {
         if (!$daemon) {
             $daemon = $this->daemon;
         }
 
-        $last = $this->getLastUpdate($filename, $daemon);
+        $last = $this->getLastUpdate($device, $filename, $daemon);
         if ($last >= $timestamp) {
             throw new WrongTimestampRrdException("RRD $filename last update was ".$last.", cannot update at ".$timestamp);
         }
@@ -137,7 +137,7 @@ class RrdCachedStorage extends RrdStorage
         }
     }
 
-    private function getLastUpdate($filename, $daemon = null)
+    protected function getLastUpdate(Device $device, $filename, $daemon = null)
     {
         if (!$daemon) {
             $daemon = $this->daemon;
