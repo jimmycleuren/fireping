@@ -14,6 +14,7 @@ use Symfony\Component\Process\Process;
 class RrdCachedStorage extends RrdStorage
 {
     private $daemon = "unix:///var/run/rrdcached.sock";
+    private $connections = [];
 
     public function __construct($path, LoggerInterface $logger)
     {
@@ -23,6 +24,34 @@ class RrdCachedStorage extends RrdStorage
         if (!$rrdtool = $finder->find("rrdtool", null, ['/usr/bin'])) {
             throw new \Exception("rrdtool is not installed on this system.");
         }
+    }
+
+    private function connect($daemon)
+    {
+        $socket = stristr($daemon, "unix://") ? $daemon : "tcp://$daemon";
+        if(!isset($this->connections[$daemon]) || !$this->connections[$daemon]) {
+            $this->connections[$daemon] = stream_socket_client($socket, $errno, $errstr, 5);
+            stream_set_timeout($this->connections[$daemon], 5);
+        }
+    }
+
+    private function send($command, $daemon)
+    {
+        if(!fwrite($this->connections[$daemon], $command.PHP_EOL)) {
+            throw new RrdException("Could not write to rrdcached");
+        }
+    }
+    private function read($daemon)
+    {
+        $line = fgets($this->connections[$daemon], 8192);
+        $result = $line;
+        $code = explode(" ", $line);
+        $code = $code[0];
+        for($i = 0; $i < $code; $i++) {
+            $result .= "\n".fgets($this->connections[$daemon], 8192);
+        }
+
+        return $result;
     }
 
     public function getFilePath(Device $device, Probe $probe, SlaveGroup $group)
@@ -56,16 +85,14 @@ class RrdCachedStorage extends RrdStorage
             $daemon = $this->daemon;
         }
 
-        $process = new Process("rrdtool info $path -d ".$daemon);
-        $process->run();
-        $output = $process->getOutput();
-        $error = $process->getErrorOutput();
+        $this->connect($daemon);
 
-        if (trim($error) != "") {
-            return false;
+        $this->send("INFO $path", $daemon);
+        $message = $this->read($daemon);
+        if (stristr($message, "rrd_version")) {
+            return true;
         }
-
-        return true;
+        return false;
     }
 
     protected function create($filename, Probe $probe, $timestamp, $data, $daemon = null)
@@ -161,26 +188,19 @@ class RrdCachedStorage extends RrdStorage
             $daemon = $this->daemon;
         }
 
+        $this->connect($daemon);
+
         $sources = array();
-
-        $process = new Process("rrdtool info $filename -d ".$daemon);
-        $process->run();
-        $output = $process->getOutput();
-        $error = $process->getErrorOutput();
-
-        if ($error) {
-            throw new RrdException(trim($error));
-        }
-
-        $output = explode("\n", $output);
-        foreach($output as $line) {
+        $this->send("INFO $filename", $daemon);
+        $message = $this->read($daemon);
+        $message = explode("\n", $message);
+        foreach($message as $line) {
             if(preg_match("/ds\[([\w]+)\]/", $line, $match)) {
                 if (!in_array($match[1], $sources)) {
                     $sources[] = $match[1];
                 }
             }
         }
-
         return $sources;
     }
 
