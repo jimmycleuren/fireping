@@ -25,7 +25,8 @@ class StorageNodeController extends AbstractController
             $nodes[] = [
                 'node' => $node,
                 'rrdcached' => $this->checkRrdCached($node),
-                'ssh' => $this->checkSsh($node)
+                'ssh' => $this->checkSsh($node),
+                'permissions' => $this->checkPermissions($node)
             ];
         }
 
@@ -58,5 +59,30 @@ class StorageNodeController extends AbstractController
         $this->logger->warning("SSH connection to $node failed: ".trim($error));
 
         return false;
+    }
+
+    private function checkPermissions(StorageNode $node)
+    {
+        $process = new Process('ssh '.$node->getIp().' touch /opt/fireping/var/rrd/test.txt');
+        $process->run();
+
+        $error = $process->getErrorOutput();
+        if ($error) {
+            $this->logger->warning("Error creating test file on $node: " . trim($error));
+
+            return false;
+        }
+
+        $process = new Process('ssh '.$node->getIp().' rm /opt/fireping/var/rrd/test.txt');
+        $process->run();
+
+        $error = $process->getErrorOutput();
+        if ($error) {
+            $this->logger->warning("Error deleting test file on $node: " . trim($error));
+
+            return false;
+        }
+
+        return true;
     }
 }

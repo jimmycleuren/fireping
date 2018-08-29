@@ -30,6 +30,16 @@ class RrdCachedStorage extends RrdStorage
         return $device->getId()."/".$probe->getId()."/".$group->getId().'.rrd';
     }
 
+    /**
+     * @param Device $device
+     * @param Probe $probe
+     * @param SlaveGroup $group
+     * @param $timestamp
+     * @param $data
+     * @param null $daemon
+     * @throws RrdException
+     * @throws WrongTimestampRrdException
+     */
     public function store(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data, $daemon = null)
     {
         $path = $this->getFilePath($device, $probe, $group);
@@ -110,6 +120,16 @@ class RrdCachedStorage extends RrdStorage
         }
     }
 
+    /**
+     * @param Device $device
+     * @param $filename
+     * @param $probe
+     * @param $timestamp
+     * @param $data
+     * @param null $daemon
+     * @throws RrdException
+     * @throws WrongTimestampRrdException
+     */
     protected function update(Device $device, $filename, $probe, $timestamp, $data, $daemon = null)
     {
         if (!$daemon) {
@@ -132,6 +152,9 @@ class RrdCachedStorage extends RrdStorage
         $process->run();
         $error = $process->getErrorOutput();
 
+        if (stristr($error, "minimum one second step")) {
+            throw new WrongTimestampRrdException($error);
+        }
         if ($error) {
             throw new RrdException(trim($error));
         }

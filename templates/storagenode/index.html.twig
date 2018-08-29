@@ -13,6 +13,7 @@
             <th>Devices</th>
             <th>Rrdcached</th>
             <th>SSH</th>
+            <th>Permissions</th>
         </tr>
         </thead>
         <tbody>
@@ -24,6 +25,7 @@
             <td>{{ row.node.devices|length }}</td>
             <td>{% if row.rrdcached %}<span class="label label-success">OK</span>{% else %}<span class="label label-danger">Failed</span>{% endif %}</td>
             <td>{% if row.ssh %}<span class="label label-success">{{ row.ssh }}</span>{% else %}<span class="label label-danger">Failed</span>{% endif %}</td>
+            <td>{% if row.permissions %}<span class="label label-success">OK</span>{% else %}<span class="label label-danger">Failed</span>{% endif %}</td>
         </tr>
         {% endfor %}
         </tbody>
