@@ -8,6 +8,7 @@ use App\DependencyInjection\Queue;
 use App\Instruction\Instruction;
 
 use App\Instruction\InstructionBuilder;
+use App\Kernel;
 use App\Probe\ProbeDefinition;
 
 
@@ -151,14 +152,14 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
      * The threshold indicating a high amount of workers is being used, and we
      * should create more.
      *
-     * @var
+     * @var int
      */
     protected $highWorkersThreshold;
 
     /**
      * The peak number of in use workers.
      *
-     * @var
+     * @var int
      */
     protected $inUsePeak;
 
@@ -214,8 +215,10 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
     public function __construct(
         ProbeStore $probeStore,
         LoggerInterface $logger,
-        InstructionBuilder $instructionBuilder
+        InstructionBuilder $instructionBuilder,
+        KernelInterface $kernel
     ) {
+        $this->kernel = $kernel;
         $this->logger = $logger;
         $this->probeStore = $probeStore;
         $this->instructionBuilder = $instructionBuilder;
@@ -278,8 +281,6 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
      */
     private function setUp(InputInterface $input)
     {
-        $this->kernel = $this->getContainer()->get('kernel');
-
         $this->initWorkers = $input->getOption('workers');
         $this->minimumIdleWorkers = $input->getOption('minimum-available-workers');
         $this->maximumWorkers = $input->getOption('maximum-workers');
@@ -405,20 +406,18 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
             function () {
                 foreach ($this->processes as $pid => $process) {
                     try {
-                        if ($process) {
-                            if (!\in_array($pid, $this->inUseWorkers, true)) {
+                        if (!\in_array($pid, $this->inUseWorkers, true)) {
+                            $process->checkTimeout();
+                        } elseif (isset($this->startTimes[$pid], $this->expectedRuntime[$pid])) {
+                            $actualRuntime = microtime(true) - $this->startTimes[$pid];
+                            $expectedRuntime = $this->expectedRuntime[$pid] * 1.25;
+                            if ($actualRuntime > $expectedRuntime) {
+                                $str = "Worker $pid has exceeded the expected runtime, terminating.";
+                                $this->logger->info($str);
                                 $process->checkTimeout();
-                            } elseif (isset($this->startTimes[$pid], $this->expectedRuntime[$pid])) {
-                                $actualRuntime = microtime(true) - $this->startTimes[$pid];
-                                $expectedRuntime = $this->expectedRuntime[$pid] * 1.25;
-                                if ($actualRuntime > $expectedRuntime) {
-                                    $str = "Worker $pid has exceeded the expected runtime, terminating.";
-                                    $this->logger->info($str);
-                                    $process->checkTimeout();
-                                }
                             }
-                            $process->getIncrementalOutput();
                         }
+                        $process->getIncrementalOutput();
                     } catch (ProcessTimedOutException $exception) {
                         $this->logger->info("Worker $pid timed out", [
                             'available' => count($this->availableWorkers),
@@ -629,8 +628,8 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param $channel
-     * @param $data
+     * @param string $channel
+     * @param string $data
      */
     private function handleResponse($channel, $data): void
     {
@@ -671,7 +670,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
         switch ($type) {
             case 'exception':
-                $this->logger->alert("Response ($status) from worker $pid returned an exception: " . $contents);
+                $this->logger->alert("Response ($status) from worker $pid returned an exception: " . print_r($contents, true));
                 break;
 
             case 'probe':
@@ -771,7 +770,6 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
         if (isset($this->processes[$pid])) {
             $this->processes[$pid]->stop(3, SIGINT);
-            $this->processes[$pid] = null;
             unset($this->processes[$pid]);
         }
 

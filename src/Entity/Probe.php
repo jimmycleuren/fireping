@@ -83,7 +83,7 @@ class Probe
     /**
      * Set id
      *
-     * @param string $id
+     * @param int $id
      *
      * @return Probe
      */
@@ -235,11 +235,11 @@ class Probe
     /**
      * Add ProbeArchive
      *
-     * @param \App\Entity\ProbeArchive $probeArchive
+     * @param ProbeArchive $archive
      *
-     * @return Domain
+     * @return Probe
      */
-    public function addArchive(\App\Entity\ProbeArchive $archive)
+    public function addArchive(ProbeArchive $archive)
     {
         $this->archives[] = $archive;
 
@@ -249,9 +249,9 @@ class Probe
     /**
      * Remove ProbeArchive
      *
-     * @param \App\Entity\ProbeArchive $probeArchive
+     * @param ProbeArchive $archive
      */
-    public function removeArchive(\App\Entity\ProbeArchive $archive)
+    public function removeArchive(ProbeArchive $archive)
     {
         $this->archives->removeElement($archive);
     }

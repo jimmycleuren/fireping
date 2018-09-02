@@ -12,7 +12,10 @@ use App\Entity\Slave;
 use App\Exception\WrongTimestampRrdException;
 use App\Processor\PingProcessor;
 use App\Processor\TracerouteProcessor;
+use App\Repository\SlaveRepository;
 use App\Storage\RrdStorage;
+use Doctrine\ORM\EntityManagerInterface;
+use Nette\Neon\Entity;
 use Nette\Utils\Json;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -45,14 +48,17 @@ class SlaveController extends Controller
 
     /**
      * @param string $id
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param SlaveRepository $slaveRepository
      * @return JsonResponse
      *
      * @Route("/api/slaves/{id}/config", methods={"GET"})
      */
-    public function configAction($id, Request $request)
+    public function configAction($id, Request $request, EntityManagerInterface $entityManager, SlaveRepository $slaveRepository)
     {
-        $this->em = $this->container->get('doctrine')->getManager();
-        $slave = $this->em->getRepository("App:Slave")->findOneById($id);
+        $this->em = $entityManager;
+        $slave = $slaveRepository->findOneById($id);
 
         if (!$slave) {
             $slave = new Slave();
@@ -126,6 +132,11 @@ class SlaveController extends Controller
 
     /**
      * @param Slave $slave
+     * @param Request $request
+     * @param PingProcessor $pingProcessor
+     * @param TracerouteProcessor $tracerouteProcessor
+     * @param LoggerInterface $logger
+     * @param EntityManagerInterface $entityManager
      * @return JsonResponse
      *
      * @Route("/api/slaves/{id}/result", methods={"POST"})
@@ -133,9 +144,9 @@ class SlaveController extends Controller
      *
      * Process new results from a slave
      */
-    public function resultAction(Slave $slave, Request $request, PingProcessor $pingProcessor, TracerouteProcessor $tracerouteProcessor, LoggerInterface $logger)
+    public function resultAction(Slave $slave, Request $request, PingProcessor $pingProcessor, TracerouteProcessor $tracerouteProcessor, LoggerInterface $logger, EntityManagerInterface $entityManager)
     {
-        $this->em = $this->container->get('doctrine')->getManager();
+        $this->em = $entityManager;
         $this->logger = $logger;
 
         $slave->setLastContact(new \DateTime());
@@ -156,6 +167,10 @@ class SlaveController extends Controller
                 if (!isset($probeData->timestamp)) {
                     $this->logger->warning("Incorrect data received from slave");
                     return new JsonResponse(array('code' => 400, 'message' => "No timestamp found in probe data"), 400);
+                }
+                if (!isset($probeData->targets)) {
+                    $this->logger->warning("Incorrect data received from slave");
+                    return new JsonResponse(array('code' => 400, 'message' => "No targets found in probe data"), 400);
                 }
                 $probe = $probeRepository->findOneById($probeId);
                 $timestamp = $probeData->timestamp;

@@ -226,7 +226,7 @@ class AlertRule
     }
 
     /**
-     * @param $children
+     * @param ArrayCollection $children
      * @return $this
      */
     public function setChildren($children)
@@ -263,7 +263,7 @@ class AlertRule
     /**
      * Set messageDown
      *
-     * @param string $messageUp
+     * @param string $messageDown
      *
      * @return AlertRule
      */

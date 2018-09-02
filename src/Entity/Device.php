@@ -122,7 +122,7 @@ class Device
     /**
      * Set id
      *
-     * @param string $id
+     * @param int $id
      *
      * @return Device
      */
@@ -403,7 +403,7 @@ class Device
      *
      * @param \App\Entity\AlertDestination $alertDestination
      *
-     * @return Domain
+     * @return Device
      */
     public function addAlertDestination(\App\Entity\AlertDestination $alertDestination)
     {

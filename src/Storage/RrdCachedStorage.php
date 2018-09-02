@@ -63,8 +63,8 @@ class RrdCachedStorage extends RrdStorage
      * @param Device $device
      * @param Probe $probe
      * @param SlaveGroup $group
-     * @param $timestamp
-     * @param $data
+     * @param int $timestamp
+     * @param array $data
      * @param null $daemon
      * @throws RrdException
      * @throws WrongTimestampRrdException
@@ -157,15 +157,15 @@ class RrdCachedStorage extends RrdStorage
 
     /**
      * @param Device $device
-     * @param $filename
-     * @param $probe
-     * @param $timestamp
-     * @param $data
-     * @param null $daemon
+     * @param string $filename
+     * @param Probe $probe
+     * @param int $timestamp
+     * @param array $data
+     * @param string $daemon
      * @throws RrdException
      * @throws WrongTimestampRrdException
      */
-    protected function update(Device $device, $filename, $probe, $timestamp, $data, $daemon = null)
+    protected function update(Device $device, $filename, Probe $probe, $timestamp, $data, $daemon = null)
     {
         if (!$daemon) {
             $daemon = $this->daemon;
@@ -243,10 +243,10 @@ class RrdCachedStorage extends RrdStorage
      * @param Device $device
      * @param Probe $probe
      * @param SlaveGroup $group
-     * @param $timestamp
-     * @param $key
-     * @param $function
-     * @param null $daemon
+     * @param int $timestamp
+     * @param string $key
+     * @param string $function
+     * @param string $daemon
      * @return mixed|null|string|void
      */
     public function fetch(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $key, $function, $daemon = null)
