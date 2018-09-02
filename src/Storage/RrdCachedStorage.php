@@ -65,7 +65,7 @@ class RrdCachedStorage extends RrdStorage
      * @param SlaveGroup $group
      * @param int $timestamp
      * @param array $data
-     * @param null $daemon
+     * @param string $daemon
      * @throws RrdException
      * @throws WrongTimestampRrdException
      */
