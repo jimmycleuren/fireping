@@ -32,7 +32,7 @@ class ProbeDispatcherCommandTest extends KernelTestCase
         $instructionBuilder = $this->prophesize(InstructionBuilder::class)->reveal();
 
         $application->add(
-            new ProbeDispatcherCommand($probeStore, $logger, $instructionBuilder)
+            new ProbeDispatcherCommand($probeStore, $logger, $instructionBuilder, $kernel)
         );
 
         $command       = $application->find('app:probe:dispatcher');

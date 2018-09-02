@@ -209,6 +209,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
      *                                       the state of our program.
      *
      * @param InstructionBuilder $instructionBuilder
+     * @param KernelInterface $kernel
      *
      * @throws \Symfony\Component\Console\Exception\LogicException
      */
