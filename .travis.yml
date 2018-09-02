@@ -2,7 +2,7 @@ env:
   global:
     - CC_TEST_REPORTER_ID=c0e8e75ad3debbbedee5e22c23696e0b27ae916102c3a65149a1a01cf74f8495
     - GIT_COMMITTED_AT=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then git log -1 --pretty=format:%ct; else git log -1 --skip 1 --pretty=format:%ct; fi)
-    - DATABASE_URL=mysql://root@database:3306/fireping_test
+    - DATABASE_URL=mysql://root@127.0.0.1:3306/fireping_test
 
 # Project language
 language: php
