@@ -46,7 +46,7 @@ class StorageNodeController extends AbstractController
 
     private function checkSsh(StorageNode $node)
     {
-        $process = new Process('ssh '.$node->getIp().' hostname');
+        $process = new Process('ssh -oBatchMode=yes '.$node->getIp().' hostname');
         $process->run();
 
         $output = $process->getOutput();
@@ -63,7 +63,7 @@ class StorageNodeController extends AbstractController
 
     private function checkPermissions(StorageNode $node)
     {
-        $process = new Process('ssh '.$node->getIp().' touch /opt/fireping/var/rrd/test.txt');
+        $process = new Process('ssh -oBatchMode=yes '.$node->getIp().' touch /opt/fireping/var/rrd/test.txt');
         $process->run();
 
         $error = $process->getErrorOutput();
@@ -73,7 +73,7 @@ class StorageNodeController extends AbstractController
             return false;
         }
 
-        $process = new Process('ssh '.$node->getIp().' rm /opt/fireping/var/rrd/test.txt');
+        $process = new Process('ssh -oBatchMode=yes '.$node->getIp().' rm /opt/fireping/var/rrd/test.txt');
         $process->run();
 
         $error = $process->getErrorOutput();

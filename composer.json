@@ -68,7 +68,10 @@
             "@auto-scripts"
         ],
         "phpstan": "vendor/bin/phpstan --level=4 --configuration=phpstan.neon analyse src",
-        "test": "vendor/bin/phpunit --coverage-html ../fireping-coverage",
+        "test": {
+            "cache:clear": "php bin/console cache:clear --env=test",
+            "tests": "vendor/bin/phpunit --coverage-html ../fireping-coverage"
+        },
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install --symlink --relative %PUBLIC_DIR%": "symfony-cmd",
