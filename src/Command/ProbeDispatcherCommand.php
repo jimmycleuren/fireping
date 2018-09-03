@@ -381,12 +381,9 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                 }
 
                 //keep 1 worker above the minimum required
-                $this->workersNeeded = max(
-                    0,
-                    $this->minimumIdleWorkers - count($this->availableWorkers) - $this->workersNeeded + 1
-                );
+                $this->workersNeeded = $this->minimumIdleWorkers - count($this->availableWorkers) - $this->workersNeeded + 1;
 
-                while ($this->workersNeeded !== 0) {
+                while ($this->workersNeeded > 0) {
                     if (count($this->processes) >= $this->maximumWorkers) {
                         $this->logger->critical("Cannot create " . $this->workersNeeded . " more workers, hard limit (maximum-workers=" . $this->maximumWorkers . ") reached.");
                         break;
@@ -395,6 +392,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                     if (count($this->processes) >= $this->highWorkersThreshold) {
                         $this->logger->alert("Nearing the upper worker " . $this->highWorkersThreshold . " threshold, investigate high workload or tweak settings!");
                     }
+                    $this->logger->info("Starting extra worker (minimum-idle=".$this->minimumIdleWorkers.", available=".$this->availableWorkers.", needed=".$this->workersNeeded.")");
                     $this->startWorker();
                     --$this->workersNeeded;
                 }
