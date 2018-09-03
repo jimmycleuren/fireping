@@ -6,7 +6,7 @@ eight_points_guzzle:
             options:
                 headers:
                     Accept: "application/json"
-                timeout: 20
+                timeout: 30
         alert:
             options:
                 headers:

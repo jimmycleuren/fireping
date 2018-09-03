@@ -157,13 +157,6 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
     protected $highWorkersThreshold;
 
     /**
-     * The peak number of workers that was requested at once.
-     *
-     * @var int
-     */
-    protected $requestedPeak;
-
-    /**
      * How long the ProbeDispatcher can run for, in seconds. You can specify 0 to
      * indicate an infinitely running process.
      *
@@ -300,7 +293,6 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         }
 
         $this->workersNeeded = 0;
-        $this->requestedPeak = $this->minimumIdleWorkers;
 
         for ($i = 0; $i < $this->numberOfQueues; $i++) {
             $this->queues[$i] = new Queue(
@@ -381,7 +373,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                 }
 
                 //keep 1 worker above the minimum required
-                $this->workersNeeded = $this->requestedPeak - count($this->availableWorkers) - $this->workersNeeded + 1;
+                $this->workersNeeded = $this->minimumIdleWorkers - count($this->availableWorkers) - $this->workersNeeded + 1;
 
                 while ($this->workersNeeded > 0) {
                     if (count($this->processes) >= $this->maximumWorkers) {
@@ -392,8 +384,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                     if (count($this->processes) >= $this->highWorkersThreshold) {
                         $this->logger->alert("Nearing the upper worker " . $this->highWorkersThreshold . " threshold, investigate high workload or tweak settings!");
                     }
-                    $this->logger->info("Starting extra worker (minimum-idle=".$this->minimumIdleWorkers.", available=".count($this->availableWorkers).", needed=".$this->workersNeeded.", peak-requested=".$this->requestedPeak.")");
-                    $this->requestedPeak = max($this->requestedPeak, $this->workersNeeded);
+                    $this->logger->info("Starting extra worker (minimum-idle=".$this->minimumIdleWorkers.", available=".count($this->availableWorkers).", needed=".$this->workersNeeded.")");
                     $this->startWorker();
                     --$this->workersNeeded;
                 }
@@ -429,12 +420,6 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                 }
             }
         );
-
-        //reduce the peak amount by 1 every hour
-        $this->loop->addPeriodicTimer(3600, function(){
-            $this->logger->info("Reducing peak level from ".$this->requestedPeak." to ".max($this->requestedPeak - 1, $this->minimumIdleWorkers));
-            $this->requestedPeak = max($this->requestedPeak - 1, $this->minimumIdleWorkers);
-        });
 
         if ($this->maxRuntime > 0) {
             $this->logger->info('Running for ' . $this->maxRuntime . ' seconds');
