@@ -77,11 +77,7 @@ class SlaveController extends Controller
                 $devices = array_merge($devices, $this->getDomainDevices($domain));
             }
 
-            $query = $this->em->createQuery("SELECT d, p FROM App:Device d LEFT JOIN d.probes p WHERE d in (:devices)")
-                ->setParameter("devices", $slave->getSlaveGroup()->getDevices())
-                ->useQueryCache(true);
-
-            $devices = array_merge($devices, $query->getResult());
+            $devices = array_merge($devices, $slave->getSlaveGroup()->getDevices()->toArray());
 
             //remove devices that were selected, but the current slavegroup is not active for the device
             foreach ($devices as $key => $device) {
@@ -89,6 +85,7 @@ class SlaveController extends Controller
                 foreach ($device->getActiveSlaveGroups() as $slavegroup) {
                     if ($slavegroup->getId() == $slave->getSlaveGroup()->getId()) {
                         $found = true;
+                        break;
                     }
                 }
                 if (!$found) {
@@ -235,11 +232,7 @@ class SlaveController extends Controller
             $devices = array_merge($devices, $this->getDomainDevices($subdomain));
         }
 
-        $query = $this->em->createQuery("SELECT d, p FROM App:Device d LEFT JOIN d.probes p WHERE d in (:devices)")
-            ->setParameter("devices", $domain->getDevices())
-            ->useQueryCache(true)
-        ;
-        $devices = $devices = array_merge($devices, $query->getResult());
+        $devices = array_merge($devices, $domain->getDevices()->toArray());
 
         return $devices;
     }
