@@ -300,7 +300,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         }
 
         $this->workersNeeded = 0;
-        $this->inUsePeak = $this->minimumIdleWorkers;
+        $this->requestedPeak = $this->minimumIdleWorkers;
 
         for ($i = 0; $i < $this->numberOfQueues; $i++) {
             $this->queues[$i] = new Queue(
