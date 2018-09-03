@@ -392,7 +392,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                     if (count($this->processes) >= $this->highWorkersThreshold) {
                         $this->logger->alert("Nearing the upper worker " . $this->highWorkersThreshold . " threshold, investigate high workload or tweak settings!");
                     }
-                    $this->logger->info("Starting extra worker (minimum-idle=".$this->minimumIdleWorkers.", available=".$this->availableWorkers.", needed=".$this->workersNeeded.")");
+                    $this->logger->info("Starting extra worker (minimum-idle=".$this->minimumIdleWorkers.", available=".count($this->availableWorkers).", needed=".$this->workersNeeded.")");
                     $this->startWorker();
                     --$this->workersNeeded;
                 }
