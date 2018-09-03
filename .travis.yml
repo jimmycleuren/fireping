@@ -20,6 +20,14 @@ cache:
   directories:
     - $HOME/.composer/cache/files
 
+addons:
+  apt:
+    sources:
+    - mysql-5.7-trusty
+    packages:
+    - mysql-server
+    - mysql-client
+
 # Matrix to test in every php version
 matrix:
   # Fast finish allows to set the build as "finished" even if the "allow_failures" matrix elements are not finished yet.
