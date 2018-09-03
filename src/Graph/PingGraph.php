@@ -34,7 +34,7 @@ class PingGraph extends RrdGraph
 
         $slavegroups = $device->getActiveSlaveGroups()->toArray();
 
-        $start = date("U") - 3600 * 12;
+        $start = (int)date("U") - 3600 * 12;
         $title = $device->getName();
 
         $options = array(

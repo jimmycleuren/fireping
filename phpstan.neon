@@ -1,3 +1,5 @@
 parameters:
 	excludes_analyse:
 		- %rootDir%/../../../src/Migrations/*
+	ignoreErrors:
+		- '#Call to an undefined method [a-zA-Z0-9\\_]+::findOneBy[A-Z][a-zA-Z]*\(\)#'

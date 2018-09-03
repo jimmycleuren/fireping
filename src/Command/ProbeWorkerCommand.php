@@ -82,7 +82,7 @@ class ProbeWorkerCommand extends ContainerAwareCommand
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
-     * @return int|null|void
+     * @return void
      * @throws \LogicException
      * @throws \RuntimeException
      * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
@@ -118,7 +118,7 @@ class ProbeWorkerCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param $data
+     * @param string $data
      *
      * @throws \LogicException
      */
@@ -300,7 +300,7 @@ class ProbeWorkerCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param $data
+     * @param array $data
      */
     protected function sendResponse($data): void
     {

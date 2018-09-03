@@ -120,7 +120,7 @@ class RrdStorage extends Storage
         }
     }
 
-    protected function update(Device $device, $filename, $probe, $timestamp, $data)
+    protected function update(Device $device, $filename, Probe $probe, $timestamp, $data)
     {
         $info = rrd_info($filename);
         $update = rrd_lastupdate($filename);

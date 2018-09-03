@@ -1,11 +1,12 @@
 <?php
 
 passthru(sprintf(
-    'rm -f %s/../var/data.db',
+    'php "%s/../bin/console" cache:clear --env=test',
     __DIR__
 ));
+
 passthru(sprintf(
-    'php "%s/../bin/console" doctrine:database:create --env=test',
+    'php "%s/../bin/console" doctrine:schema:drop --env=test --force',
     __DIR__
 ));
 passthru(sprintf(

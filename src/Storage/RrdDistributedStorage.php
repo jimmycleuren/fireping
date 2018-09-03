@@ -28,7 +28,7 @@ class RrdDistributedStorage extends RrdCachedStorage
         $temp = $storageNodeRepository->findBy(['status' => StorageNode::STATUS_ACTIVE], ['id' => 'ASC']);
         foreach($temp as $node) {
             $this->storageNodes[$node->getId()] = $node;
-            $this->hash->addTarget($node->getId());
+            $this->hash->addTarget("".$node->getId());
         }
     }
 

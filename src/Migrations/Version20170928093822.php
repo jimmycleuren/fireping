@@ -2,7 +2,7 @@
 
 namespace DoctrineMigrations;
 
-use Doctrine\DBAL\Migrations\AbstractMigration;
+use Doctrine\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
 
 /**
@@ -46,6 +46,7 @@ class Version20170928093822 extends AbstractMigration
         $this->addSql('ALTER TABLE slave DROP FOREIGN KEY FK_408CF09C29D09A3');
         $this->addSql('CREATE TABLE device_slaves (device_id INT NOT NULL, slave_id INT NOT NULL, INDEX IDX_B1C60E7B94A4C7D4 (device_id), INDEX IDX_B1C60E7B2B29BD08 (slave_id), PRIMARY KEY(device_id, slave_id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB');
         $this->addSql('CREATE TABLE domain_slaves (domain_id INT NOT NULL, slave_id INT NOT NULL, INDEX IDX_DB573A9115F0EE5 (domain_id), INDEX IDX_DB573A92B29BD08 (slave_id), PRIMARY KEY(domain_id, slave_id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB');
+        $this->addSql('ALTER TABLE slave ADD name VARCHAR(255) NOT NULL COLLATE utf8_unicode_ci, DROP slavegroup_id, CHANGE id id INT AUTO_INCREMENT NOT NULL');
         $this->addSql('ALTER TABLE device_slaves ADD CONSTRAINT FK_B1C60E7B2B29BD08 FOREIGN KEY (slave_id) REFERENCES slave (id)');
         $this->addSql('ALTER TABLE device_slaves ADD CONSTRAINT FK_B1C60E7B94A4C7D4 FOREIGN KEY (device_id) REFERENCES device (id)');
         $this->addSql('ALTER TABLE domain_slaves ADD CONSTRAINT FK_DB573A9115F0EE5 FOREIGN KEY (domain_id) REFERENCES domain (id)');
@@ -53,8 +54,8 @@ class Version20170928093822 extends AbstractMigration
         $this->addSql('DROP TABLE device_slavegroups');
         $this->addSql('DROP TABLE domain_slavegroups');
         $this->addSql('DROP TABLE slave_group');
-        $this->addSql('DROP INDEX IDX_408CF09C29D09A3 ON slave');
-        $this->addSql('ALTER TABLE slave ADD name VARCHAR(255) NOT NULL COLLATE utf8_unicode_ci, DROP slavegroup_id, CHANGE id id INT AUTO_INCREMENT NOT NULL');
+        //$this->addSql('DROP INDEX IDX_408CF09C29D09A3 ON slave');
+
         $this->addSql('CREATE UNIQUE INDEX UNIQ_408CF095E237E06 ON slave (name)');
     }
 }

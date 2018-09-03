@@ -14,6 +14,7 @@ sudo service php7.2-fpm restart
 
 mysql -u homestead -e "CREATE USER 'fireping'@'localhost' IDENTIFIED BY 'fireping';"
 mysql -u homestead -e "GRANT ALL PRIVILEGES ON fireping.* TO 'fireping'@'localhost';"
+mysql -u homestead -e "GRANT ALL PRIVILEGES ON fireping_test.* TO 'fireping'@'localhost';"
 mysql -u homestead -e "FLUSH PRIVILEGES;"
 
 cd fireping

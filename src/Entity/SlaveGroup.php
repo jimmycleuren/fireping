@@ -59,7 +59,7 @@ class SlaveGroup
     /**
      * Set id
      *
-     * @param string $id
+     * @param int $id
      *
      * @return SlaveGroup
      */

@@ -23,11 +23,10 @@
         "easycorp/easyadmin-bundle": "^1.17",
         "eightpoints/guzzle-bundle": "^7.0",
         "flexihash/flexihash": "^2.0",
-        "incenteev/composer-parameter-handler": "^2.0",
         "predis/predis": "^1.1",
-        "react/event-loop": "^0.4.3",
-        "react/socket": "^0.8",
-        "react/stream": "^0.7.1",
+        "react/event-loop": "^1.0",
+        "react/socket": "^1.0",
+        "react/stream": "^1.0",
         "sensio/framework-extra-bundle": "^5.1",
         "snc/redis-bundle": "^2.0",
         "symfony/asset": "^4.0",
@@ -54,7 +53,6 @@
         "phpstan/phpstan": "^0.10",
         "phpunit/phpunit": "^7.1",
         "sensiolabs/security-checker": "^4.1",
-        "sllh/composer-versions-check": "^2.0",
         "squizlabs/php_codesniffer": "^3.3",
         "symfony/browser-kit": "^4.0",
         "symfony/css-selector": "^4.0",
@@ -69,8 +67,11 @@
         "post-update-cmd": [
             "@auto-scripts"
         ],
-        "phpstan": "vendor/bin/phpstan --level=1 --configuration=phpstan.neon analyse src",
-        "test": "vendor/bin/phpunit --coverage-html ../fireping-coverage",
+        "phpstan": "vendor/bin/phpstan --level=4 --configuration=phpstan.neon analyse src",
+        "test": {
+            "cache:clear": "php bin/console cache:clear --env=test",
+            "tests": "vendor/bin/phpunit --coverage-html ../fireping-coverage"
+        },
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install --symlink --relative %PUBLIC_DIR%": "symfony-cmd",
