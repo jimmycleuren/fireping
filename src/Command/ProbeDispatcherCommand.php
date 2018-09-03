@@ -717,7 +717,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                 if ($status === 200) {
                     $etag = $response['headers']['etag'];
                     $this->probeStore->updateConfig($contents, $etag);
-                    $this->logger->info("Response ($status) from worker $pid config applied");
+                    $this->logger->info("Response ($status) from worker $pid config applied (".$this->probeStore->getAllProbesDeviceCount()." devices)");
                 } else {
                     $this->logger->info("Response ($status) from worker $pid received");
                 }
