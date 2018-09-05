@@ -10,6 +10,7 @@ namespace App\DependencyInjection;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Process\Exception\ProcessTimedOutException;
 
 class WorkerManager
 {
@@ -187,6 +188,10 @@ class WorkerManager
         if (($key = array_search($worker, $this->inUseWorkers, true)) !== false) {
             unset($this->inUseWorkers[$key]);
         }
+
+        if (($key = array_search($worker, $this->workers, true)) !== false) {
+            unset($this->workers[$key]);
+        }
     }
 
     public function loop()
@@ -202,6 +207,12 @@ class WorkerManager
                 ]);
                 $this->cleanup($worker);
             }
+        }
+
+        //check if we have enough workers available and start 1 if needed
+        if (count($this->availableWorkers) < $this->minimumIdleWorkers) {
+            $this->logger->info("Not enough workers available, starting 1");
+            $this->startWorker();
         }
     }
 }

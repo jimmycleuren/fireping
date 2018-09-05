@@ -33,6 +33,8 @@ class Worker
 
     private $type;
 
+    private $name;
+
     public function __construct(WorkerManager $manager, KernelInterface $kernel, LoggerInterface $logger, int $timeout, int $idleTimeout)
     {
         $this->manager = $manager;
@@ -56,13 +58,14 @@ class Worker
                 $this->receiveBuffer .= $data;
 
                 if (json_decode($this->receiveBuffer, true)) {
-                    $this->logger->info("$this received a valid json, calling callback");
                     ($this->callback)($type, $this->receiveBuffer);
 
                     $this->release();
                 }
             }
         );
+
+        $this->name = "#".$this->process->getPid();
     }
 
     public function stop()
@@ -106,7 +109,7 @@ class Worker
 
     public function __toString()
     {
-        return "#".$this->process->getPid();
+        return $this->name;
     }
 
     public function getType()
