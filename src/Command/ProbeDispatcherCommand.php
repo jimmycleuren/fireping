@@ -394,7 +394,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
                     $count = 0;
                     foreach ($this->probeStore->getProbes() as $probe) {
-                        $count += ceil($this->probeStore->getProbeDeviceCount($probe->getId()) % $this->devicesPerWorker);
+                        $count += ceil($this->probeStore->getProbeDeviceCount($probe->getId()) / $this->devicesPerWorker);
                     }
                     $this->workerManager->setNumberOfProbeProcesses(intval($count));
                 } else {
