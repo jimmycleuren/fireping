@@ -133,13 +133,6 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                 5
             )
             ->addOption(
-                'minimum-available-workers',
-                'min',
-                InputOption::VALUE_REQUIRED,
-                'Specifies the minimum amount of available workers at all times.',
-                5
-            )
-            ->addOption(
                 'maximum-workers',
                 'max',
                 InputOption::VALUE_REQUIRED,
@@ -174,7 +167,6 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         $this->workerManager->initialize(
             intval($input->getOption('workers')),
             intval($input->getOption('maximum-workers')),
-            intval($input->getOption('minimum-available-workers')),
             $this->numberOfQueues
         );
 

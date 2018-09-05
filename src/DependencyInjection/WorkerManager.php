@@ -14,50 +14,43 @@ use Symfony\Component\Process\Exception\ProcessTimedOutException;
 
 class WorkerManager
 {
-    /**
-     * Holds the Application Kernel
-     *
-     * @var KernelInterface
-     */
     protected $kernel;
+
+    private $logger;
 
     /**
      * An array of process ids of workers that are currently idle.
      *
-     * @var int[]
+     * @var Worker[]
      */
-    protected $availableWorkers = [];
+    private $availableWorkers = [];
 
+    /**
+     * @var Worker[]
+     */
     private $workers = [];
     /**
      * An array of process ids of workers that are currently performing a task.
      *
-     * @var int[]
+     * @var Worker[]
      */
-    protected $inUseWorkers = [];
+    private $inUseWorkers = [];
 
-    protected $inUseWorkerTypes = [];
-
-    /**
-     * The amount of workers that need to be created during the next cycle
-     *
-     * @var int
-     */
-    protected $workersNeeded;
+    private $inUseWorkerTypes = [];
 
     /**
      * The minimum amount of workers that should be idle at all times.
      *
      * @var int
      */
-    protected $minimumIdleWorkers;
+    private $minimumIdleWorkers;
 
     /**
      * At most this many workers should ever be created.
      *
      * @var int
      */
-    protected $maximumWorkers;
+    private $maximumWorkers;
 
     private $numberOfQueues = 0;
 
@@ -70,13 +63,12 @@ class WorkerManager
         $this->logger = $logger;
     }
 
-    public function initialize(int $startWorkers, int $maximumWorkers, int $minimumIdleWorkers, int $numberOfQueues)
+    public function initialize(int $startWorkers, int $maximumWorkers, int $numberOfQueues)
     {
         $this->maximumWorkers = $maximumWorkers;
-        $this->minimumIdleWorkers = $minimumIdleWorkers;
         $this->numberOfQueues = $numberOfQueues;
 
-        if ($this->minimumIdleWorkers < $this->getWorkerBaseline()) {
+        if ($startWorkers < $this->getWorkerBaseline()) {
             $this->logger->warning("Increasing initial workers to ".$this->getWorkerBaseline());
             $startWorkers = $this->getWorkerBaseline();
         }
@@ -218,8 +210,12 @@ class WorkerManager
 
         //check if we have enough workers available and start 1 if needed
         if (count($this->workers) < $this->getWorkerBaseline()) {
-            $this->logger->info("Not enough workers available, starting 1");
-            $this->startWorker();
+            if(count($this->workers) < $this->maximumWorkers) {
+                $this->logger->info("Not enough workers available, starting 1");
+                $this->startWorker();
+            } else {
+                $this->logger->error("Maximum amount of workers (".$this->maximumWorkers.") reached");
+            }
         }
     }
 }
