@@ -35,6 +35,8 @@ class Worker
 
     private $name;
 
+    private $executing = false;
+
     public function __construct(WorkerManager $manager, KernelInterface $kernel, LoggerInterface $logger, int $timeout, int $idleTimeout)
     {
         $this->manager = $manager;
@@ -75,6 +77,7 @@ class Worker
         $this->input = null;
         $this->startTime = null;
         $this->expectedRuntime = null;
+        $this->executing = false;
     }
 
     public function release()
@@ -82,11 +85,13 @@ class Worker
         $this->receiveBuffer = '';
         $this->startTime = null;
         $this->expectedRuntime = null;
+        $this->executing = false;
         $this->manager->release($this);
     }
 
     public function send($data, $expectedRuntime, \Closure $callback)
     {
+        $this->executing = true;
         $this->startTime = microtime(true);
         $this->expectedRuntime = $expectedRuntime;
         $this->callback = $callback;
@@ -103,7 +108,9 @@ class Worker
                 $this->logger->info("Worker $this has exceeded the expected runtime, terminating.");
             }
         }
-        $this->process->checkTimeout();
+        if (!$this->executing) {
+            $this->process->checkTimeout();
+        }
         $this->process->getIncrementalOutput();
     }
 
