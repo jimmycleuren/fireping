@@ -38,6 +38,10 @@ class Queue
                     if (!$this->worker) {
                         $this->reserveWorker();
                     }
+                    if (!$this->worker) {
+                        $this->logger->warning("Queue $this->id had no worker");
+                        return;
+                    }
                     $this->lock = true;
                     $this->current = $this->getNextPacket();
 
@@ -67,8 +71,6 @@ class Queue
 
     private function handleResponse($type, $data)
     {
-        $this->logger->info("[$type] data received");
-
         $response = json_decode($data, true);
 
         if (!$response) {

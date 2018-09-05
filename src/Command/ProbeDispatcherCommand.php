@@ -87,6 +87,8 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
     private $workerManager;
 
+    private $devicesPerWorker = 250;
+
     /**
      * ProbeDispatcherCommand constructor.
      *
@@ -231,7 +233,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                     if ($ready) {
                         $instructions = $this->instructionBuilder::create(
                             $probe,
-                            250
+                            $this->devicesPerWorker
                         );
 
                         // Keep track of how many processes are starting.
@@ -324,8 +326,6 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
      */
     private function handleResponse($channel, $data): void
     {
-        $this->logger->info("[$channel] data received");
-
         $response = json_decode($data, true);
 
         if (!$response) {
@@ -391,6 +391,12 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
                     $etag = $response['headers']['etag'];
                     $this->probeStore->updateConfig($contents, $etag);
                     $this->logger->info("Response ($status) from worker $pid config applied (".$this->probeStore->getAllProbesDeviceCount()." devices)");
+
+                    $count = 0;
+                    foreach ($this->probeStore->getProbes() as $probe) {
+                        $count += ceil($this->probeStore->getProbeDeviceCount($probe->getId()) % $this->devicesPerWorker);
+                    }
+                    $this->workerManager->setNumberOfProbeProcesses(intval($count));
                 } else {
                     $this->logger->info("Response ($status) from worker $pid received");
                 }

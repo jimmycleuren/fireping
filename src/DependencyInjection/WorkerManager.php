@@ -59,7 +59,9 @@ class WorkerManager
      */
     protected $maximumWorkers;
 
-    private $numberOfQueues;
+    private $numberOfQueues = 0;
+
+    private $numberOfProbeProcesses = 0;
 
 
     public function __construct(KernelInterface $kernel, LoggerInterface $logger)
@@ -87,9 +89,14 @@ class WorkerManager
         }
     }
 
+    public function setNumberOfProbeProcesses(int $numberOfProbeProcesses)
+    {
+        $this->numberOfProbeProcesses = $numberOfProbeProcesses;
+    }
+
     private function getWorkerBaseline()
     {
-        return $this->numberOfQueues + 1;
+        return $this->numberOfQueues + ($this->numberOfProbeProcesses * 2) + 1;
     }
 
     public function getWorker(string $type) : Worker
@@ -210,7 +217,7 @@ class WorkerManager
         }
 
         //check if we have enough workers available and start 1 if needed
-        if (count($this->availableWorkers) < $this->minimumIdleWorkers) {
+        if (count($this->workers) < $this->getWorkerBaseline()) {
             $this->logger->info("Not enough workers available, starting 1");
             $this->startWorker();
         }
