@@ -17,6 +17,12 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ApiResource(attributes={
  *     "normalization_context"={"groups"={"domain"}},
  *     "denormalization_context"={"groups"={"write"}}
+ * },
+ *     itemOperations={
+ *     "get",
+ *     "put",
+ *     "delete",
+ *     "alerts"={"route_name"="api_domains_alerts"},
  * })
  * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  */
