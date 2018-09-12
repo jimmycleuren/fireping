@@ -11,6 +11,7 @@ namespace App\Controller;
 use ApiPlatform\Core\JsonLd\Serializer\ItemNormalizer;
 use ApiPlatform\Core\Serializer\JsonEncoder;
 use App\Entity\Domain;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,14 +24,14 @@ class DomainApiController extends Controller
     /**
      * @Route("/api/domains/{id}/alerts.json", name="api_domains_alerts")
      */
-    public function alertsAction(Domain $domain)
+    public function alertsAction(Domain $domain, EntityManagerInterface $entityManager)
     {
         $devices = $this->getDevices($domain);
 
-        $alerts = [];
-        foreach ($devices as $device) {
-            $alerts = array_merge($alerts, $device->getActiveAlerts()->toArray());
-        }
+        $alerts = $entityManager
+            ->createQuery("SELECT a FROM App:Alert a WHERE a.active = 1 AND a.device IN (:devices)")
+            ->setParameter("devices", $devices)
+            ->getResult();
 
         $result = array();
         foreach($alerts as $alert) {
