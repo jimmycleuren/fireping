@@ -31,8 +31,10 @@ class ProbeDispatcherCommandTest extends KernelTestCase
         $probeStore->getEtag()->willReturn("etag");
         $probeStore         = $probeStore->reveal();
 
-        $worker = $this->prophesize(Worker::class)->reveal();
-        $logger             = $this->prophesize(LoggerInterface::class)->reveal();
+        $worker = $this->prophesize(Worker::class);
+        $worker->__toString()->willReturn("worker");
+        $worker = $worker->reveal();
+        $logger = $this->prophesize(LoggerInterface::class)->reveal();
         $instructionBuilder = $this->prophesize(InstructionBuilder::class)->reveal();
         $workerManager = $this->prophesize(WorkerManager::class);
         $workerManager->initialize(Argument::type('int'), Argument::type('int'), Argument::type('int'))->shouldBeCalledTimes(1);
