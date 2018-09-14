@@ -58,4 +58,20 @@ class DomainApiTest extends WebTestCase
         $response = $client->getResponse();
         $this->assertEquals(204, $response->getStatusCode());
     }
+
+    public function testAlerts()
+    {
+        $client = static::createClient();
+
+        $crawler = $client->request('GET', '/api/domains/1/alerts.json', array(), array(), array(
+            "HTTP_Accept" => "application/json"
+        ));
+
+        $response = $client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
+        $this->assertJson($response->getContent());
+
+        $this->assertEquals('Alertrule 1 on Device 1 from Slavegroup 1', json_decode($response->getContent())[0]->message);
+    }
 }
