@@ -5,6 +5,7 @@ namespace Tests\App\Command;
 
 use App\Command\ProbeDispatcherCommand;
 use App\DependencyInjection\ProbeStore;
+use App\DependencyInjection\Worker;
 use App\DependencyInjection\WorkerManager;
 use App\Instruction\InstructionBuilder;
 use Prophecy\Argument;
