@@ -2,7 +2,6 @@
 
 namespace App\DependencyInjection;
 
-use App\Command\ProbeDispatcherCommand;
 use Psr\Log\LoggerInterface;
 
 class Queue
@@ -14,15 +13,15 @@ class Queue
     private $worker;
     private $logger;
     private $id;
-    private $dispatcher;
+    private $workerManager;
     private $targetsPerPacket = 50;
 
-    public function __construct(ProbeDispatcherCommand $dispatcher, int $id, string $slaveName, LoggerInterface $logger)
+    public function __construct(WorkerManager $workerManager, int $id, string $slaveName, LoggerInterface $logger)
     {
         $this->id = $id;
         $this->logger = $logger;
         $this->slaveName = $slaveName;
-        $this->dispatcher = $dispatcher;
+        $this->workerManager = $workerManager;
         $this->queue = new \SplQueue();
     }
 
@@ -37,7 +36,11 @@ class Queue
             if (!$this->queue->isEmpty()) {
                 try {
                     if (!$this->worker) {
-                        $this->reservePoster();
+                        $this->reserveWorker();
+                    }
+                    if (!$this->worker) {
+                        $this->logger->warning("Queue $this->id had no worker");
+                        return;
                     }
                     $this->lock = true;
                     $this->current = $this->getNextPacket();
@@ -52,13 +55,45 @@ class Queue
                         'body' => $this->current,
                     );
 
-                    $this->dispatcher->sendInstruction($instruction, $this->worker);
+                    $this->worker->send(json_encode($instruction), 60, function($type, $response){
+                        $this->handleResponse($type, $response);
+                    });
+
+                    $this->logger->info('COMMUNICATION_FLOW: Queue '.$this->id.' sent ' . $instruction['type'] . " instruction to worker $this->worker.");
+
                 } catch (\Exception $e) {
                     $this->lock = false;
                     $this->logger->warning($e->getMessage()." at ".$e->getFile().":".$e->getLine());
                 }
             }
         }
+    }
+
+    private function handleResponse($type, $data)
+    {
+        $response = json_decode($data, true);
+
+        if (!$response) {
+            $this->logger->warning('COMMUNICATION_FLOW: Response from worker could not be decoded to JSON.');
+            return;
+        }
+
+        $status = $response['status'];
+
+        if ($status === 200) {
+            $this->logger->info("Response ($status) from worker $this->worker saved.");
+            $this->current = null;
+        } elseif ($status === 409) {
+            $this->logger->info("Response ($status) from worker $this->worker discarded.");
+            $this->current = null;
+        } else {
+            $this->logger->info("Response ($status) from worker $this->worker problem - retrying later.");
+            $this->retryPost();
+        }
+
+        $this->lock = false;
+        $this->worker = null;
+        $this->logger->info("Queue $this->id items remain: " . $this->queue->count() . ".");
     }
 
     private function getNextPacket()
@@ -87,31 +122,11 @@ class Queue
         return $first;
     }
 
-    public function result($status)
-    {
-        if ($status === 200) {
-            $this->logger->info("Response ($status) from worker $this->worker saved.");
-            $this->current = null;
-        } elseif ($status === 409) {
-            $this->logger->info("Response ($status) from worker .$this->worker discarded.");
-            $this->current = null;
-        } else {
-            $this->logger->info("Response ($status) from worker $this->worker problem - retrying later.");
-            $this->retryPost();
-        }
-
-        $this->worker = null;
-        $this->lock = false;
-        $this->logger->info("Queue $this->id items remain: " . $this->queue->count() . ".");
-    }
-
-    private function reservePoster()
+    private function reserveWorker()
     {
         try {
-            $worker       = $this->dispatcher->getWorker();
-            $workerPid    = $worker->getPid();
-            $this->worker = $workerPid;
-            $this->logger->info("Worker $workerPid reserved to post data for queue ".$this->id);
+            $this->worker = $this->workerManager->getWorker('queue');
+            $this->logger->info("Worker $this->worker reserved to post data for queue ".$this->id);
         } catch (\Exception $e) {
             $this->logger->critical("Could not reserve a worker to post data for queue ".$this->id);
         }
@@ -124,10 +139,5 @@ class Queue
             $this->queue->unshift($this->current);
             $this->current = null;
         }
-    }
-
-    public function getWorker()
-    {
-        return $this->worker;
     }
 }
