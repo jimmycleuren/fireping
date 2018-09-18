@@ -10,6 +10,7 @@ namespace App\Controller;
 
 use App\Entity\Slave;
 use App\Exception\WrongTimestampRrdException;
+use App\Processor\HttpProcessor;
 use App\Processor\PingProcessor;
 use App\Processor\TracerouteProcessor;
 use App\Repository\SlaveRepository;
@@ -141,7 +142,7 @@ class SlaveController extends Controller
      *
      * Process new results from a slave
      */
-    public function resultAction(Slave $slave, Request $request, PingProcessor $pingProcessor, TracerouteProcessor $tracerouteProcessor, LoggerInterface $logger, EntityManagerInterface $entityManager)
+    public function resultAction(Slave $slave, Request $request, PingProcessor $pingProcessor, TracerouteProcessor $tracerouteProcessor, HttpProcessor $httpProcessor, LoggerInterface $logger, EntityManagerInterface $entityManager)
     {
         $this->em = $entityManager;
         $this->logger = $logger;
@@ -186,6 +187,9 @@ class SlaveController extends Controller
                             break;
                         case "traceroute":
                             $tracerouteProcessor->storeResult($device, $probe, $slave->getSlaveGroup(), $timestamp, $targetData);
+                            break;
+                        case "http":
+                            $httpProcessor->storeResult($device, $probe, $slave->getSlaveGroup(), $timestamp, $targetData);
                             break;
                     }
                 }
@@ -239,24 +243,12 @@ class SlaveController extends Controller
 
     private function getDeviceProbes($device, &$config)
     {
-        foreach($device->getProbes() as $probe) {
+        foreach($device->getActiveProbes() as $probe) {
             $config[$probe->getId()]['type'] = $probe->getType();
             $config[$probe->getId()]['step'] = $probe->getStep();
             $config[$probe->getId()]['samples'] = $probe->getSamples();
             $config[$probe->getId()]['args'] = json_decode($probe->getArguments());
             $config[$probe->getId()]['targets'][$device->getId()] = $device->getIp();
-        }
-
-        $parent = $device->getDomain();
-        while($parent != null) {
-            foreach($parent->getProbes() as $probe) {
-                $config[$probe->getId()]['type'] = $probe->getType();
-                $config[$probe->getId()]['step'] = $probe->getStep();
-                $config[$probe->getId()]['samples'] = $probe->getSamples();
-                $config[$probe->getId()]['args'] = json_decode($probe->getArguments());
-                $config[$probe->getId()]['targets'][$device->getId()] = $device->getIp();
-            }
-            $parent = $parent->getParent();
         }
     }
 }

@@ -46,16 +46,21 @@ class ProbeWorkerCommand extends ContainerAwareCommand
      */
     protected $maxRuntime;
 
+    private $commandFactory;
+
+
     /**
      * ProbeWorkerCommand constructor.
      *
      * @param LoggerInterface $logger
+     * @param CommandFactory $commandFactory
      *
      * @throws \Symfony\Component\Console\Exception\LogicException
      */
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, CommandFactory $commandFactory)
     {
         $this->logger = $logger;
+        $this->commandFactory = $commandFactory;
 
         parent::__construct();
     }
@@ -189,11 +194,10 @@ class ProbeWorkerCommand extends ContainerAwareCommand
             $data['type'] . ' instruction from master.';
         $this->logger->info($str);
 
-        $factory = new CommandFactory();
         $data['container'] = $this->getContainer();
         $command = null;
         try {
-            $command = $factory->create($data['type'], $data);
+            $command = $this->commandFactory->create($data['type'], $data);
         } catch (Exception $e) {
             $this->sendResponse(
                 [
@@ -258,6 +262,7 @@ class ProbeWorkerCommand extends ContainerAwareCommand
                 case 'ping':
                 case 'mtr':
                 case 'traceroute':
+                case 'http':
                     $this->sendResponse([
                         'type' => 'probe',
                         'status' => 200,

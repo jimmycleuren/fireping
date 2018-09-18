@@ -12,6 +12,7 @@ use App\Entity\Device;
 use App\Entity\Probe;
 use App\Entity\SlaveGroup;
 use App\Exception\RrdException;
+use App\Graph\HttpGraph;
 use App\Graph\PingGraph;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,27 +31,22 @@ class GraphController extends Controller
      * @Route("/api/graphs/summary/{id}", methods={"GET"})
      * @ParamConverter("device", class="App:Device")
      */
-    public function summaryAction(Device $device, PingGraph $pingGraph)
+    public function summaryAction(Device $device, PingGraph $pingGraph, HttpGraph $httpGraph)
     {
-        $probes = array();
-
-        foreach($device->getProbes() as $probe) {
-            $probes[] = $probe;
-        }
-
-        $current = $device->getDomain();
-
-        do {
-            foreach($current->getProbes() as $probe) {
-                $probes[] = $probe;
-            }
-
-            $current = $current->getParent();
-        } while($current != null);
+        $probes = $device->getActiveProbes();
 
         foreach ($probes as $probe) {
             if ($probe->getType() == "ping") {
                 $graph = $pingGraph->getSummaryGraph($device, $probe);
+                $response = new Response($graph, 200);
+                $response->headers->set('Content-Type', 'image/png');
+
+                return $response;
+            }
+        }
+        foreach ($probes as $probe) {
+            if ($probe->getType() == "http") {
+                $graph = $httpGraph->getSummaryGraph($device, $probe);
                 $response = new Response($graph, 200);
                 $response->headers->set('Content-Type', 'image/png');
 
@@ -75,7 +71,7 @@ class GraphController extends Controller
      * @ParamConverter("probe", class="App:Probe", options={"id" = "probe_id"})
      * @ParamConverter("slavegroup", class="App:SlaveGroup", options={"id" = "slavegroup_id"})
      */
-    public function detailAction(Device $device = null, Probe $probe = null, SlaveGroup $slavegroup = null, Request $request, PingGraph $pingGraph, SessionInterface $session)
+    public function detailAction(Device $device = null, Probe $probe = null, SlaveGroup $slavegroup = null, Request $request, PingGraph $pingGraph, HttpGraph $httpGraph, SessionInterface $session)
     {
         $start = $request->get('start') ?: -3600;
         $end = $request->get('end') ?: date("U");
@@ -83,6 +79,13 @@ class GraphController extends Controller
 
         if ($probe->getType() == "ping") {
             $graph = $pingGraph->getDetailGraph($device, $probe, $slavegroup, $start, $end, $debug);
+            $response = new Response($graph, 200);
+            $response->headers->set('Content-Type', 'image/png');
+
+            return $response;
+        }
+        if ($probe->getType() == "http") {
+            $graph = $httpGraph->getDetailGraph($device, $probe, $slavegroup, $start, $end, $debug);
             $response = new Response($graph, 200);
             $response->headers->set('Content-Type', 'image/png');
 

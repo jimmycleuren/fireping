@@ -13,7 +13,7 @@ use App\Entity\Probe;
 use App\Entity\SlaveGroup;
 use App\Exception\RrdException;
 
-class PingGraph extends SmokeRrdGraph
+class HttpGraph extends SmokeRrdGraph
 {
-    protected $datasource = "ping";
+    protected $datasource = "http";
 }
