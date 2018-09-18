@@ -13,11 +13,13 @@ use GuzzleHttp\Promise;
  */
 class Http
 {
+    private $args;
     private $delay;
     private $logger;
     private $targets;
     private $samples;
     private $waitTime;
+    private $times;
 
     public function __construct($data, LoggerInterface $logger)
     {

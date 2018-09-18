@@ -9,10 +9,11 @@
 namespace App\ShellCommand;
 
 use Psr\Log\LoggerInterface;
-use Psr\Log\Test\LoggerInterfaceTest;
 
 class CommandFactory
 {
+    private $logger;
+
     protected static $mappings = array(
         'ping' => 'App\\ShellCommand\\PingShellCommand',
         'mtr' => 'App\\ShellCommand\\MtrShellCommand',
