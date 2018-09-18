@@ -20,7 +20,7 @@ class SmokeProcessor extends Processor
     public function storeResult(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data)
     {
         if (count($data) != $probe->getSamples()) {
-            throw new \Exception(count($data)." http samples received, should have been ".$probe->getSamples());
+            throw new \Exception(count($data)." ".$this->datasource." samples received, should have been ".$probe->getSamples());
         }
 
         $datasources = array();
@@ -43,13 +43,13 @@ class SmokeProcessor extends Processor
 
         $datasourceCounter = 1;
         for ($i = 0; $i < $lowerLoss; $i++) {
-            $datasources['http'.$datasourceCounter++] = "U";
+            $datasources[$this->datasource.$datasourceCounter++] = "U";
         }
         foreach ($times as $time) {
-            $datasources['http'.$datasourceCounter++] = $time;
+            $datasources[$this->datasource.$datasourceCounter++] = $time;
         }
         for ($i = 0; $i < $upperLoss; $i++) {
-            $datasources['http'.$datasourceCounter++] = "U";
+            $datasources[$this->datasource.$datasourceCounter++] = "U";
         }
 
         $datasources['loss'] = $failed;
