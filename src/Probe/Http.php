@@ -26,6 +26,7 @@ class Http
         $this->targets = $data['targets'];
         $this->samples = $data['args']['samples'];
         $this->waitTime = $data['args']['wait_time'];
+        $this->args = $data['args'];
     }
 
     public function execute()
@@ -34,14 +35,24 @@ class Http
 
         $result = [];
 
-        $client = new Client();
-        for($i = 0; $i < $this->samples; $i++) {
+        $options  = [
+            'timeout' => $this->waitTime / 1000,
+            'headers' => [],
+        ];
 
+        if (isset($this->args['host'])) {
+            $options['headers']['Host'] = $this->args['host'];
+        }
+        $client = new Client($options);
+
+        $path = isset($this->args['path']) ? $this->args['path'] : "/";
+
+        for($i = 0; $i < $this->samples; $i++) {
             $start = microtime(true);
             $promises = [];
             foreach ($this->targets as $target) {
                 $id = $target['id'];
-                $promises[$target['id']] = $client->getAsync('http://'.$target['ip'], [
+                $promises[$target['id']] = $client->getAsync('http://'.$target['ip'].$path, [
                     'on_stats' => function (TransferStats $stats) use ($id){
                         $this->times[$id] = $stats->getTransferTime() * 1000;
                     }
@@ -50,7 +61,7 @@ class Http
 
             $responses = Promise\settle($promises)->wait();
             foreach($responses as $id => $response) {
-                if ($response['value']->getStatusCode() == 200) {
+                if (isset($response['value']) && $response['value']->getStatusCode() == 200) {
                     $result[$id][] = $this->times[$id];
                 } else {
                     $result[$id][] = -1;
@@ -63,6 +74,8 @@ class Http
 
             if ($sleep > 0 && $i < $this->samples) {
                 usleep($sleep);
+            } elseif($sleep < 0) {
+                $this->logger->warning("HTTP probe did not have enough time");
             }
         }
 
