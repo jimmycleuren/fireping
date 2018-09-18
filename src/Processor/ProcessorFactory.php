@@ -31,7 +31,7 @@ class ProcessorFactory
             case 'ping': return new PingProcessor($this->storageFactory, $this->alertDestinationFactory, $this->logger, $this->entityManager, $this->cache);
             case 'http': return new HttpProcessor($this->storageFactory, $this->alertDestinationFactory, $this->logger, $this->entityManager, $this->cache);
             case 'traceroute': return new TracerouteProcessor($this->storageFactory, $this->alertDestinationFactory, $this->logger, $this->entityManager, $this->cache);
-            default: throw new RuntimeException("Could not create processor of type $type");
+            default: throw new \RuntimeException("Could not create processor of type $type");
         }
     }
 }

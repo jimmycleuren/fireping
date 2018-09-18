@@ -18,7 +18,7 @@ class GraphFactory
         switch($type) {
             case 'ping': return new PingGraph($this->storageFactory);
             case 'http': return new HttpGraph($this->storageFactory);
-            default: throw new RuntimeException("Could not create graph of type $type");
+            default: throw new \RuntimeException("Could not create graph of type $type");
         }
     }
 }
