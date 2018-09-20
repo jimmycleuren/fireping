@@ -6,14 +6,14 @@
  * Time: 16:10
  */
 
-namespace App\Graph;
+namespace App\Processor;
 
 use App\Entity\Device;
 use App\Entity\Probe;
 use App\Entity\SlaveGroup;
-use App\Exception\RrdException;
+use App\Exception\WrongTimestampRrdException;
 
-class PingGraph extends SmokeRrdGraph
+class HttpProcessor extends SmokeProcessor
 {
-    protected $datasource = "ping";
+    protected $datasource = "http";
 }

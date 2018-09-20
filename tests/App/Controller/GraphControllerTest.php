@@ -38,7 +38,7 @@ class GraphControllerTest extends WebTestCase
 
         $crawler = $client->request('GET', '/api/graphs/detail/1/3/1');
 
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals(500, $client->getResponse()->getStatusCode());
     }
 
     public function testDevice2Summary()
