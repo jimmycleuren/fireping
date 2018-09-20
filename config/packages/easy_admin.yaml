@@ -1,63 +1,71 @@
 easy_admin:
-        site_name: 'Fireping'
-        list:
-           max_results: 30
-           actions:
-               - { name: 'show', icon: 'search', label: '' }
-               - { name: 'edit', icon: 'pencil', label: '' }
-               - { name: 'delete', icon: 'remove', label: '' }
-        show:
-           max_results: 20
-        entities:
-           Domain:
-               class: App\Entity\Domain
-               list:
-                   fields: ['id', 'name', 'parent', 'subdomains']
-           Device:
-               class: App\Entity\Device
-               list:
-                   fields: ['id', 'name', 'ip', 'domain']
-               form:
-                   fields:
-                       - name
-                       - domain
-                       - ip
-                       - slavegroups
-                       - probes
-                       - alertRules
-                       - alertDestinations
-           Alert:
-               class: App\Entity\Alert
-               disabled_actions: ['new']
-           AlertRule:
-               class: App\Entity\AlertRule
-           AlertDestination:
-               class: App\Entity\AlertDestination
-               form:
-                   fields:
-                       - name
-                       - { property: 'type', type: 'choice', type_options: { choices: { 'http': 'http', 'mail': 'mail', 'monolog': 'monolog', 'slack': 'slack' } } }
-           Probe:
-               class: App\Entity\Probe
-               form:
-                   fields:
-                       - name
-                       - { property: 'type', type: 'choice', type_options: { choices: { 'ping': 'ping' } } }
-                       - step
-                       - samples
-                       - arguments
-                       - archives
-           ProbeArchive:
-               class: App\Entity\ProbeArchive
-           Slave:
-               class: App\Entity\Slave
-               disabled_actions: ['new']
-           SlaveGroup:
-               class: App\Entity\SlaveGroup
-           StorageNode:
-               class: App\Entity\StorageNode
-               form:
-                   fields:
-                       - 'name'
-                       - 'ip'
-                       - { property: 'status', type: 'choice', type_options: { choices: { 'active': 'active', 'inactive': 'inactive' } } }
+    site_name: 'Fireping'
+    list:
+        max_results: 30
+        actions:
+            - { name: 'show', icon: 'search', label: '' }
+            - { name: 'edit', icon: 'pencil', label: '' }
+            - { name: 'delete', icon: 'remove', label: '' }
+    show:
+        max_results: 20
+    entities:
+        Domain:
+            class: App\Entity\Domain
+            list:
+                fields: ['id', 'name', 'parent', 'subdomains']
+            form:
+                fields:
+                    - name
+                    - parent
+                    - slavegroups
+                    - probes
+                    - alertRules
+                    - alertDestinations
+        Device:
+            class: App\Entity\Device
+            list:
+                fields: ['id', 'name', 'ip', 'domain']
+            form:
+                fields:
+                    - name
+                    - domain
+                    - ip
+                    - slavegroups
+                    - probes
+                    - alertRules
+                    - alertDestinations
+        Alert:
+            class: App\Entity\Alert
+            disabled_actions: ['new']
+        AlertRule:
+            class: App\Entity\AlertRule
+        AlertDestination:
+            class: App\Entity\AlertDestination
+            form:
+                fields:
+                    - name
+                    - { property: 'type', type: 'choice', type_options: { choices: { 'http': 'http', 'mail': 'mail', 'monolog': 'monolog', 'slack': 'slack' } } }
+        Probe:
+            class: App\Entity\Probe
+            form:
+                fields:
+                    - name
+                    - { property: 'type', type: 'choice', type_options: { choices: { 'ping': 'ping', 'http': 'http' } } }
+                    - step
+                    - samples
+                    - arguments
+                    - archives
+        ProbeArchive:
+            class: App\Entity\ProbeArchive
+        Slave:
+            class: App\Entity\Slave
+            disabled_actions: ['new']
+        SlaveGroup:
+            class: App\Entity\SlaveGroup
+        StorageNode:
+            class: App\Entity\StorageNode
+            form:
+                fields:
+                    - 'name'
+                    - 'ip'
+                    - { property: 'status', type: 'choice', type_options: { choices: { 'active': 'active', 'inactive': 'inactive' } } }
