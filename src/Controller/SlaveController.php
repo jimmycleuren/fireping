@@ -11,6 +11,7 @@ namespace App\Controller;
 use App\Entity\Slave;
 use App\Exception\WrongTimestampRrdException;
 use App\Processor\ProcessorFactory;
+use App\Repository\DeviceRepository;
 use App\Repository\SlaveRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -51,7 +52,7 @@ class SlaveController extends Controller
      *
      * @Route("/api/slaves/{id}/config", methods={"GET"})
      */
-    public function configAction($id, Request $request, EntityManagerInterface $entityManager, SlaveRepository $slaveRepository)
+    public function configAction($id, Request $request, EntityManagerInterface $entityManager, SlaveRepository $slaveRepository, DeviceRepository $deviceRepository)
     {
         $this->em = $entityManager;
         $slave = $slaveRepository->findOneById($id);
@@ -67,13 +68,12 @@ class SlaveController extends Controller
 
         $config = array();
 
-        $devices = array();
+        $domains = array();
         if ($slave->getSlaveGroup()) {
             foreach ($slave->getSlaveGroup()->getDomains() as $domain) {
-                $devices = array_merge($devices, $this->getDomainDevices($domain));
+                $domains = array_merge($domains, $this->getDomains($domain));
             }
-
-            $devices = array_merge($devices, $slave->getSlaveGroup()->getDevices()->toArray());
+            $devices = $deviceRepository->findByDomain($domains);
 
             //remove devices that were selected, but the current slavegroup is not active for the device
             foreach ($devices as $key => $device) {
@@ -126,7 +126,8 @@ class SlaveController extends Controller
     /**
      * @param Slave $slave
      * @param Request $request
-     * @param ProcessorFactory $processorFactory
+     * @param PingProcessor $pingProcessor
+     * @param TracerouteProcessor $tracerouteProcessor
      * @param LoggerInterface $logger
      * @param EntityManagerInterface $entityManager
      * @return JsonResponse
@@ -213,17 +214,15 @@ class SlaveController extends Controller
         return new JsonResponse(array('code' => 200));
     }
 
-    private function getDomainDevices($domain)
+    private function getDomains($domain)
     {
-        $devices = array();
+        $domains = array($domain);
 
         foreach ($domain->getSubDomains() as $subdomain) {
-            $devices = array_merge($devices, $this->getDomainDevices($subdomain));
+            $domains = array_merge($domains, $this->getDomains($subdomain));
         }
 
-        $devices = array_merge($devices, $domain->getDevices()->toArray());
-
-        return $devices;
+        return $domains;
     }
 
     private function getDeviceProbes($device, &$config)
