@@ -8,15 +8,25 @@
 
 namespace App\ShellCommand;
 
+use Psr\Log\LoggerInterface;
+
 class CommandFactory
 {
+    private $logger;
+
     protected static $mappings = array(
         'ping' => 'App\\ShellCommand\\PingShellCommand',
         'mtr' => 'App\\ShellCommand\\MtrShellCommand',
+        'http' => 'App\\Probe\\Http',
         'traceroute' => 'App\\DependencyInjection\\Traceroute',
         'config-sync' => 'App\\ShellCommand\\GetConfigHttpWorkerCommand',
         'post-result' => 'App\\ShellCommand\\PostResultsHttpWorkerCommand',
     );
+
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
 
     public function create($command, $args)
     {
@@ -25,6 +35,6 @@ class CommandFactory
         }
 
         $class = self::$mappings[$command];
-        return new $class($args);
+        return new $class($args, $this->logger);
     }
 }

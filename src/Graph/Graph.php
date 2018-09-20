@@ -10,10 +10,13 @@ namespace App\Graph;
 
 use App\Entity\Device;
 use App\Entity\Probe;
+use App\Entity\SlaveGroup;
 
 abstract class Graph
 {
     protected $storage;
 
     abstract function getSummaryGraph(Device $device, Probe $probe);
+
+    abstract function getDetailGraph(Device $device, Probe $probe, SlaveGroup $slavegroup, $start = -3600, $end = null, $debug = false);
 }

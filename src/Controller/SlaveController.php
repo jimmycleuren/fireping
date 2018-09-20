@@ -10,13 +10,9 @@ namespace App\Controller;
 
 use App\Entity\Slave;
 use App\Exception\WrongTimestampRrdException;
-use App\Processor\PingProcessor;
-use App\Processor\TracerouteProcessor;
+use App\Processor\ProcessorFactory;
 use App\Repository\SlaveRepository;
-use App\Storage\RrdStorage;
 use Doctrine\ORM\EntityManagerInterface;
-use Nette\Neon\Entity;
-use Nette\Utils\Json;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -130,8 +126,7 @@ class SlaveController extends Controller
     /**
      * @param Slave $slave
      * @param Request $request
-     * @param PingProcessor $pingProcessor
-     * @param TracerouteProcessor $tracerouteProcessor
+     * @param ProcessorFactory $processorFactory
      * @param LoggerInterface $logger
      * @param EntityManagerInterface $entityManager
      * @return JsonResponse
@@ -141,7 +136,7 @@ class SlaveController extends Controller
      *
      * Process new results from a slave
      */
-    public function resultAction(Slave $slave, Request $request, PingProcessor $pingProcessor, TracerouteProcessor $tracerouteProcessor, LoggerInterface $logger, EntityManagerInterface $entityManager)
+    public function resultAction(Slave $slave, Request $request, ProcessorFactory $processorFactory, LoggerInterface $logger, EntityManagerInterface $entityManager)
     {
         $this->em = $entityManager;
         $this->logger = $logger;
@@ -180,14 +175,8 @@ class SlaveController extends Controller
                         continue;
                     }
                     $this->logger->debug("Updating data for probe " . $probe->getType() . " on " . $device->getName());
-                    switch ($probe->getType()) {
-                        case "ping":
-                            $pingProcessor->storeResult($device, $probe, $slave->getSlaveGroup(), $timestamp, $targetData);
-                            break;
-                        case "traceroute":
-                            $tracerouteProcessor->storeResult($device, $probe, $slave->getSlaveGroup(), $timestamp, $targetData);
-                            break;
-                    }
+                    $processor = $processorFactory->create($probe->getType());
+                    $processor->storeResult($device, $probe, $slave->getSlaveGroup(), $timestamp, $targetData);
                 }
             }
 
@@ -239,24 +228,12 @@ class SlaveController extends Controller
 
     private function getDeviceProbes($device, &$config)
     {
-        foreach($device->getProbes() as $probe) {
+        foreach($device->getActiveProbes() as $probe) {
             $config[$probe->getId()]['type'] = $probe->getType();
             $config[$probe->getId()]['step'] = $probe->getStep();
             $config[$probe->getId()]['samples'] = $probe->getSamples();
             $config[$probe->getId()]['args'] = json_decode($probe->getArguments());
             $config[$probe->getId()]['targets'][$device->getId()] = $device->getIp();
-        }
-
-        $parent = $device->getDomain();
-        while($parent != null) {
-            foreach($parent->getProbes() as $probe) {
-                $config[$probe->getId()]['type'] = $probe->getType();
-                $config[$probe->getId()]['step'] = $probe->getStep();
-                $config[$probe->getId()]['samples'] = $probe->getSamples();
-                $config[$probe->getId()]['args'] = json_decode($probe->getArguments());
-                $config[$probe->getId()]['targets'][$device->getId()] = $device->getIp();
-            }
-            $parent = $parent->getParent();
         }
     }
 }
