@@ -54,6 +54,10 @@ class SlaveController extends Controller
      */
     public function configAction($id, Request $request, EntityManagerInterface $entityManager, SlaveRepository $slaveRepository, DeviceRepository $deviceRepository)
     {
+        if (extension_loaded ('newrelic')) {
+            newrelic_name_transaction ("api_slaves_config");
+        }
+
         $this->em = $entityManager;
         $slave = $slaveRepository->findOneById($id);
 
@@ -139,6 +143,10 @@ class SlaveController extends Controller
      */
     public function resultAction(Slave $slave, Request $request, ProcessorFactory $processorFactory, LoggerInterface $logger, EntityManagerInterface $entityManager)
     {
+        if (extension_loaded ('newrelic')) {
+            newrelic_name_transaction ("api_slaves_result");
+        }
+
         $this->em = $entityManager;
         $this->logger = $logger;
 
