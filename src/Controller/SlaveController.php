@@ -130,8 +130,7 @@ class SlaveController extends Controller
     /**
      * @param Slave $slave
      * @param Request $request
-     * @param PingProcessor $pingProcessor
-     * @param TracerouteProcessor $tracerouteProcessor
+     * @param ProcessorFactory $processorFactory
      * @param LoggerInterface $logger
      * @param EntityManagerInterface $entityManager
      * @return JsonResponse
