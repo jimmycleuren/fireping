@@ -32,6 +32,7 @@ class ProbeDispatcherCommandTest extends KernelTestCase
         $probeStore         = $probeStore->reveal();
 
         $worker = $this->prophesize(Worker::class);
+        $worker->send(Argument::any(), Argument::type('int'), Argument::any())->willReturn(true);
         $worker->__toString()->willReturn("worker");
         $worker = $worker->reveal();
         $logger = $this->prophesize(LoggerInterface::class)->reveal();
