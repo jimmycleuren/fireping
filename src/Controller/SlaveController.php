@@ -8,11 +8,13 @@
 
 namespace App\Controller;
 
+use App\Entity\Device;
 use App\Entity\Slave;
 use App\Exception\WrongTimestampRrdException;
 use App\Processor\ProcessorFactory;
 use App\Repository\DeviceRepository;
 use App\Repository\SlaveRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -82,7 +84,8 @@ class SlaveController extends Controller
             //remove devices that were selected, but the current slavegroup is not active for the device
             foreach ($devices as $key => $device) {
                 $found = false;
-                foreach ($device->getActiveSlaveGroups() as $slavegroup) {
+                $slavegroups = $this->getActiveSlaveGroups($device);
+                foreach ($slavegroups as $slavegroup) {
                     if ($slavegroup->getId() == $slave->getSlaveGroup()->getId()) {
                         $found = true;
                         break;
@@ -234,12 +237,55 @@ class SlaveController extends Controller
 
     private function getDeviceProbes($device, &$config)
     {
-        foreach($device->getActiveProbes() as $probe) {
+        $probes = $this->getActiveProbes($device);
+        foreach($probes as $probe) {
             $config[$probe->getId()]['type'] = $probe->getType();
             $config[$probe->getId()]['step'] = $probe->getStep();
             $config[$probe->getId()]['samples'] = $probe->getSamples();
             $config[$probe->getId()]['args'] = json_decode($probe->getArguments());
             $config[$probe->getId()]['targets'][$device->getId()] = $device->getIp();
         }
+    }
+
+    private function getActiveSlaveGroups(Device $device)
+    {
+        if ($device->getSlaveGroups()->count() > 0) {
+            return $device->getSlaveGroups();
+        } else {
+            $parent = $device->getDomain();
+            while ($parent != null) {
+                if (isset($this->slavegroupCache[$parent->getId()])) {
+                    return $this->slavegroupCache[$parent->getId()];
+                }
+                elseif ($parent->getSlaveGroups()->count() > 0) {
+                    $this->slavegroupCache[$device->getDomain()->getId()] = $parent->getSlaveGroups();
+                    return $parent->getSlaveGroups();
+                }
+                $parent = $parent->getParent();
+            }
+        }
+
+        return new ArrayCollection();
+    }
+
+    private function getActiveProbes(Device $device)
+    {
+        if ($device->getProbes()->count() > 0) {
+            return $device->getProbes();
+        } else {
+            $parent = $device->getDomain();
+            while ($parent != null) {
+                if (isset($this->probeCache[$parent->getId()])) {
+                    return $this->probeCache[$parent->getId()];
+                }
+                elseif ($parent->getProbes()->count() > 0) {
+                    $this->probeCache[$device->getDomain()->getId()] = $parent->getProbes();
+                    return $parent->getProbes();
+                }
+                $parent = $parent->getParent();
+            }
+        }
+
+        return new ArrayCollection();
     }
 }
