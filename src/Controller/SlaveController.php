@@ -8,15 +8,14 @@
 
 namespace App\Controller;
 
+use App\Entity\Device;
 use App\Entity\Slave;
 use App\Exception\WrongTimestampRrdException;
-use App\Processor\PingProcessor;
-use App\Processor\TracerouteProcessor;
+use App\Processor\ProcessorFactory;
+use App\Repository\DeviceRepository;
 use App\Repository\SlaveRepository;
-use App\Storage\RrdStorage;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
-use Nette\Neon\Entity;
-use Nette\Utils\Json;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -28,6 +27,9 @@ class SlaveController extends Controller
 {
     private $em = null;
     private $logger = null;
+
+    private $probeCache = [];
+    private $slavegroupCache = [];
 
     /**
      * Lists all slave entities.
@@ -55,8 +57,12 @@ class SlaveController extends Controller
      *
      * @Route("/api/slaves/{id}/config", methods={"GET"})
      */
-    public function configAction($id, Request $request, EntityManagerInterface $entityManager, SlaveRepository $slaveRepository)
+    public function configAction($id, Request $request, EntityManagerInterface $entityManager, SlaveRepository $slaveRepository, DeviceRepository $deviceRepository)
     {
+        if (extension_loaded ('newrelic')) {
+            newrelic_name_transaction ("api_slaves_config");
+        }
+
         $this->em = $entityManager;
         $slave = $slaveRepository->findOneById($id);
 
@@ -71,18 +77,18 @@ class SlaveController extends Controller
 
         $config = array();
 
-        $devices = array();
+        $domains = array();
         if ($slave->getSlaveGroup()) {
             foreach ($slave->getSlaveGroup()->getDomains() as $domain) {
-                $devices = array_merge($devices, $this->getDomainDevices($domain));
+                $domains = array_merge($domains, $this->getDomains($domain));
             }
-
-            $devices = array_merge($devices, $slave->getSlaveGroup()->getDevices()->toArray());
+            $devices = $deviceRepository->findByDomain($domains);
 
             //remove devices that were selected, but the current slavegroup is not active for the device
             foreach ($devices as $key => $device) {
                 $found = false;
-                foreach ($device->getActiveSlaveGroups() as $slavegroup) {
+                $slavegroups = $this->getActiveSlaveGroups($device);
+                foreach ($slavegroups as $slavegroup) {
                     if ($slavegroup->getId() == $slave->getSlaveGroup()->getId()) {
                         $found = true;
                         break;
@@ -130,8 +136,7 @@ class SlaveController extends Controller
     /**
      * @param Slave $slave
      * @param Request $request
-     * @param PingProcessor $pingProcessor
-     * @param TracerouteProcessor $tracerouteProcessor
+     * @param ProcessorFactory $processorFactory
      * @param LoggerInterface $logger
      * @param EntityManagerInterface $entityManager
      * @return JsonResponse
@@ -141,8 +146,12 @@ class SlaveController extends Controller
      *
      * Process new results from a slave
      */
-    public function resultAction(Slave $slave, Request $request, PingProcessor $pingProcessor, TracerouteProcessor $tracerouteProcessor, LoggerInterface $logger, EntityManagerInterface $entityManager)
+    public function resultAction(Slave $slave, Request $request, ProcessorFactory $processorFactory, LoggerInterface $logger, EntityManagerInterface $entityManager)
     {
+        if (extension_loaded ('newrelic')) {
+            newrelic_name_transaction ("api_slaves_result");
+        }
+
         $this->em = $entityManager;
         $this->logger = $logger;
 
@@ -180,14 +189,8 @@ class SlaveController extends Controller
                         continue;
                     }
                     $this->logger->debug("Updating data for probe " . $probe->getType() . " on " . $device->getName());
-                    switch ($probe->getType()) {
-                        case "ping":
-                            $pingProcessor->storeResult($device, $probe, $slave->getSlaveGroup(), $timestamp, $targetData);
-                            break;
-                        case "traceroute":
-                            $tracerouteProcessor->storeResult($device, $probe, $slave->getSlaveGroup(), $timestamp, $targetData);
-                            break;
-                    }
+                    $processor = $processorFactory->create($probe->getType());
+                    $processor->storeResult($device, $probe, $slave->getSlaveGroup(), $timestamp, $targetData);
                 }
             }
 
@@ -224,39 +227,68 @@ class SlaveController extends Controller
         return new JsonResponse(array('code' => 200));
     }
 
-    private function getDomainDevices($domain)
+    private function getDomains($domain)
     {
-        $devices = array();
+        $domains = array($domain);
 
         foreach ($domain->getSubDomains() as $subdomain) {
-            $devices = array_merge($devices, $this->getDomainDevices($subdomain));
+            $domains = array_merge($domains, $this->getDomains($subdomain));
         }
 
-        $devices = array_merge($devices, $domain->getDevices()->toArray());
-
-        return $devices;
+        return $domains;
     }
 
     private function getDeviceProbes($device, &$config)
     {
-        foreach($device->getProbes() as $probe) {
+        $probes = $this->getActiveProbes($device);
+        foreach($probes as $probe) {
             $config[$probe->getId()]['type'] = $probe->getType();
             $config[$probe->getId()]['step'] = $probe->getStep();
             $config[$probe->getId()]['samples'] = $probe->getSamples();
             $config[$probe->getId()]['args'] = json_decode($probe->getArguments());
             $config[$probe->getId()]['targets'][$device->getId()] = $device->getIp();
         }
+    }
 
-        $parent = $device->getDomain();
-        while($parent != null) {
-            foreach($parent->getProbes() as $probe) {
-                $config[$probe->getId()]['type'] = $probe->getType();
-                $config[$probe->getId()]['step'] = $probe->getStep();
-                $config[$probe->getId()]['samples'] = $probe->getSamples();
-                $config[$probe->getId()]['args'] = json_decode($probe->getArguments());
-                $config[$probe->getId()]['targets'][$device->getId()] = $device->getIp();
+    private function getActiveSlaveGroups(Device $device)
+    {
+        if ($device->getSlaveGroups()->count() > 0) {
+            return $device->getSlaveGroups();
+        } else {
+            $parent = $device->getDomain();
+            while ($parent != null) {
+                if (isset($this->slavegroupCache[$parent->getId()])) {
+                    return $this->slavegroupCache[$parent->getId()];
+                }
+                elseif ($parent->getSlaveGroups()->count() > 0) {
+                    $this->slavegroupCache[$device->getDomain()->getId()] = $parent->getSlaveGroups();
+                    return $parent->getSlaveGroups();
+                }
+                $parent = $parent->getParent();
             }
-            $parent = $parent->getParent();
         }
+
+        return new ArrayCollection();
+    }
+
+    private function getActiveProbes(Device $device)
+    {
+        if ($device->getProbes()->count() > 0) {
+            return $device->getProbes();
+        } else {
+            $parent = $device->getDomain();
+            while ($parent != null) {
+                if (isset($this->probeCache[$parent->getId()])) {
+                    return $this->probeCache[$parent->getId()];
+                }
+                elseif ($parent->getProbes()->count() > 0) {
+                    $this->probeCache[$device->getDomain()->getId()] = $parent->getProbes();
+                    return $parent->getProbes();
+                }
+                $parent = $parent->getParent();
+            }
+        }
+
+        return new ArrayCollection();
     }
 }

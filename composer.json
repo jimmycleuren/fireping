@@ -24,6 +24,7 @@
         "easycorp/easyadmin-bundle": "^1.17",
         "eightpoints/guzzle-bundle": "^7.0",
         "flexihash/flexihash": "^2.0",
+        "guzzlehttp/guzzle": "^6.3",
         "predis/predis": "^1.1",
         "react/event-loop": "^1.0",
         "react/socket": "^1.0",
