@@ -1,33 +1,32 @@
 {% extends "base.html.twig" %}
 {% trans_default_domain 'FOSUserBundle' %}
 {% block fos_user_content %}
-    <div class="row main">
-        <div class="main-login main-center">
-            <form action="{{ path('fos_user_registration_register') }}" method="POST">
-                <div class="login-container">
-                    <h1>Register</h1><br>
-                    <form>
-                        <div class="form-group" id="fos_user_registration_form">
-                            {{ form_widget(form.email, { 'attr': {'class': 'form-control', 'placeholder': 'form.email'|trans } }) }}
-                            {{ form_errors(form.email) }}
+    <div class="main-login main-center">
+        <form action="{{ path('fos_user_registration_register') }}" method="POST">
+            <div class="login-container">
+                <h1>Register</h1><br>
+                <form>
+                    <div class="form-group" id="fos_user_registration_form">
+                        {{ form_widget(form.email, { 'attr': {'class': 'form-control', 'placeholder': 'form.email'|trans } }) }}
+                        {{ form_errors(form.email) }}
 
-                            {{ form_widget(form.username, { 'attr': {'class': 'form-control', 'placeholder': 'form.username'|trans } }) }}
-                            {{ form_errors(form.username) }}
+                        {{ form_widget(form.username, { 'attr': {'class': 'form-control', 'placeholder': 'form.username'|trans } }) }}
+                        {{ form_errors(form.username) }}
 
-                            {{ form_widget(form.plainPassword.first, { 'attr': {'class': 'form-control', 'placeholder': 'form.password'|trans } }) }}
-                            {{ form_errors(form.plainPassword.first) }}
+                        {{ form_widget(form.plainPassword.first, { 'attr': {'class': 'form-control', 'placeholder': 'form.password'|trans } }) }}
+                        {{ form_errors(form.plainPassword.first) }}
 
-                            {{ form_widget(form.plainPassword.second, { 'attr': {'class': 'form-control', 'placeholder': 'form.password_confirmation'|trans } }) }}
-                            {{ form_errors(form.plainPassword.second) }}
+                        {{ form_widget(form.plainPassword.second, { 'attr': {'class': 'form-control', 'placeholder': 'form.password_confirmation'|trans } }) }}
+                        {{ form_errors(form.plainPassword.second) }}
 
-                            {{ form_rest(form) }}
-                            <input class="login login-submit" type="submit" value="{{ 'registration.submit'|trans }}" />
-
-                        </div>
-                        </div>
-                    </form>
+                        {{ form_rest(form) }}
+                        <input class="login login-submit" type="submit" value="{{ 'registration.submit'|trans }}"/>
+                    </div>
+                </form>
+                <div class="login-help">
+                    <a href="{{ path('fos_user_security_login') }}">Login</a>
                 </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
 {% endblock fos_user_content %}
