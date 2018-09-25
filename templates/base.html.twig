@@ -170,6 +170,7 @@
                         <li {% if active_menu is defined and active_menu == "alerts" %}class="active"{% endif %}><a href="{{ path('app_alert_index') }}">Alerts</a></li>
                         <li {% if active_menu is defined and active_menu == "storagenodes" %}class="active"{% endif %}><a href="{{ path('storagenode') }}">Storage nodes</a></li>
                         <li {% if active_menu is defined and active_menu == "admin" %}class="active"{% endif %}><a href="{{ path('admin') }}">Admin</a></li>
+                        {% if is_granted('IS_AUTHENTICATED_FULLY') %}<li><a href="/logout">Logout</a></li>{% endif %}
                     </ul>
                     <div style="float:right; margin:7px 0px;">
                         <form class="form-inline" action="{{ path('app_search_index') }}">
@@ -184,8 +185,6 @@
 
         <div class="container-fluid">
             {% block body %}{% endblock %}
-        </div>
-        <div class="container">
             {% block content %}
                 {% block fos_user_content %}{% endblock %}
             {% endblock %}
