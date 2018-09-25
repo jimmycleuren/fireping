@@ -69,3 +69,5 @@ easy_admin:
                     - 'name'
                     - 'ip'
                     - { property: 'status', type: 'choice', type_options: { choices: { 'active': 'active', 'inactive': 'inactive' } } }
+        User:
+            class: App\Entity\User

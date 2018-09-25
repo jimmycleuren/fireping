@@ -1,203 +1,221 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8" />
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
-        <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap/dist/css/bootstrap.min.css') }}">
-        <link rel="stylesheet" href="{{ asset('css/rrdGraphCtrl.css') }}" />
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
-        <style>
+<head>
+    <meta charset="UTF-8"/>
+    <title>{% block title %}Welcome!{% endblock %}</title>
+    {% block stylesheets %}{% endblock %}
+    <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap/dist/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/rrdGraphCtrl.css') }}"/>
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}"/>
+    <style>
 
-            /*
-             * Main content
-             */
+        /*
+         * Main content
+         */
 
+        .main {
+            padding: 20px;
+        }
+
+        @media (min-width: 768px) {
             .main {
-                padding: 20px;
+                padding-right: 40px;
+                padding-left: 40px;
             }
-            @media (min-width: 768px) {
-                .main {
-                    padding-right: 40px;
-                    padding-left: 40px;
-                }
-            }
-            .main .page-header {
-                margin-top: 0;
-            }
+        }
 
-            /*
-             * Sidebar
-             */
+        .main .page-header {
+            margin-top: 0;
+        }
 
-            /* Hide for mobile, show later */
+        /*
+         * Sidebar
+         */
+
+        /* Hide for mobile, show later */
+        .sidebar {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
             .sidebar {
-                display: none;
-            }
-            @media (min-width: 768px) {
-                .sidebar {
-                    position: fixed;
-                    top: 51px;
-                    bottom: 0;
-                    left: 0;
-                    z-index: 1000;
-                    display: block;
-                    padding: 20px;
-                    overflow-x: hidden;
-                    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
-                    background-color: #f5f5f5;
-                    border-right: 1px solid #eee;
-                }
-            }
-
-            /* Sidebar navigation */
-            .nav-sidebar {
-                margin-right: -21px; /* 20px padding + 1px border */
-                margin-bottom: 20px;
-                margin-left: -20px;
-            }
-            .nav-sidebar > li > a {
-                padding: 0px 20px;
-            }
-            .nav-sidebar > .active > a,
-            .nav-sidebar > .active > a:hover,
-            .nav-sidebar > .active > a:focus {
-                color: #fff;
-                background-color: #428bca;
-            }
-
-            /****** LOGIN ******/
-            .login-container {
-                padding: 30px;
-                max-width: 350px;
-                width: 100% !important;
-                background-color: #F7F7F7;
-                margin: 100px auto;
-                border-radius: 2px;
-                box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-                overflow: hidden;
-                font-family: roboto;
-            }
-
-            .login-container h1 {
-                text-align: center;
-                font-size: 1.8em;
-                font-family: roboto;
-            }
-
-            .login-container input[type=submit] {
-                width: 100%;
+                position: fixed;
+                top: 51px;
+                bottom: 0;
+                left: 0;
+                z-index: 1000;
                 display: block;
-                margin-bottom: 10px;
-                position: relative;
+                padding: 20px;
+                overflow-x: hidden;
+                overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+                background-color: #f5f5f5;
+                border-right: 1px solid #eee;
             }
+        }
 
-            .login-container input[type=text], input[type=password] {
-                height: 44px;
-                font-size: 16px;
-                width: 100%;
-                margin-bottom: 10px;
-                -webkit-appearance: none;
-                background: #fff;
-                border: 1px solid #d9d9d9;
-                border-top: 1px solid #c0c0c0;
-                /* border-radius: 2px; */
-                padding: 0 8px;
-                box-sizing: border-box;
-                -moz-box-sizing: border-box;
-            }
+        /* Sidebar navigation */
+        .nav-sidebar {
+            margin-right: -21px; /* 20px padding + 1px border */
+            margin-bottom: 20px;
+            margin-left: -20px;
+        }
 
-            .login-container input[type=text]:hover, input[type=password]:hover {
-                border: 1px solid #b9b9b9;
-                border-top: 1px solid #a0a0a0;
-                -moz-box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
-                -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
-                box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
-            }
+        .nav-sidebar > li > a {
+            padding: 0px 20px;
+        }
 
-            .login-submit {
-                /* border: 1px solid #3079ed; */
-                border: 0px;
-                color: #fff;
-                text-shadow: 0 1px rgba(0,0,0,0.1);
-                background-color: #4d90fe;
-                padding: 17px 0px;
-                font-family: roboto;
-                font-size: 14px;
-                /* background-image: -webkit-gradient(linear, 0 0, 0 100%,   from(#4d90fe), to(#4787ed)); */
-            }
+        .nav-sidebar > .active > a,
+        .nav-sidebar > .active > a:hover,
+        .nav-sidebar > .active > a:focus {
+            color: #fff;
+            background-color: #428bca;
+        }
 
-            .login-submit:hover {
-                /* border: 1px solid #2f5bb7; */
-                border: 0px;
-                text-shadow: 0 1px rgba(0,0,0,0.3);
-                background-color: #357ae8;
-                /* background-image: -webkit-gradient(linear, 0 0, 0 100%,   from(#4d90fe), to(#357ae8)); */
-            }
+        /****** LOGIN ******/
+        .login-container {
+            padding: 30px;
+            max-width: 350px;
+            width: 100% !important;
+            background-color: #F7F7F7;
+            margin: 100px auto;
+            border-radius: 2px;
+            box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            font-family: roboto;
+        }
 
-            .login-container a {
-                text-decoration: none;
-                color: #666;
-                font-weight: 400;
-                text-align: center;
-                display: inline-block;
-                opacity: 0.6;
-                transition: opacity ease 0.5s;
-            }
-            .login-help{
-                font-size: 12px;
-            }
+        .login-container h1 {
+            text-align: center;
+            font-size: 1.8em;
+            font-family: roboto;
+        }
 
-            #fos_user_registration_form input {
-                margin-bottom: 3%;
-            }
+        .login-container input[type=submit] {
+            width: 100%;
+            display: block;
+            margin-bottom: 10px;
+            position: relative;
+        }
 
-        </style>
-    </head>
-    <body style="padding-top: 50px;">
-        <nav class="navbar navbar-inverse navbar-fixed-top">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="{{ path('home') }}">Fireping</a>
-                </div>
-                <div id="navbar" class="collapse navbar-collapse">
-                    <ul class="nav navbar-nav">
-                        <li {% if active_menu is defined and active_menu == "slave" %}class="active"{% endif %}><a href="{{ path('slave_index') }}">Slaves</a></li>
-                        <li {% if active_menu is defined and active_menu == "alerts" %}class="active"{% endif %}><a href="{{ path('app_alert_index') }}">Alerts</a></li>
-                        <li {% if active_menu is defined and active_menu == "storagenodes" %}class="active"{% endif %}><a href="{{ path('storagenode') }}">Storage nodes</a></li>
-                        <li {% if active_menu is defined and active_menu == "admin" %}class="active"{% endif %}><a href="{{ path('admin') }}">Admin</a></li>
-                        {% if is_granted('IS_AUTHENTICATED_FULLY') %}<li><a href="/logout">Logout</a></li>{% endif %}
-                    </ul>
-                    <div style="float:right; margin:7px 0px;">
-                        <form class="form-inline" action="{{ path('app_search_index') }}">
-                            <input class="form-control" type="search" placeholder="Search" aria-label="Search" name="q">
-                            <a class="label {% if app.session.get('debug') %}label-success{% else %}label-danger{% endif %}" href="{{ path('debug') }}">Debug mode</a>
-                        </form>
+        .login-container input[type=text], input[type=password] {
+            height: 44px;
+            font-size: 16px;
+            width: 100%;
+            margin-bottom: 10px;
+            -webkit-appearance: none;
+            background: #fff;
+            border: 1px solid #d9d9d9;
+            border-top: 1px solid #c0c0c0;
+            /* border-radius: 2px; */
+            padding: 0 8px;
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+        }
 
-                    </div>
-                </div><!--/.nav-collapse -->
+        .login-container input[type=text]:hover, input[type=password]:hover {
+            border: 1px solid #b9b9b9;
+            border-top: 1px solid #a0a0a0;
+            -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+            -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-submit {
+            /* border: 1px solid #3079ed; */
+            border: 0px;
+            color: #fff;
+            text-shadow: 0 1px rgba(0, 0, 0, 0.1);
+            background-color: #4d90fe;
+            padding: 17px 0px;
+            font-family: roboto;
+            font-size: 14px;
+            /* background-image: -webkit-gradient(linear, 0 0, 0 100%,   from(#4d90fe), to(#4787ed)); */
+        }
+
+        .login-submit:hover {
+            /* border: 1px solid #2f5bb7; */
+            border: 0px;
+            text-shadow: 0 1px rgba(0, 0, 0, 0.3);
+            background-color: #357ae8;
+            /* background-image: -webkit-gradient(linear, 0 0, 0 100%,   from(#4d90fe), to(#357ae8)); */
+        }
+
+        .login-container a {
+            text-decoration: none;
+            color: #666;
+            font-weight: 400;
+            text-align: center;
+            display: inline-block;
+            opacity: 0.6;
+            transition: opacity ease 0.5s;
+        }
+
+        .login-help {
+            font-size: 12px;
+        }
+
+        #fos_user_registration_form input {
+            margin-bottom: 3%;
+        }
+
+    </style>
+</head>
+<body style="padding-top: 50px;">
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ path('home') }}">Fireping</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li {% if active_menu is defined and active_menu == "slave" %}class="active"{% endif %}><a
+                            href="{{ path('slave_index') }}">Slaves</a></li>
+                <li {% if active_menu is defined and active_menu == "alerts" %}class="active"{% endif %}><a
+                            href="{{ path('app_alert_index') }}">Alerts</a></li>
+                <li {% if active_menu is defined and active_menu == "storagenodes" %}class="active"{% endif %}><a
+                            href="{{ path('storagenode') }}">Storage nodes</a></li>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <li {% if active_menu is defined and active_menu == "admin" %}class="active"{% endif %}><a
+                            href="{{ path('admin') }}">Admin</a></li>{% endif %}
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                <li><a href="{{ path('fos_user_security_logout') }}">Logout</a></li>
+                {% else %}
+                <li> <a href="{{ path('fos_user_security_login') }}">Login</a>
+                        {% endif %}
+
+            </ul>
+            <div style="float:right; margin:7px 0px;">
+                <form class="form-inline" action="{{ path('app_search_index') }}">
+                    <input class="form-control" type="search" placeholder="Search" aria-label="Search" name="q">
+                    <a class="label {% if app.session.get('debug') %}label-success{% else %}label-danger{% endif %}"
+                       href="{{ path('debug') }}">Debug mode</a>
+                </form>
+
             </div>
-        </nav>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
 
-        <div class="container-fluid">
-            {% block body %}{% endblock %}
-        </div>
-        <div class="container">
-            {% block content %}
-                {% block fos_user_content %}{% endblock %}
-            {% endblock %}
-        </div>
-        <script src="{{ asset('js/q-5.0.2.min.js') }}"></script>
-        <script src="{{ asset('js/rrdGraphPng.js') }}"></script>
-        <script src="{{ asset('js/rrdGraphCtrl.js') }}"></script>
-        <script src="{{ asset('assets/vendor/jquery/dist/jquery.js') }}"></script>
-        <script src="{{ asset('assets/vendor/bootstrap/dist/js/bootstrap.js') }}"></script>
-        {% block javascripts %}{% endblock %}
-    </body>
+<div class="container-fluid">
+    {% block body %}{% endblock %}
+</div>
+<div class="container">
+    {% block content %}
+        {% block fos_user_content %}{% endblock %}
+    {% endblock %}
+</div>
+<script src="{{ asset('js/q-5.0.2.min.js') }}"></script>
+<script src="{{ asset('js/rrdGraphPng.js') }}"></script>
+<script src="{{ asset('js/rrdGraphCtrl.js') }}"></script>
+<script src="{{ asset('assets/vendor/jquery/dist/jquery.js') }}"></script>
+<script src="{{ asset('assets/vendor/bootstrap/dist/js/bootstrap.js') }}"></script>
+{% block javascripts %}{% endblock %}
+</body>
 </html>
