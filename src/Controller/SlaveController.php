@@ -28,6 +28,9 @@ class SlaveController extends Controller
     private $em = null;
     private $logger = null;
 
+    private $probeCache = [];
+    private $slavegroupCache = [];
+
     /**
      * Lists all slave entities.
      *
