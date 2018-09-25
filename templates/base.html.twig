@@ -145,10 +145,9 @@
                 transition: opacity ease 0.5s;
             }
 
-            .login-help{
-                font-size: 12px;
+            #fos_user_registration_form input {
+                margin-bottom: 3%;
             }
-
 
         </style>
     </head>
@@ -185,6 +184,8 @@
 
         <div class="container-fluid">
             {% block body %}{% endblock %}
+        </div>
+        <div class="container">
             {% block content %}
                 {% block fos_user_content %}{% endblock %}
             {% endblock %}
