@@ -3,8 +3,8 @@ security:
     encoders:
         FOS\UserBundle\Model\UserInterface: bcrypt
     role_hierarchy:
-        ROLE_ADMIN:
-        ROLE_API:        [ROLE_ADMIN]
+        ROLE_ADMIN:      [ROLE_API]
+        ROLE_API:
 
     providers:
         fos_userbundle:

@@ -8,19 +8,17 @@
 
 namespace Tests\App\Api;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Tests\App\Api\AbstractApiTest;
 
-class DeviceApiTest extends WebTestCase
+class DeviceApiTest extends AbstractApiTest
 {
     public function testCollection()
     {
-        $client = static::createClient();
-
-        $crawler = $client->request('GET', '/api/devices.json', array(), array(), array(
+        $crawler = $this->client->request('GET', '/api/devices.json', array(), array(), array(
             "HTTP_Accept" => "application/json"
         ));
 
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json; charset=utf-8'));
         $this->assertJson($response->getContent());
@@ -28,13 +26,11 @@ class DeviceApiTest extends WebTestCase
 
     public function testStatus()
     {
-        $client = static::createClient();
-
-        $crawler = $client->request('GET', '/api/devices/1/status.json', array(), array(), array(
+        $crawler = $this->client->request('GET', '/api/devices/1/status.json', array(), array(), array(
             "HTTP_Accept" => "application/json"
         ));
 
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
@@ -44,13 +40,11 @@ class DeviceApiTest extends WebTestCase
 
     public function testStatusNoProbe()
     {
-        $client = static::createClient();
-
-        $crawler = $client->request('GET', '/api/devices/3/status.json', array(), array(), array(
+        $crawler = $this->client->request('GET', '/api/devices/3/status.json', array(), array(), array(
             "HTTP_Accept" => "application/json"
         ));
 
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
         $this->assertEquals(500, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());

@@ -8,19 +8,17 @@
 
 namespace Tests\App\Api;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Tests\App\Api\AbstractApiTest;
 
-class AlertRuleApiTest extends WebTestCase
+class AlertRuleApiTest extends AbstractApiTest
 {
     public function testCollection()
     {
-        $client = static::createClient();
-
-        $crawler = $client->request('GET', '/api/alert_rules.json', array(), array(), array(
+        $crawler = $this->client->request('GET', '/api/alert_rules.json', array(), array(), array(
             "HTTP_Accept" => "application/json"
         ));
 
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json; charset=utf-8'));
         $this->assertJson($response->getContent());
@@ -28,9 +26,8 @@ class AlertRuleApiTest extends WebTestCase
 
     public function testAddRemove()
     {
-        $client = static::createClient();
 
-        $crawler = $client->request(
+        $crawler = $this->client->request(
             'POST',
             '/api/alert_rules.json',
             array(),
@@ -49,19 +46,19 @@ class AlertRuleApiTest extends WebTestCase
             ))
         );
 
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
         $this->assertEquals(201, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json; charset=utf-8'));
         $this->assertJson($response->getContent());
 
         $id = json_decode($response->getContent())->id;
 
-        $crawler = $client->request(
+        $crawler = $this->client->request(
             'DELETE',
             "/api/alert_rules/$id.json"
         );
 
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
         $this->assertEquals(204, $response->getStatusCode());
     }
 }
