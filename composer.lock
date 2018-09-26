@@ -9109,6 +9109,7 @@
     "prefer-lowest": false,
     "platform": {
         "php": "^7.2",
+        "ext-json": "*",
         "ext-rrd": "*"
     },
     "platform-dev": []

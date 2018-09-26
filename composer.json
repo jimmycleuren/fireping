@@ -14,6 +14,7 @@
     },
     "require": {
         "php": "^7.2",
+        "ext-json": "*",
         "ext-rrd": "*",
         "api-platform/api-pack": "^1.0",
         "doctrine/doctrine-bundle": "^1.6",
