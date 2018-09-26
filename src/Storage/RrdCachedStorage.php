@@ -104,8 +104,8 @@ class RrdCachedStorage extends RrdStorage
         $start = $timestamp - 1;
 
         $options = array(
-            "--start", $start,
-            "--step", $probe->getStep()
+            "-b", $start,
+            "-s", $probe->getStep()
         );
         foreach ($data as $key => $value) {
             $options[] = sprintf(
@@ -138,12 +138,10 @@ class RrdCachedStorage extends RrdStorage
             );
         }
 
-        $process = new Process("rrdtool create $filename -d ".$daemon . " ".implode(" ", $options));
-        $process->run();
-        $error = $process->getErrorOutput();
-
-        if ($error) {
-            throw new RrdException(trim($error));
+        $this->send("CREATE $filename ".implode(" ", $options), $daemon);
+        $message = $this->read($daemon);
+        if (!stristr($message, "0 RRD created OK")) {
+            throw new RrdException(trim($message));
         }
     }
 
