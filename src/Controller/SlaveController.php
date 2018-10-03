@@ -83,6 +83,7 @@ class SlaveController extends Controller
                 $domains = array_merge($domains, $this->getDomains($domain));
             }
             $devices = $deviceRepository->findByDomain($domains);
+            $devices = array_merge($devices, $slave->getSlaveGroup()->getDevices()->toArray());
 
             //remove devices that were selected, but the current slavegroup is not active for the device
             foreach ($devices as $key => $device) {
