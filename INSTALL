@@ -84,9 +84,10 @@ php bin/console doctrine:migrations:migrate
 
 Docker slave
 -------------
-sudo docker run \
+sudo docker run -d \
 -e SLAVE_NAME='myslave' \
 -e SLAVE_URL='https://my.master.com' \
 -v /tmp/logs:/app/var/logs \
+--restart=unless-stopped \
 --name fireping \
 jimmycleuren/fireping
