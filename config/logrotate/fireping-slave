@@ -1,8 +1,9 @@
-/opt/fireping/var/logs/*.log {
+/opt/fireping/var/log/*.log {
     daily
     missingok
     rotate 7
     compress
     delaycompress
     notifempty
+    copytruncate
 }
