@@ -13,6 +13,11 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        api:
+            pattern: ^/api/
+            http_basic:
+                realm: "API"
+                provider: fos_userbundle
         main:
             pattern: ^/
             form_login:
@@ -20,6 +25,7 @@ security:
                   csrf_token_generator: security.csrf.token_manager
             logout:       true
             anonymous:    true
+
 
             # activate different ways to authenticate
 
