@@ -18,13 +18,10 @@ abstract class AbstractApiTest extends WebTestCase
 
     protected function createAuthorizedClient()
     {
-        $client = static::createClient(array(), array(
+        return static::createClient(array(), array(
             'PHP_AUTH_USER' => 'test',
             'PHP_AUTH_PW'   => 'test123',
         ));
-        return $client;
-
-
     }
 
 }
