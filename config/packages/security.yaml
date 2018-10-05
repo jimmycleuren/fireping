@@ -16,7 +16,7 @@ security:
         api:
             pattern: ^/api/
             http_basic:
-                realm: "API"
+                realm: "API Login"
                 provider: fos_userbundle
         main:
             pattern: ^/
