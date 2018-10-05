@@ -18,22 +18,13 @@ abstract class AbstractApiTest extends WebTestCase
 
     protected function createAuthorizedClient()
     {
-        $client = static::createClient();
-        $container = $client->getContainer();
-        $session = $container->get('session');
-        $firewall= 'main';
-        $userManager = static::$kernel->getContainer()->get('fos_user.user_manager');
-
-        $user = $userManager->findUserBy(array('username' => 'test'));
-        $token = new UsernamePasswordToken($user, $user->getPassword(), $firewall, $user->getRoles());
-
-        // save the login token into the session and put it in a cookie
-        $session->set('_security_'.$firewall, serialize($token));
-        $session->save();
-        $cookie = new Cookie($session->getName(), $session->getId());
-        $client->getCookieJar()->set($cookie);
-
+        $client = static::createClient(array(), array(
+            'PHP_AUTH_USER' => 'test',
+            'PHP_AUTH_PW'   => 'test123',
+        ));
         return $client;
+
+
     }
 
 }
