@@ -89,6 +89,8 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
 
     private $devicesPerWorker = 250;
 
+    private $randomFactor = 0;
+
     /**
      * ProbeDispatcherCommand constructor.
      *
@@ -157,6 +159,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
     private function setUp(InputInterface $input)
     {
         $this->maxRuntime = $input->getOption('max-runtime');
+        $this->randomFactor = random_int(0, 119);
 
         foreach (['SLAVE_NAME', 'SLAVE_URL'] as $item) {
             if (!getenv($item)) {
@@ -195,13 +198,14 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
         $this->logger->info('Fireping Dispatcher Started.');
         $this->logger->info('Slave name is ' . getenv('SLAVE_NAME'));
         $this->logger->info('Slave url is ' . getenv('SLAVE_URL'));
+        $this->logger->info('Random factor is ' . $this->randomFactor);
 
         $this->loop = Factory::create();
 
         $this->loop->addPeriodicTimer(
             1,
             function () {
-                $toSync = time() % 120 === 0;
+                $toSync = time() % 120 === $this->randomFactor;
 
                 if ($toSync) {
                     $this->logger->info('Starting config sync.');
