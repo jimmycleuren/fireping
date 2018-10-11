@@ -55,6 +55,14 @@ services:
     App\Storage\RrdCachedStorage:
         arguments:  ['%storage.path%']
 
+    App\Storage\StorageFactory:
+        arguments:  ['@App\Storage\RrdStorage', '@App\Storage\RrdCachedStorage', '@App\Storage\RrdDistributedStorage']
+        public: true
+
+    App\Services\CleanupService:
+        arguments: ['@doctrine.orm.default_entity_manager','@monolog.logger', '@parameter_bag']
+        public: true
+
     probe_store:
         class:      App\DependencyInjection\ProbeStore
         arguments:  ["@service_container"]

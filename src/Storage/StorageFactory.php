@@ -8,7 +8,6 @@
 
 namespace App\Storage;
 
-use Psr\Container\ContainerInterface;
 
 class StorageFactory
 {
