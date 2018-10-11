@@ -8,55 +8,46 @@
 
 namespace Tests\App\Controller;
 
+use App\Tests\App\Api\AbstractApiTest;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class GraphControllerTest extends WebTestCase
+class GraphControllerTest extends AbstractApiTest
 {
     public function testDevice1Summary()
     {
-        $client = static::createClient();
+        $crawler = $this->client->request('GET', '/api/graphs/summary/1');
 
-        $crawler = $client->request('GET', '/api/graphs/summary/1');
-
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertTrue($client->getResponse()->headers->contains('Content-Type', 'image/png'));
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertTrue($this->client->getResponse()->headers->contains('Content-Type', 'image/png'));
     }
 
     public function testDevice1Detail()
     {
-        $client = static::createClient();
+        $crawler = $this->client->request('GET', '/api/graphs/detail/1/1/1');
 
-        $crawler = $client->request('GET', '/api/graphs/detail/1/1/1');
-
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertTrue($client->getResponse()->headers->contains('Content-Type', 'image/png'));
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertTrue($this->client->getResponse()->headers->contains('Content-Type', 'image/png'));
     }
 
     public function testDevice1DetailDummy()
     {
-        $client = static::createClient();
+        $crawler = $this->client->request('GET', '/api/graphs/detail/1/3/1');
 
-        $crawler = $client->request('GET', '/api/graphs/detail/1/3/1');
-
-        $this->assertEquals(500, $client->getResponse()->getStatusCode());
+        $this->assertEquals(500, $this->client->getResponse()->getStatusCode());
     }
 
     public function testDevice2Summary()
     {
-        $client = static::createClient();
+        $crawler = $this->client->request('GET', '/api/graphs/summary/2');
 
-        $crawler = $client->request('GET', '/api/graphs/summary/2');
-
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertTrue($client->getResponse()->headers->contains('Content-Type', 'image/png'));
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertTrue($this->client->getResponse()->headers->contains('Content-Type', 'image/png'));
     }
 
     public function testDevice3Summary()
     {
-        $client = static::createClient();
+        $crawler = $this->client->request('GET', '/api/graphs/summary/3');
 
-        $crawler = $client->request('GET', '/api/graphs/summary/3');
-
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
     }
 }

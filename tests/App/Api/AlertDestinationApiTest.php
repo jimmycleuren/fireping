@@ -1,26 +1,18 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jimmyc
- * Date: 08/03/2018
- * Time: 22:48
- */
 
 namespace Tests\App\Api;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Tests\App\Api\AbstractApiTest;
 
-class AlertDestinationApiTest extends WebTestCase
+class AlertDestinationApiTest extends AbstractApiTest
 {
     public function testCollection()
     {
-        $client = static::createClient();
-
-        $crawler = $client->request('GET', '/api/alert_destinations.json', array(), array(), array(
+       $this->client->request('GET', '/api/alert_destinations.json', array(), array(), array(
             "HTTP_Accept" => "application/json"
         ));
 
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json; charset=utf-8'));
         $this->assertJson($response->getContent());
@@ -28,9 +20,7 @@ class AlertDestinationApiTest extends WebTestCase
 
     public function testAddRemove()
     {
-        $client = static::createClient();
-
-        $crawler = $client->request(
+        $this->client->request(
             'POST',
             '/api/alert_destinations.json',
             array(),
@@ -45,19 +35,19 @@ class AlertDestinationApiTest extends WebTestCase
             ))
         );
 
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
         $this->assertEquals(201, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json; charset=utf-8'));
         $this->assertJson($response->getContent());
 
         $id = json_decode($response->getContent())->id;
 
-        $crawler = $client->request(
+        $crawler = $this->client->request(
             'DELETE',
             "/api/alert_destinations/$id.json"
         );
 
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
         $this->assertEquals(204, $response->getStatusCode());
     }
 }
