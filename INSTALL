@@ -86,6 +86,7 @@ Docker slave
 -------------
 sudo docker run -d \
 -e SLAVE_NAME='myslave' \
+-e SLAVE_PASSWORD='mypassword' \
 -e SLAVE_URL='https://my.master.com' \
 -v /tmp/logs:/app/var/logs \
 --restart=unless-stopped \
