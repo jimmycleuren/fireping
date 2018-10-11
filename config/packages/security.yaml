@@ -13,6 +13,9 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        graphs:
+            pattern: ^/api/graphs
+            security: false
         api:
             pattern: ^/api/
             http_basic:
@@ -39,5 +42,4 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
          - { path: ^/admin, roles: ROLE_ADMIN }
-         - { path: ^/api/graphs, roles: IS_AUTHENTICATED_ANONYMOUSLY }
          - { path: ^/api, roles: ROLE_API }
