@@ -3,7 +3,7 @@ FROM php:7.2.3-cli-stretch
 ADD . /app
 
 RUN apt-get update
-RUN apt-get install -y fping zip git rrdtool
+RUN apt-get install -y fping zip git rrdtool librrd-dev
 
 WORKDIR /app
 
