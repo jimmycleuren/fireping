@@ -17,6 +17,7 @@ class RrdDistributedStorage extends RrdCachedStorage
 {
     private $entityManager;
     private $storageNodes;
+    private $storageNodeRepo;
     private $hash;
 
     public function __construct(LoggerInterface $logger, StorageNodeRepository $storageNodeRepository, EntityManagerInterface $entityManager)
@@ -25,6 +26,7 @@ class RrdDistributedStorage extends RrdCachedStorage
 
         $this->hash = new Flexihash();
         $this->entityManager = $entityManager;
+        $this->storageNodeRepo = $storageNodeRepository;
 
         $temp = $storageNodeRepository->findBy(['status' => StorageNode::STATUS_ACTIVE], ['id' => 'ASC']);
         foreach($temp as $node) {
@@ -133,9 +135,7 @@ class RrdDistributedStorage extends RrdCachedStorage
 
     public function cleanup(CleanupService $cleanupService){
 
-        $storageNodes = $this->entityManager->getRepository(StorageNode::class)->findAll();
-
-        foreach ($storageNodes as $storageNode){
+        foreach ($this->storageNodeRepo->findAll() as $storageNode){
             $cleanupService->setStorageNode($storageNode);
             $cleanupService->cleanup();
         }

@@ -4,15 +4,16 @@ namespace Tests\App\Command;
 
 use App\Command\CleanupCommand;
 use App\Services\CleanupService;
-use App\Storage\RrdStorage;
 use App\Storage\StorageFactory;
-use Prophecy\Argument;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
+/**
+ * Class CleanupCommandTest
+ * @package Tests\App\Command
+ */
 class CleanupCommandTest extends KernelTestCase
 {
 
@@ -24,23 +25,19 @@ class CleanupCommandTest extends KernelTestCase
     private $cleanupService;
     private $storageFactory;
 
-
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
     public function setUp()
     {
         $kernel = self::bootKernel();
-        $this->dirPath = $kernel->getContainer()->getParameter('kernel.cache_dir'). '/funny';
+        $container = self::$container;
+
+        $this->dirPath = $container->getParameter('kernel.cache_dir'). '/funny';
         $this->application = new Application($kernel);
-        $this->logger = $this->prophesize("Psr\Log\LoggerInterface");
-        $this->em = $kernel->getContainer()->get('doctrine')->getManager();
 
-        $this->cleanupService = $kernel->getContainer()->get('App\Services\CleanupService');
+        $this->logger = $container->get('logger');
+        $this->em = $container->get('doctrine')->getManager();
 
-        $this->storageFactory = $kernel->getContainer()->get('App\Storage\StorageFactory');
+        $this->cleanupService = $container->get(CleanupService::class);
+        $this->storageFactory = $container->get(StorageFactory::class);
 
         $this->fileSystem = new Filesystem();
         $this->setupDirectory();
@@ -48,7 +45,7 @@ class CleanupCommandTest extends KernelTestCase
 
     public function testExecute()
     {
-        $cleanUpCommand = new CleanupCommand($this->logger->reveal(), $this->storageFactory, $this->cleanupService);
+        $cleanUpCommand = new CleanupCommand($this->logger, $this->storageFactory, $this->cleanupService);
         $this->application->add($cleanUpCommand);
 
         $this->assertTrue($this->fileSystem->exists($this->dirPath .'/VeryFunnyFolder'));
@@ -116,7 +113,7 @@ class CleanupCommandTest extends KernelTestCase
 
     public function tearDown()
     {
-        //$this->fileSystem->remove($this->dirPath);
+        $this->fileSystem->remove($this->dirPath);
         parent::tearDown();
     }
 }

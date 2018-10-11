@@ -10,30 +10,54 @@ namespace App\Services;
 
 use App\Entity\Device;
 use App\Entity\StorageNode;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
+/**
+ * Class CleanupService
+ * @package App\Services
+ */
 class CleanupService
 {
 
+    /** @var string */
     private $path;
 
+    /** @var EntityManagerInterface */
     private $em;
+
+    /** @var LoggerInterface */
     private $logger;
 
+    /** @var array */
     private $inactiveDevices;
+    /** @var array */
     private $activeDeviceIds;
+    /** @var array */
     private $storedDeviceIds;
+
+    /** @var Collection|Device[] */
     private $storedActiveDevices;
 
+    /** @var StorageNode */
     private $storageNode;
+
+    /** @var array */
     private $activeProbes;
+    /** @var array */
     private $activeGroups;
 
 
+    /**
+     * CleanupService constructor.
+     * @param EntityManagerInterface $em
+     * @param LoggerInterface $logger
+     * @param ParameterBagInterface $params
+     */
     public function __construct(EntityManagerInterface $em, LoggerInterface $logger, ParameterBagInterface $params)
     {
         $this->path = $params->get('rrd_storage_path');
@@ -43,16 +67,25 @@ class CleanupService
 
     }
 
-    public function setStorageNode(StorageNode $storageNode){
+    /**
+     * @param StorageNode $storageNode
+     */
+    public function setStorageNode(StorageNode $storageNode): void
+    {
         $this->storageNode = $storageNode;
     }
 
-    public function cleanup(){
+    /**
+     * Main method that will be called
+     * from the storage classes
+     */
+    public function cleanup(): void
+    {
 
-        echo 'Sitrep ' . PHP_EOL;
+        echo PHP_EOL . 'Sitrep ' . PHP_EOL;
 
         $this->logger->info('Retrieving statistics...');
-        $this->getCurrentSituation();
+        $this->setCurrentSituation();
 
         echo 'Remove Inactive Devices ' . PHP_EOL;
 
@@ -62,12 +95,12 @@ class CleanupService
         echo 'Sitrep ' . PHP_EOL;
 
         $this->logger->info('Updating statistics...');
-        $this->getCurrentSituation();
+        $this->setCurrentSituation();
 
         echo 'Gather Active Probes ' . PHP_EOL;
 
         $this->logger->info('Gathering active probes...');
-        $this->gatherActiveProbes();
+        $this->setActiveProbes();
 
         echo 'Remove Inactive Probes ' . PHP_EOL;
 
@@ -77,7 +110,7 @@ class CleanupService
         echo 'Gather Active Slave groups ' . PHP_EOL;
 
         $this->logger->info('Gathering active slave groups...');
-        $this->gatherActiveSlaveGroups();
+        $this->setActiveSlaveGroups();
 
         echo 'Remove Inactive Slave Groups ' . PHP_EOL;
 
@@ -85,14 +118,15 @@ class CleanupService
         $this->removeInactiveSlaveGroups();
     }
 
-    protected function getCurrentSituation()
+    /**
+     * This function paints a picture and sets variables
+     * required for the cleanup
+     */
+    private function setCurrentSituation(): void
     {
 
         //create an array of existing directories
         $this->storedDeviceIds = $this->getDirContent($this->path);
-
-        //remove newline
-        array_pop($this->storedDeviceIds);
 
         //get only the active devices based on previous result set
         $this->storedActiveDevices = $this->em->getRepository(Device::class)->findBy(['id' => $this->storedDeviceIds]);
@@ -111,10 +145,15 @@ class CleanupService
     }
 
 
-    protected function gatherActiveSlaveGroups(){
+    /**
+     * gathers the slave groups for all active devices
+     * that are stored on the filesystem
+     */
+    protected function setActiveSlaveGroups(): void
+    {
 
         if($this->storedActiveDevices === null){
-            return null;
+            return;
         }
 
         foreach ($this->storedActiveDevices as $device) {
@@ -132,10 +171,15 @@ class CleanupService
 
     }
 
-    protected function removeInactiveSlaveGroups(){
+    /**
+     * removes everything that is not part of the active
+     * groups array
+     */
+    private function removeInactiveSlaveGroups(): void
+    {
 
         if($this->activeProbes === null){
-            return null;
+            return;
         }
 
         $items = array_chunk($this->activeProbes, 10, true);
@@ -216,10 +260,13 @@ class CleanupService
 
     }
 
-    protected function gatherActiveProbes()
+    /**
+     * collect the probes from active devices in storage
+     */
+    private function setActiveProbes(): void
     {
         if($this->storedActiveDevices === null){
-            return null;
+            return;
         }
 
         foreach ($this->storedActiveDevices as $device) {
@@ -236,10 +283,14 @@ class CleanupService
 
     }
 
-    protected function removeInactiveProbes()
+    /**
+     * remove all inactive probes that are not part
+     * of the active probes array
+     */
+    private function removeInactiveProbes(): void
     {
         if($this->activeProbes === null){
-            return null;
+            return;
         }
 
         $items = array_chunk($this->activeProbes, 10, true);
@@ -302,7 +353,14 @@ class CleanupService
 
     }
 
-    protected function getDirContent(string $path){
+    /**
+     * gets the initial directory content for device folders
+     * this is not being used anywhere else!
+     * @param string $path
+     * @return array
+     */
+    private function getDirContent(string $path): array
+    {
 
         $process = $this->generateProcess('ls ' . $path);
         $process->run();
@@ -311,15 +369,22 @@ class CleanupService
             throw new ProcessFailedException($process);
         }
 
-        return explode("\n", $process->getOutput());
+        $contentArray = explode("\n", $process->getOutput());
+        array_pop($contentArray);
+
+        return $contentArray;
     }
 
-    protected function removeInactiveDevices(int $maxProcesses = null){
+    /**
+     * @param int|null $maxProcesses
+     */
+    private function removeInactiveDevices(int $maxProcesses = null): void
+    {
 
         $nrInActive = $this->getInactiveDeviceCount();
 
         if($nrInActive === 0){
-            return null;
+            return;
         }
 
         if ($maxProcesses !== null && $maxProcesses < $nrInActive){
@@ -367,17 +432,34 @@ class CleanupService
 
     }
 
-    public function getStoredDeviceCount(){
+    /**
+     * @return int
+     */
+    public function getStoredDeviceCount() : int{
         return count($this->storedDeviceIds);
     }
-    public function getActiveDeviceCount(){
+
+    /**
+     * @return int
+     */
+    public function getActiveDeviceCount() : int{
         return count($this->activeDeviceIds);
     }
-    public function getInactiveDeviceCount(){
+
+    /**
+     * @return int
+     */
+    public function getInactiveDeviceCount() : int{
         return count($this->inactiveDevices);
     }
 
-    private function generateProcess($commands, string $cwd = null){
+    /**
+     * @param $commands
+     * @param string|null $cwd
+     * @return Process
+     */
+    private function generateProcess($commands, string $cwd = null): Process
+    {
 
         if($this->storageNode !== null){
             $commands = 'ssh ' . $this->storageNode->getIp() . ' ' . $commands;
