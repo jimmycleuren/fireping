@@ -39,4 +39,5 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
          - { path: ^/admin, roles: ROLE_ADMIN }
+         - { path: ^/api/graphs, roles: IS_AUTHENTICATED_ANONYMOUSLY }
          - { path: ^/api, roles: ROLE_API }
