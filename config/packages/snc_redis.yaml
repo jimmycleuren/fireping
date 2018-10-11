@@ -23,4 +23,5 @@ snc_redis:
             client: doctrine
             entity_manager: default
     session:
-        client: session
+        client: default
+        locking: false
