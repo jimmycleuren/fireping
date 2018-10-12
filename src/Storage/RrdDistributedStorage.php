@@ -136,8 +136,12 @@ class RrdDistributedStorage extends RrdCachedStorage
     public function cleanup(CleanupService $cleanupService){
 
         foreach ($this->storageNodeRepo->findAll() as $storageNode){
+            echo 'Cleaning up Node: ' . $storageNode->getIp() . PHP_EOL;
+            $this->logger->info('Cleaning up node: ' . $storageNode->getIp());
             $cleanupService->setStorageNode($storageNode);
             $cleanupService->cleanup();
+            echo 'Done cleaning up Node: ' . $storageNode->getIp() . PHP_EOL;
+            $this->logger->info('Done cleaning up node: ' . $storageNode->getIp());
         }
 
     }
