@@ -40,7 +40,7 @@ class CleanupService
     /** @var array */
     private $storedDeviceIds;
 
-    /** @var Collection|Device[] */
+    /** @var array */
     private $storedActiveDevices;
 
     /** @var StorageNode */
@@ -454,7 +454,7 @@ class CleanupService
     }
 
     /**
-     * @param $commands
+     * @param string $commands
      * @param string|null $cwd
      * @return Process
      */
