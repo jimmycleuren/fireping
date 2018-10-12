@@ -8,27 +8,24 @@
 
 namespace Tests\App\Controller;
 
+use App\Tests\App\Api\AbstractApiTest;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class SlaveControllerTest extends WebTestCase
+class SlaveControllerTest extends AbstractApiTest
 {
     public function testIndex()
     {
-        $client = static::createClient();
+        $crawler = $this->client->request('GET', '/slaves');
 
-        $crawler = $client->request('GET', '/slaves');
-
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertContains('Slave list', $crawler->filter('h1')->text());
     }
 
     public function testError()
     {
-        $client = static::createClient();
+        $crawler = $this->client->request('POST', '/api/slaves/slave1/error', array("message" => "error"));
 
-        $crawler = $client->request('POST', '/api/slaves/slave1/error', array("message" => "error"));
-
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
@@ -36,11 +33,9 @@ class SlaveControllerTest extends WebTestCase
 
     public function testConfig()
     {
-        $client = static::createClient();
+        $crawler = $this->client->request('GET', '/api/slaves/slave1/config');
 
-        $crawler = $client->request('GET', '/api/slaves/slave1/config');
-
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
@@ -48,11 +43,9 @@ class SlaveControllerTest extends WebTestCase
 
     public function testConfigUnuedSlave()
     {
-        $client = static::createClient();
+        $crawler = $this->client->request('GET', '/api/slaves/slave-unused/config');
 
-        $crawler = $client->request('GET', '/api/slaves/slave-unused/config');
-
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
@@ -60,27 +53,24 @@ class SlaveControllerTest extends WebTestCase
 
     public function testConfigNewSlave()
     {
-        $client = static::createClient();
         $id = date("U");
 
-        $crawler = $client->request('GET', '/api/slaves/'.$id.'/config');
+        $crawler = $this->client->request('GET', '/api/slaves/'.$id.'/config');
 
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
 
-        $em = $client->getContainer()->get('doctrine')->getManager();
+        $em = $this->client->getContainer()->get('doctrine')->getManager();
         $this->assertNotNull($em->getRepository("App:Slave")->findOneById($id));
     }
 
     public function testEmptyResult()
     {
-        $client = static::createClient();
+        $crawler = $this->client->request('POST', '/api/slaves/slave1/result');
 
-        $crawler = $client->request('POST', '/api/slaves/slave1/result');
-
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
@@ -88,13 +78,11 @@ class SlaveControllerTest extends WebTestCase
 
     public function testResultWithoutTimestamp()
     {
-        $client = static::createClient();
-
-        $crawler = $client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
+        $crawler = $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
             '1' => array()
         )));
 
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
@@ -102,15 +90,13 @@ class SlaveControllerTest extends WebTestCase
 
     public function testResultInvalidFormat()
     {
-        $client = static::createClient();
-
-        $crawler = $client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
+        $crawler = $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
             '1' => array(
                 'timestamp' => date("U")
             )
         )));
 
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
@@ -118,9 +104,7 @@ class SlaveControllerTest extends WebTestCase
 
     public function testResultUnknownTarget()
     {
-        $client = static::createClient();
-
-        $crawler = $client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
+        $crawler = $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
             '1' => array(
                 'timestamp' => date("U"),
                 'targets' => array(
@@ -129,7 +113,7 @@ class SlaveControllerTest extends WebTestCase
             )
         )));
 
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
@@ -137,10 +121,9 @@ class SlaveControllerTest extends WebTestCase
 
     public function testResultPingWrongStep()
     {
-        $client = static::createClient();
         $timestamp = date("U");
 
-        $crawler = $client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
+        $crawler = $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
             '1' => array(
                 'timestamp' => $timestamp,
                 'targets' => array(
@@ -151,7 +134,7 @@ class SlaveControllerTest extends WebTestCase
             )
         )));
 
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
         $this->assertEquals(500, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
@@ -159,10 +142,9 @@ class SlaveControllerTest extends WebTestCase
 
     public function testResultPingUnreachable()
     {
-        $client = static::createClient();
         $timestamp = date("U");
 
-        $crawler = $client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
+        $crawler = $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
             '1' => array(
                 'timestamp' => $timestamp,
                 'targets' => array(
@@ -187,20 +169,19 @@ class SlaveControllerTest extends WebTestCase
             )
         )));
 
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
 
-        unlink($client->getContainer()->get('kernel')->getProjectDir()."/var/rrd/1/1/1.rrd");
+        unlink($this->client->getContainer()->get('kernel')->getProjectDir()."/var/rrd/1/1/1.rrd");
     }
 
     public function testResultPing()
     {
-        $client = static::createClient();
         $timestamp = date("U");
 
-        $crawler = $client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
+        $crawler = $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
             '1' => array(
                 'timestamp' => $timestamp,
                 'targets' => array(
@@ -225,13 +206,13 @@ class SlaveControllerTest extends WebTestCase
             )
         )));
 
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
 
         //try to update at the same timestamp again
-        $crawler = $client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
+        $crawler = $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
             '1' => array(
                 'timestamp' => $timestamp,
                 'targets' => array(
@@ -256,20 +237,19 @@ class SlaveControllerTest extends WebTestCase
             )
         )));
 
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
         $this->assertEquals(409, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
 
-        unlink($client->getContainer()->get('kernel')->getProjectDir()."/var/rrd/1/1/1.rrd");
+        unlink($this->client->getContainer()->get('kernel')->getProjectDir()."/var/rrd/1/1/1.rrd");
     }
 
     public function testResultTracerouteWrongStep()
     {
-        $client = static::createClient();
         $timestamp = date("U");
 
-        $crawler = $client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
+        $crawler = $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
             '2' => array(
                 'timestamp' => $timestamp,
                 'targets' => array(
@@ -280,7 +260,7 @@ class SlaveControllerTest extends WebTestCase
             )
         )));
 
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
         $this->assertEquals(500, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
@@ -288,10 +268,9 @@ class SlaveControllerTest extends WebTestCase
 
     public function testResultTraceroute()
     {
-        $client = static::createClient();
         $timestamp = date("U");
 
-        $crawler = $client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
+        $crawler = $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
             '2' => array(
                 'timestamp' => $timestamp,
                 'targets' => array(
@@ -316,7 +295,7 @@ class SlaveControllerTest extends WebTestCase
             )
         )));
 
-        $response = $client->getResponse();
+        $response = $this->client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());

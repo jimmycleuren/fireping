@@ -20,12 +20,14 @@ class DebugControllerTest extends WebTestCase
         $crawler = $client->request('GET', '/');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertContains('<a class="label label-danger" href="/debug">Debug mode</a>', $client->getResponse()->getContent());
+        $link =$crawler->filter('.label-danger');
+        $this->assertEquals('a', $link->nodeName());
 
         $link = $crawler->selectLink("Debug mode")->link();
         $crawler = $client->click($link);
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertContains('<a class="label label-success" href="/debug">Debug mode</a>', $client->getResponse()->getContent());
+        $link =$crawler->filter('.label-success');
+        $this->assertEquals('a', $link->nodeName());
     }
 }

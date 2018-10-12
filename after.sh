@@ -8,7 +8,7 @@
 sudo DEBIAN_FRONTEND=noninteractive apt-get --assume-yes update
 
 # load any extensions you like here
-sudo DEBIAN_FRONTEND=noninteractive apt-get --assume-yes install php-mcrypt php-rrd
+sudo DEBIAN_FRONTEND=noninteractive apt-get --assume-yes install php-rrd
 
 sudo service php7.2-fpm restart
 
