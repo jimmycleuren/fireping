@@ -7,6 +7,7 @@ use App\Entity\Probe;
 use App\Entity\SlaveGroup;
 use App\Entity\StorageNode;
 use App\Repository\StorageNodeRepository;
+use App\Services\CleanupService;
 use Doctrine\ORM\EntityManagerInterface;
 use Flexihash\Flexihash;
 use Psr\Log\LoggerInterface;
@@ -16,6 +17,7 @@ class RrdDistributedStorage extends RrdCachedStorage
 {
     private $entityManager;
     private $storageNodes;
+    private $storageNodeRepo;
     private $hash;
 
     public function __construct(LoggerInterface $logger, StorageNodeRepository $storageNodeRepository, EntityManagerInterface $entityManager)
@@ -24,6 +26,7 @@ class RrdDistributedStorage extends RrdCachedStorage
 
         $this->hash = new Flexihash();
         $this->entityManager = $entityManager;
+        $this->storageNodeRepo = $storageNodeRepository;
 
         $temp = $storageNodeRepository->findBy(['status' => StorageNode::STATUS_ACTIVE], ['id' => 'ASC']);
         foreach($temp as $node) {
@@ -128,5 +131,14 @@ class RrdDistributedStorage extends RrdCachedStorage
         if ($error) {
             throw new \RuntimeException($error);
         }
+    }
+
+    public function cleanup(CleanupService $cleanupService){
+
+        foreach ($this->storageNodeRepo->findAll() as $storageNode){
+            $cleanupService->setStorageNode($storageNode);
+            $cleanupService->cleanup();
+        }
+
     }
 }
