@@ -1,2 +1,0 @@
-parameters:
-    rrd_storage_path: '/opt/fireping/var/rrd'

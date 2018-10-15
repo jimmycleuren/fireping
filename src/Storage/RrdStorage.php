@@ -286,6 +286,7 @@ class RrdStorage extends Storage
     }
 
     public function cleanup(CleanupService $cleanupService){
+        echo 'cleaning up local rrdstorage';
         $cleanupService->cleanup();
     }
 }

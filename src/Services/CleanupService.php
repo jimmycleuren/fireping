@@ -50,7 +50,8 @@ class CleanupService
     /** @var array */
     private $activeGroups;
 
-    private $defaultMaxProcesses = 10;
+    /** @var int */
+    private $maxProcesses;
 
 
     /**
@@ -62,10 +63,15 @@ class CleanupService
     public function __construct(EntityManagerInterface $em, LoggerInterface $logger, ParameterBagInterface $params)
     {
         $this->path = $params->get('rrd_storage_path');
+        $this->maxProcesses = $params->get('default_max_processes');
 
         $this->em = $em;
         $this->logger = $logger;
 
+    }
+
+    public function setMaxProcesses(int $maxProcesses){
+        $this->maxProcesses = $maxProcesses;
     }
 
     /**
@@ -82,6 +88,8 @@ class CleanupService
      */
     public function cleanup(): void
     {
+        echo PHP_EOL . 'Max processes set to: ' . $this->maxProcesses . PHP_EOL;
+        $this->logger->info('Max processes set to: ' . $this->maxProcesses );
 
         echo PHP_EOL . 'Sitrep ' . PHP_EOL;
 
@@ -91,7 +99,7 @@ class CleanupService
         echo 'Remove Inactive Devices ' . PHP_EOL;
 
         $this->logger->info('Removing inactive devices...');
-        $this->removeInactiveDevices(10);
+        $this->removeInactiveDevices();
 
         echo 'Sitrep ' . PHP_EOL;
 
@@ -177,15 +185,11 @@ class CleanupService
      * groups array
      * @param int $maxProcesses
      */
-    private function removeInactiveSlaveGroups(int $maxProcesses = null): void
+    private function removeInactiveSlaveGroups(): void
     {
 
         if($this->activeProbes === null){
             return;
-        }
-
-        if($maxProcesses === null){
-            $maxProcesses = $this->defaultMaxProcesses;
         }
 
         $runningProcesses = [];
@@ -206,7 +210,7 @@ class CleanupService
             // Do not modify unless you know what
             // You're doing
 
-            while(\count($runningProcesses) >= $maxProcesses)
+            while(\count($runningProcesses) >= $this->maxProcesses)
             {
                 usleep(250000);
                 $this->runningSlavesProcessCheck($runningProcesses);
@@ -309,14 +313,10 @@ class CleanupService
      * of the active probes array
      * @param int|null $maxProcesses
      */
-    private function removeInactiveProbes(int $maxProcesses = null): void
+    private function removeInactiveProbes(): void
     {
         if($this->activeProbes === null){
             return;
-        }
-
-        if($maxProcesses === null){
-            $maxProcesses = $this->defaultMaxProcesses;
         }
 
         $runningProcesses = [];
@@ -324,7 +324,7 @@ class CleanupService
 
         foreach ($this->activeProbes as $device => $probes) {
 
-            while(\count($runningProcesses) >= $maxProcesses){
+            while(\count($runningProcesses) >= $this->maxProcesses){
                 usleep(250000);
                 $this->runningProbesProcessCheck($runningProcesses);
             }
@@ -407,6 +407,13 @@ class CleanupService
         }
 
         $contentArray = explode("\n", $process->getOutput());
+
+        if(empty($process->getOutput())){
+            echo 'No devices found, wrong directory?' . PHP_EOL;
+            $this->logger->info('No devices found, wrong directory?');
+            exit;
+        }
+
         array_pop($contentArray);
 
         return $contentArray;
@@ -415,7 +422,7 @@ class CleanupService
     /**
      * @param int|null $maxProcesses
      */
-    private function removeInactiveDevices(int $maxProcesses = null): void
+    private function removeInactiveDevices(): void
     {
 
         $nrInActive = $this->getInactiveDeviceCount();
@@ -424,10 +431,6 @@ class CleanupService
 
         if($nrInActive === 0){
             return;
-        }
-
-        if($maxProcesses === null){
-            $maxProcesses = $this->defaultMaxProcesses;
         }
 
         $items = array_chunk($this->inactiveDevices, 100);
@@ -442,7 +445,7 @@ class CleanupService
 
             $value = $this->path . '/' . $value;
 
-            while (count($runningProcesses) >= $maxProcesses) {
+            while (count($runningProcesses) >= $this->maxProcesses) {
                 sleep(1);
                 foreach ($runningProcesses as $i => $runningProcess) {
                     // specific process is finished, so we remove it
