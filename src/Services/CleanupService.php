@@ -183,7 +183,6 @@ class CleanupService
     /**
      * removes everything that is not part of the active
      * groups array
-     * @param int $maxProcesses
      */
     private function removeInactiveSlaveGroups(): void
     {
@@ -311,7 +310,6 @@ class CleanupService
     /**
      * remove all inactive probes that are not part
      * of the active probes array
-     * @param int|null $maxProcesses
      */
     private function removeInactiveProbes(): void
     {
@@ -419,8 +417,9 @@ class CleanupService
         return $contentArray;
     }
 
+
     /**
-     * @param int|null $maxProcesses
+     * remove inactive devices
      */
     private function removeInactiveDevices(): void
     {
