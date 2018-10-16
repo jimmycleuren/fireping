@@ -48,6 +48,7 @@ class PostResultsHttpWorkerCommand implements CommandInterface
         } elseif (isset($args['uri'])) {
             $this->client = new \GuzzleHttp\Client([
                 'base_uri' => $args['uri'],
+                'cookies' => true
             ]);
         }
 
