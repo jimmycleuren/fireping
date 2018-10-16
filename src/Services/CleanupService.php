@@ -10,7 +10,6 @@ namespace App\Services;
 
 use App\Entity\Device;
 use App\Entity\StorageNode;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -51,6 +50,9 @@ class CleanupService
     /** @var array */
     private $activeGroups;
 
+    /** @var int */
+    private $maxProcesses;
+
 
     /**
      * CleanupService constructor.
@@ -61,10 +63,15 @@ class CleanupService
     public function __construct(EntityManagerInterface $em, LoggerInterface $logger, ParameterBagInterface $params)
     {
         $this->path = $params->get('rrd_storage_path');
+        $this->maxProcesses = $params->get('default_max_processes');
 
         $this->em = $em;
         $this->logger = $logger;
 
+    }
+
+    public function setMaxProcesses(int $maxProcesses){
+        $this->maxProcesses = $maxProcesses;
     }
 
     /**
@@ -81,6 +88,8 @@ class CleanupService
      */
     public function cleanup(): void
     {
+        echo PHP_EOL . 'Max processes set to: ' . $this->maxProcesses . PHP_EOL;
+        $this->logger->info('Max processes set to: ' . $this->maxProcesses );
 
         echo PHP_EOL . 'Sitrep ' . PHP_EOL;
 
@@ -90,7 +99,7 @@ class CleanupService
         echo 'Remove Inactive Devices ' . PHP_EOL;
 
         $this->logger->info('Removing inactive devices...');
-        $this->removeInactiveDevices(10);
+        $this->removeInactiveDevices();
 
         echo 'Sitrep ' . PHP_EOL;
 
@@ -182,82 +191,97 @@ class CleanupService
             return;
         }
 
-        $items = array_chunk($this->activeProbes, 10, true);
         $runningProcesses = [];
-        $activeGroups = [];
 
-        foreach ($items as $item){
-            foreach ($item as $device => $probes){
+        foreach ($this->activeProbes as $device => $probes){
 
-                if(!isset($this->activeGroups[$device])){
+            if(!isset($this->activeGroups[$device])){
+                continue;
+            }
+
+            if(\is_array($probes)){
+                $probes = implode(' ' . $this->path . '/' .$device. '/',  $probes);
+            }
+
+            $probes = $this->path . '/' .$device . '/' . $probes;
+
+            // !!! Max x amount of processes !!!!
+            // Do not modify unless you know what
+            // You're doing
+
+            while(\count($runningProcesses) >= $this->maxProcesses)
+            {
+                usleep(250000);
+                $this->runningSlavesProcessCheck($runningProcesses);
+            }
+
+            $process = $this->generateProcess('ls ' . $probes);
+            $process->start(function ($type, $buffer) {
+                if (Process::ERR === $type) {
+                    echo 'ERR > '.$buffer;
+                    $this->logger->error($buffer);
+                }
+            });
+
+
+            $runningProcesses[$device] = $process;
+
+        }
+
+
+        while (\count($runningProcesses)) {
+            usleep(250000);
+            $this->runningSlavesProcessCheck($runningProcesses);
+        }
+
+    }
+
+    /**
+     * @param array $runningProcesses
+     */
+    private function runningSlavesProcessCheck(&$runningProcesses) : void {
+
+        foreach ($runningProcesses as $device => $runningProcess) {
+
+            if (!$runningProcess->isRunning()) {
+
+                preg_match_all("/\d+.rrd/", $runningProcess->getOutput(), $storedGroups);
+
+                $storedGroups = array_unique($storedGroups[0]);
+
+                $difference = array_diff($storedGroups, $this->activeGroups[$device]);
+
+                if(empty($difference)){
+                    unset($runningProcesses[$device]);
                     continue;
                 }
 
-                if(\is_array($probes)){
-                    $probes = implode(' ' . $this->path . '/' .$device. '/',  $probes);
+
+                $param = '';
+
+                foreach($this->activeProbes[$device] as $probes => $probe){
+                    foreach ($difference as $group){
+                        $param .= $this->path .'/'. $device . '/' . $probe . '/' . $group . ' ';
+                    }
                 }
 
-                $probes = $this->path . '/' .$device . '/' . $probes;
 
-                $process = $this->generateProcess('ls ' . $probes);
+                $param = trim($param);
+
+                $process = $this->generateProcess('rm -rf '. $param);
                 $process->start(function ($type, $buffer) {
                     if (Process::ERR === $type) {
                         echo 'ERR > '.$buffer;
+                        $this->logger->error($buffer);
                     }
                 });
 
-                $activeGroups[$device] = $this->activeGroups[$device];
-
-                $runningProcesses[$device] = $process;
-
-            }
-        }
-
-        while (count($runningProcesses)) {
-            foreach ($runningProcesses as $device => $runningProcess) {
-
-                    if (!$runningProcess->isRunning()) {
-
-                        preg_match_all("/\d+.rrd/", $runningProcess->getOutput(), $storedGroups);
-
-                        $storedGroups = array_unique($storedGroups[0]);
-
-                        $difference = array_diff($storedGroups, $activeGroups[$device]);
-
-                        if(empty($difference)){
-                            unset($runningProcesses[$device], $activeGroups[$device]);
-                            continue;
-                        }
-
-
-                        $param = '';
-
-                        foreach($this->activeProbes[$device] as $probes => $probe){
-                            foreach ($difference as $group){
-                                $param .= $this->path .'/'. $device . '/' . $probe . '/' . $group . ' ';
-                            }
-                        }
-
-
-                        $param = trim($param);
-
-                        $process = $this->generateProcess('rm -rf '. $param);
-                        $process->start(function ($type, $buffer) {
-                            if (Process::ERR === $type) {
-                                echo 'ERR > '.$buffer;
-                            }
-                        });
-
-                        // specific process is finished, so we remove it
-                        unset($runningProcesses[$device], $activeGroups[$device]);
-
-                }
+                // specific process is finished, so we remove it
+                unset($runningProcesses[$device]);
 
             }
 
         }
-
-
     }
 
     /**
@@ -293,64 +317,75 @@ class CleanupService
             return;
         }
 
-        $items = array_chunk($this->activeProbes, 10, true);
         $runningProcesses = [];
-        $deviceProbes = [];
 
-        foreach ($items as $item) {
 
-            foreach ($item as $device => $probes) {
+        foreach ($this->activeProbes as $device => $probes) {
 
-                $deviceProbes[$device] = $probes;
+            while(\count($runningProcesses) >= $this->maxProcesses){
+                usleep(250000);
+                $this->runningProbesProcessCheck($runningProcesses);
+            }
 
-                $process = $this->generateProcess('ls '. $this->path . '/' . $device);
+            $process = $this->generateProcess('ls '. $this->path . '/' . $device);
+            $process->start(function ($type, $buffer) {
+                if (Process::ERR === $type) {
+                    echo 'ERR > '.$buffer;
+                    $this->logger->error($buffer);
+                }
+            });
+
+            $runningProcesses[$device] = $process;
+        }
+
+        while (\count($runningProcesses))
+        {
+            usleep(250000);
+            $this->runningProbesProcessCheck($runningProcesses);
+        }
+
+
+    }
+
+    /**
+     * @param array $runningProcesses
+     */
+    private function runningProbesProcessCheck(&$runningProcesses): void
+    {
+
+        foreach ($runningProcesses as $device => $runningProcess) {
+            if (! $runningProcess->isRunning()) {
+
+                $storedProbes = explode("\n", $runningProcess->getOutput());
+                array_pop($storedProbes);
+
+                $inactiveProbes = array_diff($storedProbes, $this->activeProbes[$device]);
+
+                if(empty($inactiveProbes))
+                {
+                    unset($runningProcesses[$device]);
+                    continue;
+                }
+
+                if(\is_array($inactiveProbes)){
+                    $inactiveProbes = implode(' '.$this->path . '/' . $device.'/', $inactiveProbes);
+                }
+
+                $value = $this->path . '/' . $device.'/' . $inactiveProbes;
+
+                $process = $this->generateProcess('rm -rf '. $value);
                 $process->start(function ($type, $buffer) {
                     if (Process::ERR === $type) {
                         echo 'ERR > '.$buffer;
+                        $this->logger->error($buffer);
                     }
                 });
 
-                $runningProcesses[$device] = $process;
-            }
-        }
-
-        while (count($runningProcesses)) {
-            foreach ($runningProcesses as $device => $runningProcess) {
-                if (! $runningProcess->isRunning()) {
-
-                    $storedProbes = explode("\n", $runningProcess->getOutput());
-                    array_pop($storedProbes);
-
-                    $inactiveProbes = array_diff($storedProbes, $deviceProbes[$device]);
-
-                    if(empty($inactiveProbes))
-                    {
-                        unset($runningProcesses[$device], $deviceProbes[$device]);
-                        continue;
-                    }
-
-                    if(\is_array($inactiveProbes)){
-                        $inactiveProbes = implode(' '.$this->path . '/' . $device.'/', $inactiveProbes);
-                    }
-
-                    $value = $this->path . '/' . $device.'/' . $inactiveProbes;
-
-                    $process = $this->generateProcess('rm -rf '. $value);
-                    $process->start(function ($type, $buffer) {
-                        if (Process::ERR === $type) {
-                            echo 'ERR > '.$buffer;
-                        }
-                    });
-
-                    // specific process is finished, so we remove it
-                    unset($runningProcesses[$device], $deviceProbes[$device]);
-                }
-
+                // specific process is finished, so we remove it
+                unset($runningProcesses[$device]);
             }
 
         }
-
-
     }
 
     /**
@@ -370,31 +405,34 @@ class CleanupService
         }
 
         $contentArray = explode("\n", $process->getOutput());
+
+        if(empty($process->getOutput())){
+            echo 'No devices found, wrong directory?' . PHP_EOL;
+            $this->logger->info('No devices found, wrong directory?');
+            exit;
+        }
+
         array_pop($contentArray);
 
         return $contentArray;
     }
 
+
     /**
-     * @param int|null $maxProcesses
+     * remove inactive devices
      */
-    private function removeInactiveDevices(int $maxProcesses = null): void
+    private function removeInactiveDevices(): void
     {
 
         $nrInActive = $this->getInactiveDeviceCount();
+
+        echo 'Removing ' . $nrInActive . ' devices...' . PHP_EOL;
 
         if($nrInActive === 0){
             return;
         }
 
-        if ($maxProcesses !== null && $maxProcesses < $nrInActive){
-            $chunkSize = ($nrInActive - ($nrInActive % $maxProcesses)) / $maxProcesses;
-            echo 'Chunksize: ' . $chunkSize . PHP_EOL;
-
-            $items = array_chunk($this->inactiveDevices, $chunkSize);
-        }else{
-            $items = $this->inactiveDevices;
-        }
+        $items = array_chunk($this->inactiveDevices, 100);
 
         $runningProcesses = [];
 
@@ -406,10 +444,23 @@ class CleanupService
 
             $value = $this->path . '/' . $value;
 
+            while (count($runningProcesses) >= $this->maxProcesses) {
+                sleep(1);
+                foreach ($runningProcesses as $i => $runningProcess) {
+                    // specific process is finished, so we remove it
+                    if (! $runningProcess->isRunning()) {
+                        unset($runningProcesses[$i]);
+                    }
+
+                }
+
+            }
+
             $process = $this->generateProcess('rm -rf '. $value);
             $process->start(function ($type, $buffer) {
                 if (Process::ERR === $type) {
                     echo 'ERR > '.$buffer;
+                    $this->logger->error($buffer);
                 }
             });
 
@@ -418,6 +469,7 @@ class CleanupService
         }
 
         while (count($runningProcesses)) {
+            sleep(1);
             foreach ($runningProcesses as $i => $runningProcess) {
 
                 // specific process is finished, so we remove it
@@ -427,7 +479,6 @@ class CleanupService
 
             }
 
-            usleep(500000);
         }
 
     }
@@ -436,21 +487,21 @@ class CleanupService
      * @return int
      */
     public function getStoredDeviceCount() : int{
-        return count($this->storedDeviceIds);
+        return \count($this->storedDeviceIds);
     }
 
     /**
      * @return int
      */
     public function getActiveDeviceCount() : int{
-        return count($this->activeDeviceIds);
+        return \count($this->activeDeviceIds);
     }
 
     /**
      * @return int
      */
     public function getInactiveDeviceCount() : int{
-        return count($this->inactiveDevices);
+        return \count($this->inactiveDevices);
     }
 
     /**

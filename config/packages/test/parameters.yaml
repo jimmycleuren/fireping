@@ -1,2 +1,0 @@
-parameters:
-    rrd_storage_path: '%kernel.cache_dir%/funny'
