@@ -9,13 +9,10 @@
 namespace App\Services;
 
 use App\Entity\Device;
-use App\Entity\StorageNode;
 use App\Storage\StorageFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\Process\Exception\ProcessFailedException;
-use Symfony\Component\Process\Process;
 
 /**
  * Class CleanupService
