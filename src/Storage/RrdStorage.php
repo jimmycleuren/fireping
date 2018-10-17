@@ -11,10 +11,8 @@ namespace App\Storage;
 use App\Entity\Device;
 use App\Entity\Probe;
 use App\Entity\SlaveGroup;
-use App\Entity\StorageNode;
 use App\Exception\RrdException;
 use App\Exception\WrongTimestampRrdException;
-use App\Services\CleanupService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
@@ -285,8 +283,52 @@ class RrdStorage extends Storage
         return (float)$data['calcpr'][0];
     }
 
-    public function cleanup(CleanupService $cleanupService){
-        echo 'cleaning up local rrdstorage';
-        $cleanupService->cleanup();
+    /**
+     * @param string|array $path
+     * @param bool $explode
+     * @return array|null|string
+     */
+    public function listItems($path, bool $explode)
+    {
+        if(\is_array($path)){
+            array_unshift($path, 'ls');
+            $command = $path;
+        }
+        else{
+            $command = ['ls', $path];
+        }
+
+        $process = new Process($command);
+        $process->run(function ($type, $buffer) {
+            if (Process::ERR === $type) {
+                $this->logger->info($buffer);
+            }
+        });
+
+        if(empty($process->getOutput())){
+
+            return null;
+        }
+
+        if($explode){
+            $contentArray = explode("\n", $process->getOutput());
+            $contentArray = array_filter(array_unique($contentArray));
+            return $contentArray;
+        }
+
+        return $process->getOutput();
+    }
+
+    /**
+     * @param string $items
+     */
+    public function remove(string $items)
+    {
+        $process = new Process('rm -rf '. $items);
+        $process->run(function ($type, $buffer) {
+            if (Process::ERR === $type) {
+                $this->logger->info($buffer);
+            }
+        });
     }
 }

@@ -1,3 +1,2 @@
 parameters:
     rrd_storage_path: '%kernel.cache_dir%/funny'
-    default_max_processes: 10

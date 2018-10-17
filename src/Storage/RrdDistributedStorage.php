@@ -7,7 +7,6 @@ use App\Entity\Probe;
 use App\Entity\SlaveGroup;
 use App\Entity\StorageNode;
 use App\Repository\StorageNodeRepository;
-use App\Services\CleanupService;
 use Doctrine\ORM\EntityManagerInterface;
 use Flexihash\Flexihash;
 use Psr\Log\LoggerInterface;
@@ -133,16 +132,61 @@ class RrdDistributedStorage extends RrdCachedStorage
         }
     }
 
-    public function cleanup(CleanupService $cleanupService){
+    /**
+     * @param string|array $path
+     * @param bool $explode
+     * @return array|null|string
+     */
+    public function listItems($path, bool $explode)
+    {
+        $output = '';
+        foreach ($this->storageNodeRepo->findAll() as $storageNode) {
+            $ip = $storageNode->getIp();
+            if (\is_array($path)) {
+                $command = 'ssh ' . $ip . ' ls ' . implode(' ', $path);
+            } else {
+                $command = ['ssh', $ip, 'ls', $path];
+            }
 
-        foreach ($this->storageNodeRepo->findAll() as $storageNode){
-            echo 'Cleaning up Node: ' . $storageNode->getIp() . PHP_EOL;
-            $this->logger->info('Cleaning up node: ' . $storageNode->getIp());
-            $cleanupService->setStorageNode($storageNode);
-            $cleanupService->cleanup();
-            echo 'Done cleaning up Node: ' . $storageNode->getIp() . PHP_EOL;
-            $this->logger->info('Done cleaning up node: ' . $storageNode->getIp());
+            $process = new Process($command);
+            $process->run(function ($type, $buffer) {
+                if (Process::ERR === $type) {
+                    $this->logger->info($buffer);
+                }
+            });
+
+            $output .= $process->getOutput();
         }
 
+        if (empty($output)) {
+
+            return null;
+        }
+
+        if ($explode) {
+            $contentArray = explode("\n", $output);
+            $contentArray = array_filter(array_unique($contentArray));
+            return $contentArray;
+        }
+
+        return $output;
+
     }
+
+    /**
+     * @param string $items
+     */
+    public function remove(string $items)
+    {
+        foreach ($this->storageNodeRepo->findAll() as $storageNode) {
+            $ip = $storageNode->getIp();
+            $process = new Process('ssh ' . $ip . ' rm -rf ' . $items);
+            $process->run(function ($type, $buffer) {
+                if (Process::ERR === $type) {
+                    $this->logger->info($buffer);
+                }
+            });
+        }
+    }
+
 }

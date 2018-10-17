@@ -11,7 +11,6 @@ namespace App\Storage;
 use App\Entity\Device;
 use App\Entity\Probe;
 use App\Entity\SlaveGroup;
-use App\Services\CleanupService;
 
 abstract class Storage
 {
@@ -19,7 +18,8 @@ abstract class Storage
 
     abstract function fetch(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $key, $function);
 
-    abstract function cleanup(CleanupService $cleanupService);
+    abstract function listItems(string $path, bool $explode);
 
+    abstract function remove(string $items);
 
 }

@@ -1,3 +1,2 @@
 parameters:
     rrd_storage_path: '/opt/fireping/var/rrd'
-    default_max_processes: 10
