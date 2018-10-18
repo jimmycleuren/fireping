@@ -142,7 +142,7 @@ class RrdDistributedStorage extends RrdCachedStorage
         $output = '';
         foreach ($this->storageNodeRepo->findAll() as $storageNode) {
             $ip = $storageNode->getIp();
-            echo 'Retrieving items from: ' . $ip;
+            echo 'Retrieving items from: ' . $ip . PHP_EOL;
             if (\is_array($path)) {
                 $command = 'ssh ' . $ip . ' ls ' . implode(' ', $path);
             } else {
@@ -181,7 +181,7 @@ class RrdDistributedStorage extends RrdCachedStorage
     {
         foreach ($this->storageNodeRepo->findAll() as $storageNode) {
             $ip = $storageNode->getIp();
-            echo 'Removing items from: ' . $ip;
+            echo 'Removing items from: ' . $ip . PHP_EOL;
             $process = new Process('ssh ' . $ip . ' rm -rf ' . $items);
             $process->run(function ($type, $buffer) {
                 if (Process::ERR === $type) {
