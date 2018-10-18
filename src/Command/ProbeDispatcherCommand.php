@@ -158,7 +158,7 @@ class ProbeDispatcherCommand extends ContainerAwareCommand
      */
     private function setUp(InputInterface $input)
     {
-        $this->maxRuntime = $input->getOption('max-runtime');
+        $this->maxRuntime = (int)$input->getOption('max-runtime');
         $this->randomFactor = random_int(0, 119);
 
         foreach (['SLAVE_NAME', 'SLAVE_URL'] as $item) {
