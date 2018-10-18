@@ -28,6 +28,11 @@ security:
                   csrf_token_generator: security.csrf.token_manager
             logout:       true
             anonymous:    true
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800 #1 week in seconden
+                path: /
+                always_remember_me: true
 
 
             # activate different ways to authenticate

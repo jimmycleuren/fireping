@@ -11,8 +11,10 @@ namespace App\Storage;
 use App\Entity\Device;
 use App\Entity\Probe;
 use App\Entity\SlaveGroup;
+use App\Entity\StorageNode;
 use App\Exception\RrdException;
 use App\Exception\WrongTimestampRrdException;
+use App\Services\CleanupService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
@@ -281,5 +283,10 @@ class RrdStorage extends Storage
         unlink($tempFile);
 
         return (float)$data['calcpr'][0];
+    }
+
+    public function cleanup(CleanupService $cleanupService){
+        echo 'cleaning up local rrdstorage';
+        $cleanupService->cleanup();
     }
 }
