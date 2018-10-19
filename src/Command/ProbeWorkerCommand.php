@@ -96,7 +96,7 @@ class ProbeWorkerCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $this->output = $output;
-        $this->maxRuntime = $input->getOption('max-runtime');
+        $this->maxRuntime = (int)$input->getOption('max-runtime');
 
         $this->loop = Factory::create();
 
