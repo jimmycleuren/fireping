@@ -176,18 +176,9 @@ class CleanupService
                 continue;
             }
 
+            $items = $this->concatCollection($probes, $this->path . '/' .$device. '/');
 
-            if(\is_array($probes)){
-                $probePaths = implode(' ' . $this->path . '/' .$device. '/',  $probes);
-            } else {
-                $probePaths = $probes;
-            }
-
-            $probePaths = $this->path . '/' .$device . '/' . $probePaths;
-
-            $slaves = explode(' ', $probePaths);
-
-            $storedSlaves = $this->storage->listItems($slaves, false);
+            $storedSlaves = $this->storage->listItems($items, false);
 
             if($storedSlaves === null){
                 continue;
@@ -271,11 +262,9 @@ class CleanupService
                 continue;
             }
 
-            if(\is_array($inactiveProbes)){
-                $inactiveProbes = implode(' '.$this->path . '/' . $device.'/', $inactiveProbes);
-            }
+            $items = $this->concatCollection($inactiveProbes, $this->path . '/' . $device.'/');
 
-            $items = $this->path . '/' . $device.'/' . $inactiveProbes;
+            $items = implode(' ', $items);
 
             $this->storage->remove($items);
 
@@ -301,16 +290,35 @@ class CleanupService
 
         foreach ($items as $key => $value){
 
-            if(\is_array($value)){
-                $value = implode(' '.$this->path.'/', $value);
-            }
+            $items = $this->concatCollection($value, $this->path.'/');
 
-            $value = $this->path . '/' . $value;
+            $items = implode(' ', $items);
 
-            $this->storage->remove($value);
+            $this->storage->remove($items);
 
         }
 
+    }
+
+    /**
+     * @param array $items
+     * @param string $path
+     * @return array
+     */
+    private function concatCollection($items, $path): array
+    {
+        return array_map(function($item) use ($path) {
+            return $this->concatPath($item, $path);
+        }, $items);
+    }
+    /**
+     * @param $item
+     * @param $path
+     * @return string
+     */
+    private function concatPath($item, $path): string
+    {
+        return $path . $item;
     }
 
     /**
