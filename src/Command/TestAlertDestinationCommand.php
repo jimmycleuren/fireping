@@ -40,7 +40,7 @@ class TestAlertDestinationCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $id = $input->getArgument('destination-id');
+        $id = (int)$input->getArgument('destination-id');
 
         $destination = $this->em->getRepository("App:AlertDestination")->findOneById($id);
         if (!$destination) {
