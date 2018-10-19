@@ -312,8 +312,8 @@ class CleanupService
         }, $items);
     }
     /**
-     * @param $item
-     * @param $path
+     * @param string $item
+     * @param string $path
      * @return string
      */
     private function concatPath($item, $path): string
