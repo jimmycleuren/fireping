@@ -18,8 +18,8 @@ abstract class Storage
 
     abstract function fetch(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $key, $function);
 
-    abstract function listItems(string $path, bool $explode);
+    abstract function listItems(string $path);
 
-    abstract function remove(string $items);
+    abstract function remove(array $items, string $path);
 
 }

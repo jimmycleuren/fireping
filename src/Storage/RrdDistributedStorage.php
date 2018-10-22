@@ -133,23 +133,17 @@ class RrdDistributedStorage extends RrdCachedStorage
     }
 
     /**
-     * @param string|array $path
-     * @param bool $explode
+     * @param string $path
      * @return array|null|string
      */
-    public function listItems($path, bool $explode)
+    public function listItems($path)
     {
         $output = '';
         foreach ($this->storageNodeRepo->findAll() as $storageNode) {
             $ip = $storageNode->getIp();
             echo 'Retrieving items from: ' . $ip . PHP_EOL;
-            if (\is_array($path)) {
-                $command = 'ssh ' . $ip . ' ls ' . implode(' ', $path);
-            } else {
-                $command = ['ssh', $ip, 'ls', $path];
-            }
 
-            $process = new Process($command);
+            $process = new Process(['ssh', $ip, 'ls', $path]);
             $process->run(function ($type, $buffer) {
                 if (Process::ERR === $type) {
                     $this->logger->info($buffer);
@@ -164,31 +158,51 @@ class RrdDistributedStorage extends RrdCachedStorage
             return null;
         }
 
-        if ($explode) {
-            $contentArray = explode("\n", $output);
-            $contentArray = array_filter(array_unique($contentArray));
-            return $contentArray;
-        }
+        $contentArray = explode("\n", $output);
+        $contentArray = array_filter(array_unique($contentArray));
 
-        return $output;
+        return $contentArray;
 
     }
 
     /**
-     * @param string $items
+     * @param array $items
+     * @param string $path
+     * @return array
      */
-    public function remove(string $items)
+    private function concatCollection($items, $path): array
     {
-        foreach ($this->storageNodeRepo->findAll() as $storageNode) {
-            $ip = $storageNode->getIp();
-            echo 'Removing items from: ' . $ip . PHP_EOL;
-            $process = new Process('ssh ' . $ip . ' rm -rf ' . $items);
-            $process->run(function ($type, $buffer) {
-                if (Process::ERR === $type) {
-                    $this->logger->info($buffer);
-                }
-            });
-        }
+        return array_map(function($item) use ($path) {
+            return $this->concatPath($item, $path);
+        }, $items);
+    }
+    /**
+     * @param string $item
+     * @param string $path
+     * @return string
+     */
+    private function concatPath($item, $path): string
+    {
+        return $path . $item;
+    }
+
+    /**
+     * @param array $items
+     * @param string $path
+     */
+    public function remove(array $items, string $path)
+    {
+        $path = rtrim($path, '/') . '/';
+        $items = $this->concatCollection($items, $path);
+
+        $deleteCandidates = implode(' ', $items);
+
+        $process = new Process('rm -rf '. $deleteCandidates);
+        $process->run(function ($type, $buffer) {
+            if (Process::ERR === $type) {
+                $this->logger->info($buffer);
+            }
+        });
     }
 
 }

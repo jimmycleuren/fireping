@@ -106,7 +106,7 @@ class CleanupService
     {
 
         //create an array of existing directories
-        $this->storedDeviceIds = $this->storage->listItems($this->path, true);
+        $this->storedDeviceIds = $this->storage->listItems($this->path);
         if($this->storedDeviceIds === null){
             echo 'No devices listed, directory is either clean or wrongly set, exiting...' . PHP_EOL;
             $this->logger->info('No items found, directory is either clean or wrongly set');
@@ -176,36 +176,24 @@ class CleanupService
                 continue;
             }
 
-            $items = $this->concatCollection($probes, $this->path . '/' .$device. '/');
+            foreach ($probes as $probe){
+                $path = $this->path . '/' . $device . '/' . $probe;
 
-            $storedSlaves = $this->storage->listItems($items, false);
+                $storedSlaves = $this->storage->listItems($path);
 
-            if($storedSlaves === null){
-                continue;
-            }
-
-            preg_match_all("/\d+.rrd/", $storedSlaves, $storedGroups);
-
-            $storedGroups = array_unique($storedGroups[0]);
-
-            $difference = array_diff($storedGroups, $this->activeGroups[$device]);
-
-            if(empty($difference)){
-                continue;
-            }
-
-            $param = '';
-
-
-            foreach($probes as $probe){
-                foreach ($difference as $group){
-                    $param .= $this->path .'/'. $device . '/' . $probe . '/' . $group . ' ';
+                if($storedSlaves === null){
+                    continue;
                 }
+
+                $difference = array_diff($storedSlaves, $this->activeGroups[$device]);
+
+                if(empty($difference)){
+                    continue;
+                }
+
+                $this->storage->remove($difference, $path);
+
             }
-
-            $param = trim($param);
-
-            $this->storage->remove($param);
 
         }
 
@@ -250,7 +238,8 @@ class CleanupService
 
         foreach ($this->activeProbes as $device => $probes) {
 
-            $storedProbes = $this->storage->listItems($this->path . '/' . $device, true);
+            $path = $this->path . '/' . $device;
+            $storedProbes = $this->storage->listItems($path);
             if($storedProbes === null){
                 continue;
             }
@@ -262,11 +251,7 @@ class CleanupService
                 continue;
             }
 
-            $items = $this->concatCollection($inactiveProbes, $this->path . '/' . $device.'/');
-
-            $items = implode(' ', $items);
-
-            $this->storage->remove($items);
+            $this->storage->remove($inactiveProbes, $path);
 
         }
 
@@ -290,35 +275,10 @@ class CleanupService
 
         foreach ($items as $key => $value){
 
-            $items = $this->concatCollection($value, $this->path.'/');
-
-            $items = implode(' ', $items);
-
-            $this->storage->remove($items);
+            $this->storage->remove($value, $this->path);
 
         }
 
-    }
-
-    /**
-     * @param array $items
-     * @param string $path
-     * @return array
-     */
-    private function concatCollection($items, $path): array
-    {
-        return array_map(function($item) use ($path) {
-            return $this->concatPath($item, $path);
-        }, $items);
-    }
-    /**
-     * @param string $item
-     * @param string $path
-     * @return string
-     */
-    private function concatPath($item, $path): string
-    {
-        return $path . $item;
     }
 
     /**
