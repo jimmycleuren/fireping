@@ -3,7 +3,6 @@
 namespace App\Command;
 
 use App\Services\CleanupService;
-use App\Storage\StorageFactory;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -19,19 +18,16 @@ class CleanupCommand extends ContainerAwareCommand
     protected static $defaultName = 'app:cleanup';
 
     private $logger;
-    private $storage;
     private $cleanupService;
 
     /**
      * CleanupCommand constructor.
      * @param LoggerInterface $logger
-     * @param StorageFactory $storageFactory
      * @param CleanupService $cleanupService
      */
-    public function __construct(LoggerInterface $logger, StorageFactory $storageFactory, CleanupService $cleanupService)
+    public function __construct(LoggerInterface $logger, CleanupService $cleanupService)
     {
         $this->cleanupService = $cleanupService;
-        $this->storage = $storageFactory;
         $this->logger = $logger;
 
         parent::__construct();
@@ -54,7 +50,7 @@ class CleanupCommand extends ContainerAwareCommand
         $stopwatch = new Stopwatch();
         $stopwatch->start('Cleanup');
 
-        $this->storage->create()->cleanup($this->cleanupService);
+        $this->cleanupService->cleanup();
 
         $event = $stopwatch->stop('Cleanup');
 

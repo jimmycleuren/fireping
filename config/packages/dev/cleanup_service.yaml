@@ -1,3 +1,2 @@
 parameters:
     rrd_storage_path: '/home/vagrant/fireping/var/rrd'
-    default_max_processes: 10

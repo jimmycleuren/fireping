@@ -11,10 +11,8 @@ namespace App\Storage;
 use App\Entity\Device;
 use App\Entity\Probe;
 use App\Entity\SlaveGroup;
-use App\Entity\StorageNode;
 use App\Exception\RrdException;
 use App\Exception\WrongTimestampRrdException;
-use App\Services\CleanupService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
@@ -285,8 +283,68 @@ class RrdStorage extends Storage
         return (float)$data['calcpr'][0];
     }
 
-    public function cleanup(CleanupService $cleanupService){
-        echo 'cleaning up local rrdstorage';
-        $cleanupService->cleanup();
+    /**
+     * @param string $path
+     * @return array|null|string
+     */
+    public function listItems($path)
+    {
+
+        $process = new Process(['ls', $path]);
+        $process->run(function ($type, $buffer) {
+            if (Process::ERR === $type) {
+                $this->logger->info($buffer);
+            }
+        });
+
+        if(empty($process->getOutput())){
+
+            return null;
+        }
+
+        $contentArray = explode("\n", $process->getOutput());
+        $contentArray = array_filter(array_unique($contentArray));
+
+        return $contentArray;
+    }
+
+    /**
+     * @param array $items
+     * @param string $path
+     * @return array
+     */
+    private function concatCollection($items, $path): array
+    {
+        return array_map(function($item) use ($path) {
+            return $this->concatPath($item, $path);
+        }, $items);
+    }
+    /**
+     * @param string $item
+     * @param string $path
+     * @return string
+     */
+    private function concatPath($item, $path): string
+    {
+        return $path . $item;
+    }
+
+    /**
+     * @param array $items
+     * @param string $path
+     */
+    public function remove(array $items, string $path)
+    {
+        $path = rtrim($path, '/') . '/';
+        $items = $this->concatCollection($items, $path);
+
+        $deleteCandidates = implode(' ', $items);
+
+        $process = new Process('rm -rf '. $deleteCandidates);
+        $process->run(function ($type, $buffer) {
+            if (Process::ERR === $type) {
+                $this->logger->info($buffer);
+            }
+        });
     }
 }

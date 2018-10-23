@@ -4,7 +4,6 @@ namespace Tests\App\Command;
 
 use App\Command\CleanupCommand;
 use App\Services\CleanupService;
-use App\Storage\StorageFactory;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -23,7 +22,6 @@ class CleanupCommandTest extends KernelTestCase
     private $dirPath;
     private $application;
     private $cleanupService;
-    private $storageFactory;
 
     public function setUp()
     {
@@ -37,7 +35,6 @@ class CleanupCommandTest extends KernelTestCase
         $this->em = $container->get('doctrine')->getManager();
 
         $this->cleanupService = $container->get(CleanupService::class);
-        $this->storageFactory = $container->get(StorageFactory::class);
 
         $this->fileSystem = new Filesystem();
         $this->setupDirectory();
@@ -45,7 +42,7 @@ class CleanupCommandTest extends KernelTestCase
 
     public function testExecute()
     {
-        $cleanUpCommand = new CleanupCommand($this->logger, $this->storageFactory, $this->cleanupService);
+        $cleanUpCommand = new CleanupCommand($this->logger, $this->cleanupService);
         $this->application->add($cleanUpCommand);
 
         $this->assertTrue($this->fileSystem->exists($this->dirPath .'/VeryFunnyFolder'));
