@@ -356,7 +356,7 @@ class RrdCachedStorage extends RrdStorage
             "U"
         );
 
-        $process = new Process("rrdtool tune /home/vagrant/fireping/var/rrd/$filename --daemon ".$daemon." ".$ds);
+        $process = new Process("rrdtool tune ".$this->path."var/rrd/$filename --daemon ".$daemon." ".$ds);
         $process->run();
         $error = $process->getErrorOutput();
 
