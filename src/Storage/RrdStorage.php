@@ -59,14 +59,14 @@ class RrdStorage extends Storage
         return $this->path.$device->getId()."/".$probe->getId()."/".$group->getId().'.rrd';
     }
 
-    public function store(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data)
+    public function store(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data, bool $addNewSources = false)
     {
         $path = $this->getFilePath($device, $probe, $group);
 
         if (!$this->fileExists($device, $path)) {
             $this->create($path, $probe, $timestamp, $data);
         }
-        $this->update($device, $path, $probe, $timestamp, $data);
+        $this->update($device, $path, $probe, $timestamp, $data, $addNewSources);
     }
 
     public function fileExists(Device $device, $path)
@@ -74,8 +74,10 @@ class RrdStorage extends Storage
         return file_exists($path);
     }
 
-    protected function create($filename, Probe $probe, $timestamp, $data)
+    protected function create(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data)
     {
+        $filename = $this->getFilePath($device, $probe, $group);
+
         $start = $timestamp - 1;
 
         $options = array(
@@ -120,8 +122,10 @@ class RrdStorage extends Storage
         }
     }
 
-    protected function update(Device $device, $filename, Probe $probe, $timestamp, $data)
+    protected function update(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data, bool $addNewSources)
     {
+        $filename = $this->getFilePath($device, $probe, $group);
+
         $info = rrd_info($filename);
         $update = rrd_lastupdate($filename);
 
@@ -149,6 +153,11 @@ class RrdStorage extends Storage
         if (!$return) {
             throw new RrdException(rrd_error());
         }
+    }
+
+    public function getDatasources(Device $device, Probe $probe, SlaveGroup $group)
+    {
+        return null;
     }
 
     public function fetch(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $key, $function)

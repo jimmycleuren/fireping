@@ -8,6 +8,8 @@ use App\Entity\SlaveGroup;
 use App\Exception\RrdException;
 use App\Exception\WrongTimestampRrdException;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Lock\Factory;
+use Symfony\Component\Lock\Store\FlockStore;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 
@@ -65,18 +67,19 @@ class RrdCachedStorage extends RrdStorage
      * @param SlaveGroup $group
      * @param int $timestamp
      * @param array $data
+     * @param bool $addNewSources
      * @param string $daemon
      * @throws RrdException
      * @throws WrongTimestampRrdException
      */
-    public function store(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data, $daemon = null)
+    public function store(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data, bool $addNewSources = false, $daemon = null)
     {
         $path = $this->getFilePath($device, $probe, $group);
 
         if (!$this->fileExists($device, $path, $daemon)) {
-            $this->create($path, $probe, $timestamp, $data, $daemon);
+            $this->create($device, $probe, $group, $timestamp, $data, $daemon);
         }
-        $this->update($device, $path, $probe, $timestamp, $data, $daemon);
+        $this->update($device, $probe, $group, $timestamp, $data, $addNewSources, $daemon);
     }
 
     public function fileExists(Device $device, $path, $daemon = null)
@@ -95,8 +98,10 @@ class RrdCachedStorage extends RrdStorage
         return false;
     }
 
-    protected function create($filename, Probe $probe, $timestamp, $data, $daemon = null)
+    protected function create(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data, $daemon = null)
     {
+        $filename = $this->getFilePath($device, $probe, $group);
+
         if (!$daemon) {
             $daemon = $this->daemon;
         }
@@ -149,22 +154,29 @@ class RrdCachedStorage extends RrdStorage
     {
         $this->connect($daemon);
         $this->send('LAST '.$filename, $daemon);
-        $timestamp = explode(" ", $this->read($daemon))[1];
+        $message = $this->read($daemon);
+        if (!trim($message)) {
+            throw new RrdException(trim($message));
+        }
+        $timestamp = explode(" ", $message)[1];
         return $timestamp;
     }
 
     /**
      * @param Device $device
-     * @param string $filename
      * @param Probe $probe
+     * @param SlaveGroup $group
      * @param int $timestamp
      * @param array $data
+     * @param bool $addNewSources
      * @param string $daemon
      * @throws RrdException
      * @throws WrongTimestampRrdException
      */
-    protected function update(Device $device, $filename, Probe $probe, $timestamp, $data, $daemon = null)
+    protected function update(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data, bool $addNewSources, $daemon = null)
     {
+        $filename = $this->getFilePath($device, $probe, $group);
+
         if (!$daemon) {
             $daemon = $this->daemon;
         }
@@ -174,11 +186,45 @@ class RrdCachedStorage extends RrdStorage
             throw new WrongTimestampRrdException("RRD $filename last update was ".$last.", cannot update at ".$timestamp);
         }
 
-        $sources = $this->getDatasources($filename, $daemon);
+        $originalData = $data;
+
+        $sources = $this->getDatasources($device, $probe, $group, $daemon);
 
         $values = array($timestamp);
         foreach($sources as $source) {
-            $values[] = $data[$source];
+            if (isset($data[$source])) {
+                $values[] = $data[$source];
+                unset($data[$source]);
+            } else {
+                $values[] = "U";
+            }
+        }
+
+        if ($addNewSources) {
+            $store = new FlockStore(sys_get_temp_dir());
+            $factory = new Factory($store);
+            $lock = $factory->createLock('update-'.$filename);
+
+            if ($lock->acquire()) {
+                $this->logger->info("Checking new datasources");
+                foreach ($data as $name => $value) {
+                    $this->logger->info("Adding new datasource $name to $filename");
+                    $this->addDataSource($filename, $name, $probe, $daemon);
+                }
+
+                $sources = $this->getDatasources($device, $probe, $group, $daemon);
+
+                $data = $originalData;
+                $values = array($timestamp);
+                foreach ($sources as $source) {
+                    if (isset($data[$source])) {
+                        $values[] = $data[$source];
+                    } else {
+                        $values[] = "U";
+                    }
+                }
+                $lock->release();
+            }
         }
 
         $this->send("UPDATE $filename ".implode(":", $values), $daemon);
@@ -188,8 +234,10 @@ class RrdCachedStorage extends RrdStorage
         }
     }
 
-    private function getDatasources($filename, $daemon = null)
+    public function getDatasources(Device $device, Probe $probe, SlaveGroup $group, $daemon = null)
     {
+        $filename = $this->getFilePath($device, $probe, $group);
+
         if (!$daemon) {
             $daemon = $this->daemon;
         }
@@ -207,6 +255,7 @@ class RrdCachedStorage extends RrdStorage
                 }
             }
         }
+
         return $sources;
     }
 
@@ -294,5 +343,25 @@ class RrdCachedStorage extends RrdStorage
         $data = explode("\n", $data);
 
         return (float)$data[1];
+    }
+
+    private function addDataSource($filename, $name, Probe $probe, $daemon)
+    {
+        $ds = sprintf(
+            "DS:%s:%s:%s:%s:%s",
+            $name,
+            'GAUGE',
+            $probe->getStep() * 2,
+            0,
+            "U"
+        );
+
+        $process = new Process("rrdtool tune /home/vagrant/fireping/var/rrd/$filename --daemon ".$daemon." ".$ds);
+        $process->run();
+        $error = $process->getErrorOutput();
+
+        if ($error) {
+            throw new RrdException(trim($error));
+        }
     }
 }

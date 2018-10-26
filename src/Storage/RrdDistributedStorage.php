@@ -34,12 +34,20 @@ class RrdDistributedStorage extends RrdCachedStorage
         }
     }
 
-    public function store(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data, $daemon = null)
+    public function store(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data, bool $addNewSources = false, $daemon = null)
     {
         $node = $this->getStorageNode($device);
         $daemon  = $node->getIp().":42217";
 
-        parent::store($device, $probe, $group, $timestamp, $data, $daemon);
+        parent::store($device, $probe, $group, $timestamp, $data, $addNewSources, $daemon);
+    }
+
+    public function getDatasources(Device $device, Probe $probe, SlaveGroup $group, $daemon = null)
+    {
+        $node = $this->getStorageNode($device);
+        $daemon  = $node->getIp().":42217";
+
+        return parent::getDatasources($device, $probe, $group, $daemon);
     }
 
     public function fetch(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $key, $function, $daemon = null)

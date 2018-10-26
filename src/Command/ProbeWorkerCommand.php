@@ -291,7 +291,7 @@ class ProbeWorkerCommand extends ContainerAwareCommand
                     'status' => 500,
                     'body' => [
                         'timestamp' => $timestamp,
-                        'contents' => $e->getMessage()
+                        'contents' => $e->getMessage() . " on " . $e->getFile().":".$e->getLine()
                     ],
                     'debug' => [
                         'runtime' => time() - $timestamp,
