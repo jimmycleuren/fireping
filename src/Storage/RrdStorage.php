@@ -166,7 +166,7 @@ class RrdStorage extends Storage
 
         $result = rrd_fetch($path, array($function, "--start", $timestamp - $probe->getStep()));
 
-        if (!$result) {
+        if (!$result || !$result['data'] || !isset($result['data'][$key]) || !$result['data'][$key]) {
             return null;
         }
 

@@ -18,12 +18,10 @@ class TracerouteProcessor extends Processor
     {
         $datasources = array();
 
-        //$this->logger->info(json_encode($data));
-
         $prevTotal = 0;
         foreach ($data->hop as $hop => $details) {
             if (isset($details->latencies) && count($details->latencies) != $probe->getSamples()) {
-                throw new \Exception(count($details)." traceroute samples received for hop $hop, should have been ".$probe->getSamples());
+                throw new \Exception(count((array)$details)." traceroute samples received for hop $hop, should have been ".$probe->getSamples());
             }
             $total = 0;
             $failed = 0;

@@ -206,21 +206,25 @@ class RrdCachedStorage extends RrdStorage
             $lock = $factory->createLock('update-'.$filename);
 
             if ($lock->acquire(true)) {
-                foreach ($data as $name => $value) {
-                    $this->logger->info("Adding new datasource $name to $filename");
-                    $this->addDataSource($filename, $name, $probe, $daemon);
-                }
-
-                $sources = $this->getDatasources($device, $probe, $group, $daemon);
-
-                $data = $originalData;
-                $values = array($timestamp);
-                foreach ($sources as $source) {
-                    if (isset($data[$source])) {
-                        $values[] = $data[$source];
-                    } else {
-                        $values[] = "U";
+                try {
+                    foreach ($data as $name => $value) {
+                        $this->logger->info("Adding new datasource $name to $filename");
+                        $this->addDataSource($filename, $name, $probe, $daemon);
                     }
+
+                    $sources = $this->getDatasources($device, $probe, $group, $daemon);
+
+                    $data = $originalData;
+                    $values = array($timestamp);
+                    foreach ($sources as $source) {
+                        if (isset($data[$source])) {
+                            $values[] = $data[$source];
+                        } else {
+                            $values[] = "U";
+                        }
+                    }
+                } catch(\Exception $e) {
+                    $this->logger->error($e->getMessage());
                 }
                 $lock->release();
             }
@@ -355,7 +359,7 @@ class RrdCachedStorage extends RrdStorage
             "U"
         );
 
-        $process = new Process("rrdtool tune ".$this->path."var/rrd/$filename --daemon ".$daemon." ".$ds);
+        $process = new Process("rrdtool tune ".$this->path."$filename --daemon ".$daemon." ".$ds);
         $process->run();
         $error = $process->getErrorOutput();
 

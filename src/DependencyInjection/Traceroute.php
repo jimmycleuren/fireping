@@ -87,8 +87,11 @@ class Traceroute
         }
 
         $end = microtime(true);
-        $remaining = ($step * 1000) - ($end - $start);
-        $waitTime = floor($remaining / $samples);
+        $remaining = $step - ($end - $start);
+
+        $this->logger->info("Trace took ".($end - $start)." seconds, ".$remaining." seconds remaining");
+
+        $waitTime = floor($remaining / $samples) * 1000;
 
         //ping all gathered hops with the given waitTime and samples
         $merged = array_unique($merged);

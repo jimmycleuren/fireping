@@ -19,9 +19,9 @@ class RrdDistributedStorage extends RrdCachedStorage
     private $storageNodeRepo;
     private $hash;
 
-    public function __construct(LoggerInterface $logger, StorageNodeRepository $storageNodeRepository, EntityManagerInterface $entityManager)
+    public function __construct($path, LoggerInterface $logger, StorageNodeRepository $storageNodeRepository, EntityManagerInterface $entityManager)
     {
-        parent::__construct(null, $logger);
+        parent::__construct($path, $logger);
 
         $this->hash = new Flexihash();
         $this->entityManager = $entityManager;
