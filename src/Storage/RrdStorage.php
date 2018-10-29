@@ -64,9 +64,9 @@ class RrdStorage extends Storage
         $path = $this->getFilePath($device, $probe, $group);
 
         if (!$this->fileExists($device, $path)) {
-            $this->create($path, $probe, $timestamp, $data);
+            $this->create($device, $probe, $group, $timestamp, $data);
         }
-        $this->update($device, $path, $probe, $timestamp, $data, $addNewSources);
+        $this->update($device, $probe, $group, $timestamp, $data, $addNewSources);
     }
 
     public function fileExists(Device $device, $path)

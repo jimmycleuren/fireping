@@ -13,8 +13,8 @@ class Traceroute
 {
     private $maxHops = 30;
     private $delay = null;
+    private $step = null;
     private $samples = null;
-    private $waitTime = null;
     private $targets = [];
     private $logger = null;
 
@@ -22,8 +22,8 @@ class Traceroute
     {
         $this->logger = $logger;
         $this->delay = $args['delay_execution'];
+        $this->step = $args['step'];
         $this->samples = $args['args']['samples'];
-        $this->waitTime = $args['args']['wait_time'];
         $this->targets = $args['targets'];
 
         $finder = new ExecutableFinder();
@@ -36,14 +36,14 @@ class Traceroute
     {
         usleep($this->delay * 1000);
 
-        $this->logger->debug("Launching traceroute (waittime=$this->waitTime, samples=$this->samples) on ".json_encode($this->targets));
+        $this->logger->debug("Launching traceroute (step=$this->step, samples=$this->samples) on ".json_encode($this->targets));
 
         $ips = [];
         foreach ($this->targets as $target) {
             $ips[] = $target['ip'];
         }
 
-        $temp = $this->trace($ips, $this->samples, $this->waitTime);
+        $temp = $this->trace($ips, $this->samples, $this->step);
 
         $result = array();
         foreach ($this->targets as $target) {
@@ -55,7 +55,7 @@ class Traceroute
         return $result;
     }
 
-    public function trace(array $ips, $samples, $waitTime)
+    public function trace(array $ips, $samples, $step)
     {
         $result = array();
         $active = array();
@@ -65,6 +65,7 @@ class Traceroute
         }
 
         $merged = array();
+        $start = microtime(true);
 
         //determine hops
         for($i = 1; $i < $this->maxHops && count($active) > 0; $i++) {
@@ -84,6 +85,10 @@ class Traceroute
                 }
             }
         }
+
+        $end = microtime(true);
+        $remaining = ($step * 1000) - ($end - $start);
+        $waitTime = floor($remaining / $samples);
 
         //ping all gathered hops with the given waitTime and samples
         $merged = array_unique($merged);

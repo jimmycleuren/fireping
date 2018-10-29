@@ -205,8 +205,7 @@ class RrdCachedStorage extends RrdStorage
             $factory = new Factory($store);
             $lock = $factory->createLock('update-'.$filename);
 
-            if ($lock->acquire()) {
-                $this->logger->info("Checking new datasources");
+            if ($lock->acquire(true)) {
                 foreach ($data as $name => $value) {
                     $this->logger->info("Adding new datasource $name to $filename");
                     $this->addDataSource($filename, $name, $probe, $daemon);
