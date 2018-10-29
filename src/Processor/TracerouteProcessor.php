@@ -11,6 +11,7 @@ namespace App\Processor;
 use App\Entity\Device;
 use App\Entity\Probe;
 use App\Entity\SlaveGroup;
+use App\Exception\TracerouteException;
 
 class TracerouteProcessor extends Processor
 {
@@ -20,8 +21,11 @@ class TracerouteProcessor extends Processor
 
         $prevTotal = 0;
         foreach ($data->hop as $hop => $details) {
+            if (!isset($details->ip) ) {
+                throw new TracerouteException("No ip specified for hop $hop");
+            }
             if (isset($details->latencies) && count($details->latencies) != $probe->getSamples()) {
-                throw new \Exception(count((array)$details)." traceroute samples received for hop $hop, should have been ".$probe->getSamples());
+                throw new TracerouteException(count((array)$details)." samples received for hop $hop, should have been ".$probe->getSamples());
             }
             $total = 0;
             $failed = 0;
