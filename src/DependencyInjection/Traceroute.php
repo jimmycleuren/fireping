@@ -91,9 +91,9 @@ class Traceroute
 
         $this->logger->info("Trace took ".($end - $start)." seconds, ".$remaining." seconds remaining");
 
-        $waitTime = floor($remaining / $samples) * 1000;
+        $waitTime = floor($remaining * 1000 / $samples);
 
-        //ping all gathered hops with the given waitTime and samples
+        //ping all gathered hops in the remaining time
         $merged = array_unique($merged);
         $latencies = array();
         $res = $this->exec("fping -C $samples -p ".($waitTime)." ".implode(" ", $merged)." 2>&1");

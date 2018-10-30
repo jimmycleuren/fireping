@@ -91,10 +91,12 @@ class TracerouteGraph extends RrdGraph
                 }
 
 
-                $options[] = "GPRINT:$name" . "median:AVERAGE:rtt\: %6.1lf ms avg";
-                $options[] = "GPRINT:$name" . "median:MIN:%6.1lf ms min";
-                $options[] = "GPRINT:$name" . "median:MAX:%6.1lf ms max";
-                $options[] = "GPRINT:$name" . "losspercent:AVERAGE:packet loss\: %6.2lf %% avg";
+                $options[] = "GPRINT:$name" . "median:AVERAGE:median rtt\: %7.1lf ms avg";
+                $options[] = "GPRINT:$name" . "median:MIN:%7.1lf ms min";
+                $options[] = "GPRINT:$name" . "median:MAX:%7.1lf ms max";
+                $options[] = "GPRINT:$name" . "losspercent:AVERAGE:packet loss\: %8.2lf %% avg";
+                $options[] = "GPRINT:$name" . "losspercent:MIN:%8.2lf %% min";
+                $options[] = "GPRINT:$name" . "losspercent:MAX:%8.2lf %% max";
                 $options[] = "COMMENT: \\n";
             }
         }
@@ -105,8 +107,13 @@ class TracerouteGraph extends RrdGraph
 
             $options[] = sprintf("DEF:%s=%s:%s:%s", $name . "median", $this->storage->getFilePath($device, $probe, $slavegroup), $hops[0] . 'm', "AVERAGE");
             $options[] = "LINE:$name" . "median#000000";
-            $options[] = "COMMENT: No traceroute data found";
+            $options[] = "COMMENT:No traceroute data found";
         }
+
+        $options[] = "COMMENT: \\n";
+
+        $options[] = "COMMENT:".$probe->getName()." (".$probe->getSamples()." probes of type ".$probe->getType()." in ".$probe->getStep()." seconds) from ".$slavegroup->getName()."";
+        $options[] = "COMMENT:ending on ".date("D M j H\\\:i\\\:s Y", $end)."";
 
         return $this->storage->graph($device, $options);
     }
