@@ -50,7 +50,7 @@ easy_admin:
             form:
                 fields:
                     - name
-                    - { property: 'type', type: 'choice', type_options: { choices: { 'ping': 'ping', 'http': 'http' } } }
+                    - { property: 'type', type: 'choice', type_options: { choices: { 'ping': 'ping', 'http': 'http', 'traceroute': 'traceroute' } } }
                     - step
                     - samples
                     - arguments

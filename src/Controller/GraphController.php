@@ -33,7 +33,7 @@ class GraphController extends Controller
     public function summaryAction(Device $device, GraphFactory $graphFactory)
     {
         $probes = $device->getActiveProbes();
-        $priority = ['ping', 'http'];
+        $priority = ['ping', 'traceroute', 'http'];
 
         foreach ($priority as $type) {
             foreach ($probes as $probe) {
