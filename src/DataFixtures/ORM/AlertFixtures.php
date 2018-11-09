@@ -26,6 +26,52 @@ class AlertFixtures extends Fixture implements DependentFixtureInterface
         $alert->setAlertRule($this->getReference('alertrule-1'));
         $manager->persist($alert);
 
+        //alerts for cleanupAlert
+        $alert = new Alert();
+        $alert->setActive(true);
+        $alert->setFirstseen(new \DateTime("1 hour ago"));
+        $alert->setLastseen(new \DateTime("now"));
+        $alert->setDevice($this->getReference('device-4'));
+        $alert->setSlaveGroup($this->getReference('slavegroup-1'));
+        $alert->setAlertRule($this->getReference('alertrule-1'));
+        $manager->persist($alert);
+
+        $alert = new Alert();
+        $alert->setActive(true);
+        $alert->setFirstseen(new \DateTime("1 hour ago"));
+        $alert->setLastseen(new \DateTime("now"));
+        $alert->setDevice($this->getReference('device-4'));
+        $alert->setSlaveGroup($this->getReference('slavegroup-1'));
+        $alert->setAlertRule($this->getReference('alertrule-1'));
+        $manager->persist($alert);
+
+        $alert = new Alert();
+        $alert->setActive(true);
+        $alert->setFirstseen(new \DateTime("1 hour ago"));
+        $alert->setLastseen(new \DateTime("now"));
+        $alert->setDevice($this->getReference('device-4'));
+        $alert->setSlaveGroup($this->getReference('slavegroup-1'));
+        $alert->setAlertRule($this->getReference('alertrule-1'));
+        $manager->persist($alert);
+
+        $alert = new Alert();
+        $alert->setActive(true);
+        $alert->setFirstseen(new \DateTime("1 hour ago"));
+        $alert->setLastseen(new \DateTime("now"));
+        $alert->setDevice($this->getReference('device-5'));
+        $alert->setSlaveGroup($this->getReference('slavegroup-1'));
+        $alert->setAlertRule($this->getReference('alertrule-1'));
+        $manager->persist($alert);
+
+        $alert = new Alert();
+        $alert->setActive(true);
+        $alert->setFirstseen(new \DateTime("1 hour ago"));
+        $alert->setLastseen(new \DateTime("now"));
+        $alert->setDevice($this->getReference('device-6'));
+        $alert->setSlaveGroup($this->getReference('slavegroup-1'));
+        $alert->setAlertRule($this->getReference('alertrule-1'));
+        $manager->persist($alert);
+
         $manager->flush();
     }
 

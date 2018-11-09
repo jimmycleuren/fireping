@@ -39,6 +39,16 @@ easy_admin:
             disabled_actions: ['new']
         AlertRule:
             class: App\Entity\AlertRule
+            edit:
+                fields:
+                    - name
+                    - datasource
+                    - pattern
+                    - messageUp
+                    - messageDown
+                    - { property: 'probe', type_options: { disabled: true }, help: 'It is not allowed to change the probe. Instead create a new alert rule.' }
+                    - parent
+                    - children
         AlertDestination:
             class: App\Entity\AlertDestination
             form:
