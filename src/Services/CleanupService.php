@@ -107,6 +107,7 @@ class CleanupService
 
         //create an array of existing directories
         $this->storedDeviceIds = $this->storage->listItems($this->path);
+
         if($this->storedDeviceIds === null){
             echo 'No devices listed, directory is either clean or wrongly set, exiting...' . PHP_EOL;
             $this->logger->info('No items found, directory is either clean or wrongly set');
@@ -150,8 +151,10 @@ class CleanupService
                 $this->activeGroups[$deviceId][] = $activeGroup->getid() . '.rrd';
             }
 
-            $this->activeGroups[$deviceId] = array_unique($this->activeGroups[$deviceId]);
-
+            if (isset($this->activeGroups[$deviceId]))
+            {
+                $this->activeGroups[$deviceId] = array_unique($this->activeGroups[$deviceId]);
+            }
         }
 
     }
@@ -217,7 +220,11 @@ class CleanupService
                 $this->activeProbes[$deviceId][] = $probe->getid();
             }
 
-            $this->activeProbes[$deviceId] = array_unique($this->activeProbes[$deviceId]);
+            if (isset($this->activeProbes[$deviceId]))
+            {
+                $this->activeProbes[$deviceId] = array_unique($this->activeProbes[$deviceId]);
+            }
+
         }
 
     }

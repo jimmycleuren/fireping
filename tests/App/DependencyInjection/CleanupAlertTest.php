@@ -3,13 +3,7 @@
 namespace Tests\App\DependencyInjection;
 
 use App\DependencyInjection\CleanupAlert;
-use App\DependencyInjection\Queue;
-use App\DependencyInjection\Worker;
-use App\DependencyInjection\WorkerManager;
 use App\Entity\Alert;
-use App\Repository\AlertRepository;
-use Doctrine\ORM\EntityManager;
-use Prophecy\Argument;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -18,7 +12,6 @@ class CleanupAlertTest extends WebTestCase
 {
     private $logger;
     private $alertRepository;
-    private $entityManager;
     private $cleanupAlertService;
 
     public function setUp()
