@@ -60,8 +60,19 @@ class DeviceFixtures extends Fixture implements DependentFixtureInterface
         $device->setDomain($this->getReference('domain-4'));
         $device->addSlaveGroup($this->getReference('slavegroup-2'));
         $device->addAlertRule($this->getReference('alertrule-1'));
+        $device->addProbe($this->getReference('probe-ping'));
         $manager->persist($device);
         $this->addReference('device-6', $device);
+
+        $device = new Device();
+        $device->setName('Device 7');
+        $device->setIp('8.8.8.8');
+        $device->setDomain($this->getReference('domain-4'));
+        $device->addSlaveGroup($this->getReference('slavegroup-2'));
+        $device->addAlertRule($this->getReference('alertrule-1'));
+        $device->addProbe($this->getReference('probe-traceroute'));
+        $manager->persist($device);
+        $this->addReference('device-7', $device);
 
         $manager->flush();
     }

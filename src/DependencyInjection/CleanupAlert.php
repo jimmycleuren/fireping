@@ -43,19 +43,33 @@ class CleanupAlert
     {
         $alerts = $this->alertRepository->findAll();
 
-        $alertsNoSlaveGroups = array_filter($alerts,function(Alert $alert){
+        $removeAlertsSlaveGroup = array_filter($alerts,function(Alert $alert){
              return !in_array($alert->getSlaveGroup(), $alert->getDevice()->getActiveSlaveGroups()->toArray()) ;
         });
 
-        $alertsNoSlaveGroupsNoAlertRules = array_filter($alertsNoSlaveGroups,function(Alert $alert){
+        $this->removeAlerts($removeAlertsSlaveGroup);
+
+        $removeAlertsAlertRule = array_filter(array_diff($alerts, $removeAlertsSlaveGroup),function(Alert $alert){
             return !in_array($alert->getAlertRule(), $alert->getDevice()->getActiveAlertRules()->toArray());
         });
 
-        foreach ($alertsNoSlaveGroupsNoAlertRules as $alert) {
-            $this->logger->info("Alert ".$alert->getId()." from device ".$alert->getDevice()->getName()." will be removed");
-            $this->entityManager->remove($alert);
-        }
+        $this->removeAlerts($removeAlertsAlertRule);
+
+        $removeAlertsProbe = array_filter(array_diff($alerts, $removeAlertsSlaveGroup, $removeAlertsAlertRule),function(Alert $alert){
+            return !in_array($alert->getAlertRule()->getProbe(), $alert->getDevice()->getActiveProbes()->toArray());
+        });
+
+        $this->removeAlerts($removeAlertsProbe);
 
         $this->entityManager->flush();
+    }
+
+    private function removeAlerts(array $removeAlerts): void
+    {
+        foreach ($removeAlerts as $alert) {
+            $this->logger->info("Alert ".$alert->getId()." from device ".$alert->getDevice()->getName()." will be removed");
+
+            $this->entityManager->remove($alert);
+        }
     }
 }

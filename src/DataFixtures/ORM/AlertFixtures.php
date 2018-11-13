@@ -72,6 +72,24 @@ class AlertFixtures extends Fixture implements DependentFixtureInterface
         $alert->setAlertRule($this->getReference('alertrule-1'));
         $manager->persist($alert);
 
+        $alert = new Alert();
+        $alert->setActive(true);
+        $alert->setFirstseen(new \DateTime("1 hour ago"));
+        $alert->setLastseen(new \DateTime("now"));
+        $alert->setDevice($this->getReference('device-6'));
+        $alert->setSlaveGroup($this->getReference('slavegroup-2'));
+        $alert->setAlertRule($this->getReference('alertrule-1'));
+        $manager->persist($alert);
+
+        $alert = new Alert();
+        $alert->setActive(true);
+        $alert->setFirstseen(new \DateTime("1 hour ago"));
+        $alert->setLastseen(new \DateTime("now"));
+        $alert->setDevice($this->getReference('device-7'));
+        $alert->setSlaveGroup($this->getReference('slavegroup-2'));
+        $alert->setAlertRule($this->getReference('alertrule-1'));
+        $manager->persist($alert);
+
         $manager->flush();
     }
 
