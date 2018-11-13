@@ -37,6 +37,6 @@ class CleanupAlertTest extends WebTestCase
         $this->cleanupAlertService->cleanup();
         $countAlertsAfter = count($this->alertRepository->findAll());
 
-        $this->assertEquals(3, $countAlertsBefore - $countAlertsAfter);
+        $this->assertEquals(7, $countAlertsBefore - $countAlertsAfter);
     }
 }
