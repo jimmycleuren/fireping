@@ -254,7 +254,12 @@ class SlaveControllerTest extends AbstractApiTest
                 'timestamp' => $timestamp,
                 'targets' => array(
                     '1' => array(
-                        0 => 1,
+                        'hop' => array(
+                            0 => array(
+                                'ip' => "1.1.1.1",
+                                'latencies' => array(1)
+                            ),
+                        )
                     )
                 )
             )
@@ -275,21 +280,12 @@ class SlaveControllerTest extends AbstractApiTest
                 'timestamp' => $timestamp,
                 'targets' => array(
                     '1' => array(
-                        0 => 1,
-                        1 => 1,
-                        2 => 1,
-                        3 => 1,
-                        4 => 1,
-                        5 => 1,
-                        6 => 1,
-                        7 => 1,
-                        8 => 1,
-                        9 => 1,
-                        10 => 1,
-                        11 => 1,
-                        12 => 1,
-                        13 => 1,
-                        14 => 1,
+                        'hop' => array(
+                            0 => array(
+                                'ip' => "1.1.1.1",
+                                'latencies' => array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
+                            ),
+                        )
                     )
                 )
             )

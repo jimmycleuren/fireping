@@ -1,6 +1,7 @@
 <?php
 namespace App\DependencyInjection;
 use App\ShellCommand\PingShellCommand;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Process\ExecutableFinder;
 
 
@@ -11,9 +12,20 @@ use Symfony\Component\Process\ExecutableFinder;
 class Traceroute
 {
     private $maxHops = 30;
+    private $delay = null;
+    private $step = null;
+    private $samples = null;
+    private $targets = [];
+    private $logger = null;
 
-    public function __construct()
+    public function __construct($args, LoggerInterface $logger)
     {
+        $this->logger = $logger;
+        $this->delay = $args['delay_execution'];
+        $this->step = $args['step'];
+        $this->samples = $args['args']['samples'];
+        $this->targets = $args['targets'];
+
         $finder = new ExecutableFinder();
         if (!$finder->find("fping")) {
             throw new \Exception("fping is not installed on this system.");
@@ -22,7 +34,25 @@ class Traceroute
 
     public function execute()
     {
-        $this->trace(array("8.8.8.8"), 1, 1);
+        usleep($this->delay * 1000);
+
+        $this->logger->debug("Launching traceroute (step=$this->step, samples=$this->samples) on ".json_encode($this->targets));
+
+        $ips = [];
+        foreach ($this->targets as $target) {
+            $ips[] = $target['ip'];
+        }
+
+        $temp = $this->trace($ips, $this->samples, $this->step);
+
+        $result = array();
+        foreach ($this->targets as $target) {
+            $result[$target['id']] = $temp[$target['ip']];
+        }
+
+        $this->logger->debug("Traceroute result: ".json_encode($result));
+
+        return $result;
     }
 
     public function trace(array $ips, $samples, $step)
@@ -35,6 +65,7 @@ class Traceroute
         }
 
         $merged = array();
+        $start = microtime(true);
 
         //determine hops
         for($i = 1; $i < $this->maxHops && count($active) > 0; $i++) {
@@ -55,15 +86,22 @@ class Traceroute
             }
         }
 
-        //ping all gathered hops with the given step and samples
+        $end = microtime(true);
+        $remaining = $step - ($end - $start);
+
+        $this->logger->info("Trace took ".($end - $start)." seconds, ".$remaining." seconds remaining");
+
+        $waitTime = floor($remaining * 1000 / $samples);
+
+        //ping all gathered hops in the remaining time
         $merged = array_unique($merged);
         $latencies = array();
-        $res = $this->exec("fping -C $samples -p ".($step * 1000 / $samples)." ".implode(" ", $merged)." 2>&1");
+        $res = $this->exec("fping -C $samples -p ".($waitTime)." ".implode(" ", $merged)." 2>&1");
         $res = implode("\n", $res);
 
         foreach ($merged as $ip) {
             if (preg_match("/$ip([\s]+): (?P<latencies>[\d\.\-\ ]+)/", $res, $matches)) {
-                $latencies[$ip] = explode(" ", $matches['latencies']);
+                $latencies[$ip] = explode(" ", str_replace("-", "-1", $matches['latencies']));
             }
         }
 
@@ -75,7 +113,7 @@ class Traceroute
             }
         }
 
-        var_dump($result);
+        return $result;
     }
 
     private function exec($command)
