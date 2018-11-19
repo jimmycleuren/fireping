@@ -11,7 +11,7 @@
             {% for probe in device.getActiveProbes() %}
                 {% for slavegroup in device.getActiveSlaveGroups() %}
                     <h3><u>{{ probe.name }} - {{ slavegroup.name }}</u></h3>
-                    <img style="width:1097px;" class="graph" data-src-template="/api/graphs/detail/{{ device.id }}/{{ probe.id }}/{{ slavegroup.id }}{% verbatim %}?start={{start}}&end={{end}}{% endverbatim  %}" /><br/><br/>
+                    <img style="width:1097px;" onload="window.dispatchEvent(new Event('resize'));" class="graph" data-src-template="/api/graphs/detail/{{ device.id }}/{{ probe.id }}/{{ slavegroup.id }}{% verbatim %}?start={{start}}&end={{end}}{% endverbatim  %}" /><br/><br/>
                 {% endfor %}
             {% endfor %}
         </div>
