@@ -20,6 +20,11 @@ class Http
     private $samples;
     private $waitTime;
     private $times;
+    private $allowedCodes = [
+        200,
+        301,
+        302
+    ];
 
     public function __construct($data, LoggerInterface $logger)
     {
@@ -38,7 +43,8 @@ class Http
         $result = [];
 
         $options  = [
-            'timeout' => $this->waitTime / 1000,
+            'timeout' => ($this->waitTime / 1000) * 0.9,
+            'allow_redirects' => false,
             'headers' => [],
         ];
 
@@ -63,7 +69,7 @@ class Http
 
             $responses = Promise\settle($promises)->wait();
             foreach($responses as $id => $response) {
-                if (isset($response['value']) && $response['value']->getStatusCode() == 200) {
+                if (isset($response['value']) && in_array($response['value']->getStatusCode(), $this->allowedCodes)) {
                     $result[$id][] = $this->times[$id];
                 } else {
                     $result[$id][] = -1;
