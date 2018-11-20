@@ -27,7 +27,7 @@ class StorageFactoryTest extends TestCase
 
         $rrdStorage = new RrdStorage("", $logger);
         $rrdCachedStorage = new RrdCachedStorage("", $logger);
-        $rrdDistributedStorage = new RrdDistributedStorage($logger, $storageNodeRepository, $entityManager);
+        $rrdDistributedStorage = new RrdDistributedStorage("", $logger, $storageNodeRepository, $entityManager);
 
         $factory = new StorageFactory($rrdStorage, $rrdCachedStorage, $rrdDistributedStorage);
 
@@ -56,7 +56,7 @@ class StorageFactoryTest extends TestCase
 
         $rrdStorage = new RrdStorage("", $logger);
         $rrdCachedStorage = new RrdCachedStorage("", $logger);
-        $rrdDistributedStorage = new RrdDistributedStorage($logger, $storageNodeRepository, $entityManager);
+        $rrdDistributedStorage = new RrdDistributedStorage("", $logger, $storageNodeRepository, $entityManager);
 
         $factory = new StorageFactory($rrdStorage, $rrdCachedStorage, $rrdDistributedStorage);
 

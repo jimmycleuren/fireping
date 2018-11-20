@@ -56,11 +56,7 @@ class Mail extends AlertDestinationInterface
             return;
         }
 
-        $alertRule = $alert->getAlertRule();
-        $device = $alert->getDevice()->getName();
-        $group = $alert->getSlaveGroup()->getName();
-
-        $this->sendMail($this->recipient, $this->getAlertMessage($alert), $alert);
+        $this->sendMail($this->recipient, $this->getAlertMessage($alert), $alert, 'ALERT');
     }
 
     /**
@@ -73,20 +69,16 @@ class Mail extends AlertDestinationInterface
             return;
         }
 
-        $alertRule = $alert->getAlertRule();
-        $device = $alert->getDevice()->getName();
-        $group = $alert->getSlaveGroup()->getName();
-
-        $this->sendMail($this->recipient, $this->getAlertMessage($alert), $alert);
+        $this->sendMail($this->recipient, $this->getAlertMessage($alert), $alert, "CLEAR");
     }
 
     /**
      * @param string $to
      * @param string $subject
      * @param Alert $alert
-     * @throws \Twig\Error\Error
+     * @param string $action
      */
-    private function sendMail(string $to, string $subject, Alert $alert)
+    private function sendMail(string $to, string $subject, Alert $alert, string $action)
     {
         try {
             $message = (new \Swift_Message($subject))
@@ -95,7 +87,10 @@ class Mail extends AlertDestinationInterface
                 ->setBody(
                     $this->templating->render(
                         'emails/alert.html.twig',
-                        array('alert' => $alert)
+                        array(
+                            'alert' => $alert,
+                            'action' => $action
+                        )
                     ),
                     'text/html'
                 );
