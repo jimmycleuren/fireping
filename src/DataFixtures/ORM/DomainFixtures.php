@@ -38,6 +38,12 @@ class DomainFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($domain);
         $this->addReference('domain-3', $domain);
 
+        $domain = new Domain();
+        $domain->setId(4);
+        $domain->setName("Domain 4");
+        $manager->persist($domain);
+        $this->addReference('domain-4', $domain);
+
         $manager->flush();
     }
 
