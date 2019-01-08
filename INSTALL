@@ -1,5 +1,12 @@
 Install os dependencies
 -----------------------
+sudo apt-get install ca-certificates apt-transport-https
+
+wget -q https://packages.sury.org/php/apt.gpg -O- | sudo apt-key add -
+echo "deb https://packages.sury.org/php/ stretch main" | sudo tee /etc/apt/sources.list.d/php.list
+
+sudo apt-get update
+
 sudo apt-get install fping php-cli php-xml php-mbstring php-zip php-curl git supervisor
 
 Install composer
