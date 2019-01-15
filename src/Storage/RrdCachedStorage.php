@@ -274,7 +274,7 @@ class RrdCachedStorage extends RrdStorage
             $options[$key] = '"'.$option.'"';
         }
 
-        $process = new Process("rrdtool graph $imageFile -d ".$daemon." ".implode(" ", $options));
+        $process = new Process(["rrdtool", "graph", $imageFile, "-d", $daemon, implode(" ", $options)]);
         $process->run();
         $error = $process->getErrorOutput();
 
@@ -332,7 +332,7 @@ class RrdCachedStorage extends RrdStorage
 
         $tempFile = tempnam("/tmp", 'temp');
 
-        $process = new Process("rrdtool graph $tempFile -d ".$daemon." ".implode(" ", $options));
+        $process = new Process(["rrdtool", "graph", $tempFile, "-d", $daemon, implode(" ", $options)]);
         $process->run();
         $data = $process->getOutput();
         $error = $process->getErrorOutput();
@@ -359,7 +359,7 @@ class RrdCachedStorage extends RrdStorage
             "U"
         );
 
-        $process = new Process("rrdtool tune ".$this->path."$filename --daemon ".$daemon." ".$ds);
+        $process = new Process(["rrdtool", "tune", $this->path.$filename, "--daemon", $daemon, $ds]);
         $process->run();
         $error = $process->getErrorOutput();
 

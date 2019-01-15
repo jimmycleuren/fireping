@@ -2,15 +2,13 @@
 
 namespace App\Controller;
 
-use App\Entity\Device;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
-class DebugController extends Controller
+class DebugController extends AbstractController
 {
     /**
      * @Route("/debug", name="debug")

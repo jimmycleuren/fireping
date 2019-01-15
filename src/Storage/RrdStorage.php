@@ -218,7 +218,7 @@ class RrdStorage extends Storage
                     $archive->getSteps(),
                     $archive->getRows()
                 );
-                $process = new Process("rrdtool tune $filename $rradef");
+                $process = new Process(["rrdtool", "tune", $filename, $rradef]);
                 $process->run();
             }
         }
@@ -236,7 +236,7 @@ class RrdStorage extends Storage
             }
             if (!$found && in_array($item['cf'], array("AVERAGE", "MIN", "MAX"))) {
                 $this->logger->info("Removing #$i " . $item['cf'] . "-" . $item['pdp_per_row'] . "-" . $item['rows']);
-                $process = new Process("rrdtool tune $filename DELRRA:$i");
+                $process = new Process(["rrdtool", "tune", $filename, "DELRRA:$i"]);
                 $process->run();
             }
         }
@@ -349,7 +349,7 @@ class RrdStorage extends Storage
 
         $deleteCandidates = implode(' ', $items);
 
-        $process = new Process('rm -rf '. $deleteCandidates);
+        $process = new Process(["rm", "-rf", $deleteCandidates]);
         $process->run(function ($type, $buffer) {
             if (Process::ERR === $type) {
                 $this->logger->info($buffer);

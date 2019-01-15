@@ -4,7 +4,7 @@ namespace App\Command;
 
 use App\Services\CleanupService;
 use Psr\Log\LoggerInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
@@ -13,7 +13,7 @@ use Symfony\Component\Stopwatch\Stopwatch;
  * Class CleanupCommand
  * @package App\Command
  */
-class CleanupCommand extends ContainerAwareCommand
+class CleanupCommand extends Command
 {
     protected static $defaultName = 'app:cleanup';
 
