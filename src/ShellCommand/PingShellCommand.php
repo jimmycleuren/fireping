@@ -10,6 +10,8 @@ namespace App\ShellCommand;
 
 
 use App\OutputFormatter\PingOutputFormatter;
+use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 
 class PingShellCommand extends ShellCommand
 {
@@ -24,9 +26,9 @@ class PingShellCommand extends ShellCommand
     protected $EXTRA_ARGUMENTS = array('-q');
     protected $REQUIRED_ARGUMENTS = array('-C');
 
-    public function __construct($data)
+    public function __construct($data, LoggerInterface $logger, ContainerInterface $container)
     {
-        parent::__construct($data);
+        parent::__construct($data, $logger, $container);
         $this->setOutputFormatter(new PingOutputFormatter());
     }
 }

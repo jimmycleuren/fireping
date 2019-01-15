@@ -11,6 +11,8 @@ namespace App\ShellCommand;
 use App\ShellCommand\CommandInterface;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Exception\TransferException;
+use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 
 class PostResultsHttpWorkerCommand implements CommandInterface
 {
@@ -38,10 +40,13 @@ class PostResultsHttpWorkerCommand implements CommandInterface
     /* @var $body string */
     protected $body;
 
-    function __construct($args)
+    protected $logger;
+
+    function __construct($args, LoggerInterface $logger, ContainerInterface $container)
     {
         $this->arguments = $args;
-        $this->container = $args['container'];
+        $this->logger = $logger;
+        $this->container = $container;
 
         if (isset($args['client'])) {
             $this->client = $this->container->get($args['client']);

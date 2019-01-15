@@ -3,6 +3,8 @@
 namespace App\ShellCommand;
 use App\OutputFormatter\DefaultOutputFormatter;
 use App\OutputFormatter\OutputFormatterInterface;
+use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Process\ExecutableFinder;
@@ -35,7 +37,11 @@ abstract class ShellCommand implements CommandInterface
     /* @var $outputFormatter OutputFormatterInterface */
     protected $outputFormatter;
 
-    public function __construct($data)
+    protected $logger;
+
+    protected $container;
+
+    public function __construct($data, LoggerInterface $logger, ContainerInterface $container)
     {
         $finder = new ExecutableFinder();
         if (!$finder->find($this->command)) {
@@ -45,6 +51,8 @@ abstract class ShellCommand implements CommandInterface
         $this->arguments = $this->mapArguments($data['args']);
         $this->targets = $data['targets'];
         $this->outputFormatter = new DefaultOutputFormatter();
+        $this->logger = $logger;
+        $this->container = $container;
     }
 
     /**

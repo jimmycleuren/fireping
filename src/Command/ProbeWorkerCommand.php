@@ -193,7 +193,6 @@ class ProbeWorkerCommand extends Command
         $str = 'COMMUNICATION_FLOW: Worker '.getmypid().' received a '.$data['type'].' instruction from master.';
         $this->logger->info($str);
 
-        $data['container'] = $this->getContainer();
         $command = null;
         try {
             $command = $this->commandFactory->create($data['type'], $data);
