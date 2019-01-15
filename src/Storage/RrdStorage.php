@@ -347,9 +347,7 @@ class RrdStorage extends Storage
         $path = rtrim($path, '/') . '/';
         $items = $this->concatCollection($items, $path);
 
-        $deleteCandidates = implode(' ', $items);
-
-        $process = new Process(["rm", "-rf", $deleteCandidates]);
+        $process = new Process(array_merge(["rm", "-rf"], $items));
         $process->run(function ($type, $buffer) {
             if (Process::ERR === $type) {
                 $this->logger->info($buffer);

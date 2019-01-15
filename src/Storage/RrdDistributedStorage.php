@@ -10,6 +10,7 @@ use App\Repository\StorageNodeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Flexihash\Flexihash;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
 
 class RrdDistributedStorage extends RrdCachedStorage
@@ -202,12 +203,11 @@ class RrdDistributedStorage extends RrdCachedStorage
     {
         $path = rtrim($path, '/') . '/';
         $items = $this->concatCollection($items, $path);
-        $deleteCandidates = implode(' ', $items);
 
         foreach ($this->storageNodeRepo->findAll() as $storageNode) {
 
             $ip = $storageNode->getIp();
-            $process = new Process(["ssh", $ip, "rm", "-rf", $deleteCandidates]);
+            $process = new Process(array_merge(["ssh", $ip, "rm", "-rf"], $items));
             $process->run(function ($type, $buffer) {
                 if (Process::ERR === $type) {
                     $this->logger->info($buffer);
