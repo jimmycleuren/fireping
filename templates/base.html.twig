@@ -97,7 +97,7 @@
                             href="{{ path('storagenode') }}">Storage nodes</a></li>
 
                  {% if is_granted('ROLE_ADMIN') %}   <li {% if active_menu is defined and active_menu == "admin" %}class="active"{% endif %}><a
-                            href="{{ path('admin') }}">Admin</a></li>
+                            href="{{ path('easyadmin') }}">Admin</a></li>
                 {% endif %}
                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                 <li><a href="{{ path('fos_user_security_logout') }}">Logout</a></li>
