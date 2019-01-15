@@ -106,6 +106,7 @@ class Worker
             $expectedRuntime = $this->expectedRuntime * 1.25;
             if ($actualRuntime > $expectedRuntime) {
                 $this->logger->info("Worker $this has exceeded the expected runtime, terminating.");
+                $this->process->stop();
             }
         }
         if (!$this->executing) {

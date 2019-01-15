@@ -22,6 +22,11 @@ class SlaveGroupFixtures extends Fixture
         $this->addReference('slavegroup-1', $slavegroup);
 
         $slavegroup = new SlaveGroup();
+        $slavegroup->setName('Slavegroup 2');
+        $manager->persist($slavegroup);
+        $this->addReference('slavegroup-2', $slavegroup);
+
+        $slavegroup = new SlaveGroup();
         $slavegroup->setName('Unused SlaveGroup');
         $manager->persist($slavegroup);
         $this->addReference('slavegroup-unused', $slavegroup);
