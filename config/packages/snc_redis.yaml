@@ -3,12 +3,12 @@ snc_redis:
         default:
             type: predis
             alias: default
-            dsn: redis://localhost
+            dsn: '%env(resolve:REDIS_URL)%'
             logging: false
         doctrine:
             type: predis
             alias: doctrine
-            dsn: redis://localhost
+            dsn: '%env(resolve:REDIS_URL)%'
             logging: false
     # configure doctrine caching
     doctrine:

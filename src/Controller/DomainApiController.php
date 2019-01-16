@@ -26,6 +26,10 @@ class DomainApiController extends Controller
      */
     public function alertsAction(Domain $domain, EntityManagerInterface $entityManager)
     {
+        if (extension_loaded ('newrelic')) {
+            newrelic_name_transaction("api_domains_alerts");
+        }
+
         $devices = $this->getDevices($domain);
 
         $alerts = $entityManager

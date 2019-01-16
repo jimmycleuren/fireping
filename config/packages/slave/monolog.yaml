@@ -12,3 +12,5 @@ monolog:
             channels: [alert]
         console:
             type: console
+            verbosity_levels:
+                VERBOSITY_NORMAL: DEBUG
