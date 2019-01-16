@@ -45,7 +45,7 @@ Supervisor will be the process manager used to start your slave and to keep it r
 [include]
 files = /etc/supervisor/conf.d/*.conf
 ```
-- copy the `fireping-slave.conf` file from `/opt/fireping/app/config/supervisord/fireping-slave.conf` to `/etc/supervisor/conf.d/`
+- copy the `fireping-slave.conf` file from `/opt/fireping/config/supervisord/fireping-slave.conf` to `/etc/supervisor/conf.d/`
 - `supervisorctl` to start the supervisor front-end interface
 - `reread` in supervisorctl to reread the configuration file (will not restart any existing processes)
 ```
