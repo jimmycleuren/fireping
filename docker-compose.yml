@@ -1,0 +1,42 @@
+version: '2'
+services:
+  nginx:
+    build: docker/nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./:/app
+  php:
+    build: docker/php
+    volumes:
+      - ./:/app
+    working_dir: /app
+  slave:
+    build: docker/slave
+    links:
+      - "nginx:fireping.develop"
+    volumes:
+      - ./:/app
+    working_dir: /app
+  redis:
+    image: redis
+  db:
+    image: mariadb
+    ports:
+      - "3306:3306"
+    volumes:
+      - /var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: fireping
+      MYSQL_USER: fireping
+      MYSQL_PASSWORD: fireping
+  testdb:
+    image: mariadb
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: fireping
+      MYSQL_USER: fireping
+      MYSQL_PASSWORD: fireping
