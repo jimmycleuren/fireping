@@ -183,6 +183,8 @@ class SlaveController extends AbstractController
                 $timestamp = $probeData->timestamp;
                 $targets = $probeData->targets;
 
+                if(!$probe) continue;
+
                 foreach ($targets as $targetId => $targetData) {
                     $device = $deviceRepository->findOneById($targetId);
                     if (!$device) {
