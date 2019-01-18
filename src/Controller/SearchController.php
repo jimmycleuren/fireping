@@ -2,14 +2,12 @@
 
 namespace App\Controller;
 
-use App\Entity\Device;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
-class SearchController extends Controller
+class SearchController extends AbstractController
 {
     /**
      * @Route("/search")

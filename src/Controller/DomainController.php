@@ -4,11 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Domain;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
-class DomainController extends Controller
+class DomainController extends AbstractController
 {
     /**
      * @Route("/domain/{id}")

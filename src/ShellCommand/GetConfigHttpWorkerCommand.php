@@ -11,6 +11,8 @@ namespace App\ShellCommand;
 use App\ShellCommand\CommandInterface;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Exception\TransferException;
+use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 
 class GetConfigHttpWorkerCommand implements CommandInterface
 {
@@ -24,10 +26,11 @@ class GetConfigHttpWorkerCommand implements CommandInterface
 
     protected $arguments;
 
-    function __construct($args)
+    function __construct($args, LoggerInterface $logger, ContainerInterface $container)
     {
         $this->arguments = $args;
-        $this->container = $args['container'];
+        $this->logger = $logger;
+        $this->container = $container;
         $this->etag      = isset($args['etag']) ? $args['etag'] : null;
     }
 

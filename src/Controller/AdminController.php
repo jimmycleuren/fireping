@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AdminController as BaseAdminController;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\EasyAdminController;
 
-class AdminController extends BaseAdminController
+class AdminController extends EasyAdminController
 {
     public function persistUserEntity($user)
     {

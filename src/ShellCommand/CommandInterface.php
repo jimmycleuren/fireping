@@ -2,6 +2,9 @@
 
 namespace App\ShellCommand;
 
+use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
+
 /**
  * Created by PhpStorm.
  * User: kevinr
@@ -10,7 +13,7 @@ namespace App\ShellCommand;
  */
 interface CommandInterface
 {
-    function __construct($args);
+    function __construct($args, LoggerInterface $logger, ContainerInterface $container);
     function execute();
     function build();
     function valid();

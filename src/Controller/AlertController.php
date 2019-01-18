@@ -6,10 +6,10 @@ use App\Entity\Domain;
 use App\Repository\AlertRepository;
 use App\Repository\DomainRepository;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
-class AlertController extends Controller
+class AlertController extends AbstractController
 {
     /**
      * @param AlertRepository $alertRepository
