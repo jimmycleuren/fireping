@@ -274,7 +274,7 @@ class RrdCachedStorage extends RrdStorage
             $options[$key] = '"'.$option.'"';
         }
 
-        $process = new Process(array_merge(["rrdtool", "graph", $imageFile, "-d", $daemon], $options));
+        $process = Process::fromShellCommandline("rrdtool graph $imageFile -d $daemon ".implode(" ", $options));
         $process->run();
         $error = $process->getErrorOutput();
 
