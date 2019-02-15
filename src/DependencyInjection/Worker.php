@@ -41,9 +41,9 @@ class Worker
     {
         $this->manager = $manager;
         $this->logger = $logger;
-        $executable = $kernel->getRootDir() . '/../bin/console';
+        $executable = $kernel->getProjectDir() . '/bin/console';
         $environment = $kernel->getEnvironment();
-        $this->process = new Process("exec php $executable app:probe:worker --env=$environment");
+        $this->process = Process::fromShellCommandline("exec php $executable app:probe:worker --env=$environment");
         $this->input = new InputStream();
 
         $this->process->setInput($this->input);

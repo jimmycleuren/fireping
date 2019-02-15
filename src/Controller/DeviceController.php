@@ -4,11 +4,11 @@ namespace App\Controller;
 
 use App\Entity\Device;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
-class DeviceController extends Controller
+class DeviceController extends AbstractController
 {
     /**
      * @Route("/device/{id}")

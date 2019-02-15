@@ -11,16 +11,15 @@ namespace App\Controller;
 use App\Entity\Device;
 use App\Entity\Probe;
 use App\Entity\SlaveGroup;
-use App\Exception\RrdException;
 use App\Graph\GraphFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
-class GraphController extends Controller
+class GraphController extends AbstractController
 {
     /**
      * @param Device $device

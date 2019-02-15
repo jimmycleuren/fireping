@@ -9,12 +9,12 @@ use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
 use React\EventLoop\LoopInterface;
 use React\Stream\ReadableResourceStream;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ProbeWorkerCommand extends ContainerAwareCommand
+class ProbeWorkerCommand extends Command
 {
     /**
      * @var OutputInterface
@@ -190,11 +190,9 @@ class ProbeWorkerCommand extends ContainerAwareCommand
             return;
         }
 
-        $str = 'COMMUNICATION_FLOW: Worker ' . getmypid() . ' received a ' .
-            $data['type'] . ' instruction from master.';
+        $str = 'COMMUNICATION_FLOW: Worker '.getmypid().' received a '.$data['type'].' instruction from master.';
         $this->logger->info($str);
 
-        $data['container'] = $this->getContainer();
         $command = null;
         try {
             $command = $this->commandFactory->create($data['type'], $data);

@@ -10,6 +10,7 @@ use App\Repository\StorageNodeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Flexihash\Flexihash;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
 
 class RrdDistributedStorage extends RrdCachedStorage
@@ -106,7 +107,7 @@ class RrdDistributedStorage extends RrdCachedStorage
     private function copyRrdFiles(Device $device, StorageNode $from, StorageNode $to)
     {
         //first delete the folder in the destination node
-        $process = new Process("ssh fireping@".$to->getIp()." 'rm -rf /opt/fireping/var/rrd/".$device->getId()."'");
+        $process = new Process(["ssh", "fireping@".$to->getIp(), "'rm -rf /opt/fireping/var/rrd/".$device->getId()."'"]);
         $process->run();
 
         $error = $process->getErrorOutput();
@@ -118,7 +119,7 @@ class RrdDistributedStorage extends RrdCachedStorage
         //next, copy the rrd files
         $src = 'fireping@'.$from->getIp().':/opt/fireping/var/rrd/'.$device->getId().'/';
         $dst = 'fireping@'.$to->getIp().':/opt/fireping/var/rrd/'.$device->getId().'/';
-        $process = new Process("scp -3 -r $src $dst");
+        $process = new Process(["scp", "-3",  "-r", $src, $dst]);
         $process->run();
 
         $error = $process->getErrorOutput();
@@ -130,7 +131,7 @@ class RrdDistributedStorage extends RrdCachedStorage
         }
 
         //last, remove the rrd files from the original node to clean up space
-        $process = new Process("ssh fireping@".$from->getIp()." 'rm -rf /opt/fireping/var/rrd/".$device->getId()."'");
+        $process = new Process(["ssh", "fireping@".$from->getIp(),"'rm -rf /opt/fireping/var/rrd/".$device->getId()."'"]);
         $process->run();
 
         $error = $process->getErrorOutput();
@@ -202,12 +203,11 @@ class RrdDistributedStorage extends RrdCachedStorage
     {
         $path = rtrim($path, '/') . '/';
         $items = $this->concatCollection($items, $path);
-        $deleteCandidates = implode(' ', $items);
 
         foreach ($this->storageNodeRepo->findAll() as $storageNode) {
 
             $ip = $storageNode->getIp();
-            $process = new Process('ssh ' . $ip . ' rm -rf ' . $deleteCandidates);
+            $process = new Process(array_merge(["ssh", $ip, "rm", "-rf"], $items));
             $process->run(function ($type, $buffer) {
                 if (Process::ERR === $type) {
                     $this->logger->info($buffer);
