@@ -29,15 +29,18 @@ class GraphController extends AbstractController
      * @Route("/api/graphs/summary/{id}", methods={"GET"})
      * @ParamConverter("device", class="App:Device")
      */
-    public function summaryAction(Device $device, GraphFactory $graphFactory)
+    public function summaryAction(Device $device, Request $request, GraphFactory $graphFactory)
     {
+        $start = $request->get('start') ?? -43200;
+        $end = $request->get('end');
+
         $probes = $device->getActiveProbes();
         $priority = ['ping', 'traceroute', 'http'];
 
         foreach ($priority as $type) {
             foreach ($probes as $probe) {
                 if ($probe->getType() == $type) {
-                    $graph = $graphFactory->create($type)->getSummaryGraph($device, $probe);
+                    $graph = $graphFactory->create($type)->getSummaryGraph($device, $probe, $start, $end);
                     $response = new Response($graph, 200);
                     $response->headers->set('Content-Type', 'image/png');
 

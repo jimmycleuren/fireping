@@ -9,7 +9,7 @@ use App\Exception\RrdException;
 
 class TracerouteGraph extends RrdGraph
 {
-    public function getSummaryGraph(Device $device, Probe $probe)
+    public function getSummaryGraph(Device $device, Probe $probe, $start = -43200, $end = null)
     {
         return file_get_contents(dirname(__FILE__)."/../../public/notfound.png");
     }

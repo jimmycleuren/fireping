@@ -11,16 +11,17 @@ class SmokeRrdGraph extends RrdGraph
 {
     protected $datasource = "unknown";
 
-    public function getSummaryGraph(Device $device, Probe $probe)
+    public function getSummaryGraph(Device $device, Probe $probe, $start = -43200, $end = null)
     {
         $slavegroups = $device->getActiveSlaveGroups();
 
-        $start = (int)date("U") - 3600 * 12;
+        if (!$end) $end = date("U");
         $title = $device->getName();
 
         $options = array(
             //"--slope-mode",
             "--start", $start,
+            "--end", $end,
             "--title=$title",
             "--vertical-label=ms",
             "--lower-limit=0",

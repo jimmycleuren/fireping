@@ -16,7 +16,7 @@ abstract class Graph
 {
     protected $storage;
 
-    abstract function getSummaryGraph(Device $device, Probe $probe);
+    abstract function getSummaryGraph(Device $device, Probe $probe, $start = -43200, $end = null);
 
     abstract function getDetailGraph(Device $device, Probe $probe, SlaveGroup $slavegroup, $start = -3600, $end = null, $debug = false);
 }
