@@ -10,7 +10,3 @@ monolog:
             path:  "%kernel.logs_dir%/alert.%kernel.environment%.log"
             level: info
             channels: [alert]
-        console:
-            type: console
-            verbosity_levels:
-                VERBOSITY_NORMAL: DEBUG
