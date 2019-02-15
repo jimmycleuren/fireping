@@ -53,7 +53,7 @@ class ProbeArchive
     /**
      * @var int
      *
-     * @ORM\Column(type="integer")
+     * @ORM\Column(name="archive_rows", type="integer")
      * @Assert\NotBlank
      */
     private $rows;
