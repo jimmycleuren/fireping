@@ -19,7 +19,7 @@ class DomainController extends AbstractController
         return $this->render('domain/view.html.twig', array(
             'domain' => $domain,
             'current_domain' => $domain,
-            'start' => $request->get('start') ?? date("U") - 43200,
+            'start' => $request->get('start') ?? ((int)date("U")) - 43200,
             'end' => $request->get('end')
         ));
     }
