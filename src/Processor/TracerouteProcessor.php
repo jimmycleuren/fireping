@@ -53,8 +53,10 @@ class TracerouteProcessor extends Processor
             }
         }
 
-        $this->storage->store($device, $probe, $group, $timestamp, $datasources, true);
-        $datasources['failures'] = $this->storage->fetch($device, $probe, $group, $timestamp, 'median', 'FAILURES');
+        if (count($datasources) > 0) {
+            $this->storage->store($device, $probe, $group, $timestamp, $datasources, true);
+            $datasources['failures'] = $this->storage->fetch($device, $probe, $group, $timestamp, 'median', 'FAILURES');
+        }
 
         //TODO: is this needed ?
         //$this->cacheResults($device, $timestamp, $datasources);
