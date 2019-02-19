@@ -17,11 +17,17 @@ class Kernel extends BaseKernel
 
     public function getCacheDir()
     {
+        if (getenv('CACHE_PATH')) {
+            return getenv('CACHE_PATH').'/'.$this->environment;
+        }
         return $this->getProjectDir().'/var/cache/'.$this->environment;
     }
 
     public function getLogDir()
     {
+        if (getenv('LOG_PATH')) {
+            return getenv('LOG_PATH');
+        }
         return $this->getProjectDir().'/var/log';
     }
 
