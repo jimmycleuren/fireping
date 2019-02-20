@@ -45,12 +45,13 @@ class TracerouteGraph extends RrdGraph
         $datasources = $this->storage->getDatasources($device, $probe, $slavegroup);
 
         $hops = [];
-        foreach ($datasources as $datasource)
-        {
-            $name = substr($datasource, 0, -1);
-            $hops[] = $name;
+        if (is_array($datasources)) {
+            foreach ($datasources as $datasource) {
+                $name = substr($datasource, 0, -1);
+                $hops[] = $name;
+            }
+            $hops = array_unique($hops);
         }
-        $hops = array_unique($hops);
 
         $originalKeys = [];
         $counter = 0;
@@ -104,11 +105,7 @@ class TracerouteGraph extends RrdGraph
         }
 
         if (!$someData) {
-            $parts = explode("_", $hops[0]);
-            $name = implode("", $parts);
-
-            $options[] = sprintf("DEF:%s=%s:%s:%s", $name . "median", $this->storage->getFilePath($device, $probe, $slavegroup), $hops[0] . 'm', "AVERAGE");
-            $options[] = "LINE:$name" . "median#000000";
+            $options[] = "HRULE:0#000000";
             $options[] = "COMMENT:No traceroute data found";
         }
 
