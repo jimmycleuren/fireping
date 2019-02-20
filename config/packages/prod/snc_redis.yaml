@@ -1,0 +1,6 @@
+snc_redis:
+  doctrine:
+    metadata_cache:
+      client: doctrine
+      entity_manager: default
+      document_manager: default

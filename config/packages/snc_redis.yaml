@@ -12,10 +12,6 @@ snc_redis:
             logging: false
     # configure doctrine caching
     doctrine:
-        metadata_cache:
-            client: doctrine
-            entity_manager: default
-            document_manager: default
         result_cache:
             client: doctrine
             entity_manager: [default]
