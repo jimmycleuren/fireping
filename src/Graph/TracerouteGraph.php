@@ -71,6 +71,7 @@ class TracerouteGraph extends RrdGraph
         });
 
         $someData = false;
+        $first = true;
         foreach ($hops as $key => $hop)
         {
             $parts = explode("_", $hop);
@@ -84,11 +85,12 @@ class TracerouteGraph extends RrdGraph
                 $options[] = sprintf("DEF:%s=%s:%s:%s", $name . "loss", $this->storage->getFilePath($device, $probe, $slavegroup), $hop . 'l', "AVERAGE");
                 $options[] = sprintf("CDEF:%s=%s,%s,%s,%s,%s", $name . 'losspercent', $name . "loss", $probe->getSamples(), "/", "100", "*");
 
-                if ($id == 1) {
+                if ($first === true) {
                     $options[] = "AREA:$name" . "median#" . $this->getColor($originalKeys[$hop], count($hops)) . ":" . sprintf("%2s", $id) . sprintf("%16s", $ip);
                 } else {
                     $options[] = "STACK:$name" . "median#" . $this->getColor($originalKeys[$hop], count($hops)) . ":" . sprintf("%2s", $id) . sprintf("%16s", $ip);
                 }
+                $first = false;
 
 
                 $options[] = "GPRINT:$name" . "median:AVERAGE:median rtt\: %7.1lf ms avg";
