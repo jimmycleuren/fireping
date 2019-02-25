@@ -209,7 +209,7 @@ class RrdCachedStorage extends RrdStorage
                 try {
                     foreach ($data as $name => $value) {
                         $this->logger->info("Adding new datasource $name to $filename");
-                        $this->addDataSource($device, $filename, $name, $probe, $daemon);
+                        $this->addDataSource($device, $filename, $name, $probe);
                     }
 
                     $sources = $this->getDatasources($device, $probe, $group, $daemon);
@@ -348,12 +348,8 @@ class RrdCachedStorage extends RrdStorage
         return (float)$data[1];
     }
 
-    protected function addDataSource(Device $device, $filename, $name, Probe $probe, $daemon = null)
+    protected function addDataSource(Device $device, $filename, $name, Probe $probe)
     {
-        if (!$daemon) {
-            $daemon = $this->daemon;
-        }
-
         $ds = sprintf(
             "DS:%s:%s:%s:%s:%s",
             $name,
@@ -363,7 +359,7 @@ class RrdCachedStorage extends RrdStorage
             "U"
         );
 
-        $process = new Process(["rrdtool", "tune", $this->path.$filename, "--daemon", $daemon, $ds]);
+        $process = new Process(["rrdtool", "tune", $this->path.$filename, $ds]);
         $process->run();
         $error = $process->getErrorOutput();
 
