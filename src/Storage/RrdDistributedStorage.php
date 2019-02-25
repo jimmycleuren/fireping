@@ -6,6 +6,7 @@ use App\Entity\Device;
 use App\Entity\Probe;
 use App\Entity\SlaveGroup;
 use App\Entity\StorageNode;
+use App\Exception\RrdException;
 use App\Repository\StorageNodeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Flexihash\Flexihash;
