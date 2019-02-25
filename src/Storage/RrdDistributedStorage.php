@@ -215,4 +215,12 @@ class RrdDistributedStorage extends RrdCachedStorage
             });
         }
     }
+
+    protected function addDataSource(Device $device, $filename, $name, Probe $probe, $daemon = null)
+    {
+        $node = $this->getStorageNode($device);
+        $daemon  = $node->getIp().":42217";
+
+        return parent::addDataSource($device, $filename, $name, $probe, $daemon);
+    }
 }
