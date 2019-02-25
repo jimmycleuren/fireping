@@ -6,6 +6,7 @@ use App\Entity\Device;
 use App\Entity\Probe;
 use App\Entity\SlaveGroup;
 use App\Entity\StorageNode;
+use App\Exception\RrdException;
 use App\Repository\StorageNodeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Flexihash\Flexihash;
@@ -216,11 +217,25 @@ class RrdDistributedStorage extends RrdCachedStorage
         }
     }
 
-    protected function addDataSource(Device $device, $filename, $name, Probe $probe, $daemon = null)
+    protected function addDataSource(Device $device, $filename, $name, Probe $probe)
     {
         $node = $this->getStorageNode($device);
-        $daemon  = $node->getIp().":42217";
 
-        return parent::addDataSource($device, $filename, $name, $probe, $daemon);
+        $ds = sprintf(
+            "DS:%s:%s:%s:%s:%s",
+            $name,
+            'GAUGE',
+            $probe->getStep() * 2,
+            0,
+            "U"
+        );
+
+        $process = Process::fromShellCommandline("ssh fireping@".$node->getIp()." 'rrdtool tune ".$this->path.$filename." ".$ds."'");
+        $process->run();
+        $error = $process->getErrorOutput();
+
+        if ($error) {
+            throw new RrdException(trim($error));
+        }
     }
 }
