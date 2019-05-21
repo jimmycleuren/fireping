@@ -113,6 +113,7 @@ class ProbeDefinition
         if (!isset($this->devices[$device->getId()])) {
             $this->devices[$device->getId()] = $device;
         }
+        $this->devices[$device->getId()]->setIp($device->getIp());
         $this->devices[$device->getId()]->setActive(true);
     }
 
