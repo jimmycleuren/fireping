@@ -11,8 +11,16 @@
         <div class="row">
             <div class="col-md-10">
                 {% for device in domain.devices %}
-                    <h4>{{ device.name }} - {{ device.ip }}</h4>
-                    <a href="{{ path('app_device_get', {id: device.id}) }}"><img src="{{ path('app_graph_summary', {id: device.id, start:start, end:end}) }}" /></a><br/>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        {{ device.name }} - {{ device.ip }}
+                    </div>
+                    <div class="panel-body" style="padding:0px; background-color: #f5f5f5; text-align: center;">
+                        <a href="{{ path('app_device_get', {id: device.id}) }}">
+                            <img src="{{ path('app_graph_summary', {id: device.id, start:start, end:end, width:1000}) }}" />
+                        </a>
+                    </div>
+                </div>
                 {% endfor %}
             </div>
 
