@@ -20,8 +20,7 @@ class SecurityCheckerCommandTest extends KernelTestCase
         $command = $application->find('security:check');
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
-            'command'  => $command->getName(),
-            '--end-point' => 'http://security.sensiolabs.org/check_lock'
+            'command'  => $command->getName()
         ));
         $this->assertRegExp('/No packages have known vulnerabilities/', $commandTester->getDisplay());
     }
