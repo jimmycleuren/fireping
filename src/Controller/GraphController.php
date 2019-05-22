@@ -33,6 +33,7 @@ class GraphController extends AbstractController
     {
         $start = $request->get('start') ?? -43200;
         $end = $request->get('end');
+        $width = $request->get('width') ?? 600;
 
         $probes = $device->getActiveProbes();
         $priority = ['ping', 'traceroute', 'http'];
@@ -40,7 +41,7 @@ class GraphController extends AbstractController
         foreach ($priority as $type) {
             foreach ($probes as $probe) {
                 if ($probe->getType() == $type) {
-                    $graph = $graphFactory->create($type)->getSummaryGraph($device, $probe, $start, $end);
+                    $graph = $graphFactory->create($type)->getSummaryGraph($device, $probe, $start, $end, $width);
                     $response = new Response($graph, 200);
                     $response->headers->set('Content-Type', 'image/png');
 

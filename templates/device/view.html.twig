@@ -5,17 +5,48 @@
         <div class="col-md-2 sidebar" style="padding:0px;">
             {% include 'menu/menu.html.twig' %}
         </div>
-        <div class="col-md-8 col-md-offset-2 main">
+        <div class="col-md-10 col-md-offset-2 main">
             <h1 class="page-header">{{ device.name }} - {{ device.ip }}</h1>
 
-            {% for probe in device.getActiveProbes() %}
-                {% for slavegroup in device.getActiveSlaveGroups() %}
-                    <h3><u>{{ probe.name }} - {{ slavegroup.name }}</u></h3>
-                    <img style="width:1097px;" onload="window.dispatchEvent(new Event('resize'));" class="graph" data-src-template="/api/graphs/detail/{{ device.id }}/{{ probe.id }}/{{ slavegroup.id }}{% verbatim %}?start={{start}}&end={{end}}{% endverbatim  %}" /><br/><br/>
+            <div class="row">
+                <div class="col-md-9">
+                {% for probe in device.getActiveProbes() %}
+                    {% for slavegroup in device.getActiveSlaveGroups() %}
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                {{ probe.name }} - {{ slavegroup.name }}
+                            </div>
+                            <div class="panel-body" style="padding:0px; text-align:center; background-color: #f5f5f5;">
+                                <img style="max-width: 100%; height: auto;" onload="window.dispatchEvent(new Event('resize'));" class="graph" data-src-template="/api/graphs/detail/{{ device.id }}/{{ probe.id }}/{{ slavegroup.id }}{% verbatim %}?start={{start}}&end={{end}}{% endverbatim  %}" />
+                            </div>
+                        </div>
+                    {% endfor %}
                 {% endfor %}
-            {% endfor %}
-        </div>
-        <div class="col-md-2" id="ctrl" style="position:absolute; right:0px; top: 100px;">
+                </div>
+
+                <div class="col-md-3">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Navigation</div>
+                        <div class="panel-body" id="ctrl"></div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Alert rules</div>
+                        <div class="panel-body">
+                            {% for rule in device.activeAlertRules %}
+                                <li>{{ rule.name }}</li>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Alert destinations</div>
+                        <div class="panel-body">
+                            {% for destination in device.activeAlertDestinations %}
+                                <li>{{ destination.name }}</li>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}
