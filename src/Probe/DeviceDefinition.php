@@ -39,6 +39,14 @@ class DeviceDefinition
     }
 
     /**
+     * @return mixed
+     */
+    public function setIp($ip)
+    {
+        $this->ip = $ip;
+    }
+
+    /**
      * @return bool
      */
     public function isActive()
