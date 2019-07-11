@@ -7,6 +7,22 @@
     <title>Fireping - {{ page.title }}</title>
 </head>
 <body>
-    {{ content }}
+    <!-- Header -->
+    <header>
+    </header>
+
+    <!-- docs navigation -->
+    <nav id="sidebar">
+        <ul>
+            {% for doc in site.docs %}
+                <li><a href="doc.">{{ doc.title }}</a></li>
+            {% endfor %}
+        </ul>
+    </nav>
+
+    <!-- main content -->
+    <div>
+        {{ content }}
+    </div>
 </body>
 </html>
