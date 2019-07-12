@@ -5,3 +5,7 @@ nav_order: 2
 parent: Getting started
 permalink: /getting-started/slaves
 ---
+
+## Using Docker (recommended)
+
+## Manual
