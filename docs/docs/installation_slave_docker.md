@@ -7,7 +7,6 @@ grand_parent: Getting started
 permalink: /getting-started/slaves/docker
 ---
 
-# Install fireping slave
 First make sure you have [docker](http://www.docker.com) installed.
 
 Then run
