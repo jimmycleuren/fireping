@@ -23,4 +23,8 @@ sudo docker run -d \
 
 Now open your fireping dashboard, go to `Admin > User` and create a new user with these credentials, `role` as `role_api` and check the `enabled` box.
 
-![Screenshot of adding a Slave](../../assets/img/adding_slave_user.png)
+![Screenshot of adding a Slave](/assets/img/adding_slave_user.png)
+
+You should now see the slave if you go back to `fireping.develop/slaves`. (it can take a few seconds)
+
+![Screenshot of adding a Slave](/assets/img/slaves_added_list.png)

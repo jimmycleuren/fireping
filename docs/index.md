@@ -16,4 +16,4 @@ Fireping uses a **Master/Slave** architecture. This has two parts
 
 You can setup multiple Slaves for a single Master but only one master per Slave.
 
-![Master/Slave](./assets/img/master-slave.png)
+![Master/Slave](/assets/img/master-slave.png)

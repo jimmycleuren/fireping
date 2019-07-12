@@ -108,6 +108,6 @@ sudo vim /etc/hosts
 Enter the username you created in the previous step and give it the role `role_admin`.
 Now you are done with the setup of the master and if you go to `fireping.develop`, you should see the dashboard. 
 
-![Dashboard](../assets/img/dashboard_main_page.png) 
+![Dashboard](/assets/img/dashboard_main_page.png) 
 
-Next step is to create [Slave nodes](./slaves)
+Next step is to create [Slave nodes](/getting-started/slaves)
