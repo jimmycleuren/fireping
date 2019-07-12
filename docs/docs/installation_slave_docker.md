@@ -3,7 +3,7 @@ layout: doc
 title: "Installation Using Docker"
 nav_order: 1
 parent: Installation guide for the Slaves
-grand-parent: Getting started
+grand_parent: Getting started
 permalink: /getting-started/slaves/docker
 ---
 
