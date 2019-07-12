@@ -3,3 +3,6 @@ search_enabled: true
 aux_links:
     "Fireping on GitHub":
       - "https://github.com/jimmycleuren/fireping"
+plugins:
+  - jekyll-remote-theme
+title: Fireping

@@ -19,6 +19,7 @@
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
 
-###> docs/_site ###
+###> docs/ ###
 /docs/_site
+/docs/.sass-cache
 ###< docs/_site ###
