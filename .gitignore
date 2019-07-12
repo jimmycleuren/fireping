@@ -18,3 +18,7 @@
 .phpunit
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
+
+###> docs/_site ###
+/docs/_site
+###< docs/_site ###
