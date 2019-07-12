@@ -1,6 +1,2 @@
 remote_theme: pmarsceill/just-the-docs
-defaults:
-  - scope:
-      path: "assets/img"
-    values:
-      image: true
+search_enabled: true
