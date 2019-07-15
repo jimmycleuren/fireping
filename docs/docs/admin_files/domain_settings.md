@@ -7,7 +7,7 @@ grand_parent: How to use Fireping
 permalink: /how-to/admin/domain
 ---
 
-![Settings for domain with parent](/assets/img/settings_domain_with_parent.png)
+![Settings for domain with parent](/fireping/assets/img/settings_domain_with_parent.png)
 
 # Short description
 A Domain is a container that connects `SlaveGroups`, `Probes`, `Alert rules` and `Alert destinations`. 
@@ -18,7 +18,7 @@ A Domain is a container that connects `SlaveGroups`, `Probes`, `Alert rules` and
 # Optional fields
 - a `Parent`, the domain wil be listed under the parent in the dashboard.
 
-![Domain with parent example](/assets/img/domain_with_parent.png)
+![Domain with parent example](/fireping/assets/img/domain_with_parent.png)
 
 - `SlaveGroups`, the `Probes` will be executed on the `Slaves` in these `SlaveGroup`s.
 - `Probes`, these are the probes that will be executed to gather data.

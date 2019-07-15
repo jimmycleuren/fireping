@@ -7,7 +7,7 @@ grand_parent: How to use Fireping
 permalink: /how-to/admin/slave-group
 ---
 
-![Settings for device](/assets/img/slave_group_settings.png)
+![Settings for device](/fireping/assets/img/slave_group_settings.png)
 
 # Short Description
 In a Slave Group, all workload is dispersed over the Slaves equaly.
