@@ -6,7 +6,7 @@ nav_order: 1
 ---
 
 # What does it do?
-Fireping is a program that let's you gather ping, trace route and HTTP data from servers and presents them in an easy to use environment on a graph.
+Fireping is a program that let's you gather ping, traceroute and HTTP data from servers and presents them in an easy to use environment on a graph.
 
 # How does it work?
 Fireping uses a **Master/Slave** architecture. This has two parts
@@ -16,4 +16,4 @@ Fireping uses a **Master/Slave** architecture. This has two parts
 
 You can setup multiple Slaves for a single Master but only one master per Slave.
 
-![Master/Slave](/assets/img/master-slave.png)
+![Master/Slave](/assets/img/master_slave.png)

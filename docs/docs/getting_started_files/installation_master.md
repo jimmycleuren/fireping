@@ -75,6 +75,12 @@ Copy the file `docker/nginx/symfony.conf` to `/etc/nginx/sites-enabled` and edit
 sudo vim /etc/nginx/sites-enabled/symfony.conf
 ```
 
+On the line saying
+```
+server_name fireping.develop;
+```
+the `fireping.develop` can be changed to any name you want, if you want to host a server you should change the name on this line to that of the server.
+
 change `/app/` to `/opt/fireping/` on line 3 and line 47 and then change line 11 to
 ```SQL
 fastcgi_pass unix:/var/run/php/php7.3-fpm.sock;
@@ -95,7 +101,7 @@ and follow the steps. When the user is created, you only need to give it admin r
 php bin/console fos:user:promote
 ```
 
-if needed open the hosts file and add your localhost as `fireping.develop in it`
+if needed open the hosts file and add your localhost as `fireping.develop` or the server name you chose in it
 ```bash
 sudo vim /etc/hosts
 ```
