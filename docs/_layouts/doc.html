@@ -1,0 +1,17 @@
+---
+layout: default
+---
+
+<style>
+img {
+    margin: 1rem auto;
+}
+</style>
+
+<h1 style="font-size: 42px;">{{ page.title }}</h1>
+{% if page.description %}
+    <p style="font-size: 1rem; color: #959396">{{ page.description }}</p>
+{% endif %}
+<hr />
+
+{{ content }}
