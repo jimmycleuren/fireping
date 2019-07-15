@@ -7,7 +7,7 @@ grand_parent: How to use Fireping
 permalink: /how-to/admin/device
 ---
 
-![Settings for device](/assets/img/settings_device.png)
+![Settings for device](/fireping/assets/img/settings_device.png)
 
 # Short Description
 A Device is the device from which data will be gathered, thus the slaves wil ping, or traceroute this device.

@@ -7,7 +7,7 @@ grand_parent: How to use Fireping
 permalink: /how-to/admin/alert
 ---
 
-![Settings for device](/assets/img/alert_settings.png)
+![Settings for device](/fireping/assets/img/alert_settings.png)
 
 # Short Description
 Edit the alert information.
