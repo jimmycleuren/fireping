@@ -10,7 +10,7 @@ permalink: /how-to/dashboard
 Here you'll find all the graphs and data about slaves, alerts and storage nodes
 
 ## Sidebar
-On the left is a side bar listing all domains, clicking on one will open a graph, clicking on this graph will expand all graphs of the data the domain is gathering.
+On the left is a side bar with a list of all domains, clicking on one will open a graph, clicking on this graph will expand all graphs of the data the domain is gathering.
 
 ## Graphs
 you can slide the graphs by grabbing them to go backwards or forwards in time. 

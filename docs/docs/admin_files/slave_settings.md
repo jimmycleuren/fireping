@@ -10,7 +10,7 @@ permalink: /how-to/admin/slave
 ![Settings for device](/fireping/assets/img/slave_settings.png)
 
 # Short Description
-The slave is the actual device gathering data about a server. Follow the [Slave Setup Guide](/fireping/getting-started/slaves) to get one up and running if you have none!
+The slave is the actual device which gathers data about a server. Follow the [Slave Setup Guide](/fireping/getting-started/slaves) to get one up and running if you have none!
 
 # Required fields
 - `Last contact`, the time of last contact between the master and slave.
