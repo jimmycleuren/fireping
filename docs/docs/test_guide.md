@@ -28,7 +28,7 @@ After setting up a Master and adding a Slave you can add a test domain.
 
 8. Add a device named `Google` and assign it to the domain and set the `ip` to `8.8.8.8`. The device is the server/device to be pinged/tracerouted/...
 
-9. Go back, edit the domain and add the SlaveGroup and the probes.
+9. Go back, edit the domain and add the SlaveGroup and the probes
 ![Domain settings](/fireping/assets/img/domain_2.png)
 
 10. Last go back to `fireping.develop` and click on the new link in the side bar, Wait a few minutes and you should start to see a graph. You can click on it to expand the graph into the `ping` graph and `traceroute` graph.
