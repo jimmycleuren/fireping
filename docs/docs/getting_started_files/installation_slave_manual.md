@@ -8,7 +8,7 @@ permalink: /getting-started/slaves/manual
 ---
 
 # Download fireping
-Before you can setup a Master, you need to download some dependencies and the Fireping source. After that you can configure the Master
+Before you can setup a Slave, you need to download some dependencies and the Fireping source. After that you can configure the Slave
 
 ## Installing OS dependencies
 First open a terminal and run these commands
@@ -38,8 +38,8 @@ sudo composer install
 
 # Setting up the Slave
 Define the folowing environment variables to /opt/fireping/.env
-* SLAVE_NAME=(give a name to this slave)
-* SLAVE_URL=(the base url for the fireping master)
+* `SLAVE_NAME=(give a name to this slave)`
+* `SLAVE_URL=(the base url for the fireping master)`
 
 ## Supervisor
 Supervisor will be the process manager used to start your slave and to keep it running.
