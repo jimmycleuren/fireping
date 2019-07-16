@@ -7,12 +7,13 @@ permalink: /getting-started/same-host
 ---
 
 # Using a Docker Slave
-Just follow the [Master Setup](/fireping/getting-started/master) and the [Docker Slave Setup](/fireping/getting-started/slaves/docker)
+The easiest way to install a Master and Slave(s) on the same host is by following the [Master Setup](/fireping/getting-started/master) and the [Docker Slave Setup](/fireping/getting-started/slaves/docker)
 
 # Using a manually installed Slave
-The problem with doing this manually is that you have to clone the repo twice and they want to install to the same place, so instead of installing the folders to `/opt/fireping`, we install the master to `/opt/fireping-master` and the slave to `/opt/fireping-slave`.
+The installation can also be done manually; however, this is not recommended.
+The problem with doing this manually is that you have to clone the repositry twice, while they will install on the same directory. To solve this, we install the master to `/opt/fireping-master` and the slave to `/opt/fireping-slave`.
 
-Thus Folow the instructions for the [Master Setup](/fireping/getting-started/master) but on cloning the repository use
+Next, follow the instructions for the [Master Setup](/fireping/getting-started/master) but on cloning the repository use
 ```bash
 sudo git clone https://github.com/jimmycleuren/fireping.git fireping-master
 ```
