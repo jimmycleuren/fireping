@@ -63,7 +63,7 @@ Then go into the `.env` file using `sudo vim .env` or any other text editor you 
 * **db_password** is the password you created (`fireping` in the example on `IDENTIFIED BY`)
 * **db_name** is fireping
 
-Make sure u are in the directory `/opt/fireping/` and run
+Make sure you are in the directory `/opt/fireping/` and run
 
 ```bash
 sudo php bin/console doctrine:migrations:migrate
@@ -101,6 +101,15 @@ and follow the steps. When the user is created, you only need to give it admin r
 php bin/console fos:user:promote
 ```
 
+Enter the username you created in the previous step and give it the role `role_admin`.
+```
+/opt/fireping$ php bin/console fos:user:promote
+Please choose a username:fireping
+Please choose a role:role_admin
+```
+
+Now you are done with the setup of the master and if you go to `http://fireping.develop`, you should see the dashboard. 
+
 if needed, open the hosts file and add your localhost as `fireping.develop` or the server name you chose in it
 ```bash
 sudo vim /etc/hosts
@@ -110,9 +119,6 @@ sudo vim /etc/hosts
 127.0.0.1   fireping.develop
 ...
 ```
-
-Enter the username you created in the previous step and give it the role `role_admin`.
-Now you are done with the setup of the master and if you go to `fireping.develop`, you should see the dashboard. 
 
 ![Dashboard](/fireping/assets/img/dashboard_main_page.png) 
 
