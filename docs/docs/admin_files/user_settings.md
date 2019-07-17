@@ -10,7 +10,7 @@ permalink: /how-to/admin/user
 ![Settings for device](/fireping/assets/img/user_settings.png)
 
 # Short Description
-Create/edit user credetials, roles.
+Allows you to create/edit user credetials and roles.
 
 # Required fields
 - `Username` is the username for the user.

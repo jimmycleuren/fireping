@@ -9,7 +9,7 @@ permalink: /how-to/test
 ## Testing the setup
 After setting up a Master and adding a Slave you can add a test domain.
 
-1. Goto `fireping.develop` or however you named it, the dashboard wil be located here.
+1. Goto `http://fireping.develop` or however you named it, the dashboard wil be located here.
 
 2. Login with the admin account you created while setting up the Master by clicking on the `Login` tab.
 
