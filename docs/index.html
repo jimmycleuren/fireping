@@ -20,4 +20,39 @@ article_header:
   background_image:
     gradient: "linear-gradient(rgba(0, 0, 0, .2), rgba(0, 0, 0, .6))"
     src: /assets/images/banner.png
+
+data:
+  sections:
+    - title: Lorem ipsum
+      excerpt: Lorem, ipsum dolor sit amet consectetur adipisicing elit. Non voluptatem cum, eligendi dolore eveniet obcaecati quibusdam facere quas veniam voluptate asperiores in adipisci, iste reiciendis porro omnis maxime sunt nihil.
+      actions:
+        - text: Lorem
+          url: /
+        - text: Ipsum
+          url: /
+      image:
+        src: https://picsum.photos/400/200
+        is_row: true
+        full_width: true
+        style: "max-width: 1200px;"
+    - title: Features
+      children:
+        - title: Up to 2000 end-points!
+          excerpt: The Master/Slaves architecture allows for efficient scaling. It has already been tested on 2000 slave nodes!
+          actions:
+            - text: Learn More
+              url: /docs/
+        - title: Alerts when something is wrong.
+          excerpt: Use alerting to inform when endpoints are unreachable or experience package loss using either the built-in dashboard or the standard syslog
+          actions:
+            - text: Learn More
+              url: /docs/
+    - title: Open Source
+      theme: dark
+      excerpt: Free to use however you want under the GNU General Public License v3.0. Completely free and open source!
+      actions:
+        - text: '<i class="fab fa-github"></i> GitHub'
+          type: outline-theme-dark
+          url: https://github.com/kitian616/jekyll-TeXt-theme
+      background_color: "#515151"
 ---
