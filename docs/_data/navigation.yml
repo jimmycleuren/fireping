@@ -6,8 +6,10 @@ header:
   #     en-CA   : *EN
   #     en-AU   : *EN
   #   url: /archive.html
+  - title: Docs
+    url: /docs
 
-  - titles: About
+  - title: About
     url: /about
 
   - title: GitHub
