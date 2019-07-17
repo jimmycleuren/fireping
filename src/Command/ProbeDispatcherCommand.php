@@ -7,10 +7,7 @@ use App\DependencyInjection\ProbeStore;
 use App\DependencyInjection\Queue;
 use App\DependencyInjection\WorkerManager;
 use App\Instruction\Instruction;
-
-use App\Instruction\InstructionBuilder;
 use App\Probe\ProbeDefinition;
-
 use Exception;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
@@ -88,8 +85,8 @@ class ProbeDispatcherCommand extends Command
     /**
      * ProbeDispatcherCommand constructor.
      *
-     * @param ProbeStore         $probeStore P
-     * @param LoggerInterface    $logger     Instance used to log information about
+     * @param ProbeStore $probeStore P
+     * @param LoggerInterface $logger Instance used to log information about
      *                                       the state of our program.
      *
      * @param WorkerManager $workerManager
@@ -100,7 +97,8 @@ class ProbeDispatcherCommand extends Command
         ProbeStore $probeStore,
         LoggerInterface $logger,
         WorkerManager $workerManager
-    ) {
+    )
+    {
         $this->logger = $logger;
         $this->probeStore = $probeStore;
         $this->workerManager = $workerManager;
@@ -176,7 +174,7 @@ class ProbeDispatcherCommand extends Command
 
     /**
      *
-     * @param InputInterface  $input
+     * @param InputInterface $input
      * @param OutputInterface $output
      *
      * @return int|null|void
@@ -241,7 +239,9 @@ class ProbeDispatcherCommand extends Command
             }
         );
 
-        $this->loop->addPeriodicTimer(0.1, function () {$this->workerManager->loop();});
+        $this->loop->addPeriodicTimer(0.1, function () {
+            $this->workerManager->loop();
+        });
 
         if ($this->maxRuntime > 0) {
             $this->logger->info('Running for ' . $this->maxRuntime . ' seconds');
@@ -259,7 +259,7 @@ class ProbeDispatcherCommand extends Command
 
     /**
      * @param array $instruction
-     * @param int   $expectedRuntime
+     * @param int $expectedRuntime
      *
      * @throws Exception
      */
@@ -279,7 +279,7 @@ class ProbeDispatcherCommand extends Command
             return;
         }
 
-        $worker->send(json_encode($instruction), $expectedRuntime, function($type, $response){
+        $worker->send(json_encode($instruction), $expectedRuntime, function ($type, $response) {
             $this->handleResponse($type, $response);
         });
 
@@ -356,7 +356,7 @@ class ProbeDispatcherCommand extends Command
                 if ($status === 200) {
                     $etag = $response['headers']['etag'];
                     $this->probeStore->updateConfig($contents, $etag);
-                    $this->logger->info("Response ($status) from worker $pid config applied (".$this->probeStore->getAllProbesDeviceCount()." devices)");
+                    $this->logger->info("Response ($status) from worker $pid config applied (" . $this->probeStore->getAllProbesDeviceCount() . " devices)");
 
                     $count = 0;
                     foreach ($this->probeStore->getProbes() as $probe) {
