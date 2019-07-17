@@ -58,8 +58,3 @@ services:
 
     App\Storage\RrdDistributedStorage:
         arguments:  ['%storage.path%']
-
-    probe_store:
-        class:      App\DependencyInjection\ProbeStore
-        arguments:  ["@service_container"]
-        public: true
