@@ -60,7 +60,7 @@ class ProbeStore
         return $probe !== null ? count($probe->getDevices()) : 0;
     }
 
-    public function getAllProbesDeviceCount(): void
+    public function getAllProbesDeviceCount(): int
     {
         $total = 0;
         foreach ($this->getProbes() as $probe) {
