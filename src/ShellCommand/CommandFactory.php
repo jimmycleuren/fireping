@@ -3,35 +3,41 @@ declare(strict_types=1);
 
 namespace App\ShellCommand;
 
-use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
-class CommandFactory
+final class CommandFactory
 {
     private $logger;
-    private $container;
 
-    protected static $mappings = array(
-        'ping' => PingShellCommand::class,
-        'http' => Http::class,
-        'traceroute' => Traceroute::class,
-        'config-sync' => GetConfigHttpWorkerCommand::class,
-        'post-result' => PostResultsHttpWorkerCommand::class,
-    );
+    /**
+     * @var CommandInterface[]
+     */
+    private $types = [];
 
-    public function __construct(LoggerInterface $logger, ContainerInterface $container)
+    public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
-        $this->container = $container;
     }
 
-    public function create($command, $args)
+    public function addCommandType(CommandInterface $command)
     {
-        if (!isset(self::$mappings[$command])) {
-            throw new \Exception("No mapping exists for command $command.");
+        $this->types[get_class($command)] = $command;
+    }
+
+    public function make(string $command, array $args): ?CommandInterface
+    {
+        $class = $this->types[$command] ?? null;
+
+        if ($class === null) {
+            return null;
         }
 
-        $class = self::$mappings[$command];
-        return new $class($args, $this->logger, $this->container);
+        $class->setArgs($args);
+        return $class;
+    }
+
+    public function getTypes()
+    {
+        return $this->types;
     }
 }
