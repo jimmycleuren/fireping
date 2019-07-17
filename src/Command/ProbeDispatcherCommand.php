@@ -230,7 +230,7 @@ class ProbeDispatcherCommand extends Command
                             );
                             ++$counter;
                             $instruction['delay_execution'] = $delay;
-                            $instruction['guid'] = $this->generateRandomString(25);
+                            $instruction['guid'] = sha1(random_bytes(25));
                             $this->sendInstruction(
                                 $instruction,
                                 $probe->getStep()
@@ -284,24 +284,6 @@ class ProbeDispatcherCommand extends Command
         });
 
         $this->logger->info('COMMUNICATION_FLOW: Master sent ' . $instruction['type'] . " instruction to worker $worker.");
-    }
-
-    /**
-     * @param int $length
-     *
-     * @return string
-     * @throws Exception
-     */
-    public function generateRandomString(int $length = null): string
-    {
-        $length = $length ?? 10;
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $charactersLength = \strlen($characters);
-        $randomString = '';
-        for ($i = 0; $i < $length; $i++) {
-            $randomString .= $characters[random_int(0, $charactersLength - 1)];
-        }
-        return $randomString;
     }
 
     /**
