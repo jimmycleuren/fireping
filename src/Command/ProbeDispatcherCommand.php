@@ -78,13 +78,6 @@ class ProbeDispatcherCommand extends Command
      */
     protected $loop;
 
-    /**
-     * Service used to create a set of instructions to send to a worker.
-     *
-     * @var InstructionBuilder
-     */
-    private $instructionBuilder;
-
     private $workerManager;
 
     private $devicesPerWorker = 250;
@@ -98,7 +91,6 @@ class ProbeDispatcherCommand extends Command
      * @param LoggerInterface    $logger     Instance used to log information about
      *                                       the state of our program.
      *
-     * @param InstructionBuilder $instructionBuilder
      * @param WorkerManager $workerManager
      *
      * @throws \Symfony\Component\Console\Exception\LogicException
@@ -106,13 +98,11 @@ class ProbeDispatcherCommand extends Command
     public function __construct(
         ProbeStore $probeStore,
         LoggerInterface $logger,
-        InstructionBuilder $instructionBuilder,
         WorkerManager $workerManager
     ) {
         $this->logger = $logger;
         $this->probeStore = $probeStore;
         $this->workerManager = $workerManager;
-        $this->instructionBuilder = $instructionBuilder;
         parent::__construct();
     }
 
@@ -227,10 +217,7 @@ class ProbeDispatcherCommand extends Command
                     $ready = time() % $probe->getStep() === 0;
 
                     if ($ready) {
-                        $instructions = $this->instructionBuilder::create(
-                            $probe,
-                            $this->devicesPerWorker
-                        );
+                        $instructions = new Instruction($probe, $this->devicesPerWorker);
 
                         // Keep track of how many processes are starting.
                         $counter = 0;
