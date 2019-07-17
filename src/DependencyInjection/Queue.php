@@ -48,10 +48,6 @@ class Queue
                     $instruction = array(
                         'type' => 'post-result',
                         'delay_execution' => 0,
-                        'client' => 'eight_points_guzzle.client.api_fireping',
-                        'method' => 'POST',
-                        'endpoint' => "/api/slaves/" . $this->slaveName . "/result",
-                        'headers' => ['Content-Type' => 'application/json'],
                         'body' => $this->current,
                     );
 
