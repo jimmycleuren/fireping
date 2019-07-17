@@ -41,7 +41,7 @@ abstract class ShellCommand implements CommandInterface
 
     protected $container;
 
-    public function __construct($data, LoggerInterface $logger, ContainerInterface $container)
+    public function __construct($data, LoggerInterface $logger)
     {
         $finder = new ExecutableFinder();
         if (!$finder->find($this->command)) {
@@ -52,7 +52,6 @@ abstract class ShellCommand implements CommandInterface
         $this->targets = $data['targets'];
         $this->outputFormatter = new DefaultOutputFormatter();
         $this->logger = $logger;
-        $this->container = $container;
     }
 
     /**
