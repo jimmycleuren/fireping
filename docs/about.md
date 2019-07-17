@@ -1,7 +1,7 @@
 ---
 layout: article
 key: page-about
-parmalink: /about
+permalink: /about
 ---
 
 ![TeXt Theme](https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/TeXt-home.jpg)
