@@ -81,8 +81,11 @@ server_name fireping.develop;
 ```
 the `fireping.develop` can be changed to any name you want. if you want to host a server you should change the name on this line to that of the server.
 
-Change `/app/` to `/opt/fireping/` on line 3 and line 47 and then change line 11 to
-```SQL
+Change `/app/` to `/opt/fireping/` on line 3 and line 47 
+![Vim of symfony.conf](/fireping/assets/img/symfony_conf_edit.png)
+
+and then change line 11 to
+```
 fastcgi_pass unix:/var/run/php/php7.3-fpm.sock;
 ```
 
