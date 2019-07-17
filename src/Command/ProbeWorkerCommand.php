@@ -10,6 +10,8 @@ use React\EventLoop\Factory;
 use React\EventLoop\LoopInterface;
 use React\Stream\ReadableResourceStream;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Exception\InvalidArgumentException;
+use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -48,14 +50,8 @@ class ProbeWorkerCommand extends Command
 
     private $commandFactory;
 
-
     /**
-     * ProbeWorkerCommand constructor.
-     *
-     * @param LoggerInterface $logger
-     * @param CommandFactory $commandFactory
-     *
-     * @throws \Symfony\Component\Console\Exception\LogicException
+     * @throws LogicException
      */
     public function __construct(LoggerInterface $logger, CommandFactory $commandFactory)
     {
@@ -67,7 +63,7 @@ class ProbeWorkerCommand extends Command
 
     /**
      *
-     * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function configure(): void
     {
@@ -88,10 +84,7 @@ class ProbeWorkerCommand extends Command
      * @param OutputInterface $output
      *
      * @return void
-     * @throws \LogicException
-     * @throws \RuntimeException
-     * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
@@ -195,7 +188,7 @@ class ProbeWorkerCommand extends Command
 
         $command = null;
         try {
-            $command = $this->commandFactory->create($data['type'], $data);
+            $command = $this->commandFactory->make($data['type'], $data);
         } catch (Exception $e) {
             $this->sendResponse(
                 [
