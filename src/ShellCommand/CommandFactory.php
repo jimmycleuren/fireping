@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: kevinr
- * Date: 9/06/2017
- * Time: 12:38
- */
+declare(strict_types=1);
 
 namespace App\ShellCommand;
 
@@ -17,11 +12,11 @@ class CommandFactory
     private $container;
 
     protected static $mappings = array(
-        'ping' => 'App\\ShellCommand\\PingShellCommand',
-        'http' => 'App\\Probe\\Http',
-        'traceroute' => 'App\\DependencyInjection\\Traceroute',
-        'config-sync' => 'App\\ShellCommand\\GetConfigHttpWorkerCommand',
-        'post-result' => 'App\\ShellCommand\\PostResultsHttpWorkerCommand',
+        'ping' => PingShellCommand::class,
+        'http' => Http::class,
+        'traceroute' => Traceroute::class,
+        'config-sync' => GetConfigHttpWorkerCommand::class,
+        'post-result' => PostResultsHttpWorkerCommand::class,
     );
 
     public function __construct(LoggerInterface $logger, ContainerInterface $container)
