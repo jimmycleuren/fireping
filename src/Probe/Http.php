@@ -1,17 +1,15 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Probe;
 
+use App\ShellCommand\CommandInterface;
 use GuzzleHttp\TransferStats;
 use Psr\Log\LoggerInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise;
 
-
-/**
- * Class Http
- * @package App\Probe
- */
-class Http
+class Http implements CommandInterface
 {
     private $args;
     private $delay;
@@ -26,17 +24,12 @@ class Http
         302
     ];
 
-    public function __construct($data, LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
-        $this->delay = $data['delay_execution'];
-        $this->targets = $data['targets'];
-        $this->samples = $data['args']['samples'];
-        $this->waitTime = $data['args']['wait_time'];
-        $this->args = $data['args'];
     }
 
-    public function execute()
+    public function execute(): array
     {
         usleep($this->delay * 1000);
 
@@ -88,5 +81,14 @@ class Http
         }
 
         return $result;
+    }
+
+    public function setArgs(array $args): void
+    {
+        $this->delay = $args['delay_execution'];
+        $this->targets = $args['targets'];
+        $this->samples = $args['args']['samples'];
+        $this->waitTime = $args['args']['wait_time'];
+        $this->args = $args['args'];
     }
 }
