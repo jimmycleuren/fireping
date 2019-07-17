@@ -7,7 +7,6 @@ use App\Command\ProbeDispatcherCommand;
 use App\DependencyInjection\ProbeStore;
 use App\DependencyInjection\Worker;
 use App\DependencyInjection\WorkerManager;
-use App\Instruction\InstructionBuilder;
 use Prophecy\Argument;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -36,15 +35,12 @@ class ProbeDispatcherCommandTest extends KernelTestCase
         $worker->__toString()->willReturn("worker");
         $worker = $worker->reveal();
         $logger = $this->prophesize(LoggerInterface::class)->reveal();
-        $instructionBuilder = $this->prophesize(InstructionBuilder::class)->reveal();
         $workerManager = $this->prophesize(WorkerManager::class);
         $workerManager->initialize(Argument::type('int'), Argument::type('int'), Argument::type('int'))->shouldBeCalledTimes(1);
         $workerManager->loop()->willReturn();
         $workerManager->getWorker(Argument::any())->willReturn($worker);
 
-        $application->add(
-            new ProbeDispatcherCommand($probeStore, $logger, $instructionBuilder, $workerManager->reveal())
-        );
+        $application->add(new ProbeDispatcherCommand($probeStore, $logger, $workerManager->reveal()));
 
         $command       = $application->find('app:probe:dispatcher');
         $commandTester = new CommandTester($command);

@@ -63,8 +63,3 @@ services:
         class:      App\DependencyInjection\ProbeStore
         arguments:  ["@service_container"]
         public: true
-
-    instruction_builder:
-        class:      App\DependencyInjection\InstructionBuilderService
-        arguments:  ["@service_container"]
-        public: true
