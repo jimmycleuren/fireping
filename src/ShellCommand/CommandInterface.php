@@ -5,7 +5,6 @@ namespace App\ShellCommand;
 
 interface CommandInterface
 {
-    function execute();
-    function build();
-    function valid();
+    public function setArgs(array $args): void;
+    public function execute(): array;
 }
