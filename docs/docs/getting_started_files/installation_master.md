@@ -63,6 +63,8 @@ Then go into the `.env` file using `sudo vim .env` or any other text editor you 
 * **db_password** is the password you created (`fireping` in the example on `IDENTIFIED BY`)
 * **db_name** is fireping
 
+![env vim](/fireping/assets/img/env_edit.png)
+
 Make sure you are in the directory `/opt/fireping/` and run
 
 ```bash
