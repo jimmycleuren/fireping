@@ -4,16 +4,16 @@
 # which you are expected to set up once and rarely need to edit after that.
 # For technical reasons, this file is *NOT* reloaded automatically when you use
 # 'jekyll serve'. If you change this file, please restart the server process.
+
+## !USE TEXT THEME
+theme: jekyll-text-theme # Gem-based Jekyll Themes
+# remote_theme: kitian616/jekyll-TeXt-theme # Jekyll Remote Theme, see https://github.com/benbalter/jekyll-remote-theme for more information.
 #
 # ,--------.      ,--.   ,--. ,--.
 # '--.  .--',---.  \  `.'  /,-'  '-.
 #    |  |  | .-. :  .'    \ '-.  .-'
 #    |  |  \   --. /  .'.  \  |  |
 #    `--'   `----''--'   '--' `--'
-
-
-
-
 ## => Site Settings
 ##############################
 text_skin: default # "default" (default), "dark", "forest", "ocean", "chocolate", "orange"
@@ -140,8 +140,6 @@ comments:
     app_id      : # LeanCloud App id
     app_key     : # LeanCloud App key
     placeholder : # Prompt information
-    visitor     : # false (default)
-    meta        : # "[nick, mail, link]" (default) nickname, E-mail, Personal-site
 
 
 ## => Pageview
