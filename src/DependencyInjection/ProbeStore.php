@@ -1,106 +1,75 @@
 <?php
+declare(strict_types=1);
+
 namespace App\DependencyInjection;
 
-use GuzzleHttp\Client;
 use App\Probe\ProbeDefinition;
 use App\Probe\DeviceDefinition;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Exception\TransferException;
-use GuzzleHttp\Psr7\Request;
-use Monolog\Logger;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
-/**
- * Class ProbeStore
- * @package App\DependencyInjection
- */
 class ProbeStore
 {
+    private $probes = [];
     /**
-     * @var ContainerInterface
+     * @var string|null
      */
-    private   $container;
-    protected $probes = array();
-    protected $etag = null;
+    private $etag;
 
-    /**
-     * @return null
-     */
-    public function getEtag()
+    public function getEtag(): ?string
     {
         return $this->etag;
     }
 
-    /**
-     * @param null $etag
-     */
-    public function setEtag($etag)
+    public function setEtag(?string $etag): void
     {
         $this->etag = $etag;
     }
 
-    public function __construct(ContainerInterface $container)
+    private function addProbe(ProbeDefinition $probe): void
     {
-        $this->container = $container;
+        $this->probes[$probe->getId()] = $probe;
     }
 
-    private function addProbe(ProbeDefinition $probe)
-    {
-        $this->probes[] = $probe;
-    }
-
-    public function getProbes()
+    /**
+     * @return ProbeDefinition[]
+     */
+    public function getProbes(): array
     {
         return $this->probes;
     }
 
-    public function getProbeById($id)
+    public function getProbeById($id): ?ProbeDefinition
     {
-        foreach ($this->probes as $probe) {
-            if ($probe->getId() === $id) {
-                return $probe;
-            }
-        }
-        return null;
+        return $this->probes[$id] ?? null;
     }
 
     public function getProbe($id, $type, $step, $samples, $args = null)
     {
-        foreach ($this->probes as $probe) {
-            if ($probe->getId() === $id) {
-                $probe->setConfiguration($id, $type, $step, $samples, $args);
-                return $probe;
-            }
+        if ($probe = $this->getProbeById($id)) {
+            $probe->setConfiguration($id, $type, $step, $samples, $args);
+            return $probe;
         }
-        $newProbe = new ProbeDefinition($id, $type, $step, $samples, $args);
-        $this->addProbe($newProbe);
-        return $newProbe;
+
+        $probe = new ProbeDefinition($id, $type, $step, $samples, $args);
+        $this->addProbe($probe);
+        return $probe;
     }
 
-    public function getProbeDeviceCount($id)
+    public function getProbeDeviceCount($id): int
     {
-        /* @var $probe ProbeDefinition */
         $probe = $this->getProbeById($id);
-        if ($probe === null) {
-            return 0;
-        }
-
-        return count($probe->getDevices());
+        return $probe !== null ? count($probe->getDevices()) : 0;
     }
 
-    public function getAllProbesDeviceCount()
+    public function getAllProbesDeviceCount(): void
     {
         $total = 0;
         foreach ($this->getProbes() as $probe) {
-            /* @var $probe ProbeDefinition */
             $total += count($probe->getDevices());
         }
         return $total;
     }
 
-    private function deactivateAllDevices()
+    private function deactivateAllDevices(): void
     {
         foreach ($this->getProbes() as $probe) {
             $probe->deactivateAllDevices();
