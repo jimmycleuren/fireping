@@ -74,6 +74,7 @@ sudo php bin/console doctrine:migrations:migrate
 ## Configure the dashboard server
 Copy the file `docker/nginx/symfony.conf` to `/etc/nginx/sites-enabled` and edit the file
 ```bash
+sudo cp docker/nginx/symfony.conf /etc/nginx/sites-enabled
 sudo vim /etc/nginx/sites-enabled/symfony.conf
 ```
 
