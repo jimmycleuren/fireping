@@ -98,8 +98,9 @@
 </style>
 <script>
 
-function scrollDown() {
-    window.scrollTo(0, window.innerHeight);
+function scrollDown(delay=16, distance=50) {
+    window.scrollBy(0, window.innerHeight/distance);
+    setTimeout(scrollDown(delay=delay, distance=distance-1), delay);
 }
 
 </script>
