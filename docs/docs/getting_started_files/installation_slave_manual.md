@@ -1,6 +1,6 @@
 ---
 title: "Manual installation guide for the Slaves"
-permalink: /getting-started/slaves/manual
+permalink: /docs/getting-started/slaves/manual
 key: docs-getting-started-slaves-manual
 ---
 

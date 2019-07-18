@@ -1,6 +1,6 @@
 ---
 title: "Probe Archive Settings"
-permalink: /how-to/admin/probe-archive
+permalink: /docs/how-to/admin/probe-archive
 key: docs-how-to-admin-probe-archive
 ---
 

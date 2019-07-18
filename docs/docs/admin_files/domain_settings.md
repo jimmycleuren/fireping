@@ -1,6 +1,6 @@
 ---
 title: "Domain Settings"
-permalink: /how-to/admin/domain
+permalink: /docs/how-to/admin/domain
 key: docs-how-to-admin-domain
 ---
 

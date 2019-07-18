@@ -1,6 +1,6 @@
 ---
 title: "How to use Fireping"
-permalink: /how-to
+permalink: /docs/how-to
 key: docs-how-to
 ---
 

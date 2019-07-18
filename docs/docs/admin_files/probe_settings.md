@@ -1,6 +1,6 @@
 ---
 title: "Probe Settings"
-permalink: /how-to/admin/probe
+permalink: /docs/how-to/admin/probe
 key: docs-how-to-admin-probe
 ---
 

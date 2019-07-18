@@ -1,6 +1,6 @@
 ---
 title: "Test Guide"
-permalink: /how-to/test
+permalink: /docs/how-to/test
 key: docs-how-to-test
 ---
 

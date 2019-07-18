@@ -1,6 +1,6 @@
 ---
 title: "Dashboard Guide"
-permalink: /how-to/dashboard
+permalink: /docs/how-to/dashboard
 key: docs-how-to-dashboard
 ---
 

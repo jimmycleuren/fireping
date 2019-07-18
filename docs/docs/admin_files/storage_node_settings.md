@@ -1,6 +1,6 @@
 ---
 title: "Storage Node Settings"
-permalink: /how-to/admin/storage-node
+permalink: /docs/how-to/admin/storage-node
 key: docs-how-to-admin-storage-node
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: "Installation using Docker"
-permalink: /getting-started/slaves/docker
+permalink: /docs/getting-started/slaves/docker
 key: docs-getting-started-slaves-docker
 ---
 

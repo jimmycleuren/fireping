@@ -1,6 +1,6 @@
 ---
 title: "Installation guide for the Master"
-permalink: /getting-started/master
+permalink: /docs/getting-started/master
 key: docs-getting-started-master
 ---
 

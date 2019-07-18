@@ -1,6 +1,6 @@
 ---
 title: "Alert Destination Settings"
-permalink: /how-to/admin/alert-destination
+permalink: /docs/how-to/admin/alert-destination
 key: docs-how-to-admin-alert-destination
 ---
 

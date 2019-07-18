@@ -1,6 +1,6 @@
 ---
 title: "Slave Group Settings"
-permalink: /how-to/admin/slave-group
+permalink: /docs/how-to/admin/slave-group
 key: docs-how-to-admin-slave-group
 ---
 

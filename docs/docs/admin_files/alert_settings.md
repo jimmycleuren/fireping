@@ -1,6 +1,6 @@
 ---
 title: "Alert Settings"
-permalink: /how-to/admin/alert
+permalink: /docs/how-to/admin/alert
 key: docs-how-to-admin-alert
 ---
 

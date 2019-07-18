@@ -1,6 +1,6 @@
 ---
 title: "Device Settings"
-permalink: /how-to/admin/device
+permalink: /docs/how-to/admin/device
 key: docs-how-to-admin-device
 ---
 

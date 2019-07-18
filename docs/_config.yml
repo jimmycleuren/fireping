@@ -193,6 +193,8 @@ defaults:
     values:
       layout: article
       license: true
+      sidebar:
+        nav: side-nav
       aside:
         toc: true
       show_edit_on_github: true
@@ -204,8 +206,7 @@ defaults:
       layout: article
       # nav_key: docs
       sidebar:
-        nav: docs
-      license: true
+        nav: side-nav
       aside:
         toc: true
       show_date: false

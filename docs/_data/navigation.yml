@@ -14,3 +14,65 @@ header:
 
   - title: GitHub
     url:  https://github.com/jimmycleuren/fireping
+
+side-nav:
+  - title:      Install Fireping
+    children:
+      - title:  Getting started
+        url:    /docs/getting-started
+      - title:  Master setup
+        url:    /docs/getting-started/master
+      - title:  Slave setup
+        - children: 
+          - title: Manual installation
+            url:   /docs/getting-started/slaves/manual
+          - title: Docker installation
+            url:   /docs/getting-started/slaves/docker
+  # - title:      Customization
+  #   children:
+  #     - title:  Configuration
+  #       url:    /docs/en/configuration
+  #     - title:  Navigation
+  #       url:    /docs/en/navigation
+  #     - title:  Layouts
+  #       url:    /docs/en/layouts
+  #     - title:  Logo and Favicon
+  #       url:    /docs/en/logo-and-favicon
+  #     - title:  Authors
+  #       url:    /docs/en/authors
+  #     - title:  Internationalization
+  #       url:    /docs/en/i18n
+  # - title:      Content
+  #   children:
+  #     - title:  Writing Posts
+  #       url:    /docs/en/writing-posts
+  #     - title:  Additional Styles
+  #       url:    /docs/en/additional-styles
+  #     - title:  Extensions
+  #       url:    /docs/en/extensions
+  #     - title:  Markdown Enhancements
+  #       url:    /docs/en/markdown-enhancements
+  # - title:      Extra
+  #   children:
+  #     - title:  Spacing
+  #       url:    /docs/en/spacing
+  #     - title:  Grid
+  #       url:    /docs/en/grid
+  #     - title:  Icons
+  #       url:    /docs/en/icons
+  #     - title:  Image
+  #       url:    /docs/en/image
+  #     - title:  Button
+  #       url:    /docs/en/button
+  #     - title:  Item
+  #       url:    /docs/en/item
+  #     - title:  Card
+  #       url:    /docs/en/card
+  #     - title:  Hero
+  #       url:    /docs/en/hero
+  #     - title:  Swiper
+  #       url:    /docs/en/swiper
+  # - title:      Languages
+  #   children:
+  #     - title:  中文
+  #       url:    /docs/zh/quick-start

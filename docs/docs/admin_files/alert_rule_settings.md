@@ -1,6 +1,6 @@
 ---
 title: "Alert Rule Settings"
-permalink: /how-to/admin/alert-rule
+permalink: /docs/how-to/admin/alert-rule
 key: docs-how-to-admin-alert-rule
 ---
 

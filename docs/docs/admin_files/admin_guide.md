@@ -1,6 +1,6 @@
 ---
 title: "Admin Guide"
-permalink: /how-to/admin
+permalink: /docs/how-to/admin
 key: docs-how-to-admin
 ---
 

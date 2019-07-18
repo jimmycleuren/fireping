@@ -1,6 +1,6 @@
 ---
 title: "Installing Master and Slave(s) on the same host"
-permalink: /getting-started/same-host
+permalink: /docs/getting-started/same-host
 key: docs-getting-started-same-host
 ---
 

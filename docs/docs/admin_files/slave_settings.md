@@ -1,6 +1,6 @@
 ---
 title: "Slave Settings"
-permalink: /how-to/admin/slave
+permalink: /docs/how-to/admin/slave
 key: docs-how-to-admin-slave
 ---
 

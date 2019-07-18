@@ -1,6 +1,6 @@
 ---
 title: "User Settings"
-permalink: /how-to/admin/user
+permalink: /docs/how-to/admin/user
 key: docs-how-to-admin-user
 ---
 
