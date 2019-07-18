@@ -197,6 +197,18 @@ defaults:
         toc: true
       show_edit_on_github: true
       pageview: true
+  ## docs
+  - scope:
+      path: "docs"
+    values:
+      layout: article
+      # nav_key: docs
+      sidebar:
+        nav: docs
+      license: true
+      aside:
+        toc: true
+      show_date: false
 
 ## => Plugins
 ##############################
