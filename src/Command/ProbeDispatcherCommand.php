@@ -353,7 +353,7 @@ class ProbeDispatcherCommand extends Command
                 }
                 break;
 
-            case 'config-sync':
+            case GetConfigHttpWorkerCommand::class:
                 if ($status === 200) {
                     $etag = $response['headers']['etag'];
                     $this->probeStore->updateConfig($contents, $etag);

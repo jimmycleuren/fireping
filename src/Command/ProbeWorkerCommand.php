@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\ShellCommand\CommandFactory;
+use App\ShellCommand\GetConfigHttpWorkerCommand;
+use App\ShellCommand\PostResultsHttpWorkerCommand;
 use Exception;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
@@ -214,7 +216,7 @@ class ProbeWorkerCommand extends Command
             $shellOutput = $command->execute();
 
             switch ($data['type']) {
-                case 'post-result':
+                case PostResultsHttpWorkerCommand::class:
                     $this->sendResponse([
                         'type' => $data['type'],
                         'status' => $shellOutput['code'],
@@ -231,7 +233,7 @@ class ProbeWorkerCommand extends Command
                     ]);
                     break;
 
-                case 'config-sync':
+                case GetConfigHttpWorkerCommand::class:
                     // This is a request to get the latest configuration from the master.
                     $this->sendResponse([
                         'type' => $data['type'],
@@ -251,7 +253,6 @@ class ProbeWorkerCommand extends Command
                     break;
 
                 case 'ping':
-                case 'mtr':
                 case 'traceroute':
                 case 'http':
                     $this->sendResponse([
