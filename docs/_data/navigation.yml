@@ -34,37 +34,27 @@ side-nav:
         url:    /docs/how-to/admin
       - title:  Dashboard Guide
         url:    /docs/how-to/dashboard
-  # - title:      Content
-  #   children:
-  #     - title:  Writing Posts
-  #       url:    /docs/en/writing-posts
-  #     - title:  Additional Styles
-  #       url:    /docs/en/additional-styles
-  #     - title:  Extensions
-  #       url:    /docs/en/extensions
-  #     - title:  Markdown Enhancements
-  #       url:    /docs/en/markdown-enhancements
-  # - title:      Extra
-  #   children:
-  #     - title:  Spacing
-  #       url:    /docs/en/spacing
-  #     - title:  Grid
-  #       url:    /docs/en/grid
-  #     - title:  Icons
-  #       url:    /docs/en/icons
-  #     - title:  Image
-  #       url:    /docs/en/image
-  #     - title:  Button
-  #       url:    /docs/en/button
-  #     - title:  Item
-  #       url:    /docs/en/item
-  #     - title:  Card
-  #       url:    /docs/en/card
-  #     - title:  Hero
-  #       url:    /docs/en/hero
-  #     - title:  Swiper
-  #       url:    /docs/en/swiper
-  # - title:      Languages
-  #   children:
-  #     - title:  中文
-  #       url:    /docs/zh/quick-start
+  - title:      Settings
+    children:
+      - title:  Domain
+        url:    /docs/how-to/admin/domain
+      - title:  Device
+        url:    /docs/how-to/admin/device
+      - title:  Alert
+        url:    /docs/how-to/admin/alert
+      - title:  Alert Rule
+        url:    /docs/how-to/admin/alert-rule
+      - title:  Alert Destination
+        url:    /docs/how-to/admin/alert-destination
+      - title:  Probe
+        url:    /docs/how-to/admin/probe
+      - title:  Probe Archive
+        url:    /docs/how-to/admin/probe-archive
+      - title:  Slave
+        url:    /docs/how-to/admin/slave
+      - title:  Slave Group
+        url:    /docs/how-to/admin/slave-group
+      - title:  Storage Node
+        url:    /docs/how-to/admin/storage-node
+      - title:  User
+        url:    /docs/how-to/admin/user
