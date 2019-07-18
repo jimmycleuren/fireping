@@ -7,7 +7,7 @@ grand_parent: How to use Fireping
 permalink: /how-to/admin/probe-archive
 ---
 
-![Settings for device](/fireping/assets/img/probe_archive_settings.png)
+![Settings for device](/fireping/assets/images/probe_archive_settings.png)
 
 # Short Description
 A Probe Archive will hold the data gathered by probes for a specified amount of time.

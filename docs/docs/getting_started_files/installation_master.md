@@ -63,7 +63,7 @@ Then go into the `.env` file using `sudo vim .env` or any other text editor you 
 * **db_password** is the password you created (`fireping` in the example on `IDENTIFIED BY`)
 * **db_name** is fireping
 
-![env vim](/fireping/assets/img/env_edit.png)
+![env vim](/fireping/assets/images/env_edit.png)
 
 Make sure you are in the directory `/opt/fireping/` and run
 
@@ -85,7 +85,7 @@ server_name fireping.develop;
 the `fireping.develop` can be changed to any name you want. if you want to host a server you should change the name on this line to that of the server.
 
 Change `/app/` to `/opt/fireping/` on line 3 and line 47 
-![Vim of symfony.conf](/fireping/assets/img/symfony_conf_edit.png)
+![Vim of symfony.conf](/fireping/assets/images/symfony_conf_edit.png)
 
 and then change line 11 to
 ```
@@ -126,6 +126,6 @@ sudo vim /etc/hosts
 ...
 ```
 
-![Dashboard](/fireping/assets/img/dashboard_main_page.png) 
+![Dashboard](/fireping/assets/images/dashboard_main_page.png) 
 
 Next step is to create [Slave nodes](/fireping/getting-started/slaves)

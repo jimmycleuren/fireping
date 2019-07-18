@@ -7,7 +7,7 @@ grand_parent: How to use Fireping
 permalink: /how-to/admin/alert-rule
 ---
 
-![Settings for device](/fireping/assets/img/alert_rule_settings.png)
+![Settings for device](/fireping/assets/images/alert_rule_settings.png)
 
 # Short Description
 Describes when to trigger an alert. Alerts can be sent to different destinations using [Alert Destinations](/fireping/how-to/admin/alert-destination).

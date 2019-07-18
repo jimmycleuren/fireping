@@ -7,7 +7,7 @@ grand_parent: How to use Fireping
 permalink: /how-to/admin/user
 ---
 
-![Settings for device](/fireping/assets/img/user_settings.png)
+![Settings for device](/fireping/assets/images/user_settings.png)
 
 # Short Description
 Allows you to create/edit user credetials and roles.

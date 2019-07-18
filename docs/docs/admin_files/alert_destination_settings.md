@@ -7,7 +7,7 @@ grand_parent: How to use Fireping
 permalink: /how-to/admin/alert-destination
 ---
 
-![Settings for device](/fireping/assets/img/alert_destination_settings.png)
+![Settings for device](/fireping/assets/images/alert_destination_settings.png)
 
 # Short Description
 An alert destination is used do define where to store alerts.

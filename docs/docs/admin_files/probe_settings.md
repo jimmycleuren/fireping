@@ -7,7 +7,7 @@ grand_parent: How to use Fireping
 permalink: /how-to/admin/probe
 ---
 
-![Settings for device](/fireping/assets/img/probe_settings.png)
+![Settings for device](/fireping/assets/images/probe_settings.png)
 
 # Short Description
 A probe will be executed by the slaves to gather data about a device. This data will be kept in a [Probe Archive](/fireping/how-to/admin/probe-archive).
