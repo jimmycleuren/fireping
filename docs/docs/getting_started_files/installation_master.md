@@ -126,4 +126,4 @@ sudo vim /etc/hosts
 
 ![Dashboard](/fireping/assets/images/dashboard_main_page.png) 
 
-Next step is to create [Slave nodes](/fireping/getting-started/slaves)
+Next step is to create [Slave nodes](/fireping/docs/getting-started/slaves)

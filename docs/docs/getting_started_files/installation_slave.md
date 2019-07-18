@@ -5,7 +5,7 @@ key: docs-getting-started-slaves
 ---
 
 ## Using Docker (recommended)
-You can easily [install one or more slaves using a docker image](/fireping/getting-started/slaves/docker). This has few steps and the slave is easily deployed!
+You can easily [install one or more slaves using a docker image](/fireping/docs/getting-started/slaves/docker). This has few steps and the slave is easily deployed!
 
 ## Manual
-You can do a [manual installation](/fireping/getting-started/slaves/manual) but its tedious and takes a long time.
+You can do a [manual installation](/fireping/docs/getting-started/slaves/manual) but its tedious and takes a long time.
