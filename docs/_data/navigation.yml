@@ -28,20 +28,12 @@ side-nav:
         url:    /docs/getting-started/slaves/manual
       - title:  Docker installation
         url:    /docs/getting-started/slaves/docker
-  # - title:      Customization
-  #   children:
-  #     - title:  Configuration
-  #       url:    /docs/en/configuration
-  #     - title:  Navigation
-  #       url:    /docs/en/navigation
-  #     - title:  Layouts
-  #       url:    /docs/en/layouts
-  #     - title:  Logo and Favicon
-  #       url:    /docs/en/logo-and-favicon
-  #     - title:  Authors
-  #       url:    /docs/en/authors
-  #     - title:  Internationalization
-  #       url:    /docs/en/i18n
+  - title:      Guides
+    children:
+      - title:  Admin Guide
+        url:    /docs/how-to/admin
+      - title:  Dashboard Guide
+        url:    /docs/how-to/dashboard
   # - title:      Content
   #   children:
   #     - title:  Writing Posts
