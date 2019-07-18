@@ -14,16 +14,14 @@ class Ping implements CommandInterface
     private $logger;
     private $formatter;
 
-    private $command = 'fping';
-    private $argumentMap = [
+    private $mappedArguments = [
         'samples' => '-C',
         'packet_size' => '-s',
         'interval' => '-i',
         'wait_time' => '-p',
         'retries' => '-r',
     ];
-    protected $extraArguments = ['-q'];
-    protected $requiredArguments = ['-C'];
+    private $requiredArguments = ['-C'];
 
     private $arguments = [];
     private $targets = [];
