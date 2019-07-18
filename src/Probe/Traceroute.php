@@ -119,4 +119,9 @@ class Traceroute implements CommandInterface
         $this->samples = $args['args']['samples'];
         $this->targets = $args['targets'];
     }
+
+    public function getType(): string
+    {
+        return 'traceroute';
+    }
 }

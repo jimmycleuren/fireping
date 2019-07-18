@@ -8,6 +8,7 @@ use App\DependencyInjection\Queue;
 use App\DependencyInjection\WorkerManager;
 use App\Instruction\Instruction;
 use App\Probe\ProbeDefinition;
+use App\ShellCommand\GetConfigHttpWorkerCommand;
 use Exception;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
@@ -199,7 +200,7 @@ class ProbeDispatcherCommand extends Command
                 if ($toSync) {
                     $this->logger->info('Starting config sync.');
                     $instruction = [
-                        'type' => 'config-sync',
+                        'type' => GetConfigHttpWorkerCommand::class,
                         'delay_execution' => 0,
                         'etag' => $this->probeStore->getEtag()
                     ];

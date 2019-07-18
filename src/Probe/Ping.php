@@ -129,4 +129,9 @@ class Ping implements CommandInterface
         }
         return $mapped;
     }
+
+    public function getType(): string
+    {
+        return 'ping';
+    }
 }

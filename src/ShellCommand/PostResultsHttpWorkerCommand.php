@@ -43,4 +43,9 @@ class PostResultsHttpWorkerCommand implements CommandInterface
         $this->endpoint = sprintf('/api/slaves/%s/result', $_ENV['SLAVE_NAME']);
         $this->body = $args['body'] ?? new \stdClass();
     }
+
+    public function getType(): string
+    {
+        return self::class;
+    }
 }

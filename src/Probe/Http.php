@@ -91,4 +91,9 @@ class Http implements CommandInterface
         $this->waitTime = $args['args']['wait_time'];
         $this->args = $args['args'];
     }
+
+    public function getType(): string
+    {
+        return 'http';
+    }
 }

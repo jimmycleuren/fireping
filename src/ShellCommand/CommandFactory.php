@@ -21,7 +21,7 @@ final class CommandFactory
 
     public function addCommandType(CommandInterface $command)
     {
-        $this->types[get_class($command)] = $command;
+        $this->types[$command->getType()] = $command;
     }
 
     public function make(string $command, array $args): ?CommandInterface

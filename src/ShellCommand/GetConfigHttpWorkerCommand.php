@@ -62,4 +62,9 @@ class GetConfigHttpWorkerCommand implements CommandInterface
     {
         $this->etag = $args['etag'] ?? null;
     }
+
+    public function getType(): string
+    {
+        return self::class;
+    }
 }
