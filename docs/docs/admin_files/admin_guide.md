@@ -4,7 +4,7 @@ permalink: /docs/how-to/admin
 key: docs-how-to-admin
 ---
 
-# the Admin dashboard
+# The admin dashboard
 On the Admin dashboard you can configure all settings, remove slaves, add or remove users and more.
 To understand what all these options do, you can read these documents.
 
