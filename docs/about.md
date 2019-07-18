@@ -2,6 +2,8 @@
 layout: article
 key: page-about
 permalink: /about
+sidebar:
+    nav: side-nav
 ---
 
 # What does it do?
