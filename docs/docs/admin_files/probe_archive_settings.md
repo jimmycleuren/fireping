@@ -1,10 +1,7 @@
 ---
-layout: doc
 title: "Probe Archive Settings"
-nav_order: 7
-parent: Admin Guide
-grand_parent: How to use Fireping
 permalink: /how-to/admin/probe-archive
+key: docs-how-to-admin-probe-archive
 ---
 
 ![Settings for device](/fireping/assets/images/probe_archive_settings.png)

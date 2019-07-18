@@ -1,10 +1,7 @@
 ---
-layout: doc
 title: "Probe Settings"
-nav_order: 6
-parent: Admin Guide
-grand_parent: How to use Fireping
 permalink: /how-to/admin/probe
+key: docs-how-to-admin-probe
 ---
 
 ![Settings for device](/fireping/assets/images/probe_settings.png)

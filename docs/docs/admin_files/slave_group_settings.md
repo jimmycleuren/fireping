@@ -1,10 +1,7 @@
 ---
-layout: doc
 title: "Slave Group Settings"
-nav_order: 9
-parent: Admin Guide
-grand_parent: How to use Fireping
 permalink: /how-to/admin/slave-group
+key: docs-how-to-admin-slave-group
 ---
 
 ![Settings for device](/fireping/assets/images/slave_group_settings.png)

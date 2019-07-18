@@ -1,11 +1,7 @@
 ---
-layout: doc
 title: "Admin Guide"
-nav_order: 2
-has_children: true
-parent: How to use Fireping
 permalink: /how-to/admin
-has_toc: false
+key: docs-how-to-admin
 ---
 
 # the Admin dashboard

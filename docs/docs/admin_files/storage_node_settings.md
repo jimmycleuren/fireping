@@ -1,10 +1,7 @@
 ---
-layout: doc
 title: "Storage Node Settings"
-nav_order: 10
-parent: Admin Guide
-grand_parent: How to use Fireping
 permalink: /how-to/admin/storage-node
+key: docs-how-to-admin-storage-node
 ---
 
 ![Settings for device](/fireping/assets/images/storage_node_settings.png)

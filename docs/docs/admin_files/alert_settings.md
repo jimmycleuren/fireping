@@ -1,10 +1,7 @@
 ---
-layout: doc
 title: "Alert Settings"
-nav_order: 3
-parent: Admin Guide
-grand_parent: How to use Fireping
 permalink: /how-to/admin/alert
+key: docs-how-to-admin-alert
 ---
 
 ![Settings for device](/fireping/assets/images/alert_settings.png)

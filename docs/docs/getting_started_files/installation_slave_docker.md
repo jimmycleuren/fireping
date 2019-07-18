@@ -1,10 +1,7 @@
 ---
-layout: doc
 title: "Installation using Docker"
-nav_order: 1
-parent: Installation guide for the Slaves
-grand_parent: Getting started
 permalink: /getting-started/slaves/docker
+key: docs-getting-started-slaves-docker
 ---
 
 First make sure you have [Docker](http://www.docker.com) installed.

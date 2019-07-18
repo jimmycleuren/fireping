@@ -1,11 +1,7 @@
 ---
-layout: doc
 title: "How to use Fireping"
-description: "Manual for using the dashboard"
-nav_order: 3
-has_children: true
 permalink: /how-to
-has_toc: false
+key: docs-how-to
 ---
 
 # Testing the setup

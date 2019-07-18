@@ -1,10 +1,7 @@
 ---
-layout: doc
 title: "Device Settings"
-nav_order: 2
-parent: Admin Guide
-grand_parent: How to use Fireping
 permalink: /how-to/admin/device
+key: docs-how-to-admin-device
 ---
 
 ![Settings for device](/fireping/assets/images/settings_device.png)

@@ -1,9 +1,7 @@
 ---
-layout: doc
 title: "Test Guide"
-nav_order: 1
-parent: How to use Fireping
 permalink: /how-to/test
+key: docs-how-to-test
 ---
 
 ## Testing the setup

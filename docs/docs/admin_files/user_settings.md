@@ -1,10 +1,7 @@
 ---
-layout: doc
 title: "User Settings"
-nav_order: 11
-parent: Admin Guide
-grand_parent: How to use Fireping
 permalink: /how-to/admin/user
+key: docs-how-to-admin-user
 ---
 
 ![Settings for device](/fireping/assets/images/user_settings.png)

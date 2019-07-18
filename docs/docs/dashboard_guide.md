@@ -1,9 +1,7 @@
 ---
-layout: doc
 title: "Dashboard Guide"
-nav_order: 3
-parent: How to use Fireping
 permalink: /how-to/dashboard
+key: docs-how-to-dashboard
 ---
 
 # The Dashboard

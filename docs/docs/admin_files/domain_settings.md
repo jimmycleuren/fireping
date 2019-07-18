@@ -1,10 +1,7 @@
 ---
-layout: doc
 title: "Domain Settings"
-nav_order: 1
-parent: Admin Guide
-grand_parent: How to use Fireping
 permalink: /how-to/admin/domain
+key: docs-how-to-admin-domain
 ---
 
 ![Settings for domain with parent](/fireping/assets/images/settings_domain_with_parent.png)

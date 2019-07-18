@@ -1,10 +1,7 @@
 ---
-layout: doc
 title: "Slave Settings"
-nav_order: 8
-parent: Admin Guide
-grand_parent: How to use Fireping
 permalink: /how-to/admin/slave
+key: docs-how-to-admin-slave
 ---
 
 ![Settings for device](/fireping/assets/images/slave_settings.png)
