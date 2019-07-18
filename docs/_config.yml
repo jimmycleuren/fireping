@@ -199,7 +199,11 @@ exclude:
   - /node_modules
   - /screenshots
   - /test
-  - /vendor
+
+collections_dir: docs
+collections:
+  docs:
+    output: true
 
 defaults:
   - scope:
