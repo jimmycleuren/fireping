@@ -198,8 +198,6 @@ defaults:
       show_edit_on_github: true
       pageview: true
 
-collections_dir: docs
-
 ## => Plugins
 ##############################
 plugins:
