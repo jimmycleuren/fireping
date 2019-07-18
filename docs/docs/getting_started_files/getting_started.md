@@ -4,7 +4,7 @@ title: "Getting started"
 description: "On Linux"
 nav_order: 2
 has_children: true
-permalink: /getting-started
+permalink: /docs/getting-started
 ---
 
 # How to install
