@@ -1,13 +1,7 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: kevinr
- * Date: 14/06/2017
- * Time: 9:04
- */
+declare(strict_types=1);
 
 namespace App\Instruction;
-
 
 use App\Probe\ProbeDefinition;
 use App\Probe\DeviceDefinition;
