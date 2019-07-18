@@ -1,10 +1,7 @@
 ---
-layout: doc
 title: "Getting started"
-description: "On Linux"
-nav_order: 2
-has_children: true
 permalink: /docs/getting-started
+key: docs-getting-started
 ---
 
 # How to install
