@@ -6,7 +6,7 @@ namespace App\DependencyInjection;
 use App\Probe\ProbeDefinition;
 use App\Probe\DeviceDefinition;
 
-class ProbeStore
+class SlaveConfiguration
 {
     private $probes = [];
     /**

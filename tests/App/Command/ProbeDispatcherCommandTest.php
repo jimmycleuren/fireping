@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Tests\App\Command;
 
 use App\Command\ProbeDispatcherCommand;
-use App\DependencyInjection\ProbeStore;
+use App\DependencyInjection\SlaveConfiguration;
 use App\DependencyInjection\Worker;
 use App\DependencyInjection\WorkerManager;
 use Prophecy\Argument;
@@ -25,7 +25,7 @@ class ProbeDispatcherCommandTest extends KernelTestCase
         $kernel      = self::bootKernel();
         $application = new Application($kernel);
 
-        $probeStore = $this->prophesize(ProbeStore::class);
+        $probeStore = $this->prophesize(SlaveConfiguration::class);
         $probeStore->getProbes()->willReturn([]);
         $probeStore->getEtag()->willReturn("etag");
         $probeStore         = $probeStore->reveal();

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\DependencyInjection\ProbeStore;
+use App\DependencyInjection\SlaveConfiguration;
 use App\DependencyInjection\Queue;
 use App\DependencyInjection\WorkerManager;
 use App\Instruction\Instruction;
@@ -58,9 +58,9 @@ class ProbeDispatcherCommand extends Command
     /**
      * Holds the configuration of our Fireping Slave
      *
-     * @var ProbeStore
+     * @var SlaveConfiguration
      */
-    protected $probeStore;
+    protected $configuration;
 
     /**
      * How long the ProbeDispatcher can run for, in seconds. You can specify 0 to
@@ -84,25 +84,14 @@ class ProbeDispatcherCommand extends Command
     private $randomFactor = 0;
 
     /**
-     * ProbeDispatcherCommand constructor.
-     *
-     * @param ProbeStore $probeStore P
-     * @param LoggerInterface $logger Instance used to log information about
-     *                                       the state of our program.
-     *
+     * @param LoggerInterface $logger
      * @param WorkerManager $workerManager
-     *
-     * @throws LogicException
      */
-    public function __construct(
-        ProbeStore $probeStore,
-        LoggerInterface $logger,
-        WorkerManager $workerManager
-    )
+    public function __construct(LoggerInterface $logger, WorkerManager $workerManager)
     {
         $this->logger = $logger;
-        $this->probeStore = $probeStore;
         $this->workerManager = $workerManager;
+        $this->configuration = new SlaveConfiguration();
         parent::__construct();
     }
 
@@ -202,7 +191,7 @@ class ProbeDispatcherCommand extends Command
                     $instruction = [
                         'type' => GetConfigHttpWorkerCommand::class,
                         'delay_execution' => 0,
-                        'etag' => $this->probeStore->getEtag()
+                        'etag' => $this->configuration->getEtag()
                     ];
                     $this->sendInstruction($instruction);
                 }
@@ -211,7 +200,7 @@ class ProbeDispatcherCommand extends Command
                     $queue->loop();
                 }
 
-                foreach ($this->probeStore->getProbes() as $probe) {
+                foreach ($this->configuration->getProbes() as $probe) {
                     /* @var $probe ProbeDefinition */
 
                     $ready = time() % $probe->getStep() === 0;
@@ -356,12 +345,12 @@ class ProbeDispatcherCommand extends Command
             case GetConfigHttpWorkerCommand::class:
                 if ($status === 200) {
                     $etag = $response['headers']['etag'];
-                    $this->probeStore->updateConfig($contents, $etag);
-                    $this->logger->info("Response ($status) from worker $pid config applied (" . $this->probeStore->getAllProbesDeviceCount() . " devices)");
+                    $this->configuration->updateConfig($contents, $etag);
+                    $this->logger->info("Response ($status) from worker $pid config applied (" . $this->configuration->getAllProbesDeviceCount() . " devices)");
 
                     $count = 0;
-                    foreach ($this->probeStore->getProbes() as $probe) {
-                        $count += ceil($this->probeStore->getProbeDeviceCount($probe->getId()) / $this->devicesPerWorker);
+                    foreach ($this->configuration->getProbes() as $probe) {
+                        $count += ceil($this->configuration->getProbeDeviceCount($probe->getId()) / $this->devicesPerWorker);
                     }
                     $this->workerManager->setNumberOfProbeProcesses(intval($count));
                 } else {
