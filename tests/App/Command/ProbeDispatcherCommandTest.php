@@ -25,22 +25,19 @@ class ProbeDispatcherCommandTest extends KernelTestCase
         $kernel      = self::bootKernel();
         $application = new Application($kernel);
 
-        $probeStore = $this->prophesize(SlaveConfiguration::class);
-        $probeStore->getProbes()->willReturn([]);
-        $probeStore->getEtag()->willReturn("etag");
-        $probeStore         = $probeStore->reveal();
+        $logger = self::$container->get(LoggerInterface::class);
 
         $worker = $this->prophesize(Worker::class);
         $worker->send(Argument::any(), Argument::type('int'), Argument::any())->willReturn(true);
         $worker->__toString()->willReturn("worker");
         $worker = $worker->reveal();
-        $logger = $this->prophesize(LoggerInterface::class)->reveal();
+
         $workerManager = $this->prophesize(WorkerManager::class);
         $workerManager->initialize(Argument::type('int'), Argument::type('int'), Argument::type('int'))->shouldBeCalledTimes(1);
         $workerManager->loop()->willReturn();
         $workerManager->getWorker(Argument::any())->willReturn($worker);
 
-        $application->add(new ProbeDispatcherCommand($probeStore, $logger, $workerManager->reveal()));
+        $application->add(new ProbeDispatcherCommand($logger, $workerManager->reveal()));
 
         $command       = $application->find('app:probe:dispatcher');
         $commandTester = new CommandTester($command);
