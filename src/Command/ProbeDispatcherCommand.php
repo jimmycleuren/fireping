@@ -181,53 +181,42 @@ class ProbeDispatcherCommand extends Command
 
         $this->loop = Factory::create();
 
-        $this->loop->addPeriodicTimer(
-            1,
-            function () {
-                $toSync = time() % 120 === $this->randomFactor;
+        $this->loop->addPeriodicTimer(1, function () {
+            if (time() % 120 === $this->randomFactor) {
+                $instruction = [
+                    'type' => GetConfigHttpWorkerCommand::class,
+                    'delay_execution' => 0,
+                    'etag' => $this->configuration->getEtag()
+                ];
+                $this->sendInstruction($instruction);
+            }
 
-                if ($toSync) {
-                    $this->logger->info('Starting config sync.');
-                    $instruction = [
-                        'type' => GetConfigHttpWorkerCommand::class,
-                        'delay_execution' => 0,
-                        'etag' => $this->configuration->getEtag()
-                    ];
-                    $this->sendInstruction($instruction);
-                }
+            foreach ($this->queues as $queue) {
+                $queue->loop();
+            }
 
-                foreach ($this->queues as $queue) {
-                    $queue->loop();
-                }
+            foreach ($this->configuration->getProbes() as $probe) {
+                $ready = time() % $probe->getStep() === 0;
 
-                foreach ($this->configuration->getProbes() as $probe) {
-                    /* @var $probe ProbeDefinition */
+                if ($ready) {
+                    $instructions = new Instruction($probe, $this->devicesPerWorker);
 
-                    $ready = time() % $probe->getStep() === 0;
+                    // Keep track of how many processes are starting.
+                    $counter = 0;
 
-                    if ($ready) {
-                        $instructions = new Instruction($probe, $this->devicesPerWorker);
-
-                        // Keep track of how many processes are starting.
-                        $counter = 0;
-
-                        /* @var $instructions Instruction */
-                        foreach ($instructions->getChunks() as $instruction) {
-                            $delay = (
-                                $counter % ($probe->getStep() / $probe->getSamples())
-                            );
-                            ++$counter;
-                            $instruction['delay_execution'] = $delay;
-                            $instruction['guid'] = sha1(random_bytes(25));
-                            $this->sendInstruction(
-                                $instruction,
-                                $probe->getStep()
-                            );
-                        }
+                    foreach ($instructions->getChunks() as $instruction) {
+                        $delay = $counter % $probe->getSampleRate();
+                        ++$counter;
+                        $instruction['delay_execution'] = $delay;
+                        $instruction['guid'] = sha1(random_bytes(25));
+                        $this->sendInstruction(
+                            $instruction,
+                            $probe->getStep()
+                        );
                     }
                 }
             }
-        );
+        });
 
         $this->loop->addPeriodicTimer(0.1, function () {
             $this->workerManager->loop();
@@ -263,13 +252,14 @@ class ProbeDispatcherCommand extends Command
             return;
         }
 
-        if (json_encode($instruction) === false) {
-            $str = "Could not send encode the instruction for worker $worker to json.";
-            $this->logger->critical($str);
+        $json = json_encode($instruction);
+        if ($json === false) {
+            $this->logger->critical('Failed to encode instruction: ' . json_last_error_msg());
             return;
         }
 
-        $worker->send(json_encode($instruction), $expectedRuntime, function ($type, $response) {
+        $this->logger->debug(sprintf('Sending worker=%s instruction=%s', $worker, $json));
+        $worker->send($json, $expectedRuntime, function ($type, $response) {
             $this->handleResponse($type, $response);
         });
 
