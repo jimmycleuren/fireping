@@ -98,9 +98,9 @@
 </style>
 <script>
 
-function scrollDown(delay=16, distance=50) {
-    window.scrollBy(0, window.innerHeight/distance);
-    setTimeout(scrollDown(delay=delay, distance=distance-1), delay);
+function scrollDown(delay, steps) {
+    window.scrollBy(0, window.innerHeight/steps);
+    setTimeout(scrollDown(delay, steps-1), delay);
 }
 
 </script>
