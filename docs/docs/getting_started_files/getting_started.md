@@ -1,6 +1,6 @@
 ---
 title: "Getting started"
-permalink: /docs/getting-started
+permalink: /docs/
 key: docs-getting-started
 ---
 
