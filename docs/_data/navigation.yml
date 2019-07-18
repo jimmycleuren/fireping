@@ -23,11 +23,11 @@ side-nav:
       - title:  Master setup
         url:    /docs/getting-started/master
       - title:  Slave setup
-        - children: 
-          - title: Manual installation
-            url:   /docs/getting-started/slaves/manual
-          - title: Docker installation
-            url:   /docs/getting-started/slaves/docker
+        url:    /docs/getting-started/slaves
+      - title:  Manual installation
+        url:    /docs/getting-started/slaves/manual
+      - title:  Docker installation
+        url:    /docs/getting-started/slaves/docker
   # - title:      Customization
   #   children:
   #     - title:  Configuration
