@@ -5,6 +5,7 @@ key: docs-how-to-admin
 ---
 
 # The admin dashboard
+![Devices listed in admin](\fireping\assets\images\devices_setings_list.png)
 On the Admin dashboard you can configure all settings, remove slaves, add or remove users and more.
 To understand what all these options do, you can read these documents.
 
