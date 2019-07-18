@@ -24,9 +24,9 @@ side-nav:
         url:    /docs/getting-started/master
       - title:  Slave setup
         url:    /docs/getting-started/slaves
-      - title:  Manual installation
+      - title:  Manual slave installation
         url:    /docs/getting-started/slaves/manual
-      - title:  Docker installation
+      - title:  Docker slave installation
         url:    /docs/getting-started/slaves/docker
   - title:      Guides
     children:
