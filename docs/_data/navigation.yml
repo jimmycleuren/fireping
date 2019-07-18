@@ -19,7 +19,7 @@ side-nav:
   - title:      Install Fireping
     children:
       - title:  Getting started
-        url:    /docs/getting-started
+        url:    /docs/
       - title:  Master setup
         url:    /docs/getting-started/master
       - title:  Slave setup
