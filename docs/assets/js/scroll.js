@@ -1,9 +1,9 @@
-function scrollDown() {
-    scrollDownSmooth(16, 50, 50);
+function scrollDownSmooth(duration, steps, stepsLeft) {
+    if (stepsLeft == 0) return;
+    window.scrollBy(0, Math.max(document.documentElement.clientHeight, window.innerHeight || 0)/steps);
+    setTimeout(() => { scrollDown(delay, steps, stepsLeft-1) }, duration / steps);
 }
 
-function scrollDownSmooth(delay, steps, stepsLeft) {
-    if (stepsLeft == 0) return;
-    window.scrollBy(0, window.outerHeight/steps);
-    setTimeout(() => { scrollDown(delay, steps, stepsLeft-1) }, delay);
+function scrollDown() {
+    scrollDownSmooth(500, 50, 50);
 }
