@@ -1,9 +1,14 @@
-function scrollDownSmooth(duration, steps, stepsLeft) {
-    if (stepsLeft == 0) return;
-    let element = document.getElementsByClassName("article__header--overlay")[0];
-    window.scrollBy(0, element.clientHeight/steps);
+function scrollDownSmooth(duration, steps) {
 
-    setTimeout(() => { scrollDownSmooth(duration, steps, stepsLeft-1); }, duration / steps);
+    let tot_height = window.innerHeight;
+    let left_height = tot_height - document.documentElement.scrollTop;
+    stepsLeft = left_height>0 ? steps * (left_height/tot_height) : 0;
+
+    if (stepsLeft == 0) return;
+
+    window.scrollBy(0, tot_height/steps);
+
+    setTimeout(() => { scrollDownSmooth(duration, steps); }, duration / steps);
 }
 
 function scrollDown() {
