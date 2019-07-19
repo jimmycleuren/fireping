@@ -12,7 +12,8 @@ class HttpTest extends TestCase
     {
         $logger = $this->prophesize(LoggerInterface::class)->reveal();
 
-        $http = new Http([
+        $http = new Http($logger);
+        $http->setArgs([
             'delay_execution' => 0,
             'targets' => [
                 ['id' => 1, 'ip' => '216.58.211.99']
@@ -21,7 +22,7 @@ class HttpTest extends TestCase
                 'samples' => 2,
                 'wait_time' => 10000
             ]
-        ], $logger);
+        ]);
 
         $result = $http->execute();
 
