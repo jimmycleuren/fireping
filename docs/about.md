@@ -17,5 +17,7 @@ Fireping uses a **Master/Slave** architecture. This has two parts
 - The **Slaves** which gather the data and send it to the master to present it on the dashboard.
 
 You can setup multiple Slaves for a single Master but only one master per Slave.
+This allows for efficient data gathering for a lot of servers with as few as possible slaves.
+For collecting data on big datacenters, you can add a Storage node to handle the large amounts of data.
 
 ![Master/Slave](/fireping/assets/images/master_slave.png)
