@@ -8,7 +8,8 @@ sidebar:
 ---
 
 # What does it do?
-Fireping is a program that lets you gather ping, traceroute and HTTP data from servers and presents them in an easy to use environment on a graph.
+Fireping is a program that lets you gather ping, traceroute and HTTP data from servers. 
+This data is then visualized on a graph.
 
 # How does it work?
 Fireping uses a **Master/Slave** architecture. This has two parts
