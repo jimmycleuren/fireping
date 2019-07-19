@@ -74,7 +74,7 @@ class Http implements CommandInterface
             $sleep = ($this->waitTime * 1000) - $duration;
 
             if ($sleep > 0 && $i < $this->samples) {
-                usleep($sleep);
+                usleep((int) $sleep);
             } elseif($sleep < 0) {
                 $this->logger->warning("HTTP probe did not have enough time");
             }
