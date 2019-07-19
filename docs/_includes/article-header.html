@@ -16,7 +16,7 @@
   {%- if _show_title or _show_edit_on_github -%}
     <div class="article__header">
       {%- if _show_title -%}
-        <header><h1>{{ _article_title }}</h1></header>
+        <header><h1 {%- if page.layout == landing -%} class="--landing-page-title" {%- endif -%} >{{ _article_title }}</h1></header>
       {%- endif -%}
       {%- if _show_edit_on_github -%}
         {%- if site.repository and site.repository_tree -%}
