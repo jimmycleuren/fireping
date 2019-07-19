@@ -10,6 +10,7 @@ sidebar:
 # What does it do?
 Fireping is a program that lets you gather ping, traceroute and HTTP data from servers. 
 This data is then visualized on a graph.
+Fireping is very easy to configure and has a built in alerting system to let you know when a server is unreachable or expriencing packet loss.
 
 # How does it work?
 Fireping uses a **Master/Slave** architecture. This has two parts
