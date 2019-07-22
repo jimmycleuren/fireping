@@ -9,8 +9,11 @@ let images = document.getElementsByTagName('img');
 // close_btn.innerHTML = '<i class="fas fa-times"></i>';
 // overlay_div.appendChild(close_btn);
 
-images.forEach((image) => {
+for (var i = 0, count = images.length; i < count; ++i)
+{
+    let image = images[i]
+
     image.onclick(() => {
         console.log(image.attributes.src);
     });
-});
+}
