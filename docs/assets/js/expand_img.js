@@ -12,7 +12,7 @@ for (var i = 0, count = images.length; i < count; ++i)
 {
     let image = images[i];
     image.onclick = () => {
-        overlay.style.display = "block";
+        overlay.style.display = "grid";
         document.body.classList.add("noscroll");
     };
 }

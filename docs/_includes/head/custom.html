@@ -113,7 +113,22 @@ img {
     bottom: 0;
     margin: 0;
     padding: 0;
-    background: #33333360;
+    background: #333333f0;
+    grid-template-rows: 3rem 1fr;
+    grid-template-areas:
+        "button"
+        "image";
+}
+
+#image-overlay button {
+    grid-area: button;
+    justify-self: end;
+    padding: 1rem;
+    font-size: 2rem;
+}
+
+#image-overlay img {
+    grid-area: image;
 }
 
 </style>
