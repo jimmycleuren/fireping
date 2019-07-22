@@ -14,7 +14,7 @@ for (var i = 0, count = images.length; i < count; ++i)
     image.onclick = () => {
         overlay.style.display = "grid";
         document.body.classList.add("noscroll");
-        let overlay_image = overlay.getElementsByTagName('img');
+        let overlay_image = overlay.getElementsByTagName('img')[0];
         overlay_image.src = image.src;
     };
 }
