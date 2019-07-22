@@ -47,7 +47,6 @@ img {
     border: 2px solid #FFF;
     background-size: 14px auto;
     border-radius: 50%;
-    z-index: 2;
     -webkit-animation: bounce 2s infinite 2s;
     animation: bounce 2s infinite 2s;
     -webkit-transition: all .2s ease-in;
@@ -101,12 +100,16 @@ img {
 }
 
 /* image overlay */
+.no-scroll { overflow: hidden; }
+
 #image-overlay {
     position: fixed;
-    left: 0;
-    top: 0;
     width: 100vw;
     height: 100vh;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
     margin: 0;
     padding: 0;
     background: #33333360;
