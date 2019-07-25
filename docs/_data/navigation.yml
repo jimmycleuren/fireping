@@ -24,10 +24,12 @@ side-nav:
         url:    /docs/getting-started/master
       - title:  Slave setup
         url:    /docs/getting-started/slaves
+      - title:  Deploy slaves with ansible
+        url:    /docs/getting-started/slaves/deploy-with-ansible
+      - title:  Docker slave installation (Recommended)
+        url:    /docs/getting-started/slaves/docker
       - title:  Manual slave installation
         url:    /docs/getting-started/slaves/manual
-      - title:  Docker slave installation
-        url:    /docs/getting-started/slaves/docker
   - title:      Guides
     children:
       - title:  Admin Guide
