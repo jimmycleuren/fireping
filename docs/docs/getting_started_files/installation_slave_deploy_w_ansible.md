@@ -39,13 +39,14 @@ In your `playbook.yml` file, add the following role
 ```yaml
 - role: fireping_slave
   become: true
-  become_user: cedric
+  become_user: username
   slave_name: myslave
   slave_password: password
   slave_url: http://fireping.develop
 ```
 
 where 
+- **become_user** is followed by the username to log in to the server
 - **slave_myslave** is followed the username for the slave
 - **slave_password** is followed the password for the slave
 - **slave_url** is followed by the url of the fireping master
