@@ -48,7 +48,7 @@ sudo mysql
 
 and execute these SQL statements (you can chose whatever user credentials you want)
 
-```SQL
+```sql
 CREATE DATABASE fireping; -- don't change
 CREATE USER 'fireping'@'localhost' IDENTIFIED BY 'password'; -- change username (but leave @'localhost') and password here
 GRANT ALL PRIVILEGES ON fireping . * TO 'fireping'@'localhost'; -- remember to use the right username
