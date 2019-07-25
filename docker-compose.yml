@@ -20,6 +20,8 @@ services:
     working_dir: /app
   redis:
     image: redis
+    ports:
+      - "6379:6379"
   db:
     image: mariadb
     ports:
