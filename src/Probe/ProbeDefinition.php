@@ -135,4 +135,9 @@ class ProbeDefinition
             }
         }
     }
+
+    public function getSampleRate()
+    {
+        return $this->getStep() / $this->getSamples();
+    }
 }

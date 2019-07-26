@@ -4,12 +4,16 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\ShellCommand\CommandFactory;
+use App\ShellCommand\GetConfigHttpWorkerCommand;
+use App\ShellCommand\PostResultsHttpWorkerCommand;
 use Exception;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
 use React\EventLoop\LoopInterface;
 use React\Stream\ReadableResourceStream;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Exception\InvalidArgumentException;
+use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -48,14 +52,8 @@ class ProbeWorkerCommand extends Command
 
     private $commandFactory;
 
-
     /**
-     * ProbeWorkerCommand constructor.
-     *
-     * @param LoggerInterface $logger
-     * @param CommandFactory $commandFactory
-     *
-     * @throws \Symfony\Component\Console\Exception\LogicException
+     * @throws LogicException
      */
     public function __construct(LoggerInterface $logger, CommandFactory $commandFactory)
     {
@@ -67,7 +65,7 @@ class ProbeWorkerCommand extends Command
 
     /**
      *
-     * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function configure(): void
     {
@@ -88,10 +86,7 @@ class ProbeWorkerCommand extends Command
      * @param OutputInterface $output
      *
      * @return void
-     * @throws \LogicException
-     * @throws \RuntimeException
-     * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
@@ -195,7 +190,7 @@ class ProbeWorkerCommand extends Command
 
         $command = null;
         try {
-            $command = $this->commandFactory->create($data['type'], $data);
+            $command = $this->commandFactory->make($data['type'], $data);
         } catch (Exception $e) {
             $this->sendResponse(
                 [
@@ -221,7 +216,7 @@ class ProbeWorkerCommand extends Command
             $shellOutput = $command->execute();
 
             switch ($data['type']) {
-                case 'post-result':
+                case PostResultsHttpWorkerCommand::class:
                     $this->sendResponse([
                         'type' => $data['type'],
                         'status' => $shellOutput['code'],
@@ -238,7 +233,7 @@ class ProbeWorkerCommand extends Command
                     ]);
                     break;
 
-                case 'config-sync':
+                case GetConfigHttpWorkerCommand::class:
                     // This is a request to get the latest configuration from the master.
                     $this->sendResponse([
                         'type' => $data['type'],
@@ -258,7 +253,6 @@ class ProbeWorkerCommand extends Command
                     break;
 
                 case 'ping':
-                case 'mtr':
                 case 'traceroute':
                 case 'http':
                     $this->sendResponse([

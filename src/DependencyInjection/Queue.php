@@ -2,6 +2,7 @@
 
 namespace App\DependencyInjection;
 
+use App\ShellCommand\PostResultsHttpWorkerCommand;
 use Psr\Log\LoggerInterface;
 
 class Queue
@@ -46,12 +47,8 @@ class Queue
                     $this->current = $this->getNextPacket();
 
                     $instruction = array(
-                        'type' => 'post-result',
+                        'type' => PostResultsHttpWorkerCommand::class,
                         'delay_execution' => 0,
-                        'client' => 'eight_points_guzzle.client.api_fireping',
-                        'method' => 'POST',
-                        'endpoint' => "/api/slaves/" . $this->slaveName . "/result",
-                        'headers' => ['Content-Type' => 'application/json'],
                         'body' => $this->current,
                     );
 

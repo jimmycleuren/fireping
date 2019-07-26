@@ -3,20 +3,19 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\DependencyInjection\ProbeStore;
+use App\DependencyInjection\SlaveConfiguration;
 use App\DependencyInjection\Queue;
 use App\DependencyInjection\WorkerManager;
 use App\Instruction\Instruction;
-
-use App\Instruction\InstructionBuilder;
 use App\Probe\ProbeDefinition;
-
+use App\ShellCommand\GetConfigHttpWorkerCommand;
 use Exception;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
 use React\EventLoop\LoopInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
+use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -59,9 +58,9 @@ class ProbeDispatcherCommand extends Command
     /**
      * Holds the configuration of our Fireping Slave
      *
-     * @var ProbeStore
+     * @var SlaveConfiguration
      */
-    protected $probeStore;
+    protected $configuration;
 
     /**
      * How long the ProbeDispatcher can run for, in seconds. You can specify 0 to
@@ -78,13 +77,6 @@ class ProbeDispatcherCommand extends Command
      */
     protected $loop;
 
-    /**
-     * Service used to create a set of instructions to send to a worker.
-     *
-     * @var InstructionBuilder
-     */
-    private $instructionBuilder;
-
     private $workerManager;
 
     private $devicesPerWorker = 250;
@@ -92,27 +84,14 @@ class ProbeDispatcherCommand extends Command
     private $randomFactor = 0;
 
     /**
-     * ProbeDispatcherCommand constructor.
-     *
-     * @param ProbeStore         $probeStore P
-     * @param LoggerInterface    $logger     Instance used to log information about
-     *                                       the state of our program.
-     *
-     * @param InstructionBuilder $instructionBuilder
+     * @param LoggerInterface $logger
      * @param WorkerManager $workerManager
-     *
-     * @throws \Symfony\Component\Console\Exception\LogicException
      */
-    public function __construct(
-        ProbeStore $probeStore,
-        LoggerInterface $logger,
-        InstructionBuilder $instructionBuilder,
-        WorkerManager $workerManager
-    ) {
+    public function __construct(LoggerInterface $logger, WorkerManager $workerManager)
+    {
         $this->logger = $logger;
-        $this->probeStore = $probeStore;
         $this->workerManager = $workerManager;
-        $this->instructionBuilder = $instructionBuilder;
+        $this->configuration = new SlaveConfiguration();
         parent::__construct();
     }
 
@@ -185,7 +164,7 @@ class ProbeDispatcherCommand extends Command
 
     /**
      *
-     * @param InputInterface  $input
+     * @param InputInterface $input
      * @param OutputInterface $output
      *
      * @return int|null|void
@@ -202,58 +181,46 @@ class ProbeDispatcherCommand extends Command
 
         $this->loop = Factory::create();
 
-        $this->loop->addPeriodicTimer(
-            1,
-            function () {
-                $toSync = time() % 120 === $this->randomFactor;
+        $this->loop->addPeriodicTimer(1, function () {
+            if (time() % 120 === $this->randomFactor) {
+                $instruction = [
+                    'type' => GetConfigHttpWorkerCommand::class,
+                    'delay_execution' => 0,
+                    'etag' => $this->configuration->getEtag()
+                ];
+                $this->sendInstruction($instruction);
+            }
 
-                if ($toSync) {
-                    $this->logger->info('Starting config sync.');
-                    $instruction = [
-                        'type' => 'config-sync',
-                        'delay_execution' => 0,
-                        'etag' => $this->probeStore->getEtag()
-                    ];
-                    $this->sendInstruction($instruction);
-                }
+            foreach ($this->queues as $queue) {
+                $queue->loop();
+            }
 
-                foreach ($this->queues as $queue) {
-                    $queue->loop();
-                }
+            foreach ($this->configuration->getProbes() as $probe) {
+                $ready = time() % $probe->getStep() === 0;
 
-                foreach ($this->probeStore->getProbes() as $probe) {
-                    /* @var $probe ProbeDefinition */
+                if ($ready) {
+                    $instructions = new Instruction($probe, $this->devicesPerWorker);
 
-                    $ready = time() % $probe->getStep() === 0;
+                    // Keep track of how many processes are starting.
+                    $counter = 0;
 
-                    if ($ready) {
-                        $instructions = $this->instructionBuilder::create(
-                            $probe,
-                            $this->devicesPerWorker
+                    foreach ($instructions->getChunks() as $instruction) {
+                        $delay = $counter % $probe->getSampleRate();
+                        ++$counter;
+                        $instruction['delay_execution'] = $delay;
+                        $instruction['guid'] = sha1(random_bytes(25));
+                        $this->sendInstruction(
+                            $instruction,
+                            $probe->getStep()
                         );
-
-                        // Keep track of how many processes are starting.
-                        $counter = 0;
-
-                        /* @var $instructions Instruction */
-                        foreach ($instructions->getChunks() as $instruction) {
-                            $delay = (
-                                $counter % ($probe->getStep() / $probe->getSamples())
-                            );
-                            ++$counter;
-                            $instruction['delay_execution'] = $delay;
-                            $instruction['guid'] = $this->generateRandomString(25);
-                            $this->sendInstruction(
-                                $instruction,
-                                $probe->getStep()
-                            );
-                        }
                     }
                 }
             }
-        );
+        });
 
-        $this->loop->addPeriodicTimer(0.1, function () {$this->workerManager->loop();});
+        $this->loop->addPeriodicTimer(0.1, function () {
+            $this->workerManager->loop();
+        });
 
         if ($this->maxRuntime > 0) {
             $this->logger->info('Running for ' . $this->maxRuntime . ' seconds');
@@ -271,7 +238,7 @@ class ProbeDispatcherCommand extends Command
 
     /**
      * @param array $instruction
-     * @param int   $expectedRuntime
+     * @param int $expectedRuntime
      *
      * @throws Exception
      */
@@ -285,35 +252,18 @@ class ProbeDispatcherCommand extends Command
             return;
         }
 
-        if (json_encode($instruction) === false) {
-            $str = "Could not send encode the instruction for worker $worker to json.";
-            $this->logger->critical($str);
+        $json = json_encode($instruction);
+        if ($json === false) {
+            $this->logger->critical('Failed to encode instruction: ' . json_last_error_msg());
             return;
         }
 
-        $worker->send(json_encode($instruction), $expectedRuntime, function($type, $response){
+        $this->logger->debug(sprintf('Sending worker=%s instruction=%s', $worker, $json));
+        $worker->send($json, $expectedRuntime, function ($type, $response) {
             $this->handleResponse($type, $response);
         });
 
         $this->logger->info('COMMUNICATION_FLOW: Master sent ' . $instruction['type'] . " instruction to worker $worker.");
-    }
-
-    /**
-     * @param int $length
-     *
-     * @return string
-     * @throws Exception
-     */
-    public function generateRandomString(int $length = null): string
-    {
-        $length = $length ?? 10;
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $charactersLength = \strlen($characters);
-        $randomString = '';
-        for ($i = 0; $i < $length; $i++) {
-            $randomString .= $characters[random_int(0, $charactersLength - 1)];
-        }
-        return $randomString;
     }
 
     /**
@@ -382,15 +332,15 @@ class ProbeDispatcherCommand extends Command
                 }
                 break;
 
-            case 'config-sync':
+            case GetConfigHttpWorkerCommand::class:
                 if ($status === 200) {
                     $etag = $response['headers']['etag'];
-                    $this->probeStore->updateConfig($contents, $etag);
-                    $this->logger->info("Response ($status) from worker $pid config applied (".$this->probeStore->getAllProbesDeviceCount()." devices)");
+                    $this->configuration->updateConfig($contents, $etag);
+                    $this->logger->info("Response ($status) from worker $pid config applied (" . $this->configuration->getAllProbesDeviceCount() . " devices)");
 
                     $count = 0;
-                    foreach ($this->probeStore->getProbes() as $probe) {
-                        $count += ceil($this->probeStore->getProbeDeviceCount($probe->getId()) / $this->devicesPerWorker);
+                    foreach ($this->configuration->getProbes() as $probe) {
+                        $count += ceil($this->configuration->getProbeDeviceCount($probe->getId()) / $this->devicesPerWorker);
                     }
                     $this->workerManager->setNumberOfProbeProcesses(intval($count));
                 } else {

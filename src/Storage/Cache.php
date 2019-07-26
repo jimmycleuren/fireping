@@ -6,8 +6,6 @@ use App\Entity\AlertRule;
 use App\Entity\Device;
 use App\Entity\Probe;
 use App\Entity\SlaveGroup;
-use Predis\Client;
-use Psr\Container\ContainerInterface;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
 
 class Cache

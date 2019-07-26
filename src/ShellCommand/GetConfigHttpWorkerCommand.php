@@ -1,83 +1,70 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: kevinr
- * Date: 5/10/2017
- * Time: 15:26
- */
+declare(strict_types=1);
 
 namespace App\ShellCommand;
 
-use App\ShellCommand\CommandInterface;
+use App\Client\FirepingClient;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Exception\TransferException;
-use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
 class GetConfigHttpWorkerCommand implements CommandInterface
 {
-    /* @var $container \Symfony\Component\DependencyInjection\ContainerInterface */
-    protected $container;
-
-    /* @var $logger \Psr\Log\LoggerInterface */
+    /**
+     * @var LoggerInterface
+     */
     protected $logger;
-
+    /**
+     * @var string|null
+     */
     protected $etag;
+    /**
+     * @var FirepingClient
+     */
+    private $client;
 
-    protected $arguments;
-
-    function __construct($args, LoggerInterface $logger, ContainerInterface $container)
+    function __construct(LoggerInterface $logger, FirepingClient $client)
     {
-        $this->arguments = $args;
         $this->logger = $logger;
-        $this->container = $container;
-        $this->etag      = isset($args['etag']) ? $args['etag'] : null;
+        $this->client = $client;
     }
 
-    function execute()
+    public function execute(): array
     {
-        /** @var \GuzzleHttp\Client $client */
-        $client = $this->container->get('eight_points_guzzle.client.api_fireping');
+        $endpoint = sprintf('/api/slaves/%s/config', $_ENV['SLAVE_NAME']);
 
-        $id       = getenv('SLAVE_NAME');
-        $endpoint = "/api/slaves/$id/config";
-
+        $headers = $this->etag !== null ? ['If-None-Match' => $this->etag] : [];
+        $request = new Request('GET', $endpoint, $headers);
         try {
-            $request = isset($this->etag) ?
-                new Request('GET', $endpoint, ['If-None-Match' => $this->etag]) :
-                new Request('GET', $endpoint);
-
-            $response = $client->send($request);
-
-            $etag = $response->hasHeader('ETag') ? $response->getHeader('ETag')[0] : null;
+            $response = $this->client->send($request);
+            $eTag = $response->getHeader('ETag')[0] ?? null;
 
             if ($response->getStatusCode() === 304) {
-                return array('code' => 304, 'contents' => 'Configuration has not changed.', 'etag' => $etag);
+                return ['code' => 304, 'contents' => 'Configuration unchanged', 'etag' => $eTag];
             }
 
-            $configuration = json_decode($response->getBody()->getContents(), true);
-
+            $configuration = json_decode((string)$response->getBody(), true);
             if ($configuration === null) {
-                return array('code' => 500, 'contents' => 'Master is returning non-JSON.', 'etag' => $etag);
+                return ['code' => 500, 'contents' => 'Malformed JSON', 'etag' => $eTag];
             }
 
-            if (count($configuration) === 0) {
-                return array('code' => 201, 'contents' => 'Empty configuration received.', 'etag' => $etag);
+            if (empty($configuration)) {
+                return ['code' => 201, 'contents' => 'Configuration empty', 'etag' => $eTag];
             }
 
-            return array('code' => 200, 'contents' => $configuration, 'etag' => $etag);
-        } catch (TransferException $e) {
-            return array('code' => 500, 'contents' => $e->getMessage(), 'etag' => null);
+            return ['code' => 200, 'contents' => $configuration, 'etag' => $eTag];
+        } catch (GuzzleException $exception) {
+            return ['code' => 500, 'contents' => $exception->getMessage(), 'etag' => null];
         }
     }
 
-    function build()
+    public function setArgs(array $args): void
     {
-        // TODO: Implement build() method.
+        $this->etag = $args['etag'] ?? null;
     }
 
-    function valid()
+    public function getType(): string
     {
-        // TODO: Implement valid() method.
+        return self::class;
     }
 }
