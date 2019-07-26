@@ -4,10 +4,9 @@ declare(strict_types=1);
 namespace Tests\App\Command;
 
 use App\Command\ProbeDispatcherCommand;
-use App\DependencyInjection\ProbeStore;
+use App\DependencyInjection\SlaveConfiguration;
 use App\DependencyInjection\Worker;
 use App\DependencyInjection\WorkerManager;
-use App\Instruction\InstructionBuilder;
 use Prophecy\Argument;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -26,25 +25,19 @@ class ProbeDispatcherCommandTest extends KernelTestCase
         $kernel      = self::bootKernel();
         $application = new Application($kernel);
 
-        $probeStore = $this->prophesize(ProbeStore::class);
-        $probeStore->getProbes()->willReturn([]);
-        $probeStore->getEtag()->willReturn("etag");
-        $probeStore         = $probeStore->reveal();
+        $logger = self::$container->get(LoggerInterface::class);
 
         $worker = $this->prophesize(Worker::class);
         $worker->send(Argument::any(), Argument::type('int'), Argument::any())->willReturn(true);
         $worker->__toString()->willReturn("worker");
         $worker = $worker->reveal();
-        $logger = $this->prophesize(LoggerInterface::class)->reveal();
-        $instructionBuilder = $this->prophesize(InstructionBuilder::class)->reveal();
+
         $workerManager = $this->prophesize(WorkerManager::class);
         $workerManager->initialize(Argument::type('int'), Argument::type('int'), Argument::type('int'))->shouldBeCalledTimes(1);
         $workerManager->loop()->willReturn();
         $workerManager->getWorker(Argument::any())->willReturn($worker);
 
-        $application->add(
-            new ProbeDispatcherCommand($probeStore, $logger, $instructionBuilder, $workerManager->reveal())
-        );
+        $application->add(new ProbeDispatcherCommand($logger, $workerManager->reveal()));
 
         $command       = $application->find('app:probe:dispatcher');
         $commandTester = new CommandTester($command);

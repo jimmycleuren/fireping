@@ -3,9 +3,6 @@
 parameters:
     locale: 'en'
     storage.path: '%kernel.project_dir%/var/rrd/'
-    slave.instructions:
-        ping: null
-        mtr: null
     env(SLAVE_URL): "http://localhost"
 
 services:
@@ -21,7 +18,7 @@ services:
     # this creates a service per class whose id is the fully-qualified class name
     App\:
         resource: '../src/*'
-        exclude: '../src/{Entity,Migrations,Tests,Kernel.php}'
+        exclude: '../src/{Client,Entity,Migrations,Tests,Kernel.php}'
 
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class
@@ -59,12 +56,4 @@ services:
     App\Storage\RrdDistributedStorage:
         arguments:  ['%storage.path%']
 
-    probe_store:
-        class:      App\DependencyInjection\ProbeStore
-        arguments:  ["@service_container"]
-        public: true
-
-    instruction_builder:
-        class:      App\DependencyInjection\InstructionBuilderService
-        arguments:  ["@service_container"]
-        public: true
+    App\Client\FirepingClient: '@eight_points_guzzle.client.api_fireping'
