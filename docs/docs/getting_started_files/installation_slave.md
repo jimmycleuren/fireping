@@ -1,5 +1,5 @@
 ---
-title: "Installation guide for the Slaves"
+title: "Installation guide for the slaves"
 permalink: /docs/getting-started/slaves
 key: docs-getting-started-slaves
 ---

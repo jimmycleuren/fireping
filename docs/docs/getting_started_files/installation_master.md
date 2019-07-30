@@ -1,11 +1,11 @@
 ---
-title: "Installation guide for the Master"
+title: "Installation guide for the master"
 permalink: /docs/getting-started/master
 key: docs-getting-started-master
 ---
 
 # Download fireping
-Before you can setup a Master, you need to download some dependencies and the Fireping source. After that you can configure the Master
+Before you can setup a master, you need to download some dependencies and the Fireping source. After that you can configure the master
 
 ## Install OS dependencies
 First open a terminal and run these commands
@@ -33,7 +33,7 @@ sudo composer install
 
 ---
 
-# Setting up the Master
+# Setting up the master
 ## Configure the database
 First install MySQL and other dependencies
 
@@ -126,4 +126,4 @@ sudo vim /etc/hosts
 
 ![Dashboard](/fireping/assets/images/dashboard_main_page.png) 
 
-Next step is to create [Slave nodes](/fireping/docs/getting-started/slaves)
+Next step is to create [slave nodes](/fireping/docs/getting-started/slaves)

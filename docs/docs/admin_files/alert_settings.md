@@ -17,4 +17,4 @@ Allows you to edit/remove the alert information.
 # Optional fields
 - `Device` is the device where the alert was triggered.
 - `Alert rule` is the rule that triggered the alert.
-- `Slave group` is the group of slaves that triggered the alert.
+- `slave group` is the group of slaves that triggered the alert.

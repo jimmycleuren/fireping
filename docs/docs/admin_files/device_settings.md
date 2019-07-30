@@ -15,7 +15,7 @@ A Device is the device from which data will be gathered, thus the slaves wil pin
 - an `Ip` address of the actual device from which to gather data.
 
 # Optional fields
-- `SlaveGroups`, the `Probes` will be executed on the `Slaves` in these `SlaveGroup`s.
+- `slaveGroups`, the `Probes` will be executed on the `slaves` in these `slaveGroup`s.
 - `Probes`, these are the probes that will be executed to gather data.
 - `Alert rules`, are the rules describing when to alert.
 - `Alert destinations`, are the destination where the alert will be shown in case one is triggered. 

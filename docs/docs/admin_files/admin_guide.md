@@ -18,7 +18,7 @@ To understand what all these options do, you can read these documents.
 | [AlertDestination](/fireping/docs/how-to/admin/alert-destination)   | The destination on which the alert will be recieved (ie. mail, slack, ...)
 | [Probe](/fireping/docs/how-to/admin/probe)                          | A probe to be executed by a slave that will gather data (ping, traceroute)
 | [ProbeArchive](/fireping/docs/how-to/admin/probe-archive)           | Settings to define how long data is stored
-| [Slave](/fireping/docs/how-to/admin/slave)                          | Remote server that will execute the probes
-| [SlaveGroup](/fireping/docs/how-to/admin/slave-group)               | A group of slaves over which the workload is equaly distributed
+| [slave](/fireping/docs/how-to/admin/slave)                          | Remote server that will execute the probes
+| [slaveGroup](/fireping/docs/how-to/admin/slave-group)               | A group of slaves over which the workload is equaly distributed
 | [StorageNode](/fireping/docs/how-to/admin/storage-node)             | An extra server to cope with the storage requirements
 | [User](/fireping/docs/how-to/admin/user)                            | Settings to add/remove/alter users

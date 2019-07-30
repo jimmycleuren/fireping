@@ -65,10 +65,10 @@ and the the slaves will be set up on the hosts.
 Now all that is left is to create an account for the slaves.
 Open your fireping dashboard, go to `Admin > User` and create a new user with these credentials, `role` as `role_api` and check the `enabled` box.
 
-![Screenshot of adding a Slave](/fireping/assets/images/adding_slave_user.png)
+![Screenshot of adding a slave](/fireping/assets/images/adding_slave_user.png)
 
 You should now see the slave if you go back to `fireping.develop/slaves`. (it can take a few seconds)
 
-![Screenshot of adding a Slave](/fireping/assets/images/slaves_added_list.png)
+![Screenshot of adding a slave](/fireping/assets/images/slaves_added_list.png)
 
 You only have to make one account as the slaves you installed all share the same user credentials.
