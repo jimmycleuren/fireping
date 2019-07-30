@@ -80,7 +80,7 @@ On the line showing
 ```
 server_name fireping.develop;
 ```
-the `fireping.develop` can be changed to any name you want. if you want to host a server you should change the name on this line to that of the server.
+the `fireping.develop` can be changed to any name you want. If you want to host a server you should change the name on this line to that of the server.
 
 Change `/app/` to `/opt/fireping/` on line 3 and line 47 
 ![Vim of symfony.conf](/fireping/assets/images/symfony_conf_edit.png)
@@ -114,7 +114,7 @@ Please choose a role:role_admin
 
 Now you are done with the setup of the master and if you go to `http://fireping.develop`, you should see the dashboard. 
 
-if needed, open the hosts file and add your localhost as `fireping.develop` or the server name you chose in it
+If needed, open the hosts file and add your localhost as `fireping.develop` or the server name you chose in it
 ```bash
 sudo vim /etc/hosts
 ```

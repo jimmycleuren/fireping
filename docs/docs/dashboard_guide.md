@@ -13,7 +13,7 @@ The left sidebar lists all domains. Clicking one will open a graph, clicking thi
 ## Graphs
 Slide the graphs left or right to go backwards or forwards in time.
 Sliding up or down wil respectively zoom in or out.
-On the navigation plane you can set change the date and the amount of time you want to be shown by the graph.
+In the navigation pane you can set the start date and end date of the graph.
 
 ## slaves
 Clicking the `slaves` tab wil show a list of all slaves serving the master, their slave group and their last contact.

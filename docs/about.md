@@ -13,13 +13,13 @@ This data is then visualized on a graph.
 Fireping is very easy to configure and has a built in alerting system to let you know when a server is unreachable or expriencing packet loss.
 
 # How does it work?
-Fireping uses a **Master/Slave** architecture. This has two parts
+Fireping uses a **master/slave** architecture. This has two parts
 
-- The **Master** which will host the dashboard that presents the data and lets you control/config all the Slave-nodes and much more.
-- The **Slaves** which gather the data and send it to the master to present it on the dashboard.
+- The **master** which will host the dashboard that presents the data and lets you control/config all the Slave-nodes and much more.
+- The **slaves** which gather the data and forward it to the master.
 
-You can setup multiple Slaves for a single Master but only one master per Slave.
-This allows for efficient data gathering for a lot of servers with as few as possible slaves.
-For collecting data on big datacenters, you can add a Storage node to handle the large amounts of data.
+You can setup multiple slaves for a single master but only one master per slave.
+This allows for efficient data gathering about a lot of servers with as few as possible slaves.
+For collecting data on big datacenters, you can add a storage node to handle the large amounts of data.
 
 ![Master/Slave](/fireping/assets/images/master_slave.png)

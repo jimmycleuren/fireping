@@ -34,12 +34,12 @@ sudo composer install
 ---
 
 # Setting up the slave
-Define the folowing environment variables to /opt/fireping/.env
+Define the folowing environment variables in /opt/fireping/.env
 * `slave_NAME=(give a name to this slave)`
 * `slave_URL=(the base url for the fireping master)`
 
 ## Supervisor
-Supervisor will be the process manager used to start your slave and to keep it running.
+Supervisor will be the process manager used to start your slave and keep it running.
 
 * `/etc/supervisor/supervisord.conf` is the main configuration file used for supervisor.
 * make sure that the `[include]` directive is configured to include the `.conf` files from the conf.d/ directory:
