@@ -16,10 +16,10 @@ class ProbeWorkerCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $logger = $this->prophesize("Psr\Log\LoggerInterface");
-        $factory = $this->prophesize(CommandFactory::class);
+        $logger = self::$container->get(LoggerInterface::class);
+        $factory = new CommandFactory($logger);
 
-        $application->add(new ProbeWorkerCommand($logger->reveal(), $factory->reveal()));
+        $application->add(new ProbeWorkerCommand($logger, $factory));
 
         $command = $application->find('app:probe:worker');
         $commandTester = new CommandTester($command);

@@ -11,6 +11,7 @@
         <ini name="error_reporting" value="-1" />
         <env name="KERNEL_CLASS" value="App\Kernel" />
         <env name="SLAVE_NAME" value="phpunit-slave" />
+        <env name="SLAVE_PASSWORD" value="phpunit-slave-password" />
         <env name="SLAVE_URL" value="http://localhost" />
         <env name="MAILER_FROM" value="test@test.com" />
         <env name="STORAGE" value="rrd" />
