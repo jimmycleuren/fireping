@@ -1,0 +1,146 @@
+<!-- start custom head snippets -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css">
+<style>    
+/* center images */
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* custom title */
+.--landing-page-title {
+    font-size: 6rem !important;
+}
+
+@media screen and (max-width: 499px) {
+    .--landing-page-title {
+        font-size: 4rem !important;
+    }
+}
+
+@media screen and (min-width: 499px) and (max-width: 1023px) {
+    .--landing-page-title {
+        font-size: 5rem !important;
+    }
+}
+
+/* read more button */
+#read-more {
+    position: relative;
+}
+
+#read-more .scroll-down {
+    opacity: 1;
+    -webkit-transition: all .5s ease-in 3s;
+    transition: all .5s ease-in 3s;
+}
+
+#read-more .scroll-down {
+    position: absolute;
+    bottom: -60px;
+    left: 50%;
+    margin-left: -16px;
+    display: block;
+    width: 32px;
+    height: 32px;
+    border: 2px solid #FFF;
+    background-size: 14px auto;
+    border-radius: 50%;
+    -webkit-animation: bounce 2s infinite 2s;
+    animation: bounce 2s infinite 2s;
+    -webkit-transition: all .2s ease-in;
+    transition: all .2s ease-in;
+    transform: scale(1)
+}
+
+#read-more .scroll-down:before {
+    position: absolute;
+    top: calc(50% - 8px);
+    left: calc(50% - 6px);
+    transform: rotate(-45deg);
+    display: block;
+    width: 12px;
+    height: 12px;
+    content: "";
+    border: 2px solid white;
+    border-width: 0px 0 2px 2px;
+}
+
+@keyframes bounce {
+    0%,
+    100%,
+    20%,
+    50%,
+    80% {
+        -webkit-transform: translateY(0);
+        -ms-transform: translateY(0);
+        transform: translateY(0);
+    }
+    40% {
+        -webkit-transform: translateY(-10px);
+        -ms-transform: translateY(-10px);
+        transform: translateY(-10px);
+    }
+    60% {
+        -webkit-transform: translateY(-5px);
+        -ms-transform: translateY(-5px);
+        transform: translateY(-5px);
+    }
+}
+
+.icon-list {
+    text-align: center;
+    font-size: 120%;
+}
+
+.icon-list ul, .icon-list ol {
+    text-align: left;
+    display: inline-block;
+}
+
+/* image overlay */
+.noscroll { overflow: hidden; }
+
+#image-overlay {
+    display: none;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: 0;
+    padding: 0;
+    background: #333333f0;
+    grid-template-rows: 5rem 1fr;
+    grid-template-areas:
+        "button"
+        "image";
+    z-index: 999;
+}
+
+#image-overlay button {
+    grid-area: button;
+    justify-self: end;
+    padding: 1rem;
+    font-size: 2rem;
+    color: #eeeeee;
+    height: 5rem;
+    width: 5rem;
+}
+
+#image-overlay button:hover {
+    color: #ff4500;
+}
+
+#image-overlay img {
+    grid-area: image;
+    margin: 2rem;
+    margin-top: 0;
+    width: calc(100vw - 4rem);
+}
+
+</style>
+<!-- end custom head snippets -->

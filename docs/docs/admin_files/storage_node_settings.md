@@ -1,13 +1,10 @@
 ---
-layout: doc
 title: "Storage Node Settings"
-nav_order: 10
-parent: Admin Guide
-grand_parent: How to use Fireping
-permalink: /how-to/admin/storage-node
+permalink: /docs/how-to/admin/storage-node
+key: docs-how-to-admin-storage-node
 ---
 
-![Settings for device](/fireping/assets/img/storage_node_settings.png)
+![Settings for device](/fireping/assets/images/storage_node_settings.png)
 
 # Short Description
 A Storage node is a remote server dedicated to saving data, this is primarily used if you gather data from big data centers.

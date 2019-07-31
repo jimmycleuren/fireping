@@ -1,0 +1,62 @@
+header:
+  # - titles:
+  #     en      : &EN       Archive
+  #     en-GB   : *EN
+  #     en-US   : *EN
+  #     en-CA   : *EN
+  #     en-AU   : *EN
+  #   url: /archive.html
+  - title: Docs
+    url: /docs
+
+  - title: About
+    url: /about
+
+  - title: GitHub
+    url:  https://github.com/jimmycleuren/fireping
+
+side-nav:
+  - title:      Install Fireping
+    children:
+      - title:  Getting started
+        url:    /docs/
+      - title:  Master setup
+        url:    /docs/getting-started/master
+      - title:  Slave setup
+        url:    /docs/getting-started/slaves
+      - title:  Docker slave installation (Recommended)
+        url:    /docs/getting-started/slaves/docker
+      - title:  Deploy multiple slaves with ansible
+        url:    /docs/getting-started/slaves/deploy-with-ansible
+      - title:  Manual slave installation
+        url:    /docs/getting-started/slaves/manual
+  - title:      Guides
+    children:
+      - title:  Admin Guide
+        url:    /docs/how-to/admin
+      - title:  Dashboard Guide
+        url:    /docs/how-to/dashboard
+  - title:      Settings
+    children:
+      - title:  Domain
+        url:    /docs/how-to/admin/domain
+      - title:  Device
+        url:    /docs/how-to/admin/device
+      - title:  Alert
+        url:    /docs/how-to/admin/alert
+      - title:  Alert Rule
+        url:    /docs/how-to/admin/alert-rule
+      - title:  Alert Destination
+        url:    /docs/how-to/admin/alert-destination
+      - title:  Probe
+        url:    /docs/how-to/admin/probe
+      - title:  Probe Archive
+        url:    /docs/how-to/admin/probe-archive
+      - title:  Slave
+        url:    /docs/how-to/admin/slave
+      - title:  Slave Group
+        url:    /docs/how-to/admin/slave-group
+      - title:  Storage Node
+        url:    /docs/how-to/admin/storage-node
+      - title:  User
+        url:    /docs/how-to/admin/user
