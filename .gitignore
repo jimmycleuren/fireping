@@ -23,4 +23,5 @@
 ###> docs/ ###
 /docs/_site
 /docs/.sass-cache
+/docs/TODO
 ###< docs/_site ###

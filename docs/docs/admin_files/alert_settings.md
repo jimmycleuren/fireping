@@ -1,16 +1,13 @@
 ---
-layout: doc
 title: "Alert Settings"
-nav_order: 3
-parent: Admin Guide
-grand_parent: How to use Fireping
-permalink: /how-to/admin/alert
+permalink: /docs/how-to/admin/alert
+key: docs-how-to-admin-alert
 ---
 
-![Settings for device](/fireping/assets/img/alert_settings.png)
+![Settings for device](/fireping/assets/images/alert_settings.png)
 
 # Short Description
-Edit the alert information.
+Allows you to edit/remove the alert information.
 
 # Required fields
 - `Active` is 1 when the alert is active, 0 if it is inactive.
@@ -20,4 +17,4 @@ Edit the alert information.
 # Optional fields
 - `Device` is the device where the alert was triggered.
 - `Alert rule` is the rule that triggered the alert.
-- `Slave group` is the group of slaves that triggered the alert.
+- `slave group` is the group of slaves that triggered the alert.

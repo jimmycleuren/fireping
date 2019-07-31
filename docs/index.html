@@ -1,0 +1,68 @@
+---
+layout: landing
+permalink: /
+title: Fireping
+excerpt: >
+  Ping without limits!
+article_header:
+  actions:
+    - text: Getting Started
+      type: error
+      url: /docs/
+      shape: pill
+    - text: Demo
+      type: outline-theme-dark
+      url: https://fireping.com/demo
+      shape: pill
+  height: 100vh
+  theme: dark
+  background_color: "#367a9a"
+  background_image:
+    gradient: "linear-gradient(rgba(0, 0, 0, .2), rgba(0, 0, 0, .6))"
+    src: /assets/images/banner.png
+
+data:
+  sections:
+    - title: Fireping, ping on another level
+      excerpt: Fireping is designed to be an easy to use and powerful program. The way it is implemented allows for it to be extremely scalable.
+      image:
+        src: /assets/images/dashboard_overview.png
+        is_row: true
+        full_width: true
+        style: "max-width: 1200px;"
+      actions:
+      - text: How Fireping works
+        url: /about
+    - title: Features
+      children:
+        - title: '<i class="fas fa-flask"></i> Tested up to 24.000 devices!'
+          excerpt: >
+            The master/slaves architecture allows for efficient scaling. 
+            It has already been tested on 24.000 devices!
+            A slave gathers the response data and forwards it to the master. The master visualizes the data in monitoring graphs and triggers alerts.
+          actions:
+            - text: Learn More
+              url: /docs/
+        - title: '<i class="far fa-bell"></i> Alerts when something is wrong.'
+          excerpt: >
+            Use alerting to inform when endpoints are unreachable or experience packet loss. Alerts can be provided via the following methods:
+            <div class="icon-list">
+              <ul class="fa-ul">
+                <li><span class="fa-li"><i class="fas fa-inbox"></i></span>The Dashboard</li>
+                <li><span class="fa-li"><i class="far fa-file"></i></span>The system logs</li>
+                <li><span class="fa-li"><i class="far fa-paper-plane"></i></span>Mail</li>
+                <li><span class="fa-li"><i class="fab fa-slack-hash"></i></span>Slack</li>
+              </ul>
+            </div>
+          actions:
+            - text: Learn More
+              url: /docs/
+    - title: Open Source
+      theme: dark
+      excerpt: Free to use however you want under the GNU General Public License v3.0. Completely free and open source!
+      actions:
+        - text: '<i class="fab fa-github"></i> GitHub'
+          type: outline-theme-dark
+          url: https://github.com/jimmycleuren/fireping
+      background_color: "#515151"
+---

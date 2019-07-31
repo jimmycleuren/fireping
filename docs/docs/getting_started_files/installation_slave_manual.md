@@ -1,14 +1,11 @@
 ---
-layout: doc
-title: "Manual installation guide for the Slaves"
-nav_order: 2
-parent: Installation guide for the Slaves
-grand_parent: Getting started
-permalink: /getting-started/slaves/manual
+title: "Manual installation guide for the slaves"
+permalink: /docs/getting-started/slaves/manual
+key: docs-getting-started-slaves-manual
 ---
 
 # Download fireping
-Before you can setup a Master, you need to download some dependencies and the Fireping source. After that you can configure the Master
+Before you can setup a slave, you need to download some dependencies and the Fireping source. After that you can configure the slave
 
 ## Installing OS dependencies
 First open a terminal and run these commands
@@ -36,13 +33,13 @@ sudo composer install
 
 ---
 
-# Setting up the Slave
-Define the folowing environment variables to /opt/fireping/.env
-* SLAVE_NAME=(give a name to this slave)
-* SLAVE_URL=(the base url for the fireping master)
+# Setting up the slave
+Define the folowing environment variables in /opt/fireping/.env
+* `slave_NAME=(give a name to this slave)`
+* `slave_URL=(the base url for the fireping master)`
 
 ## Supervisor
-Supervisor will be the process manager used to start your slave and to keep it running.
+Supervisor will be the process manager used to start your slave and keep it running.
 
 * `/etc/supervisor/supervisord.conf` is the main configuration file used for supervisor.
 * make sure that the `[include]` directive is configured to include the `.conf` files from the conf.d/ directory:
@@ -74,14 +71,14 @@ fireping-slave: added process group
 Adding slave to master
 Now open your fireping dashboard, go to `Admin > User` and create a new user with these credentials, role as `role_api` and check the `enabled` box.
 
-![Screenshot of adding a Slave](/fireping/assets/img/adding_slave_user.png)
+![Screenshot of adding a slave](/fireping/assets/images/adding_slave_user.png)
 
 You should now see the slave if you go back to `fireping.develop/slaves`. (it can take a few seconds)
 
-![Screenshot of adding a Slave](/fireping/assets/img/slaves_added_list.png)
+![Screenshot of adding a slave](/fireping/assets/images/slaves_added_list.png)
 
 ## Logrotate
-Slaves will generate a significant amount of logging. In order to mitigate disk usage somewhat, do the following:
+slaves will generate a significant amount of logging. In order to mitigate disk usage somewhat, do the following:
 
 ```bash
 sudo cp /opt/fireping/config/logrotate/fireping-slave /etc/logrotate.d/

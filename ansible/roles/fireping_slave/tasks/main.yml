@@ -1,0 +1,45 @@
+- name: "Install docker-py"
+  shell: "pip install docker-py --force"
+  become: true
+  become_method: su
+
+- name: "Install pip docker"
+  pip:
+    name: "docker"
+    state: present
+
+- name: "Make directory to copy ssl_mathc_hostname"
+  file: 
+    path: /usr/lib/python2.7/dist-packages/backports/ssl_match_hostname
+    state: directory
+  become: true
+  become_user: root
+  become_method: su
+
+- name: "Get files to copy from ssl_match_hostname"
+  command: "find .local/lib/python2.7/site-packages/backports/ssl_match_hostname -type f"
+  register: files_to_copy
+
+- name: "Copy ssl_match_hostname"
+  copy: 
+    src: "{{ item }}" 
+    dest: /usr/lib/python2.7/dist-packages/backports/ssl_match_hostname/
+    remote_src: yes
+  with_items:
+    - "{{ files_to_copy.stdout_lines }}"
+  become: true
+  become_user: root
+  become_method: su
+
+- name: "Install docker image"
+  docker_container:
+    env: 
+      SLAVE_NAME: "{{ slave_name | default('myslave') }}"
+      SLAVE_PASSWORD: "{{ slave_password | default('password') }}"
+      SLAVE_URL: "{{ slave_url }}"
+    volumes: /tmp/logs:/app/var/logs
+    restart_policy: unless-stopped
+    name: fireping-slave
+    image: jimmycleuren/fireping
+
+

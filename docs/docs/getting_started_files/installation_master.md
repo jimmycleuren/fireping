@@ -1,15 +1,13 @@
 ---
-layout: doc
-title: "Installation guide for the Master"
-nav_order: 1
-parent: Getting started
-permalink: /getting-started/master
+title: "Installation guide for the master"
+permalink: /docs/getting-started/master
+key: docs-getting-started-master
 ---
 
 # Download fireping
-Before you can setup a Master, you need to download some dependencies and the Fireping source. After that you can configure the Master
+Before you can setup a master, you need to download some dependencies and the Fireping source. After that you can configure the master
 
-## Installing OS dependencies
+## Install OS dependencies
 First open a terminal and run these commands
 
 ```bash
@@ -35,8 +33,8 @@ sudo composer install
 
 ---
 
-# Setting up the Master
-## Configuring the database
+# Setting up the master
+## Configure the database
 First install MySQL and other dependencies
 
 ``` bash
@@ -48,9 +46,9 @@ Then make the database and configure it by entering a MySQL REPL
 sudo mysql
 ```
 
-and executing these SQL statements (you can chose whatever user credentials you want)
+and execute these SQL statements (you can chose whatever user credentials you want)
 
-```SQL
+```sql
 CREATE DATABASE fireping; -- don't change
 CREATE USER 'fireping'@'localhost' IDENTIFIED BY 'password'; -- change username (but leave @'localhost') and password here
 GRANT ALL PRIVILEGES ON fireping . * TO 'fireping'@'localhost'; -- remember to use the right username
@@ -59,34 +57,40 @@ FLUSH PRIVILEGES;
 
 Then go into the `.env` file using `sudo vim .env` or any other text editor you like and edit the `DATABASE_URL` variable
 
-* db_user is the username you created (fireping in the example)
-* db_password is the password you created (fireping in the example)
-* db_name is fireping
+* **db_user** is the username you created (`fireping` in the example on `CREATE USER`)
+* **db_password** is the password you created (`fireping` in the example on `IDENTIFIED BY`)
+* **db_name** is fireping
 
-Make sure u are in the directory `/opt/fireping/` and run
+![env vim](/fireping/assets/images/env_edit.png)
+
+Make sure you are in the directory `/opt/fireping/` and run
 
 ```bash
 sudo php bin/console doctrine:migrations:migrate
 ```
 
-## Configuring the dashboard server
+## Configure the dashboard server
 Copy the file `docker/nginx/symfony.conf` to `/etc/nginx/sites-enabled` and edit the file
 ```bash
+sudo cp docker/nginx/symfony.conf /etc/nginx/sites-enabled
 sudo vim /etc/nginx/sites-enabled/symfony.conf
 ```
 
-On the line saying
+On the line showing
 ```
 server_name fireping.develop;
 ```
-the `fireping.develop` can be changed to any name you want, if you want to host a server you should change the name on this line to that of the server.
+the `fireping.develop` can be changed to any name you want. If you want to host a server you should change the name on this line to that of the server.
 
-change `/app/` to `/opt/fireping/` on line 3 and line 47 and then change line 11 to
-```SQL
+Change `/app/` to `/opt/fireping/` on line 3 and line 47 
+![Vim of symfony.conf](/fireping/assets/images/symfony_conf_edit.png)
+
+and then change line 11 to
+```
 fastcgi_pass unix:/var/run/php/php7.3-fpm.sock;
 ```
 
-Now restart nginx by typing
+Now restart nginx
 ```bash
 sudo systemctl restart nginx
 ```
@@ -101,7 +105,16 @@ and follow the steps. When the user is created, you only need to give it admin r
 php bin/console fos:user:promote
 ```
 
-if needed open the hosts file and add your localhost as `fireping.develop` or the server name you chose in it
+Enter the username you created in the previous step and give it the role `role_admin`.
+```
+/opt/fireping$ php bin/console fos:user:promote
+Please choose a username:fireping
+Please choose a role:role_admin
+```
+
+Now you are done with the setup of the master and if you go to `http://fireping.develop`, you should see the dashboard. 
+
+If needed, open the hosts file and add your localhost as `fireping.develop` or the server name you chose in it
 ```bash
 sudo vim /etc/hosts
 ```
@@ -111,9 +124,6 @@ sudo vim /etc/hosts
 ...
 ```
 
-Enter the username you created in the previous step and give it the role `role_admin`.
-Now you are done with the setup of the master and if you go to `fireping.develop`, you should see the dashboard. 
+![Dashboard](/fireping/assets/images/dashboard_main_page.png) 
 
-![Dashboard](/fireping/assets/img/dashboard_main_page.png) 
-
-Next step is to create [Slave nodes](/fireping/getting-started/slaves)
+Next step is to create [slave nodes](/fireping/docs/getting-started/slaves)
