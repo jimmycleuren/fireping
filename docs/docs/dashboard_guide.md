@@ -15,7 +15,7 @@ Slide the graphs left or right to go backwards or forwards in time.
 Sliding up or down wil respectively zoom in or out.
 In the navigation pane you can set the start date and end date of the graph.
 
-## slaves
+## Slaves
 Clicking the `slaves` tab wil show a list of all slaves serving the master, their slave group and their last contact.
 
 ## Alerts
