@@ -106,13 +106,7 @@ class ProbeDispatcherCommand extends Command
         $this
             ->setName('app:probe:dispatcher')
             ->setDescription('Start the probe dispatcher.')
-            ->addOption(
-                'workers',
-                'w',
-                InputOption::VALUE_REQUIRED,
-                'Specifies the amount of workers to start out with.',
-                5
-            )
+            ->addOption('workers', 'w', InputOption::VALUE_REQUIRED, 'Deprecated', 5)
             ->addOption(
                 'maximum-workers',
                 'max',
