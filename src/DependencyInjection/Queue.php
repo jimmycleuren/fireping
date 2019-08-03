@@ -81,7 +81,7 @@ class Queue
             $this->current = null;
         } else {
             $this->logger->info("Response ($status) from worker $this->worker problem - retrying later.");
-            $this->retryPost();
+            $this->retry();
         }
 
         $this->lock = false;
@@ -125,7 +125,7 @@ class Queue
         }
     }
 
-    private function retryPost()
+    private function retry()
     {
         if (isset($this->current)) {
             $this->logger->info("Retrying " . json_encode($this->current) . " at a later date.");
