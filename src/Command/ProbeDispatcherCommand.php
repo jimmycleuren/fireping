@@ -102,12 +102,7 @@ class ProbeDispatcherCommand extends Command
         $this->workerManager->initialize(intval($input->getOption('maximum-workers')), self::MAX_QUEUES);
 
         for ($i = 0; $i < self::MAX_QUEUES; $i++) {
-            $this->queues[$i] = new Queue(
-                $this->workerManager,
-                $i,
-                getenv('SLAVE_NAME'),
-                $this->logger
-            );
+            $this->queues[$i] = new Queue($this->workerManager, $this->logger);
         }
     }
 

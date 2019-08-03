@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Tests\App\DependencyInjection;
 
@@ -7,21 +8,20 @@ use App\DependencyInjection\Worker;
 use App\DependencyInjection\WorkerManager;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Psr\Log\LoggerInterface;
 
 class QueueTest extends TestCase
 {
     public function testQueueSameTimestamp()
     {
-        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
+        $logger = $this->prophesize(LoggerInterface::class);
 
         $worker = $this->prophesize(Worker::class);
-        //$worker->getPid()->willReturn(1234)->shouldBeCalledTimes(1);
 
         $workerManager = $this->prophesize(WorkerManager::class);
         $workerManager->getWorker(Argument::any())->willReturn($worker->reveal())->shouldBeCalledTimes(1);
-        //$workerManager->sendInstruction(Argument::any(), 1234)->shouldBeCalledTimes(1);
 
-        $queue = new Queue($workerManager->reveal(), 1, 'test', $logger->reveal());
+        $queue = new Queue($workerManager->reveal(), $logger->reveal());
 
         $queue->enqueue($this->getData(1, 1000, 10));
         $queue->enqueue($this->getData(1, 1000, 11));
@@ -46,16 +46,14 @@ class QueueTest extends TestCase
 
     public function testQueue3Timestamps()
     {
-        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
+        $logger = $this->prophesize(LoggerInterface::class);
 
         $worker = $this->prophesize(Worker::class);
-        //$worker->getPid()->willReturn(1234)->shouldBeCalledTimes(3);
 
         $workerManager = $this->prophesize(WorkerManager::class);
         $workerManager->getWorker(Argument::any())->willReturn($worker->reveal())->shouldBeCalledTimes(1);
-        //$dispatcher->sendInstruction(Argument::any(), 1234)->shouldBeCalledTimes(3);
 
-        $queue = new Queue($workerManager->reveal(), 1, 'test', $logger->reveal());
+        $queue = new Queue($workerManager->reveal(), $logger->reveal());
 
         $queue->enqueue($this->getData(1, 1000, 10));
         $queue->enqueue($this->getData(1, 1000, 11));

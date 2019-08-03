@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\DependencyInjection;
 
@@ -9,19 +10,15 @@ class Queue
 {
     private $queue;
     private $lock;
-    private $slaveName;
     private $current = null;
     private $worker;
     private $logger;
-    private $id;
     private $workerManager;
     private $targetsPerPacket = 50;
 
-    public function __construct(WorkerManager $workerManager, int $id, string $slaveName, LoggerInterface $logger)
+    public function __construct(WorkerManager $workerManager, LoggerInterface $logger)
     {
-        $this->id = $id;
         $this->logger = $logger;
-        $this->slaveName = $slaveName;
         $this->workerManager = $workerManager;
         $this->queue = new \SplQueue();
     }
@@ -38,11 +35,10 @@ class Queue
                 try {
                     if (!$this->worker) {
                         $this->reserveWorker();
-                    }
-                    if (!$this->worker) {
-                        $this->logger->warning("Queue $this->id had no worker");
+                        $this->logger->warning("Queue had no worker");
                         return;
                     }
+
                     $this->lock = true;
                     $this->current = $this->getNextPacket();
 
@@ -56,7 +52,7 @@ class Queue
                         $this->handleResponse($type, $response);
                     });
 
-                    $this->logger->info('COMMUNICATION_FLOW: Queue '.$this->id.' sent ' . $instruction['type'] . " instruction to worker $this->worker.");
+                    $this->logger->info('Queue sent ' . $instruction['type'] . " instruction to worker $this->worker.");
 
                 } catch (\Exception $e) {
                     $this->lock = false;
@@ -90,7 +86,7 @@ class Queue
 
         $this->lock = false;
         $this->worker = null;
-        $this->logger->info("Queue $this->id items remain: " . $this->queue->count() . ".");
+        $this->logger->info("Queue items remain: " . $this->queue->count() . ".");
     }
 
     private function getNextPacket()
@@ -114,7 +110,7 @@ class Queue
             $counter++;
         }
 
-        $this->logger->info("Queue $this->id will send $counter items");
+        $this->logger->info("Queue will send $counter items");
 
         return $first;
     }
@@ -123,9 +119,9 @@ class Queue
     {
         try {
             $this->worker = $this->workerManager->getWorker('queue');
-            $this->logger->info("Worker $this->worker reserved to post data for queue ".$this->id);
+            $this->logger->info("Worker $this->worker reserved to post data for queue");
         } catch (\Exception $e) {
-            $this->logger->critical("Could not reserve a worker to post data for queue ".$this->id);
+            $this->logger->critical("Could not reserve a worker to post data for queue");
         }
     }
 
