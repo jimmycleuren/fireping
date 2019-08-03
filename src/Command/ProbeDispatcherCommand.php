@@ -7,7 +7,6 @@ use App\DependencyInjection\SlaveConfiguration;
 use App\DependencyInjection\Queue;
 use App\DependencyInjection\WorkerManager;
 use App\Instruction\Instruction;
-use App\Probe\ProbeDefinition;
 use App\ShellCommand\GetConfigHttpWorkerCommand;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -20,11 +19,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * Class ProbeDispatcherCommand
- *
- * @package App\Command
- */
 class ProbeDispatcherCommand extends Command
 {
     public const MAX_QUEUES = 10;
