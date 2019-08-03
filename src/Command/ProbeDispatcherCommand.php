@@ -27,11 +27,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ProbeDispatcherCommand extends Command
 {
-    /**
-     * @var int
-     */
-    protected $numberOfQueues = 10;
-
+    public const MAX_QUEUES = 10;
     /**
      * @var Queue[]
      */
@@ -120,12 +116,9 @@ class ProbeDispatcherCommand extends Command
             }
         }
 
-        $this->workerManager->initialize(
-            intval($input->getOption('maximum-workers')),
-            $this->numberOfQueues
-        );
+        $this->workerManager->initialize(intval($input->getOption('maximum-workers')), self::MAX_QUEUES);
 
-        for ($i = 0; $i < $this->numberOfQueues; $i++) {
+        for ($i = 0; $i < self::MAX_QUEUES; $i++) {
             $this->queues[$i] = new Queue(
                 $this->workerManager,
                 $i,
@@ -296,7 +289,7 @@ class ProbeDispatcherCommand extends Command
 
                     $items = $this->expandProbeResult($cleaned);
                     foreach ($items as $key => $item) {
-                        $queue = $this->queues[$key % $this->numberOfQueues];
+                        $queue = $this->queues[$key % self::MAX_QUEUES];
                         $queue->enqueue($item);
                     }
 
