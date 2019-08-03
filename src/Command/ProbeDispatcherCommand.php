@@ -28,51 +28,31 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ProbeDispatcherCommand extends Command
 {
     /**
-     * The number of queues that will be created by the ProbeDispatcher
-     *
      * @var int
      */
     protected $numberOfQueues = 10;
 
     /**
-     * A collection of queues available to the ProbeDispatcher
-     *
      * @var Queue[]
      */
     protected $queues;
 
     /**
-     * The number of workers that will be created at most
-     *
-     * @var int
-     */
-    protected $workerLimit;
-
-    /**
-     * Used to write to log files
-     *
      * @var LoggerInterface
      */
     protected $logger;
 
     /**
-     * Holds the configuration of our Fireping Slave
-     *
      * @var SlaveConfiguration
      */
     protected $configuration;
 
     /**
-     * How long the ProbeDispatcher can run for, in seconds. You can specify 0 to
-     * indicate an infinitely running process.
-     *
      * @var int
      */
     protected $maxRuntime;
 
     /**
-     * The LoopInterface that runs our process.
-     *
      * @var LoopInterface
      */
     protected $loop;
