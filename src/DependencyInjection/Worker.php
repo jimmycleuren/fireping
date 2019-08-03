@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jimmyc
- * Date: 4/09/2018
- * Time: 11:18
- */
+declare(strict_types=1);
 
 namespace App\DependencyInjection;
 

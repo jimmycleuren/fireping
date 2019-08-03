@@ -1,16 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jimmyc
- * Date: 4/09/2018
- * Time: 10:27
- */
+declare(strict_types=1);
 
 namespace App\DependencyInjection;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Process\Exception\InvalidArgumentException;
+use Symfony\Component\Process\Exception\LogicException;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
+use Symfony\Component\Process\Exception\RuntimeException;
 
 class WorkerManager
 {
@@ -23,7 +21,7 @@ class WorkerManager
      *
      * @var Worker[]
      */
-    private $availableWorkers = [];
+    private $idleWorkers = [];
 
     /**
      * @var Worker[]
@@ -34,16 +32,9 @@ class WorkerManager
      *
      * @var Worker[]
      */
-    private $inUseWorkers = [];
+    private $runningWorkers = [];
 
     private $inUseWorkerTypes = [];
-
-    /**
-     * The minimum amount of workers that should be idle at all times.
-     *
-     * @var int
-     */
-    private $minimumIdleWorkers;
 
     /**
      * At most this many workers should ever be created.
@@ -63,19 +54,16 @@ class WorkerManager
         $this->logger = $logger;
     }
 
-    public function initialize(int $startWorkers, int $maximumWorkers, int $numberOfQueues)
+    public function initialize(int $maximumWorkers, int $numberOfQueues)
     {
         $this->maximumWorkers = $maximumWorkers;
         $this->numberOfQueues = $numberOfQueues;
 
-        if ($startWorkers < $this->getWorkerBaseline()) {
-            $this->logger->warning("Increasing initial workers to ".$this->getWorkerBaseline());
-            $startWorkers = $this->getWorkerBaseline();
-        }
+        $workers = $this->getWorkerBaseline();
 
-        $this->logger->info("Starting $startWorkers initial workers.");
+        $this->logger->info("Starting $workers initial workers.");
 
-        for ($w = 0; $w < $startWorkers; $w++) {
+        for ($w = 0; $w < $workers; $w++) {
             $this->startWorker();
             sleep(1);
         }
@@ -97,10 +85,10 @@ class WorkerManager
             $this->inUseWorkerTypes[$type] = 0;
         }
 
-        if (count($this->availableWorkers) > 0) {
+        if (count($this->idleWorkers) > 0) {
 
-            $worker = array_shift($this->availableWorkers);
-            $this->inUseWorkers[] = $worker;
+            $worker = array_shift($this->idleWorkers);
+            $this->runningWorkers[] = $worker;
 
             $this->logger->info("Marking worker $worker as in-use.");
 
@@ -117,26 +105,24 @@ class WorkerManager
     }
 
     /**
-     *
-     * @return Worker
-     * @throws \Symfony\Component\Process\Exception\InvalidArgumentException
-     * @throws \Symfony\Component\Process\Exception\LogicException
-     * @throws \Symfony\Component\Process\Exception\RuntimeException
+     * @throws InvalidArgumentException
+     * @throws LogicException
+     * @throws RuntimeException
      */
     private function startWorker(): Worker
     {
         $worker = new Worker($this, $this->kernel, $this->logger, 1500, 300);
         $worker->start();
 
-        $this->availableWorkers[] = $worker;
+        $this->idleWorkers[] = $worker;
         $this->workers[] = $worker;
 
         $this->logger->info(
             "Worker $worker started.",
             [
-                'available' => count($this->availableWorkers),
-                'inuse' => count($this->inUseWorkers),
-                'worker' => count($this->workers)
+                'idle' => count($this->idleWorkers),
+                'running' => count($this->runningWorkers),
+                'total' => count($this->workers)
             ]
         );
 
@@ -148,21 +134,21 @@ class WorkerManager
      */
     public function release(Worker $worker): void
     {
-        foreach ($this->inUseWorkers as $index => $inUseWorker) {
+        foreach ($this->runningWorkers as $index => $inUseWorker) {
             if ($worker === $inUseWorker) {
-                unset($this->inUseWorkers[$index]);
+                unset($this->runningWorkers[$index]);
             }
         }
 
-        foreach ($this->availableWorkers as $index => $availableWorker) {
+        foreach ($this->idleWorkers as $index => $availableWorker) {
             if ($worker === $availableWorker) {
                 $this->logger->warning("Worker $worker was apparently available when asked to be released, investigate!");
-                unset($this->availableWorkers[$index]);
+                unset($this->idleWorkers[$index]);
             }
         }
 
         $this->logger->info("Marking worker $worker as available.");
-        $this->availableWorkers[] = $worker;
+        $this->idleWorkers[] = $worker;
         $this->inUseWorkerTypes[$worker->getType()]--;
         $worker->setType(null);
 
@@ -180,12 +166,12 @@ class WorkerManager
     {
         $worker->stop();
 
-        if (($key = array_search($worker, $this->availableWorkers, true)) !== false) {
-            unset($this->availableWorkers[$key]);
+        if (($key = array_search($worker, $this->idleWorkers, true)) !== false) {
+            unset($this->idleWorkers[$key]);
         }
 
-        if (($key = array_search($worker, $this->inUseWorkers, true)) !== false) {
-            unset($this->inUseWorkers[$key]);
+        if (($key = array_search($worker, $this->runningWorkers, true)) !== false) {
+            unset($this->runningWorkers[$key]);
         }
 
         if (($key = array_search($worker, $this->workers, true)) !== false) {
@@ -200,8 +186,8 @@ class WorkerManager
                 $worker->loop();
             } catch (ProcessTimedOutException $exception) {
                 $this->logger->info("Worker $worker timed out", [
-                    'available' => count($this->availableWorkers),
-                    'inuse' => count($this->inUseWorkers),
+                    'available' => count($this->idleWorkers),
+                    'inuse' => count($this->runningWorkers),
                     'worker' => count($this->workers)
                 ]);
                 $this->cleanup($worker);
