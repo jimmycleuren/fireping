@@ -34,7 +34,7 @@ class Queue
             if (!$this->queue->isEmpty()) {
                 try {
                     if (!$this->worker) {
-                        $this->reserveWorker();
+                        $this->reserve();
                         $this->logger->warning("Queue had no worker");
                         return;
                     }
@@ -115,7 +115,7 @@ class Queue
         return $first;
     }
 
-    private function reserveWorker()
+    private function reserve()
     {
         try {
             $this->worker = $this->workerManager->getWorker('queue');
