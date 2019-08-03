@@ -22,41 +22,30 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ProbeDispatcherCommand extends Command
 {
     public const MAX_QUEUES = 10;
+    public const MAX_DEVICES_PER_WORKER = 250;
     /**
      * @var Queue[]
      */
     protected $queues;
-
     /**
      * @var LoggerInterface
      */
     protected $logger;
-
     /**
      * @var SlaveConfiguration
      */
     protected $configuration;
-
     /**
      * @var int
      */
     protected $maxRuntime;
-
     /**
      * @var LoopInterface
      */
     protected $loop;
-
     private $workerManager;
-
-    private $devicesPerWorker = 250;
-
     private $randomFactor = 0;
 
-    /**
-     * @param LoggerInterface $logger
-     * @param WorkerManager $workerManager
-     */
     public function __construct(LoggerInterface $logger, WorkerManager $workerManager)
     {
         $this->logger = $logger;
@@ -159,7 +148,7 @@ class ProbeDispatcherCommand extends Command
                 $ready = time() % $probe->getStep() === 0;
 
                 if ($ready) {
-                    $instructions = new Instruction($probe, $this->devicesPerWorker);
+                    $instructions = new Instruction($probe, self::MAX_DEVICES_PER_WORKER);
 
                     // Keep track of how many processes are starting.
                     $counter = 0;
@@ -300,7 +289,7 @@ class ProbeDispatcherCommand extends Command
 
                     $count = 0;
                     foreach ($this->configuration->getProbes() as $probe) {
-                        $count += ceil($this->configuration->getProbeDeviceCount($probe->getId()) / $this->devicesPerWorker);
+                        $count += ceil($this->configuration->getProbeDeviceCount($probe->getId()) / self::MAX_DEVICES_PER_WORKER);
                     }
                     $this->workerManager->setNumberOfProbeProcesses(intval($count));
                 } else {
