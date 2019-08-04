@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jimmyc
- * Date: 23/05/2017
- * Time: 16:10
- */
 
 namespace App\Processor;
 

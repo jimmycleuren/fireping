@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jimmyc
- * Date: 17/08/2018
- * Time: 16:10
- */
 
 namespace App\Storage;
 
