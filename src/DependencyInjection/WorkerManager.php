@@ -12,39 +12,35 @@ use Symfony\Component\Process\Exception\RuntimeException;
 
 class WorkerManager
 {
-    private $kernel;
-
-    private $logger;
-
     /**
-     * An array of process ids of workers that are currently idle.
-     *
+     * @var KernelInterface
+     */
+    private $kernel;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+    /**
      * @var Worker[]
      */
     private $idleWorkers = [];
-
     /**
      * @var Worker[]
      */
     private $workers = [];
     /**
-     * An array of process ids of workers that are currently performing a task.
-     *
      * @var Worker[]
      */
     private $runningWorkers = [];
-
-    private $inUseWorkerTypes = [];
-
     /**
-     * At most this many workers should ever be created.
-     *
+     * @var string[]
+     */
+    private $inUseWorkerTypes = [];
+    /**
      * @var int
      */
     private $maximumWorkers;
-
     private $numberOfQueues = 0;
-
     private $numberOfProbeProcesses = 0;
 
 
