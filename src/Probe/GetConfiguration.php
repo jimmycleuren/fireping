@@ -31,7 +31,7 @@ class GetConfiguration implements CommandInterface
 
     public function execute(): array
     {
-        $endpoint = sprintf('/api/slaves/%s/config', $_ENV['SLAVE_NAME']);
+        $endpoint = sprintf('/api/slaves/%s/config', getenv('SLAVE_NAME'));
 
         $headers = $this->etag !== null ? ['If-None-Match' => $this->etag] : [];
         $request = new Request('GET', $endpoint, $headers);

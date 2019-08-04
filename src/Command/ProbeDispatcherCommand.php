@@ -74,7 +74,7 @@ class ProbeDispatcherCommand extends Command
     {
         $this->randomFactor = random_int(0, 119);
 
-        if (isset($_['SLAVE_NAME'], $_ENV['SLAVE_URL']) === false) {
+        if (getenv('SLAVE_NAME') === false || getenv('SLAVE_URL') === false) {
             throw new \RuntimeException('SLAVE_NAME or SLAVE_URL environment variable not set.');
         }
 
@@ -104,7 +104,7 @@ class ProbeDispatcherCommand extends Command
         $maxRuntime = (int) $maxRuntime;
 
         $this->logger->info('Fireping Dispatcher Started.');
-        $this->logger->info(sprintf('Slave name=%s url=%s randomness=%s', $_ENV['SLAVE_NAME'], $_ENV['SLAVE_URL'], $this->randomFactor));
+        $this->logger->info(sprintf('Slave name=%s url=%s randomness=%s', getenv('SLAVE_NAME'), getenv('SLAVE_URL'), $this->randomFactor));
 
         $loop = Factory::create();
 

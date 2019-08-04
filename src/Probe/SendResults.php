@@ -40,7 +40,7 @@ class SendResults implements CommandInterface
     public function setArgs(array $args): void
     {
         $this->method = $args['method'] ?? 'POST';
-        $this->endpoint = sprintf('/api/slaves/%s/result', $_ENV['SLAVE_NAME']);
+        $this->endpoint = sprintf('/api/slaves/%s/result', getenv('SLAVE_NAME'));
         $this->body = $args['body'] ?? new \stdClass();
     }
 
