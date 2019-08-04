@@ -9,7 +9,6 @@ use App\ShellCommand\PostResultsHttpWorkerCommand;
 use Exception;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
-use React\EventLoop\LoopInterface;
 use React\Stream\ReadableResourceStream;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
@@ -78,7 +77,7 @@ class ProbeWorkerCommand extends Command
     }
 
     /**
-     * @param InputInterface  $input
+     * @param InputInterface $input
      * @param OutputInterface $output
      *
      * @return void
@@ -92,7 +91,7 @@ class ProbeWorkerCommand extends Command
         if (is_string($maxRuntime) === false) {
             $maxRuntime = 0;
         }
-        $maxRuntime = (int) $maxRuntime;
+        $maxRuntime = (int)$maxRuntime;
 
         $loop = Factory::create();
         $read = new ReadableResourceStream(STDIN, $loop);
@@ -136,7 +135,7 @@ class ProbeWorkerCommand extends Command
     private function getFailedResponse($response, int $code = 400): array
     {
         if ($response instanceof Exception) {
-            $response = (string) $response;
+            $response = (string)$response;
         }
 
         return $this->getResponse($response, 'exception', $code);
