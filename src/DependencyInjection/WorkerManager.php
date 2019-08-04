@@ -35,7 +35,7 @@ class WorkerManager
     /**
      * @var string[]
      */
-    private $inUseWorkerTypes = [];
+    private $runningWorkersTypes = [];
     /**
      * @var int
      */
@@ -77,8 +77,8 @@ class WorkerManager
 
     public function getWorker(string $type) : Worker
     {
-        if (!isset($this->inUseWorkerTypes[$type])) {
-            $this->inUseWorkerTypes[$type] = 0;
+        if (!isset($this->runningWorkersTypes[$type])) {
+            $this->runningWorkersTypes[$type] = 0;
         }
 
         if (count($this->idleWorkers) > 0) {
@@ -89,9 +89,9 @@ class WorkerManager
             $this->logger->info("Marking worker $worker as in-use.");
 
             $worker->setType($type);
-            $this->inUseWorkerTypes[$type]++;
+            $this->runningWorkersTypes[$type]++;
 
-            foreach($this->inUseWorkerTypes as $type => $value) {
+            foreach($this->runningWorkersTypes as $type => $value) {
                 $this->logger->info("$value workers with type $type");
             }
             return $worker;
@@ -145,10 +145,10 @@ class WorkerManager
 
         $this->logger->info("Marking worker $worker as available.");
         $this->idleWorkers[] = $worker;
-        $this->inUseWorkerTypes[$worker->getType()]--;
+        $this->runningWorkersTypes[$worker->getType()]--;
         $worker->setType(null);
 
-        foreach($this->inUseWorkerTypes as $type => $value) {
+        foreach($this->runningWorkersTypes as $type => $value) {
             $this->logger->info("$value workers with type $type");
         }
     }
