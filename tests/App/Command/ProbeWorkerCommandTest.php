@@ -3,7 +3,7 @@
 namespace Tests\App\Command;
 
 use App\Command\ProbeWorkerCommand;
-use App\ShellCommand\CommandFactory;
+use App\Probe\CommandFactory;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
