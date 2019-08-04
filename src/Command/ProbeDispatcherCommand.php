@@ -11,10 +11,8 @@ use App\Probe\GetConfiguration;
 use Exception;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
-use React\EventLoop\LoopInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
-use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -35,14 +33,6 @@ class ProbeDispatcherCommand extends Command
      * @var SlaveConfiguration
      */
     protected $configuration;
-    /**
-     * @var int
-     */
-    protected $maxRuntime;
-    /**
-     * @var LoopInterface
-     */
-    protected $loop;
     private $workerManager;
     private $randomFactor = 0;
 
@@ -84,13 +74,10 @@ class ProbeDispatcherCommand extends Command
      */
     private function setUp(InputInterface $input)
     {
-        $this->maxRuntime = (int)$input->getOption('max-runtime');
         $this->randomFactor = random_int(0, 119);
 
-        foreach (['SLAVE_NAME', 'SLAVE_URL'] as $item) {
-            if (!getenv($item)) {
-                throw new \RuntimeException("$item environment variable not set.");
-            }
+        if (isset($_['SLAVE_NAME'], $_ENV['SLAVE_URL']) === false) {
+            throw new \RuntimeException('SLAVE_NAME or SLAVE_URL environment variable not set.');
         }
 
         $this->workerManager->initialize(self::MAX_QUEUES);
@@ -112,14 +99,20 @@ class ProbeDispatcherCommand extends Command
     {
         $this->setUp($input);
 
+        $maxRuntime = $input->getOption('max-runtime');
+        if (is_string($maxRuntime) === false) {
+            $maxRuntime = 0;
+        }
+        $maxRuntime = (int) $maxRuntime;
+
         $this->logger->info('Fireping Dispatcher Started.');
         $this->logger->info('Slave name is ' . getenv('SLAVE_NAME'));
         $this->logger->info('Slave url is ' . getenv('SLAVE_URL'));
         $this->logger->info('Random factor is ' . $this->randomFactor);
 
-        $this->loop = Factory::create();
+        $loop = Factory::create();
 
-        $this->loop->addPeriodicTimer(1, function () {
+        $loop->addPeriodicTimer(1, function () {
             if (time() % 120 === $this->randomFactor) {
                 $instruction = [
                     'type' => GetConfiguration::class,
@@ -156,22 +149,20 @@ class ProbeDispatcherCommand extends Command
             }
         });
 
-        $this->loop->addPeriodicTimer(0.1, function () {
+        $loop->addPeriodicTimer(0.1, function () {
             $this->workerManager->loop();
         });
 
-        if ($this->maxRuntime > 0) {
-            $this->logger->info('Running for ' . $this->maxRuntime . ' seconds');
-            $this->loop->addTimer(
-                $this->maxRuntime,
-                function () use ($output) {
-                    $output->writeln('Max runtime reached');
-                    $this->loop->stop();
-                }
+        if ($maxRuntime > 0) {
+            $this->logger->info('Running for ' . $maxRuntime . ' seconds');
+            $loop->addTimer($maxRuntime, function () use ($output, $loop) {
+                $output->writeln('Max runtime reached');
+                $loop->stop();
+            }
             );
         }
 
-        $this->loop->run();
+        $loop->run();
     }
 
     /**
