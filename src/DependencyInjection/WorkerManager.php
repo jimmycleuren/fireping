@@ -82,7 +82,6 @@ class WorkerManager
         }
 
         if (count($this->idleWorkers) > 0) {
-
             $worker = array_shift($this->idleWorkers);
             $this->runningWorkers[] = $worker;
 
