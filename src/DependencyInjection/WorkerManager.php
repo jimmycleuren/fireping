@@ -12,7 +12,7 @@ use Symfony\Component\Process\Exception\RuntimeException;
 
 class WorkerManager
 {
-    protected $kernel;
+    private $kernel;
 
     private $logger;
 
