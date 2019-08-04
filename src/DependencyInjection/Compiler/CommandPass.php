@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\DependencyInjection\Compiler;
 
-use App\ShellCommand\CommandFactory;
+use App\Probe\CommandFactory;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;

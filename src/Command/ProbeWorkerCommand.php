@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\ShellCommand\CommandFactory;
-use App\ShellCommand\GetConfigHttpWorkerCommand;
-use App\ShellCommand\PostResultsHttpWorkerCommand;
+use App\Probe\CommandFactory;
+use App\Probe\GetConfiguration;
+use App\Probe\SendResults;
 use Exception;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
@@ -172,11 +172,11 @@ class ProbeWorkerCommand extends Command
             $contents = $output['contents'] ?? '';
 
             switch ($requestType) {
-                case PostResultsHttpWorkerCommand::class:
+                case SendResults::class:
                     $this->sendResponse($this->getResponse($contents, $requestType, $code));
                     break;
 
-                case GetConfigHttpWorkerCommand::class:
+                case GetConfiguration::class:
                     $headers = ['etag' => $output['etag']];
                     $this->sendResponse($this->getResponse($contents, $requestType, $code, $headers));
                     break;

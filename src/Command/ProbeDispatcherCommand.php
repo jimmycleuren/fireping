@@ -7,7 +7,7 @@ use App\DependencyInjection\SlaveConfiguration;
 use App\DependencyInjection\Queue;
 use App\DependencyInjection\WorkerManager;
 use App\Instruction\Instruction;
-use App\ShellCommand\GetConfigHttpWorkerCommand;
+use App\Probe\GetConfiguration;
 use Exception;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
@@ -128,7 +128,7 @@ class ProbeDispatcherCommand extends Command
         $this->loop->addPeriodicTimer(1, function () {
             if (time() % 120 === $this->randomFactor) {
                 $instruction = [
-                    'type' => GetConfigHttpWorkerCommand::class,
+                    'type' => GetConfiguration::class,
                     'delay_execution' => 0,
                     'etag' => $this->configuration->getEtag()
                 ];
@@ -276,7 +276,7 @@ class ProbeDispatcherCommand extends Command
                 }
                 break;
 
-            case GetConfigHttpWorkerCommand::class:
+            case GetConfiguration::class:
                 if ($status === 200) {
                     $etag = $response['headers']['etag'];
                     $this->configuration->updateConfig($contents, $etag);

@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace App\Probe;
 
-use App\ShellCommand\CommandInterface;
 use GuzzleHttp\TransferStats;
 use Psr\Log\LoggerInterface;
 use GuzzleHttp\Client;

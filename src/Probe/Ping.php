@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace App\Probe;
 
 use App\OutputFormatter\PingOutputFormatter;
-use App\ShellCommand\CommandInterface;
 use Psr\Log\LoggerInterface;
 
 class Ping implements CommandInterface
@@ -43,7 +42,7 @@ class Ping implements CommandInterface
         $errors = $this->validate();
 
         if (count($errors)) {
-            throw new \Exception("ShellCommand validations failed: " . json_encode($errors));
+            throw new \Exception("Validations failed: " . json_encode($errors));
         }
 
         $output = array();

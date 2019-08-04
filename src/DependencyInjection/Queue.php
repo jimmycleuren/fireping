@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\DependencyInjection;
 
-use App\ShellCommand\PostResultsHttpWorkerCommand;
+use App\Probe\SendResults;
 use Psr\Log\LoggerInterface;
 
 class Queue
@@ -43,7 +43,7 @@ class Queue
                     $this->current = $this->getNextPacket();
 
                     $instruction = array(
-                        'type' => PostResultsHttpWorkerCommand::class,
+                        'type' => SendResults::class,
                         'delay_execution' => 0,
                         'body' => $this->current,
                     );

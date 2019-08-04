@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace App\Probe;
 
-use App\ShellCommand\CommandInterface;
 use Psr\Log\LoggerInterface;
 
 class Traceroute implements CommandInterface

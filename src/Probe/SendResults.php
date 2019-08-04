@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace App\ShellCommand;
+namespace App\Probe;
 
 use App\Client\FirepingClient;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Log\LoggerInterface;
 
-class PostResultsHttpWorkerCommand implements CommandInterface
+class SendResults implements CommandInterface
 {
     /**
      * @var LoggerInterface
