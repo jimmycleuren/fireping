@@ -67,12 +67,10 @@ class ProbeDispatcherCommand extends Command
     }
 
     /**
-     * @param InputInterface $input
-     *
      * @throws \RuntimeException
      * @throws InvalidArgumentException
      */
-    private function setUp(InputInterface $input)
+    private function setUp()
     {
         $this->randomFactor = random_int(0, 119);
 
@@ -97,7 +95,7 @@ class ProbeDispatcherCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->setUp($input);
+        $this->setUp();
 
         $maxRuntime = $input->getOption('max-runtime');
         if (is_string($maxRuntime) === false) {
