@@ -154,8 +154,7 @@ class ProbeDispatcherCommand extends Command
             $loop->addTimer($maxRuntime, function () use ($output, $loop) {
                 $output->writeln('Max runtime reached');
                 $loop->stop();
-            }
-            );
+            });
         }
 
         $loop->run();
@@ -216,8 +215,6 @@ class ProbeDispatcherCommand extends Command
 
         $type = $response['type'];
         $status = $response['status'];
-        //$timestamp = $response['body']['timestamp'];
-        /** @var array $contents */
         $contents = $response['body']['contents'];
         $debug = $response['debug'];
         $pid = $debug['pid'];
@@ -273,9 +270,7 @@ class ProbeDispatcherCommand extends Command
                 break;
 
             default:
-                $this->logger->error(
-                    "Response ($status) from worker $pid type $type is not supported by the response handler."
-                );
+                $this->logger->error("Unsupported response ($status) from worker $pid type $type.");
         }
     }
 
