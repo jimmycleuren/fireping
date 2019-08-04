@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "24d7176308a3a8b83b3334b9aee24b3a",
+    "content-hash": "c0cd81ae12497ef8467bcbfed52495f4",
     "packages": [
         {
             "name": "api-platform/api-pack",
@@ -6518,7 +6518,7 @@
         },
         {
             "name": "symfony/templating",
-            "version": "v4.3.2",
+            "version": "v4.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/templating.git",
