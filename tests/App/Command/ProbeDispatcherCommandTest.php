@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Tests\App\Command;
 
 use App\Command\ProbeDispatcherCommand;
-use App\DependencyInjection\SlaveConfiguration;
 use App\DependencyInjection\Worker;
 use App\DependencyInjection\WorkerManager;
 use Prophecy\Argument;
@@ -33,7 +32,7 @@ class ProbeDispatcherCommandTest extends KernelTestCase
         $worker = $worker->reveal();
 
         $workerManager = $this->prophesize(WorkerManager::class);
-        $workerManager->initialize(Argument::type('int'), Argument::type('int'), Argument::type('int'))->shouldBeCalledTimes(1);
+        $workerManager->initialize(10)->shouldBeCalledTimes(1);
         $workerManager->loop()->willReturn();
         $workerManager->getWorker(Argument::any())->willReturn($worker);
 
