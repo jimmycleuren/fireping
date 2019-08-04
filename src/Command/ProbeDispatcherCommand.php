@@ -150,7 +150,7 @@ class ProbeDispatcherCommand extends Command
         });
 
         if ($maxRuntime > 0) {
-            $this->logger->info('Running for ' . $maxRuntime . ' seconds');
+            $this->logger->info("Running for $maxRuntime seconds");
             $loop->addTimer($maxRuntime, function () use ($output, $loop) {
                 $output->writeln('Max runtime reached');
                 $loop->stop();
@@ -167,9 +167,8 @@ class ProbeDispatcherCommand extends Command
      *
      * @throws Exception
      */
-    public function sendInstruction(array $instruction, $expectedRuntime = null): void
+    public function sendInstruction(array $instruction, int $expectedRuntime = 60): void
     {
-        $expectedRuntime = $expectedRuntime ?? 60;
         try {
             $worker = $this->workerManager->getWorker($instruction['type']);
         } catch (Exception $e) {
