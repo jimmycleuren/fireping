@@ -47,7 +47,7 @@ class Ping implements CommandInterface
 
         $output = array();
         $out = '';
-        exec($this->makeCommand(), $out);
+        exec($this->make(), $out);
         $shellOutput = $this->formatter->format($out);
 
         foreach ($shellOutput as $key => $result) {
@@ -84,7 +84,7 @@ class Ping implements CommandInterface
         return $errors;
     }
 
-    private function makeCommand(): string
+    private function make(): string
     {
         return 'fping' . $this->buildArguments() . ' ' . $this->buildTargets() . ' 2>&1';
     }
