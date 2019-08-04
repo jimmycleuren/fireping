@@ -198,6 +198,7 @@ class ProbeWorkerCommand extends Command
     protected function sendResponse(array $data): void
     {
         $this->logger->info(sprintf('Worker[%s]: sending response of type=%s', $this->pid, $data['type']));
-        $this->stdout->writeln(json_encode($data));
+        $response = json_encode($data) ?: $this->getFailedResponse('Something went wrong while encoding the response');
+        $this->stdout->writeln($response);
     }
 }
