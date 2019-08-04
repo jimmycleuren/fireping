@@ -27,19 +27,11 @@ class WorkerManager
     /**
      * @var Worker[]
      */
-    private $all = [];
-    /**
-     * @var Worker[]
-     */
     private $running = [];
     /**
      * @var string[]
      */
     private $runningTypes = [];
-    /**
-     * @var int
-     */
-    private $maximumWorkers;
     private $numberOfQueues = 0;
     private $numberOfProbeProcesses = 0;
 
@@ -50,9 +42,8 @@ class WorkerManager
         $this->logger = $logger;
     }
 
-    public function initialize(int $maximumWorkers, int $numberOfQueues)
+    public function initialize(int $numberOfQueues)
     {
-        $this->maximumWorkers = $maximumWorkers;
         $this->numberOfQueues = $numberOfQueues;
 
         $workers = $this->getWorkerBaseline();
@@ -110,7 +101,6 @@ class WorkerManager
         $worker->start();
 
         $this->idle[] = $worker;
-        $this->all[] = $worker;
 
         $this->logger->info(
             "Worker $worker started.", ['idle' => count($this->idle), 'running' => count($this->running)]
@@ -163,35 +153,28 @@ class WorkerManager
         if (($key = array_search($worker, $this->running, true)) !== false) {
             unset($this->running[$key]);
         }
-
-        if (($key = array_search($worker, $this->all, true)) !== false) {
-            unset($this->all[$key]);
-        }
     }
 
     public function loop()
     {
-        foreach ($this->all as $worker) {
+        /** @var Worker[] $all */
+        $all = \array_merge($this->idle, $this->running);
+        foreach ($all as $worker) {
             try {
                 $worker->loop();
             } catch (ProcessTimedOutException $exception) {
                 $this->logger->info("Worker $worker timed out", [
-                    'available' => count($this->idle),
-                    'inuse' => count($this->running),
-                    'worker' => count($this->all)
+                    'idle' => count($this->idle),
+                    'running' => count($this->running)
                 ]);
                 $this->cleanup($worker);
             }
         }
 
         //check if we have enough workers available and start 1 if needed
-        if (count($this->all) < $this->getWorkerBaseline()) {
-            if(count($this->all) < $this->maximumWorkers) {
-                $this->logger->info("Not enough workers available, starting 1");
-                $this->startWorker();
-            } else {
-                $this->logger->error("Maximum amount of workers (".$this->maximumWorkers.") reached");
-            }
+        if (count($all) < $this->getWorkerBaseline()) {
+            $this->logger->info('Starting New Worker');
+            $this->startWorker();
         }
     }
 }

@@ -66,13 +66,7 @@ class ProbeDispatcherCommand extends Command
             ->setName('app:probe:dispatcher')
             ->setDescription('Start the probe dispatcher.')
             ->addOption('workers', 'w', InputOption::VALUE_REQUIRED, 'Deprecated', 5)
-            ->addOption(
-                'maximum-workers',
-                'max',
-                InputOption::VALUE_REQUIRED,
-                'Specifies the maximum amount of workers that can ever be created.',
-                200
-            )
+            ->addOption('maximum-workers', 'max', InputOption::VALUE_REQUIRED, 'Deprecated', 200)
             ->addOption(
                 'max-runtime',
                 'runtime',
@@ -99,7 +93,7 @@ class ProbeDispatcherCommand extends Command
             }
         }
 
-        $this->workerManager->initialize(intval($input->getOption('maximum-workers')), self::MAX_QUEUES);
+        $this->workerManager->initialize(self::MAX_QUEUES);
 
         for ($i = 0; $i < self::MAX_QUEUES; $i++) {
             $this->queues[$i] = new Queue($this->workerManager, $this->logger);
