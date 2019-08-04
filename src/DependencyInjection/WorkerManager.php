@@ -23,19 +23,19 @@ class WorkerManager
     /**
      * @var Worker[]
      */
-    private $idleWorkers = [];
+    private $idle = [];
     /**
      * @var Worker[]
      */
-    private $workers = [];
+    private $all = [];
     /**
      * @var Worker[]
      */
-    private $runningWorkers = [];
+    private $running = [];
     /**
      * @var string[]
      */
-    private $runningWorkersTypes = [];
+    private $runningTypes = [];
     /**
      * @var int
      */
@@ -77,20 +77,20 @@ class WorkerManager
 
     public function getWorker(string $type) : Worker
     {
-        if (!isset($this->runningWorkersTypes[$type])) {
-            $this->runningWorkersTypes[$type] = 0;
+        if (!isset($this->runningTypes[$type])) {
+            $this->runningTypes[$type] = 0;
         }
 
-        if (count($this->idleWorkers) > 0) {
-            $worker = array_shift($this->idleWorkers);
-            $this->runningWorkers[] = $worker;
+        if (count($this->idle) > 0) {
+            $worker = array_shift($this->idle);
+            $this->running[] = $worker;
 
             $this->logger->info("Marking worker $worker as in-use.");
 
             $worker->setType($type);
-            $this->runningWorkersTypes[$type]++;
+            $this->runningTypes[$type]++;
 
-            foreach($this->runningWorkersTypes as $type => $value) {
+            foreach($this->runningTypes as $type => $value) {
                 $this->logger->info("$value workers with type $type");
             }
             return $worker;
@@ -109,16 +109,11 @@ class WorkerManager
         $worker = new Worker($this, $this->kernel, $this->logger, 1500, 300);
         $worker->start();
 
-        $this->idleWorkers[] = $worker;
-        $this->workers[] = $worker;
+        $this->idle[] = $worker;
+        $this->all[] = $worker;
 
         $this->logger->info(
-            "Worker $worker started.",
-            [
-                'idle' => count($this->idleWorkers),
-                'running' => count($this->runningWorkers),
-                'total' => count($this->workers)
-            ]
+            "Worker $worker started.", ['idle' => count($this->idle), 'running' => count($this->running)]
         );
 
         return $worker;
@@ -129,25 +124,25 @@ class WorkerManager
      */
     public function release(Worker $worker): void
     {
-        foreach ($this->runningWorkers as $index => $inUseWorker) {
+        foreach ($this->running as $index => $inUseWorker) {
             if ($worker === $inUseWorker) {
-                unset($this->runningWorkers[$index]);
+                unset($this->running[$index]);
             }
         }
 
-        foreach ($this->idleWorkers as $index => $availableWorker) {
+        foreach ($this->idle as $index => $availableWorker) {
             if ($worker === $availableWorker) {
                 $this->logger->warning("Worker $worker was apparently available when asked to be released, investigate!");
-                unset($this->idleWorkers[$index]);
+                unset($this->idle[$index]);
             }
         }
 
         $this->logger->info("Marking worker $worker as available.");
-        $this->idleWorkers[] = $worker;
-        $this->runningWorkersTypes[$worker->getType()]--;
+        $this->idle[] = $worker;
+        $this->runningTypes[$worker->getType()]--;
         $worker->setType(null);
 
-        foreach($this->runningWorkersTypes as $type => $value) {
+        foreach($this->runningTypes as $type => $value) {
             $this->logger->info("$value workers with type $type");
         }
     }
@@ -161,37 +156,37 @@ class WorkerManager
     {
         $worker->stop();
 
-        if (($key = array_search($worker, $this->idleWorkers, true)) !== false) {
-            unset($this->idleWorkers[$key]);
+        if (($key = array_search($worker, $this->idle, true)) !== false) {
+            unset($this->idle[$key]);
         }
 
-        if (($key = array_search($worker, $this->runningWorkers, true)) !== false) {
-            unset($this->runningWorkers[$key]);
+        if (($key = array_search($worker, $this->running, true)) !== false) {
+            unset($this->running[$key]);
         }
 
-        if (($key = array_search($worker, $this->workers, true)) !== false) {
-            unset($this->workers[$key]);
+        if (($key = array_search($worker, $this->all, true)) !== false) {
+            unset($this->all[$key]);
         }
     }
 
     public function loop()
     {
-        foreach ($this->workers as $worker) {
+        foreach ($this->all as $worker) {
             try {
                 $worker->loop();
             } catch (ProcessTimedOutException $exception) {
                 $this->logger->info("Worker $worker timed out", [
-                    'available' => count($this->idleWorkers),
-                    'inuse' => count($this->runningWorkers),
-                    'worker' => count($this->workers)
+                    'available' => count($this->idle),
+                    'inuse' => count($this->running),
+                    'worker' => count($this->all)
                 ]);
                 $this->cleanup($worker);
             }
         }
 
         //check if we have enough workers available and start 1 if needed
-        if (count($this->workers) < $this->getWorkerBaseline()) {
-            if(count($this->workers) < $this->maximumWorkers) {
+        if (count($this->all) < $this->getWorkerBaseline()) {
+            if(count($this->all) < $this->maximumWorkers) {
                 $this->logger->info("Not enough workers available, starting 1");
                 $this->startWorker();
             } else {
