@@ -10,7 +10,7 @@ namespace App\AlertDestination;
 
 use App\Entity\Alert;
 use Psr\Log\LoggerInterface;
-use Symfony\Bundle\TwigBundle\TwigEngine;
+use Twig\Environment;
 
 /**
  * Class Mail
@@ -20,20 +20,19 @@ class Mail extends AlertDestinationInterface
 {
     protected $recipient;
     protected $mailer;
-    protected $templating;
+    protected $twig;
     protected $logger;
 
     /**
-     * Mail constructor.
      * @param \Swift_Mailer $mailer
      * @param LoggerInterface $logger
-     * @param TwigEngine $templating
+     * @param Environment $twig
      */
-    public function __construct(\Swift_Mailer $mailer, LoggerInterface $logger, TwigEngine $templating)
+    public function __construct(\Swift_Mailer $mailer, LoggerInterface $logger, Environment $twig)
     {
         $this->mailer = $mailer;
         $this->logger = $logger;
-        $this->templating = $templating;
+        $this->twig = $twig;
     }
 
     /**
@@ -85,7 +84,7 @@ class Mail extends AlertDestinationInterface
                 ->setFrom($_ENV['MAILER_FROM'])
                 ->setTo($to)
                 ->setBody(
-                    $this->templating->render(
+                    $this->twig->render(
                         'emails/alert.html.twig',
                         array(
                             'alert' => $alert,
