@@ -87,7 +87,12 @@ class ProbeWorkerCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $this->stdout = $output;
-        $maxRuntime = (int)$input->getOption('max-runtime');
+
+        $maxRuntime = $input->getOption('max-runtime');
+        if (is_string($maxRuntime) === false) {
+            $maxRuntime = 0;
+        }
+        $maxRuntime = (int) $maxRuntime;
 
         $loop = Factory::create();
         $read = new ReadableResourceStream(STDIN, $loop);
