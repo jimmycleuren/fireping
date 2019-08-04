@@ -23,48 +23,44 @@ class ProbeWorkerCommand extends Command
     /**
      * @var OutputInterface
      */
-    protected $output;
-
+    protected $stdout;
     /**
      * @var string
      */
     protected $receiveBuffer;
-
-    /**
-     * @var string
-     */
-    protected $temporaryBuffer;
-
     /**
      * @var LoggerInterface
      */
     protected $logger;
-
     /**
-     * @var LoopInterface
+     * @var CommandFactory
      */
-    protected $loop;
-
+    private $factory;
     /**
      * @var int
      */
-    protected $maxRuntime;
-
-    private $commandFactory;
+    private $pid;
+    /**
+     * @var int
+     */
+    private $startedAt;
+    /**
+     * @var array
+     */
+    private $request;
 
     /**
      * @throws LogicException
      */
-    public function __construct(LoggerInterface $logger, CommandFactory $commandFactory)
+    public function __construct(LoggerInterface $logger, CommandFactory $factory)
     {
         $this->logger = $logger;
-        $this->commandFactory = $commandFactory;
-
+        $this->factory = $factory;
+        $this->pid = getmypid();
         parent::__construct();
     }
 
     /**
-     *
      * @throws InvalidArgumentException
      */
     protected function configure(): void
@@ -90,219 +86,118 @@ class ProbeWorkerCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
-        $this->output = $output;
-        $this->maxRuntime = (int)$input->getOption('max-runtime');
+        $this->stdout = $output;
+        $maxRuntime = (int)$input->getOption('max-runtime');
 
-        $this->loop = Factory::create();
-
-        $read = new ReadableResourceStream(STDIN, $this->loop);
+        $loop = Factory::create();
+        $read = new ReadableResourceStream(STDIN, $loop);
 
         $read->on('data', function ($data) {
             $this->receiveBuffer .= $data;
-            if (json_decode($this->receiveBuffer, true)) {
-                $this->temporaryBuffer = $this->receiveBuffer;
-                $this->receiveBuffer = '';
-                $this->process($this->temporaryBuffer);
+            if ($request = json_decode($this->receiveBuffer, true)) {
+                $this->process($request);
             }
         });
 
-        if ($this->maxRuntime > 0) {
-            $this->logger->info("Running for {$this->maxRuntime} seconds");
-            $this->loop->addTimer($this->maxRuntime, function () use ($output) {
-                $output->writeln('Max runtime reached');
-                $this->loop->stop();
+        if ($maxRuntime > 0) {
+            $this->logger->info(sprintf('Worker[%s]: running for %s seconds', $this->pid, $maxRuntime));
+            $loop->addTimer($maxRuntime, function () use ($loop) {
+                // TODO(): Not JSON, so dispatcher will not understand.
+                $this->stdout->writeln('Max runtime reached');
+                $loop->stop();
             });
         }
 
-        $this->loop->run();
+        $loop->run();
     }
 
+    private function getResponse($response, string $type = 'probe', int $status = 200, array $headers = []): array
+    {
+        return [
+            'type' => $type,
+            'status' => $status,
+            'headers' => $headers,
+            'body' => [
+                'timestamp' => $this->startedAt,
+                'contents' => $response
+            ],
+            'debug' => [
+                'runtime' => time() - $this->startedAt,
+                'pid' => $this->pid
+            ]
+        ];
+    }
+
+    private function getFailedResponse($response, int $code = 400): array
+    {
+        if ($response instanceof Exception) {
+            $response = (string) $response;
+        }
+
+        return $this->getResponse($response, 'exception', $code);
+    }
+
+
     /**
-     * @param string $data
-     *
      * @throws \LogicException
      */
-    protected function process(string $data)
+    private function process(array $request)
     {
-        $timestamp = time();
+        $this->request = $request;
+        $this->startedAt = time();
 
-        if (!trim($data)) {
-            $this->sendResponse(
-                [
-                    'type' => 'exception',
-                    'status' => 400,
-                    'body' => [
-                        'timestamp' => $timestamp,
-                        'contents' => 'Input data not received.'
-                    ],
-                    'debug' => [
-                        'runtime' => time() - $timestamp,
-                        'request' => $data,
-                        'pid' => getmypid()
-                    ]
-                ]
-            );
+        if (!isset($request['type'])) {
+            $this->sendResponse($this->getFailedResponse('Command type missing.'));
             return;
         }
 
-        $data = json_decode($data, true);
-
-        if (!$data) {
-            $this->sendResponse(
-                [
-                    'type' => 'exception',
-                    'status' => 400,
-                    'body' => [
-                        'timestamp' => $timestamp,
-                        'contents' => 'Invalid JSON Received.'
-                    ],
-                    'debug' => [
-                        'runtime' => time() - $timestamp,
-                        'request' => $data,
-                        'pid' => getmypid()
-                    ]
-                ]
-            );
-            return;
-        }
-
-        if (!isset($data['type'])) {
-            $this->sendResponse(
-                [
-                    'type' => 'exception',
-                    'status' => 400,
-                    'body' => [
-                        'timestamp' => $timestamp,
-                        'contents' => 'Command type missing.'
-                    ],
-                    'debug' => [
-                        'runtime' => time() - $timestamp,
-                        'request' => $data,
-                        'pid' => getmypid()
-                    ]
-                ]
-            );
-            return;
-        }
-
-        $str = 'COMMUNICATION_FLOW: Worker '.getmypid().' received a '.$data['type'].' instruction from master.';
-        $this->logger->info($str);
-
-        $command = null;
-        try {
-            $command = $this->commandFactory->make($data['type'], $data);
-        } catch (Exception $e) {
-            $this->sendResponse(
-                [
-                    'type' => 'exception',
-                    'status' => 400,
-                    'body' => [
-                        'timestamp' => $timestamp,
-                        'contents' => $e->getMessage()
-                    ],
-                    'debug' => [
-                            'runtime' => time() - $timestamp,
-                            'request' => $data,
-                            'pid' => getmypid()
-                    ]
-                ]
-            );
-            return;
-        }
-
-        sleep($data['delay_execution']);
+        $requestType = $request['type'];
+        $this->logger->info(sprintf('Worker[%s]: processing instruction type=%s', $this->pid, $requestType));
 
         try {
-            $shellOutput = $command->execute();
+            $command = $this->factory->make($requestType, $request);
+        } catch (Exception $exception) {
+            $this->sendResponse($this->getFailedResponse($exception));
+            return;
+        }
 
-            switch ($data['type']) {
+        sleep($request['delay_execution']);
+
+        try {
+            $output = $command->execute();
+            $code = $output['code'] ?? 0;
+            $contents = $output['contents'] ?? '';
+
+            switch ($requestType) {
                 case PostResultsHttpWorkerCommand::class:
-                    $this->sendResponse([
-                        'type' => $data['type'],
-                        'status' => $shellOutput['code'],
-                        'headers' => [],
-                        'body' => [
-                            'timestamp' => $timestamp,
-                            'contents' => $shellOutput['contents'],
-                            'raw' => $shellOutput
-                        ],
-                        'debug' => [
-                            'runtime' => time() - $timestamp,
-                            'pid' => getmypid()
-                        ]
-                    ]);
+                    $this->sendResponse($this->getResponse($contents, $requestType, $code));
                     break;
 
                 case GetConfigHttpWorkerCommand::class:
-                    // This is a request to get the latest configuration from the master.
-                    $this->sendResponse([
-                        'type' => $data['type'],
-                        'status' => $shellOutput['code'],
-                        'headers' => [
-                            'etag' => $shellOutput['etag']
-                        ],
-                        'body' => [
-                            'timestamp' => $timestamp,
-                            'contents' => $shellOutput['contents']
-                        ],
-                        'debug' => [
-                            'runtime' => time() - $timestamp,
-                            'pid' => getmypid()
-                        ]
-                    ]);
+                    $headers = ['etag' => $output['etag']];
+                    $this->sendResponse($this->getResponse($contents, $requestType, $code, $headers));
                     break;
 
-                case 'ping':
-                case 'traceroute':
-                case 'http':
-                    $this->sendResponse([
-                        'type' => 'probe',
-                        'status' => 200,
-                        'body' => [
-                            'timestamp' => $timestamp,
-                            'contents' => [
-                                $data['id'] => [
-                                    'type' => $data['type'],
-                                    'timestamp' => $timestamp,
-                                    'targets' => $shellOutput
-                                ]
-                            ]
-                        ],
-                        'debug' => [
-                            'runtime' => time() - $timestamp,
-                            //'request' => $data,
-                            'pid' => getmypid()
+                default:
+                    $inner = [
+                        $request['id'] => [
+                            'type' => $requestType,
+                            'timestamp' => $this->startedAt,
+                            'targets' => $output
                         ]
-                    ]);
+                    ];
+                    $this->sendResponse($this->getResponse($inner));
                     break;
             }
-        } catch (Exception $e) {
-            $this->sendResponse(
-                [
-                    'type' => 'exception',
-                    'status' => 500,
-                    'body' => [
-                        'timestamp' => $timestamp,
-                        'contents' => $e->getMessage() . " on " . $e->getFile().":".$e->getLine()
-                    ],
-                    'debug' => [
-                        'runtime' => time() - $timestamp,
-                        'request' => $data,
-                        'pid' => getmypid()
-                    ]
-                ]
-            );
+        } catch (Exception $exception) {
+            $this->sendResponse($this->getFailedResponse($exception, 500));
             return;
         }
     }
 
-    /**
-     * @param array $data
-     */
-    protected function sendResponse($data): void
+    protected function sendResponse(array $data): void
     {
-        $this->logger->info('COMMUNICATION_FLOW: Worker ' . getmypid() . ' sent a ' . $data['type'] . ' response.');
-        $json = json_encode($data);
-        $this->output->writeln($json);
+        $this->logger->info(sprintf('Worker[%s]: sending response of type=%s', $this->pid, $data['type']));
+        $this->stdout->writeln(json_encode($data));
     }
 }
