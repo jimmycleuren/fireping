@@ -104,9 +104,7 @@ class ProbeDispatcherCommand extends Command
         $maxRuntime = (int) $maxRuntime;
 
         $this->logger->info('Fireping Dispatcher Started.');
-        $this->logger->info('Slave name is ' . getenv('SLAVE_NAME'));
-        $this->logger->info('Slave url is ' . getenv('SLAVE_URL'));
-        $this->logger->info('Random factor is ' . $this->randomFactor);
+        $this->logger->info(sprintf('Slave name=%s url=%s randomness=%s', $_ENV['SLAVE_NAME'], $_ENV['SLAVE_URL'], $this->randomFactor));
 
         $loop = Factory::create();
 
