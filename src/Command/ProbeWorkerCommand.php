@@ -159,10 +159,9 @@ class ProbeWorkerCommand extends Command
         $requestType = $request['type'];
         $this->logger->info(sprintf('Worker[%s]: processing instruction type=%s', $this->pid, $requestType));
 
-        try {
-            $command = $this->factory->make($requestType, $request);
-        } catch (Exception $exception) {
-            $this->sendResponse($this->getFailedResponse($exception));
+        $command = $this->factory->make($requestType, $request);
+        if ($command === null) {
+            $this->sendResponse($this->getFailedResponse('Unknown CommandType: ' . $requestType));
             return;
         }
 
