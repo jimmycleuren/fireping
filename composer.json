@@ -24,7 +24,6 @@
         "easycorp/easyadmin-bundle": "^2.0",
         "eightpoints/guzzle-bundle": "^7.0",
         "flexihash/flexihash": "^2.0",
-        "friendsofsymfony/user-bundle": "^2.1",
         "guzzlehttp/guzzle": "^6.3",
         "predis/predis": "^1.1",
         "react/event-loop": "^1.0",

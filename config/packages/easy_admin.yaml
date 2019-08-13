@@ -71,11 +71,22 @@ easy_admin:
                     - { property: 'status', type: 'choice', type_options: { choices: { 'active': 'active', 'inactive': 'inactive' } } }
         User:
             class: App\Entity\User
+            controller: App\Controller\UserController
+            password_encoding: { algorithm: 'bcrypt', cost: 12 }
+            edit:
+                fields:
+                    # ...
+                    - { property: 'plainPassword', type: 'text', type_options: { required: false} }
+                    # ...
+                form_options: { validation_groups: ['Profile'] }
+            new:
+                fields:
+                    # ...
+                    - { property: 'plainPassword', type: 'text', type_options: { required: true} }
+                    # ...
+                form_options: { validation_groups: ['Registration'] }
             form:
                 fields:
                     - username
                     - email
-                    - enabled
-                    - lastLogin
-                    - { property: 'plainPassword', type: 'text', type_options: { required: false } }
                     - { property: 'roles', type: 'choice', type_options: { multiple: true, choices: { 'ROLE_ADMIN': 'ROLE_ADMIN', 'ROLE_API': 'ROLE_API' } } }

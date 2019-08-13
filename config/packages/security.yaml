@@ -1,14 +1,28 @@
 security:
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     encoders:
-        FOS\UserBundle\Model\UserInterface: bcrypt
+        # use your user class name here
+        App\Entity\User:
+            # bcrypt or sodium are recommended
+            # sodium is more secure, but requires PHP 7.2 or the Sodium extension
+            algorithm: bcrypt
+            cost: 12
+
     role_hierarchy:
         ROLE_ADMIN:      [ROLE_API]
         ROLE_API:
 
     providers:
-        fos_userbundle:
-            id: fos_user.user_provider.username
+        users:
+            entity:
+                # the class of the entity that represents users
+                class: 'App\Entity\User'
+                # the property to query by - e.g. username, email, etc
+                property: 'username'
+                # optional: if you're using multiple Doctrine entity
+                # managers, this option defines which one to use
+                # manager_name: 'customer'
+
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -20,13 +34,19 @@ security:
             pattern: ^/api/
             http_basic:
                 realm: "API Login"
-                provider: fos_userbundle
+            guard:
+                authenticators:
+                    - App\Security\TokenAuthenticator
         main:
             pattern: ^/
-            form_login:
-                  provider: fos_userbundle
-                  csrf_token_generator: security.csrf.token_manager
-            logout:       true
+            guard:
+                authenticators:
+                    - App\Security\BasicAuthenticator
+            success_handler: App\Security\AfterLoginAction
+            logout:
+                path: /logout
+                target: /
+                success_handler: App\Security\AfterLogoutRedirection
             anonymous:    true
             remember_me:
                 secret: '%kernel.secret%'
@@ -46,5 +66,6 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
+         - { path: ^/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
          - { path: ^/admin, roles: ROLE_ADMIN }
          - { path: ^/api, roles: ROLE_API }

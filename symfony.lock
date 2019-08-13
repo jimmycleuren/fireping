@@ -125,9 +125,6 @@
     "flexihash/flexihash": {
         "version": "v2.0.2"
     },
-    "friendsofsymfony/user-bundle": {
-        "version": "v2.1.2"
-    },
     "guzzlehttp/guzzle": {
         "version": "6.3.3"
     },
@@ -196,9 +193,6 @@
     },
     "pagerfanta/pagerfanta": {
         "version": "v1.1.0"
-    },
-    "paragonie/random_compat": {
-        "version": "v2.0.17"
     },
     "pdepend/pdepend": {
         "version": "2.5.2"
