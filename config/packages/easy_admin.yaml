@@ -72,7 +72,6 @@ easy_admin:
         User:
             class: App\Entity\User
             controller: App\Controller\UserController
-            password_encoding: { algorithm: 'bcrypt', cost: 12 }
             edit:
                 fields:
                     # ...

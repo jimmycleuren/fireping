@@ -2,14 +2,23 @@
 
 namespace App\DataFixtures\ORM;
 
+use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 class UserFixtures extends Fixture implements ContainerAwareInterface
 {
     private $container;
+
+    private $encoder;
+
+    public function __construct(EncoderFactoryInterface $encoderFactory)
+    {
+        $this->encoder = $encoderFactory;
+    }
 
     public function setContainer(ContainerInterface $container = null)
     {
@@ -18,18 +27,22 @@ class UserFixtures extends Fixture implements ContainerAwareInterface
 
     public function load(ObjectManager $manager)
     {
-        // Get our userManager, you must implement `ContainerAwareInterface`
-        $userManager = $this->container->get('fos_user.user_manager');
         // Create our user and set details
-        $user = $userManager->createUser();
+        $user = new User();
         $user->setUsername('test');
         $user->setEmail('test@fireping.be');
         $user->setPlainPassword('test123');
+
         //$user->setPassword('3NCRYPT3D-V3R51ON');
         $user->setEnabled(true);
         $user->setRoles(array('ROLE_ADMIN'));
+
         // Update the user
-        $userManager->updateUser($user, true);
+        $encoder = $this->encoder->getEncoder($user);
+        $hashedPassword = $encoder->encodePassword($user->getPlainPassword(), $user->getSalt());
+        $user->setPassword($hashedPassword);
+        $manager->persist($user);
+        $manager->flush();
     }
 
 }
