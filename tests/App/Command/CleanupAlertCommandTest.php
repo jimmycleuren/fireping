@@ -1,20 +1,15 @@
 <?php
+declare(strict_types=1);
 
 namespace Tests\App\Command;
 
 use App\Command\CleanupAlertCommand;
-use App\Command\CleanupCommand;
 use App\DependencyInjection\CleanupAlert;
-use App\Services\CleanupService;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Component\Filesystem\Filesystem;
 
-/**
- * Class CleanupCommandTest
- * @package Tests\App\Command
- */
 class CleanupAlertCommandTest extends KernelTestCase
 {
     public function testExecute()
@@ -22,17 +17,16 @@ class CleanupAlertCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $logger = $this->prophesize("Psr\Log\LoggerInterface");
-        $factory = $this->prophesize(CleanupAlert::class);
+        $logger = $this->prophesize(LoggerInterface::class);
+        $service = $this->prophesize(CleanupAlert::class);
 
-        $application->add(new CleanupAlertCommand($logger->reveal(), $factory->reveal()));
+        $application->add(new CleanupAlertCommand($logger->reveal(), $service->reveal()));
 
         $command = $application->find('app:cleanupAlert');
         $commandTester = new CommandTester($command);
-        $commandTester->execute(array(
-            'command'  => $command->getName()));
+        $commandTester->execute(['command' => $command->getName()]);
 
         $output = $commandTester->getDisplay();
-        $this->assertContains("Obsolete alerts", $output);
+        $this->assertContains('Removed obsolete alerts', $output);
     }
 }
