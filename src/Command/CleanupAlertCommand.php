@@ -1,21 +1,16 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Command;
 
 use App\DependencyInjection\CleanupAlert;
-use App\Services\CleanupService;
 use Psr\Log\LoggerInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 
-
-/**
- * Class CleanupAlertCommand
- * @package App\Command
- */
-class CleanupAlertCommand extends ContainerAwareCommand
+class CleanupAlertCommand extends Command
 {
     protected static $defaultName = 'app:cleanupAlert';
 
@@ -23,7 +18,6 @@ class CleanupAlertCommand extends ContainerAwareCommand
     private $cleanupAlert;
 
     /**
-     * CleanupCommand constructor.
      * @param LoggerInterface $logger
      * @param CleanupAlert $cleanupAlert
      */
@@ -35,15 +29,12 @@ class CleanupAlertCommand extends ContainerAwareCommand
         parent::__construct();
     }
 
-    protected function configure() : void
+    protected function configure(): void
     {
-        $this
-            ->setDescription('Clean alerts when a device is moved from slavegroup/alertrule');
+        $this->setDescription('Clean alerts when a device is moved from slavegroup/alertrule');
     }
 
     /**
-     * Executes the current command.
-     *
      * @param InputInterface $input
      * @param OutputInterface $output
      */
@@ -51,12 +42,8 @@ class CleanupAlertCommand extends ContainerAwareCommand
     {
         $stopwatch = new Stopwatch();
         $stopwatch->start('CleanupAlert');
-
         $this->cleanupAlert->cleanup();
-
         $event = $stopwatch->stop('CleanupAlert');
-
-        $output->writeln('Obsolete alerts are removed.');
-        $this->logger->info('Command took ' . $event->getDuration() . ' ms');
+        $output->writeln(sprintf('Removed obsolete alerts in %sms', $event->getDuration()));
     }
 }
