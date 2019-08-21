@@ -24,7 +24,7 @@ class StorageFactory
 
     public function create()
     {
-        switch ($_ENV('STORAGE')) {
+        switch ($_ENV['STORAGE']) {
             case 'rrd':
                 return $this->rrdStorage;
             case 'rrdcached':
@@ -32,7 +32,7 @@ class StorageFactory
             case 'rrddistributed':
                 return $this->rrdDistributedStorage;
             default:
-                throw new \RuntimeException("Could not create storage ".getenv('STORAGE'));
+                throw new \RuntimeException("Could not create storage ".$_ENV['STORAGE']);
         }
     }
 }

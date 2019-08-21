@@ -141,7 +141,7 @@ class ProbeDispatcherCommand extends Command
         $this->randomFactor = random_int(0, 119);
 
         foreach (['SLAVE_NAME', 'SLAVE_URL'] as $item) {
-            if (!$_ENV($item)) {
+            if (!$_ENV[$item]) {
                 throw new \RuntimeException("$item environment variable not set.");
             }
         }
@@ -156,7 +156,7 @@ class ProbeDispatcherCommand extends Command
             $this->queues[$i] = new Queue(
                 $this->workerManager,
                 $i,
-                getenv('SLAVE_NAME'),
+                $_ENV['SLAVE_NAME'],
                 $this->logger
             );
         }
@@ -175,8 +175,8 @@ class ProbeDispatcherCommand extends Command
         $this->setUp($input);
 
         $this->logger->info('Fireping Dispatcher Started.');
-        $this->logger->info('Slave name is ' . getenv('SLAVE_NAME'));
-        $this->logger->info('Slave url is ' . getenv('SLAVE_URL'));
+        $this->logger->info('Slave name is ' . $_ENV['SLAVE_NAME']);
+        $this->logger->info('Slave url is ' . $_ENV['SLAVE_URL']);
         $this->logger->info('Random factor is ' . $this->randomFactor);
 
         $this->loop = Factory::create();

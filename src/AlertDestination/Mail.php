@@ -51,7 +51,7 @@ class Mail extends AlertDestinationInterface
      */
     public function trigger(Alert $alert)
     {
-        if (!getenv('MAILER_FROM')) {
+        if (!$_ENV['MAILER_FROM']) {
             $this->logger->error('MAILER_FROM env variable is not set');
             return;
         }
@@ -64,7 +64,7 @@ class Mail extends AlertDestinationInterface
      */
     public function clear(Alert $alert)
     {
-        if (!getenv('MAILER_FROM')) {
+        if (!$_ENV['MAILER_FROM']) {
             $this->logger->error('MAILER_FROM env variable is not set');
             return;
         }
@@ -82,7 +82,7 @@ class Mail extends AlertDestinationInterface
     {
         try {
             $message = (new \Swift_Message($subject))
-                ->setFrom(getenv('MAILER_FROM'))
+                ->setFrom($_ENV['MAILER_FROM'])
                 ->setTo($to)
                 ->setBody(
                     $this->templating->render(
