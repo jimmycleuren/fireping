@@ -24,7 +24,10 @@ class StorageFactory
 
     public function create()
     {
-        switch (getenv('STORAGE')) {
+        if (!isset($_ENV['STORAGE'])) {
+            throw new \RuntimeException("Please specify the storage type in the STORAGE env variable");
+        }
+        switch ($_ENV['STORAGE']) {
             case 'rrd':
                 return $this->rrdStorage;
             case 'rrdcached':
@@ -32,7 +35,7 @@ class StorageFactory
             case 'rrddistributed':
                 return $this->rrdDistributedStorage;
             default:
-                throw new \RuntimeException("Could not create storage ".getenv('STORAGE'));
+                throw new \RuntimeException("Could not create storage ".$_ENV['STORAGE']);
         }
     }
 }

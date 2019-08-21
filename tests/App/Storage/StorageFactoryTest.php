@@ -31,14 +31,14 @@ class StorageFactoryTest extends TestCase
 
         $factory = new StorageFactory($rrdStorage, $rrdCachedStorage, $rrdDistributedStorage);
 
-        $existing = getenv('STORAGE');
-        putenv("STORAGE=rrd");
+        $existing = $_ENV['STORAGE'];
+        $_ENV['STORAGE'] = 'rrd';
         $this->assertInstanceOf(RrdStorage::class, $factory->create());
-        putenv("STORAGE=rrdcached");
+        $_ENV['STORAGE'] = 'rrdcached';
         $this->assertInstanceOf(RrdCachedStorage::class, $factory->create());
-        putenv("STORAGE=rrddistributed");
+        $_ENV['STORAGE'] = 'rrddistributed';
         $this->assertInstanceOf(RrdDistributedStorage::class, $factory->create());
-        putenv("STORAGE=".$existing);
+        $_ENV['STORAGE'] = $existing;
     }
 
     /**
@@ -60,9 +60,9 @@ class StorageFactoryTest extends TestCase
 
         $factory = new StorageFactory($rrdStorage, $rrdCachedStorage, $rrdDistributedStorage);
 
-        $existing = getenv('STORAGE');
-        putenv("STORAGE=bla");
+        $existing = $_ENV['STORAGE'];
+        $_ENV['STORAGE'] = 'bla';
         $factory->create();
-        putenv("STORAGE=".$existing);
+        $_ENV['STORAGE'] = $existing;
     }
 }
