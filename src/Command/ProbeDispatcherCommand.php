@@ -141,7 +141,7 @@ class ProbeDispatcherCommand extends Command
         $this->randomFactor = random_int(0, 119);
 
         foreach (['SLAVE_NAME', 'SLAVE_URL'] as $item) {
-            if (!getenv($item)) {
+            if (!$_ENV($item)) {
                 throw new \RuntimeException("$item environment variable not set.");
             }
         }

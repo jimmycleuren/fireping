@@ -24,7 +24,7 @@ class StorageFactory
 
     public function create()
     {
-        switch (getenv('STORAGE')) {
+        switch ($_ENV('STORAGE')) {
             case 'rrd':
                 return $this->rrdStorage;
             case 'rrdcached':
