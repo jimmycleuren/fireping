@@ -8,6 +8,7 @@
         <tr>
             <th>Id</th>
             <th>Slavegroup</th>
+            <th># of targets</th>
             <th>Last contact</th>
         </tr>
         </thead>
@@ -16,6 +17,7 @@
             <tr>
                 <td>{{ slave.id }}</td>
                 <td>{{ slave.slavegroup }}</td>
+                <td>{{ targets[slave.id] }}</td>
                 <td>{{ slave.lastContact|date("d-m-Y H:i:s") }}</td>
             </tr>
         {% endfor %}
