@@ -35,15 +35,27 @@ class SlaveController extends AbstractController
      * Lists all slave entities.
      *
      * @Route("/slaves", name="slave_index", methods={"GET"})
+     * @param DeviceRepository $deviceRepository
+     * @param SlaveRepository $slaveRepository
+     * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function indexAction()
+    public function indexAction(DeviceRepository $deviceRepository, SlaveRepository $slaveRepository)
     {
-        $em = $this->getDoctrine()->getManager();
+        $slaves = $slaveRepository->findAll();
 
-        $slaves = $em->getRepository('App:Slave')->findAll();
+        $targets = [];
+        foreach($slaves as $slave) {
+            $count = 0;
+            $data = $this->getSlaveConfig($slave, $deviceRepository);
+            foreach ($data as $probe) {
+                $count += count($probe['targets']);
+            }
+            $targets[$slave->getId()] = $count;
+        }
 
         return $this->render('slave/index.html.twig', array(
             'slaves' => $slaves,
+            'targets' => $targets,
             'active_menu' => 'slave',
         ));
     }
@@ -53,8 +65,10 @@ class SlaveController extends AbstractController
      * @param Request $request
      * @param EntityManagerInterface $entityManager
      * @param SlaveRepository $slaveRepository
+     * @param DeviceRepository $deviceRepository
      * @return JsonResponse
      *
+     * @throws \Exception
      * @Route("/api/slaves/{id}/config", methods={"GET"})
      */
     public function configAction($id, Request $request, EntityManagerInterface $entityManager, SlaveRepository $slaveRepository, DeviceRepository $deviceRepository)
@@ -63,18 +77,28 @@ class SlaveController extends AbstractController
             newrelic_name_transaction ("api_slaves_config");
         }
 
-        $this->em = $entityManager;
         $slave = $slaveRepository->findOneById($id);
-
         if (!$slave) {
             $slave = new Slave();
             $slave->setId($id);
         }
 
         $slave->setLastContact(new \DateTime());
-        $this->em->persist($slave);
-        $this->em->flush();
+        $entityManager->persist($slave);
+        $entityManager->flush();
 
+        $config = $this->getSlaveConfig($slave, $deviceRepository);
+
+        $response = new JsonResponse($config);
+        $response->setEtag(md5(json_encode($config)));
+        $response->setPublic();
+        $response->isNotModified($request);
+
+        return $response;
+    }
+
+    private function getSlaveConfig(Slave $slave, DeviceRepository $deviceRepository)
+    {
         $config = array();
 
         $domains = array();
@@ -114,7 +138,8 @@ class SlaveController extends AbstractController
                 }
             }
 
-            $size = ceil(count($devices) / count($slaves));
+            $divider = max(1, count($slaves));
+            $size = ceil(count($devices) / $divider);
             if ($size > 0) {
                 $subset = array_chunk($devices, (int)$size)[$slavePosition];
             } else {
@@ -126,12 +151,7 @@ class SlaveController extends AbstractController
             }
         }
 
-        $response = new JsonResponse($config);
-        $response->setEtag(md5(json_encode($config)));
-        $response->setPublic();
-        $response->isNotModified($request);
-
-        return $response;
+        return $config;
     }
 
     /**
