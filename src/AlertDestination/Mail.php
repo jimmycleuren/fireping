@@ -51,7 +51,7 @@ class Mail extends AlertDestinationInterface
      */
     public function trigger(Alert $alert)
     {
-        if (!$_ENV['MAILER_FROM']) {
+        if (!isset($_ENV['MAILER_FROM'])) {
             $this->logger->error('MAILER_FROM env variable is not set');
             return;
         }
@@ -64,7 +64,7 @@ class Mail extends AlertDestinationInterface
      */
     public function clear(Alert $alert)
     {
-        if (!$_ENV['MAILER_FROM']) {
+        if (!isset($_ENV['MAILER_FROM'])) {
             $this->logger->error('MAILER_FROM env variable is not set');
             return;
         }

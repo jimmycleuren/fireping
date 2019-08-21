@@ -24,6 +24,9 @@ class StorageFactory
 
     public function create()
     {
+        if (!isset($_ENV['STORAGE'])) {
+            throw new \RuntimeException("Please specify the storage type in the STORAGE env variable");
+        }
         switch ($_ENV['STORAGE']) {
             case 'rrd':
                 return $this->rrdStorage;

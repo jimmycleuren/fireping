@@ -19,15 +19,15 @@ class Kernel extends BaseKernel
 
     public function getCacheDir()
     {
-        if (isset($_ENV['CACHE_PATH'])) {
-            return$_ENV['CACHE_PATH'] . '/' . $this->environment;
+        if (isset($_ENV['CACHE_PATH']) && trim($_ENV['CACHE_PATH']) != "") {
+            return $_ENV['CACHE_PATH'] . '/' . $this->environment;
         }
         return $this->getProjectDir() . '/var/cache/' . $this->environment;
     }
 
     public function getLogDir()
     {
-        if (isset($_ENV['LOG_PATH'])) {
+        if (isset($_ENV['LOG_PATH']) && trim($_ENV['LOG_PATH']) != "") {
             return $_ENV['LOG_PATH'];
         }
         return $this->getProjectDir() . '/var/log';
