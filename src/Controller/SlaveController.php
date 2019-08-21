@@ -35,12 +35,13 @@ class SlaveController extends AbstractController
      * Lists all slave entities.
      *
      * @Route("/slaves", name="slave_index", methods={"GET"})
+     * @param DeviceRepository $deviceRepository
+     * @param SlaveRepository $slaveRepository
+     * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function indexAction(DeviceRepository $deviceRepository)
+    public function indexAction(DeviceRepository $deviceRepository, SlaveRepository $slaveRepository)
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $slaves = $em->getRepository('App:Slave')->findAll();
+        $slaves = $slaveRepository->findAll();
 
         $targets = [];
         foreach($slaves as $slave) {
