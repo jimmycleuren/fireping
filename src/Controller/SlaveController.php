@@ -31,6 +31,7 @@ class SlaveController extends AbstractController
     private $probeCache = [];
     private $slavegroupCache = [];
     private $deviceSlaveGroupCache = [];
+    private $deviceProbeCache = [];
 
     /**
      * Lists all slave entities.
@@ -103,6 +104,10 @@ class SlaveController extends AbstractController
         $devices = $entityManager->createQuery("SELECT d, s FROM App:Device d JOIN d.slavegroups s")->getResult();
         foreach ($devices as $device) {
             $this->deviceSlaveGroupCache[$device->getId()] = $device->getSlaveGroups();
+        }
+        $devices = $entityManager->createQuery("SELECT d, p FROM App:Device d JOIN d.probes p")->getResult();
+        foreach ($devices as $device) {
+            $this->deviceProbeCache[$device->getId()] = $device->getProbes();
         }
 
         $config = array();
@@ -302,8 +307,8 @@ class SlaveController extends AbstractController
 
     private function getActiveProbes(Device $device)
     {
-        if ($device->getProbes()->count() > 0) {
-            return $device->getProbes();
+        if (isset($this->deviceProbeCache[$device->getId()])) {
+            return $this->deviceProbeCache[$device->getId()];
         } else {
             $parent = $device->getDomain();
             while ($parent != null) {
