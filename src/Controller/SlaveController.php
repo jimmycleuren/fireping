@@ -28,8 +28,10 @@ class SlaveController extends AbstractController
     private $em = null;
     private $logger = null;
 
-    private $probeCache = [];
-    private $slavegroupCache = [];
+    private $domainSlaveGroupCache = [];
+    private $deviceSlaveGroupCache = [];
+    private $domainProbeCache = [];
+    private $deviceProbeCache = [];
 
     /**
      * Lists all slave entities.
@@ -39,14 +41,14 @@ class SlaveController extends AbstractController
      * @param SlaveRepository $slaveRepository
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function indexAction(DeviceRepository $deviceRepository, SlaveRepository $slaveRepository)
+    public function indexAction(EntityManagerInterface $entityManager, DeviceRepository $deviceRepository, SlaveRepository $slaveRepository)
     {
         $slaves = $slaveRepository->findAll();
 
         $targets = [];
         foreach($slaves as $slave) {
             $count = 0;
-            $data = $this->getSlaveConfig($slave, $deviceRepository);
+            $data = $this->getSlaveConfig($slave, $deviceRepository, $entityManager);
             foreach ($data as $probe) {
                 $count += count($probe['targets']);
             }
@@ -87,7 +89,7 @@ class SlaveController extends AbstractController
         $entityManager->persist($slave);
         $entityManager->flush();
 
-        $config = $this->getSlaveConfig($slave, $deviceRepository);
+        $config = $this->getSlaveConfig($slave, $deviceRepository, $entityManager);
 
         $response = new JsonResponse($config);
         $response->setEtag(md5(json_encode($config)));
@@ -97,8 +99,10 @@ class SlaveController extends AbstractController
         return $response;
     }
 
-    private function getSlaveConfig(Slave $slave, DeviceRepository $deviceRepository)
+    private function getSlaveConfig(Slave $slave, DeviceRepository $deviceRepository, EntityManagerInterface $entityManager)
     {
+        $this->prepareCache($entityManager);
+
         $config = array();
 
         $domains = array();
@@ -152,6 +156,27 @@ class SlaveController extends AbstractController
         }
 
         return $config;
+    }
+
+    private function prepareCache(EntityManagerInterface $entityManager)
+    {
+        $devices = $entityManager->createQuery("SELECT d, s FROM App:Device d JOIN d.slavegroups s")->getResult();
+        foreach ($devices as $device) {
+            $this->deviceSlaveGroupCache[$device->getId()] = $device->getSlaveGroups();
+        }
+        $devices = $entityManager->createQuery("SELECT d, p FROM App:Device d JOIN d.probes p")->getResult();
+        foreach ($devices as $device) {
+            $this->deviceProbeCache[$device->getId()] = $device->getProbes();
+        }
+
+        $domains = $entityManager->createQuery("SELECT d, s FROM App:Domain d JOIN d.slavegroups s")->getResult();
+        foreach ($domains as $domain) {
+            $this->domainSlaveGroupCache[$domain->getId()] = $domain->getSlaveGroups();
+        }
+        $domains = $entityManager->createQuery("SELECT d, p FROM App:Domain d JOIN d.probes p")->getResult();
+        foreach ($domains as $domain) {
+            $this->domainProbeCache[$domain->getId()] = $domain->getProbes();
+        }
     }
 
     /**
@@ -275,17 +300,13 @@ class SlaveController extends AbstractController
 
     private function getActiveSlaveGroups(Device $device)
     {
-        if ($device->getSlaveGroups()->count() > 0) {
-            return $device->getSlaveGroups();
+        if (isset($this->deviceSlaveGroupCache[$device->getId()])) {
+            return $this->deviceSlaveGroupCache[$device->getId()];
         } else {
             $parent = $device->getDomain();
             while ($parent != null) {
-                if (isset($this->slavegroupCache[$parent->getId()])) {
-                    return $this->slavegroupCache[$parent->getId()];
-                }
-                elseif ($parent->getSlaveGroups()->count() > 0) {
-                    $this->slavegroupCache[$device->getDomain()->getId()] = $parent->getSlaveGroups();
-                    return $parent->getSlaveGroups();
+                if (isset($this->domainSlaveGroupCache[$parent->getId()])) {
+                    return $this->domainSlaveGroupCache[$parent->getId()];
                 }
                 $parent = $parent->getParent();
             }
@@ -296,17 +317,13 @@ class SlaveController extends AbstractController
 
     private function getActiveProbes(Device $device)
     {
-        if ($device->getProbes()->count() > 0) {
-            return $device->getProbes();
+        if (isset($this->deviceProbeCache[$device->getId()])) {
+            return $this->deviceProbeCache[$device->getId()];
         } else {
             $parent = $device->getDomain();
             while ($parent != null) {
-                if (isset($this->probeCache[$parent->getId()])) {
-                    return $this->probeCache[$parent->getId()];
-                }
-                elseif ($parent->getProbes()->count() > 0) {
-                    $this->probeCache[$device->getDomain()->getId()] = $parent->getProbes();
-                    return $parent->getProbes();
+                if (isset($this->domainProbeCache[$parent->getId()])) {
+                    return $this->domainProbeCache[$parent->getId()];
                 }
                 $parent = $parent->getParent();
             }
