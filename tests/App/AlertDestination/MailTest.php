@@ -21,10 +21,10 @@ class MailTest extends TestCase
 
         $mail = new Mail($mailer->reveal(), $logger->reveal(), $templating->reveal());
 
-        $original = getenv('MAILER_FROM');
-        putenv('MAILER_FROM');
+        $original = $_ENV['MAILER_FROM'];
+        $_ENV['MAILER_FROM'] = null;
         $mail->trigger(new Alert());
-        putenv('MAILER_FROM='.$original);
+        $_ENV['MAILER_FROM'] = $original;
     }
 
     public function testTrigger()
@@ -86,10 +86,10 @@ class MailTest extends TestCase
 
         $mail = new Mail($mailer->reveal(), $logger->reveal(), $templating->reveal());
 
-        $original = getenv('MAILER_FROM');
-        putenv('MAILER_FROM');
-        $mail->clear(new Alert());
-        putenv('MAILER_FROM='.$original);
+        $original = $_ENV['MAILER_FROM'];
+        $_ENV['MAILER_FROM'] = null;
+        $mail->trigger(new Alert());
+        $_ENV['MAILER_FROM'] = $original;
     }
 
     public function testClear()
