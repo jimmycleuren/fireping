@@ -143,9 +143,6 @@
     "jean85/pretty-package-versions": {
         "version": "1.1"
     },
-    "laravel/homestead": {
-        "version": "v7.4.1"
-    },
     "mi-schi/phpmd-extension": {
         "version": "4.2.1"
     },
@@ -519,7 +516,7 @@
         "version": "v1.11.0"
     },
     "symfony/process": {
-        "version": "v4.0.9"
+        "version": "v4.3.3"
     },
     "symfony/profiler-pack": {
         "version": "v1.0.3"
