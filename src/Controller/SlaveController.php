@@ -28,9 +28,9 @@ class SlaveController extends AbstractController
     private $em = null;
     private $logger = null;
 
-    private $probeCache = [];
-    private $slavegroupCache = [];
+    private $domainSlaveGroupCache = [];
     private $deviceSlaveGroupCache = [];
+    private $domainProbeCache = [];
     private $deviceProbeCache = [];
 
     /**
@@ -101,14 +101,7 @@ class SlaveController extends AbstractController
 
     private function getSlaveConfig(Slave $slave, DeviceRepository $deviceRepository, EntityManagerInterface $entityManager)
     {
-        $devices = $entityManager->createQuery("SELECT d, s FROM App:Device d JOIN d.slavegroups s")->getResult();
-        foreach ($devices as $device) {
-            $this->deviceSlaveGroupCache[$device->getId()] = $device->getSlaveGroups();
-        }
-        $devices = $entityManager->createQuery("SELECT d, p FROM App:Device d JOIN d.probes p")->getResult();
-        foreach ($devices as $device) {
-            $this->deviceProbeCache[$device->getId()] = $device->getProbes();
-        }
+        $this->prepareCache($entityManager);
 
         $config = array();
 
@@ -163,6 +156,27 @@ class SlaveController extends AbstractController
         }
 
         return $config;
+    }
+
+    private function prepareCache(EntityManagerInterface $entityManager)
+    {
+        $devices = $entityManager->createQuery("SELECT d, s FROM App:Device d JOIN d.slavegroups s")->getResult();
+        foreach ($devices as $device) {
+            $this->deviceSlaveGroupCache[$device->getId()] = $device->getSlaveGroups();
+        }
+        $devices = $entityManager->createQuery("SELECT d, p FROM App:Device d JOIN d.probes p")->getResult();
+        foreach ($devices as $device) {
+            $this->deviceProbeCache[$device->getId()] = $device->getProbes();
+        }
+
+        $domains = $entityManager->createQuery("SELECT d, s FROM App:Domain d JOIN d.slavegroups s")->getResult();
+        foreach ($domains as $domain) {
+            $this->domainSlaveGroupCache[$domain->getId()] = $domain->getSlaveGroups();
+        }
+        $domains = $entityManager->createQuery("SELECT d, p FROM App:Domain d JOIN d.probes p")->getResult();
+        foreach ($domains as $domain) {
+            $this->domainProbeCache[$domain->getId()] = $domain->getProbes();
+        }
     }
 
     /**
@@ -291,12 +305,8 @@ class SlaveController extends AbstractController
         } else {
             $parent = $device->getDomain();
             while ($parent != null) {
-                if (isset($this->slavegroupCache[$parent->getId()])) {
-                    return $this->slavegroupCache[$parent->getId()];
-                }
-                elseif ($parent->getSlaveGroups()->count() > 0) {
-                    $this->slavegroupCache[$device->getDomain()->getId()] = $parent->getSlaveGroups();
-                    return $parent->getSlaveGroups();
+                if (isset($this->domainSlaveGroupCache[$parent->getId()])) {
+                    return $this->domainSlaveGroupCache[$parent->getId()];
                 }
                 $parent = $parent->getParent();
             }
@@ -312,12 +322,8 @@ class SlaveController extends AbstractController
         } else {
             $parent = $device->getDomain();
             while ($parent != null) {
-                if (isset($this->probeCache[$parent->getId()])) {
-                    return $this->probeCache[$parent->getId()];
-                }
-                elseif ($parent->getProbes()->count() > 0) {
-                    $this->probeCache[$device->getDomain()->getId()] = $parent->getProbes();
-                    return $parent->getProbes();
+                if (isset($this->domainProbeCache[$parent->getId()])) {
+                    return $this->domainProbeCache[$parent->getId()];
                 }
                 $parent = $parent->getParent();
             }
