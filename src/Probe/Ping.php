@@ -34,6 +34,9 @@ class Ping implements CommandInterface
 
     public function setArgs(array $args): void
     {
+        $args['interval'] = $args['wait_time'] / count($args['targets']);
+        $args['retries'] = 0;
+
         $this->arguments = $this->mapArguments($args['args']);
         $this->targets = $args['targets'];
     }
