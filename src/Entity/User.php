@@ -202,4 +202,11 @@ class User implements UserInterface
 
         return $this;
     }
+
+    public function setProperty(string $property, $value): void
+    {
+        if (!empty($value)) {
+            $this->$property = $value;
+        }
+    }
 }
