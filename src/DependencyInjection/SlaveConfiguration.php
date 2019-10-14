@@ -98,15 +98,6 @@ class SlaveConfiguration
                 $device = new DeviceDefinition($hostname, $ip);
                 $probe->addDevice($device);
             }
-
-            // TODO: clean up, handle via master.
-            if ($type === 'ping') {
-                $probe->setArg('retries', 0);
-                $t_wait = intval($step / $samples) * 1000;
-                $n_devs = intval(count($probe->getDevices()));
-                $interval = $t_wait / $n_devs;
-                $probe->setArg('interval', $interval);
-            }
         }
         $this->purgeAllInactiveDevices();
         $this->setEtag($etag);
