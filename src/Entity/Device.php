@@ -68,7 +68,7 @@ class Device
     /**
      * @ORM\ManyToMany(targetEntity="SlaveGroup", inversedBy="devices", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="device_slavegroups",
-     *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id")},
+     *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id", onDelete="CASCADE")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="slavegroup_id", referencedColumnName="id")}
      *      )
      * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
