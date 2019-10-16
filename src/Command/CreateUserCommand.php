@@ -57,12 +57,6 @@ class CreateUserCommand extends Command
 
         $helper = $this->getHelper('question');
 
-        $questions = [
-            'username' => 'Please enter the username (defaults to admin): ',
-            'password' => 'Please enter the password: ',
-            'email' => 'Please enter the email: '
-        ];
-
         $questions['username'] = new Question('Please enter the username (defaults to admin): ', 'admin');
         $questions['password'] = new Question('Please enter the password: ');
         $questions['email'] = new Question('Please enter the email address: ');
