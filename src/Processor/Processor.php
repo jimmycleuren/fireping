@@ -77,7 +77,7 @@ abstract class Processor
                             'active' => 1
                         ));
                         if ($alert) {
-                            //$alert->setActive(0);
+                            $alert->setActive(0);
                             //$this->em->persist($alert); //flush will be done in slavecontroller
                             $destinations = $device->getActiveAlertDestinations();
                             foreach ($destinations as $destination) {
