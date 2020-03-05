@@ -230,6 +230,14 @@ class CleanupService
         }
     }
 
+    public function getStoredDeviceCount() : int{
+        return \count($this->storedDeviceIds);
+    }
+
+    public function getActiveDeviceCount() : int{
+        return \count($this->activeDeviceIds);
+    }
+
     public function getInactiveDeviceCount(): int
     {
         return count($this->inactiveDevices);

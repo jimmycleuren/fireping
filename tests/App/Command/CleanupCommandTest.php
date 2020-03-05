@@ -15,12 +15,14 @@ use Symfony\Component\Filesystem\Filesystem;
  */
 class CleanupCommandTest extends KernelTestCase
 {
-
     private $logger;
     private $em;
     private $fileSystem;
     private $dirPath;
     private $application;
+    /**
+     * @var CleanupService
+     */
     private $cleanupService;
 
     public function setUp()
