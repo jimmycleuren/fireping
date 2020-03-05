@@ -98,7 +98,7 @@ class CleanupCommandTest extends KernelTestCase
                 $this->fileSystem->mkdir($this->dirPath .'/'.$i.'/'.$j);
                 //create 3 rrd folders
                 for($k=1; $k<=3; $k++){
-                    $this->fileSystem->touch($this->dirPath . '/' . $i . '/' . $j . '/' .$k.'.rrd', '');
+                    $this->fileSystem->touch($this->dirPath . '/' . $i . '/' . $j . '/' .$k.'.rrd');
                 }
             }
         }
