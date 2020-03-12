@@ -8,15 +8,23 @@ use App\Entity\Alert;
 use Psr\Log\LoggerInterface;
 use Twig\Environment;
 
-/**
- * Class Mail
- * @package App\AlertDestination
- */
 class Mail extends AlertDestinationHandler
 {
+    /**
+     * @var string
+     */
     protected $recipient;
+    /**
+     * @var \Swift_Mailer
+     */
     protected $mailer;
+    /**
+     * @var Environment
+     */
     protected $templating;
+    /**
+     * @var LoggerInterface
+     */
     protected $logger;
 
     public function __construct(\Swift_Mailer $mailer, LoggerInterface $logger, Environment $templating)
@@ -26,19 +34,13 @@ class Mail extends AlertDestinationHandler
         $this->templating = $templating;
     }
 
-    /**
-     * @param array $parameters
-     */
     public function setParameters(array $parameters): void
     {
         if ($parameters) {
-            $this->recipient = $parameters['recipient'];
+            $this->recipient = (string) $parameters['recipient'];
         }
     }
 
-    /**
-     * @param Alert $alert
-     */
     public function trigger(Alert $alert): void
     {
         if (!isset($_ENV['MAILER_FROM'])) {
@@ -49,26 +51,7 @@ class Mail extends AlertDestinationHandler
         $this->sendMail($this->recipient, $this->getAlertMessage($alert), $alert, 'ALERT');
     }
 
-    /**
-     * @param Alert $alert
-     */
-    public function clear(Alert $alert): void
-    {
-        if (!isset($_ENV['MAILER_FROM'])) {
-            $this->logger->error('MAILER_FROM env variable is not set');
-            return;
-        }
-
-        $this->sendMail($this->recipient, $this->getAlertMessage($alert), $alert, "CLEAR");
-    }
-
-    /**
-     * @param string $to
-     * @param string $subject
-     * @param Alert $alert
-     * @param string $action
-     */
-    private function sendMail(string $to, string $subject, Alert $alert, string $action)
+    private function sendMail(string $to, string $subject, Alert $alert, string $action): void
     {
         try {
             $message = (new \Swift_Message($subject))
@@ -91,5 +74,15 @@ class Mail extends AlertDestinationHandler
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
         }
+    }
+
+    public function clear(Alert $alert): void
+    {
+        if (!isset($_ENV['MAILER_FROM'])) {
+            $this->logger->error('MAILER_FROM env variable is not set');
+            return;
+        }
+
+        $this->sendMail($this->recipient, $this->getAlertMessage($alert), $alert, "CLEAR");
     }
 }
