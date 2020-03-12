@@ -8,6 +8,9 @@ use App\Entity\Alert;
 
 interface AlertDestinationHandlerInterface
 {
+    /**
+     * @param array<string, string|int|null> $parameters
+     */
     public function setParameters(array $parameters): void;
 
     public function trigger(Alert $alert): void;
