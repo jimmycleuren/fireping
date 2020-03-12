@@ -22,6 +22,6 @@ abstract class AlertDestinationHandler
         }
     }
 
-    public abstract function trigger(Alert $alert);
-    public abstract function clear(Alert $alert);
+    abstract public function trigger(Alert $alert);
+    abstract public function clear(Alert $alert);
 }
