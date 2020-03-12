@@ -8,11 +8,6 @@ use App\Entity\Alert;
 
 abstract class AlertDestinationHandler
 {
-    public function setParameters(array $parameters)
-    {
-
-    }
-
     protected function getAlertMessage(Alert $alert)
     {
         if ($alert->getActive()) {
@@ -22,6 +17,7 @@ abstract class AlertDestinationHandler
         }
     }
 
+    abstract public function setParameters(array $parameters);
     abstract public function trigger(Alert $alert);
     abstract public function clear(Alert $alert);
 }
