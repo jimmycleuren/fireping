@@ -11,8 +11,17 @@ use Psr\Log\LoggerInterface;
 
 class Http extends AlertDestinationHandler
 {
+    /**
+     * @var Client
+     */
     protected $client;
+    /**
+     * @var string
+     */
     protected $url;
+    /**
+     * @var LoggerInterface
+     */
     protected $logger;
 
     public function __construct(Client $client, LoggerInterface $logger)
@@ -24,7 +33,7 @@ class Http extends AlertDestinationHandler
     public function setParameters(array $parameters): void
     {
         if ($parameters) {
-            $this->url = $parameters['url'];
+            $this->url = (string) $parameters['url'];
         }
     }
 
@@ -40,19 +49,10 @@ class Http extends AlertDestinationHandler
         }
     }
 
-    public function clear(Alert $alert): void
-    {
-        if (!$this->url) {
-            return;
-        }
-        try {
-            $this->client->post($this->url, array(RequestOptions::JSON => $this->getData($alert, 'cleared')));
-        } catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
-        }
-    }
-
-    protected function getData(Alert $alert, $state)
+    /**
+     * @return array<string, string|array<string, int|string>>
+     */
+    protected function getData(Alert $alert, string $state): array
     {
         return array(
             'device' => array(
@@ -69,5 +69,17 @@ class Http extends AlertDestinationHandler
             ),
             'state' => $state
         );
+    }
+
+    public function clear(Alert $alert): void
+    {
+        if (!$this->url) {
+            return;
+        }
+        try {
+            $this->client->post($this->url, array(RequestOptions::JSON => $this->getData($alert, 'cleared')));
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+        }
     }
 }
