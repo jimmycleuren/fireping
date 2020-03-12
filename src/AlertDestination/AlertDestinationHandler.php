@@ -6,7 +6,7 @@ namespace App\AlertDestination;
 
 use App\Entity\Alert;
 
-abstract class AlertDestinationHandler
+abstract class AlertDestinationHandler implements AlertDestinationHandlerInterface
 {
     abstract public function setParameters(array $parameters);
 
@@ -14,7 +14,7 @@ abstract class AlertDestinationHandler
 
     abstract public function clear(Alert $alert);
 
-    protected function getAlertMessage(Alert $alert)
+    public function getAlertMessage(Alert $alert)
     {
         if ($alert->getActive()) {
             return $alert->getAlertRule()->getMessageDown() . ": " . $alert->getDevice()->getName() . " from " . $alert->getSlaveGroup()->getName();
