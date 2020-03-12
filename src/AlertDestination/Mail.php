@@ -35,7 +35,7 @@ class Mail extends AlertDestinationHandler
     /**
      * @param array $parameters
      */
-    public function setParameters(array $parameters)
+    public function setParameters(array $parameters): void
     {
         if ($parameters) {
             $this->recipient = $parameters['recipient'];
@@ -45,7 +45,7 @@ class Mail extends AlertDestinationHandler
     /**
      * @param Alert $alert
      */
-    public function trigger(Alert $alert)
+    public function trigger(Alert $alert): void
     {
         if (!isset($_ENV['MAILER_FROM'])) {
             $this->logger->error('MAILER_FROM env variable is not set');
@@ -58,7 +58,7 @@ class Mail extends AlertDestinationHandler
     /**
      * @param Alert $alert
      */
-    public function clear(Alert $alert)
+    public function clear(Alert $alert): void
     {
         if (!isset($_ENV['MAILER_FROM'])) {
             $this->logger->error('MAILER_FROM env variable is not set');

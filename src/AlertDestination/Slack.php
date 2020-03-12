@@ -22,7 +22,7 @@ class Slack extends AlertDestinationHandler
         $this->logger = $logger;
     }
 
-    public function setParameters(array $parameters)
+    public function setParameters(array $parameters): void
     {
         if ($parameters && isset($parameters['channel'])) {
             $this->channel = $parameters['channel'];
@@ -32,7 +32,7 @@ class Slack extends AlertDestinationHandler
         }
     }
 
-    public function trigger(Alert $alert)
+    public function trigger(Alert $alert): void
     {
         if (!$this->url) {
             return false;
@@ -57,7 +57,7 @@ class Slack extends AlertDestinationHandler
         }
     }
 
-    public function clear(Alert $alert)
+    public function clear(Alert $alert): void
     {
         if (!$this->url) {
             return false;

@@ -8,11 +8,11 @@ use App\Entity\Alert;
 
 interface AlertDestinationHandlerInterface
 {
-    public function setParameters(array $parameters);
+    public function setParameters(array $parameters): void;
 
-    public function trigger(Alert $alert);
+    public function trigger(Alert $alert): void;
 
-    public function clear(Alert $alert);
+    public function clear(Alert $alert): void;
 
-    public function getAlertMessage(Alert $alert);
+    public function getAlertMessage(Alert $alert): string;
 }
