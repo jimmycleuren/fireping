@@ -25,4 +25,8 @@ class Monolog extends AlertDestinationHandler
     {
         $this->logger->warning("FIREPING.CLEAR: " . $this->getAlertMessage($alert));
     }
+
+    public function setParameters(array $parameters): void
+    {
+    }
 }
