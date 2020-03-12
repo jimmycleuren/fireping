@@ -9,16 +9,19 @@ use Psr\Container\ContainerInterface;
 
 class AlertDestinationFactory
 {
-    protected $container = null;
+    /**
+     * @var ContainerInterface
+     */
+    protected $container;
 
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
     }
 
-    public function create(AlertDestination $destination) : AlertDestinationHandlerInterface
+    public function create(AlertDestination $destination): AlertDestinationHandlerInterface
     {
-        $dest = $this->container->get("App\\AlertDestination\\".ucfirst($destination->getType()));
+        $dest = $this->container->get("App\\AlertDestination\\" . ucfirst($destination->getType()));
         if ($destination->getParameters()) {
             $dest->setParameters($destination->getParameters());
         }
