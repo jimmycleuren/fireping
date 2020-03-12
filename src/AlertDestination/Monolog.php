@@ -9,6 +9,9 @@ use Psr\Log\LoggerInterface;
 
 class Monolog extends AlertDestinationHandler
 {
+    /**
+     * @var LoggerInterface
+     */
     protected $logger;
 
     public function __construct(LoggerInterface $logger)
