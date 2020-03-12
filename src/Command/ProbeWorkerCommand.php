@@ -85,7 +85,6 @@ class ProbeWorkerCommand extends Command
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
-     * @return void
      * @throws InvalidArgumentException
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
