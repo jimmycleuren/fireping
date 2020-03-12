@@ -35,8 +35,9 @@ class Slack extends AlertDestinationHandler
     public function trigger(Alert $alert): void
     {
         if (!$this->url) {
-            return false;
+            return;
         }
+
         try {
             $data = array(
                 'username' => "fireping",
@@ -60,8 +61,9 @@ class Slack extends AlertDestinationHandler
     public function clear(Alert $alert): void
     {
         if (!$this->url) {
-            return false;
+            return;
         }
+
         try {
             $data = array(
                 'username' => "fireping",
