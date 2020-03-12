@@ -9,7 +9,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Psr\Log\LoggerInterface;
 
-class Slack extends AlertDestinationInterface
+class Slack extends AlertDestinationHandler
 {
     protected $client;
     protected $channel;

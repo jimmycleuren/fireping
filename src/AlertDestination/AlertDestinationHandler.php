@@ -6,7 +6,7 @@ namespace App\AlertDestination;
 
 use App\Entity\Alert;
 
-abstract class AlertDestinationInterface
+abstract class AlertDestinationHandler
 {
     public function setParameters(array $parameters)
     {

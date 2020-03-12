@@ -9,7 +9,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Psr\Log\LoggerInterface;
 
-class Http extends AlertDestinationInterface
+class Http extends AlertDestinationHandler
 {
     protected $client;
     protected $url;

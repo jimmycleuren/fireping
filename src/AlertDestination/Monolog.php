@@ -7,7 +7,7 @@ namespace App\AlertDestination;
 use App\Entity\Alert;
 use Psr\Log\LoggerInterface;
 
-class Monolog extends AlertDestinationInterface
+class Monolog extends AlertDestinationHandler
 {
     protected $logger;
 

@@ -12,7 +12,7 @@ use Symfony\Bundle\TwigBundle\TwigEngine;
  * Class Mail
  * @package App\AlertDestination
  */
-class Mail extends AlertDestinationInterface
+class Mail extends AlertDestinationHandler
 {
     protected $recipient;
     protected $mailer;
