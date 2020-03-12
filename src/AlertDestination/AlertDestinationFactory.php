@@ -1,10 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jimmyc
- * Date: 8/03/2018
- * Time: 20:03
- */
+
+declare(strict_types=1);
 
 namespace App\AlertDestination;
 
