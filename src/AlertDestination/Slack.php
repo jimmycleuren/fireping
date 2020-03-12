@@ -11,9 +11,21 @@ use Psr\Log\LoggerInterface;
 
 class Slack extends AlertDestinationHandler
 {
+    /**
+     * @var Client
+     */
     protected $client;
+    /**
+     * @var string
+     */
     protected $channel;
+    /**
+     * @var string
+     */
     protected $url;
+    /**
+     * @var LoggerInterface
+     */
     protected $logger;
 
     public function __construct(Client $client, LoggerInterface $logger)
@@ -25,10 +37,10 @@ class Slack extends AlertDestinationHandler
     public function setParameters(array $parameters): void
     {
         if ($parameters && isset($parameters['channel'])) {
-            $this->channel = $parameters['channel'];
+            $this->channel = (string) $parameters['channel'];
         }
         if ($parameters && isset($parameters['url'])) {
-            $this->url = $parameters['url'];
+            $this->url = (string) $parameters['url'];
         }
     }
 
