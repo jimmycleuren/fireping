@@ -8,6 +8,12 @@ use App\Entity\Alert;
 
 abstract class AlertDestinationHandler
 {
+    abstract public function setParameters(array $parameters);
+
+    abstract public function trigger(Alert $alert);
+
+    abstract public function clear(Alert $alert);
+
     protected function getAlertMessage(Alert $alert)
     {
         if ($alert->getActive()) {
@@ -16,8 +22,4 @@ abstract class AlertDestinationHandler
 
         return $alert->getAlertRule()->getMessageUp() . ": " . $alert->getDevice()->getName() . " from " . $alert->getSlaveGroup()->getName();
     }
-
-    abstract public function setParameters(array $parameters);
-    abstract public function trigger(Alert $alert);
-    abstract public function clear(Alert $alert);
 }
