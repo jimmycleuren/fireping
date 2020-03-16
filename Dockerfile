@@ -1,9 +1,9 @@
-FROM php:7.2.3-cli-stretch
+FROM php:7.4.3-cli
 
 ADD . /app
 
 RUN apt-get update
-RUN apt-get install -y fping zip git rrdtool librrd-dev
+RUN apt-get install -y fping zip git rrdtool librrd-dev php-mysql php-fpm
 
 WORKDIR /app
 
