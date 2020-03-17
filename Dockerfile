@@ -5,7 +5,7 @@ ENV MODE slave
 ADD . /app
 
 RUN apt-get update
-RUN apt-get install -y fping zip git rrdtool librrd-dev procps php-mysql php-fpm
+RUN apt-get install -y fping zip git rrdtool librrd-dev procps
 
 WORKDIR /app
 
