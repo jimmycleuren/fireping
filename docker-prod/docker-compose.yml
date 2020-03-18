@@ -21,6 +21,7 @@ services:
     environment:
       MODE: master
       DATABASE_URL: mysql://fireping:fireping@db/fireping
+      REDIS_URL: redis://redis
 
   slave:
     build: ../
