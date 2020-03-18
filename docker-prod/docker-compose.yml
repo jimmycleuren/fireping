@@ -1,0 +1,53 @@
+version: '2'
+services:
+  nginx:
+    image: nginx
+    depends_on:
+      - php
+    ports:
+      - "80:80"
+    volumes:
+      - ../:/app
+      - ./symfony.conf:/etc/nginx/conf.d/symfony.conf:ro
+
+  php:
+    build: ../
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ../:/app
+    working_dir: /app
+    environment:
+      MODE: master
+      DATABASE_URL: mysql://fireping:fireping@db/fireping
+
+  slave:
+    build: ../
+    depends_on:
+      - nginx
+    volumes:
+      - ../:/app
+    working_dir: /app
+    environment:
+      MODE: slave
+      SLAVE_NAME: slave
+      SLAVE_PASSWORD: password
+      SLAVE_URL: http://nginx
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+
+  db:
+    image: mariadb
+    ports:
+      - "3306:3306"
+    volumes:
+      - /var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: fireping
+      MYSQL_USER: fireping
+      MYSQL_PASSWORD: fireping

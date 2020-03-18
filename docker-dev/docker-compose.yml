@@ -1,22 +1,22 @@
 version: '2'
 services:
   nginx:
-    build: docker/nginx
+    build: nginx
     ports:
       - "80:80"
     volumes:
-      - ./:/app
+      - ../:/app
   php:
-    build: docker/php
+    build: php
     volumes:
-      - ./:/app
+      - ../:/app
     working_dir: /app
   slave:
-    build: docker/slave
+    build: slave
     links:
       - "nginx:fireping.develop"
     volumes:
-      - ./:/app
+      - ../:/app
     working_dir: /app
   redis:
     image: redis

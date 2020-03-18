@@ -14,5 +14,4 @@ RUN pecl install rrd
 RUN docker-php-ext-enable rrd
 RUN php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer
 
-CMD SYMFONY_ENV=$MODE composer install
-CMD ["php", "/app/bin/console", "app:probe:dispatcher", "--env=slave"]
+CMD sh -c 'if [ "$MODE" = "master" ]; then ./docker-master.sh ; else ./docker-slave.sh ; fi'
