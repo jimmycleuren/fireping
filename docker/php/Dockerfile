@@ -10,7 +10,7 @@ RUN apt-get update \
       rrdtool \
       librrd-dev \
       zlib1g-dev \
-      mysql-client \
+      mariadb-client \
  && docker-php-ext-install \
       pdo_mysql \
       zip \
