@@ -1,10 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jimmyc
- * Date: 8/03/2018
- * Time: 20:03
- */
+
+declare(strict_types=1);
 
 namespace App\AlertDestination;
 
@@ -13,16 +9,19 @@ use Psr\Container\ContainerInterface;
 
 class AlertDestinationFactory
 {
-    protected $container = null;
+    /**
+     * @var ContainerInterface
+     */
+    protected $container;
 
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
     }
 
-    public function create(AlertDestination $destination) : AlertDestinationInterface
+    public function create(AlertDestination $destination): AlertDestinationHandlerInterface
     {
-        $dest = $this->container->get("App\\AlertDestination\\".ucfirst($destination->getType()));
+        $dest = $this->container->get("App\\AlertDestination\\" . ucfirst($destination->getType()));
         if ($destination->getParameters()) {
             $dest->setParameters($destination->getParameters());
         }

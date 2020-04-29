@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\AlertDestination;
 
 use App\Entity\Alert;
@@ -7,11 +9,23 @@ use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Psr\Log\LoggerInterface;
 
-class Slack extends AlertDestinationInterface
+class Slack extends AlertDestinationHandler
 {
+    /**
+     * @var Client
+     */
     protected $client;
+    /**
+     * @var string
+     */
     protected $channel;
+    /**
+     * @var string
+     */
     protected $url;
+    /**
+     * @var LoggerInterface
+     */
     protected $logger;
 
     public function __construct(Client $client, LoggerInterface $logger)
@@ -20,21 +34,22 @@ class Slack extends AlertDestinationInterface
         $this->logger = $logger;
     }
 
-    public function setParameters(array $parameters)
+    public function setParameters(array $parameters): void
     {
         if ($parameters && isset($parameters['channel'])) {
-            $this->channel = $parameters['channel'];
+            $this->channel = (string) $parameters['channel'];
         }
         if ($parameters && isset($parameters['url'])) {
-            $this->url = $parameters['url'];
+            $this->url = (string) $parameters['url'];
         }
     }
 
-    public function trigger(Alert $alert)
+    public function trigger(Alert $alert): void
     {
         if (!$this->url) {
-            return false;
+            return;
         }
+
         try {
             $data = array(
                 'username' => "fireping",
@@ -55,11 +70,12 @@ class Slack extends AlertDestinationInterface
         }
     }
 
-    public function clear(Alert $alert)
+    public function clear(Alert $alert): void
     {
         if (!$this->url) {
-            return false;
+            return;
         }
+
         try {
             $data = array(
                 'username' => "fireping",

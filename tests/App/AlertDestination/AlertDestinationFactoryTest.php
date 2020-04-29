@@ -1,42 +1,48 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jimmyc
- * Date: 8/03/2018
- * Time: 21:11
- */
+
+declare(strict_types=1);
 
 namespace Tests\App\AlertDestination;
 
 use App\AlertDestination\AlertDestinationFactory;
+use App\AlertDestination\Http;
+use App\AlertDestination\Mail;
+use App\AlertDestination\Monolog;
+use App\AlertDestination\Slack;
 use App\Entity\AlertDestination;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class AlertDestinationFactoryTest extends WebTestCase
 {
-    public function testCreateHttp()
+    /**
+     * @var AlertDestinationFactory
+     */
+    private $factory;
+
+    /**
+     * @dataProvider typeProvider
+     */
+    public function testCreateHandler(string $type, string $class): void
     {
-        $client = static::createClient();
+        $destination = new AlertDestination();
+        $destination->setType($type);
 
-        $factory = new AlertDestinationFactory($client->getContainer());
-
-        $alertDestination = new AlertDestination();
-        $alertDestination->setType('http');
-        $http = $factory->create($alertDestination);
-
-        $this->assertEquals('App\AlertDestination\Http', get_class($http));
+        self::assertInstanceOf($class, $this->factory->create($destination));
     }
 
-    public function testCreateMonolog()
+    public function typeProvider(): array
+    {
+        return [
+            'http handler' => ['http', Http::class],
+            'mail handler' => ['mail', Mail::class],
+            'monolog handler' => ['monolog', Monolog::class],
+            'slack handler' => ['slack', Slack::class],
+        ];
+    }
+
+    protected function setUp(): void
     {
         $client = static::createClient();
-
-        $factory = new AlertDestinationFactory($client->getContainer());
-
-        $alertDestination = new AlertDestination();
-        $alertDestination->setType('monolog');
-        $monolog = $factory->create($alertDestination);
-
-        $this->assertEquals('App\AlertDestination\Monolog', get_class($monolog));
+        $this->factory = new AlertDestinationFactory($client->getContainer());
     }
 }

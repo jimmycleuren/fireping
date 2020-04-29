@@ -1,18 +1,17 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jimmyc
- * Date: 8/03/2018
- * Time: 19:46
- */
+
+declare(strict_types=1);
 
 namespace App\AlertDestination;
 
 use App\Entity\Alert;
 use Psr\Log\LoggerInterface;
 
-class Monolog extends AlertDestinationInterface
+class Monolog extends AlertDestinationHandler
 {
+    /**
+     * @var LoggerInterface
+     */
     protected $logger;
 
     public function __construct(LoggerInterface $logger)
@@ -20,13 +19,17 @@ class Monolog extends AlertDestinationInterface
         $this->logger = $logger;
     }
 
-    public function trigger(Alert $alert)
+    public function trigger(Alert $alert): void
     {
         $this->logger->warning("FIREPING.ALERT: " . $this->getAlertMessage($alert));
     }
 
-    public function clear(Alert $alert)
+    public function clear(Alert $alert): void
     {
         $this->logger->warning("FIREPING.CLEAR: " . $this->getAlertMessage($alert));
+    }
+
+    public function setParameters(array $parameters): void
+    {
     }
 }

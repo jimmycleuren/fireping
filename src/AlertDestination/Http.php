@@ -1,10 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jimmyc
- * Date: 8/03/2018
- * Time: 20:01
- */
+
+declare(strict_types=1);
 
 namespace App\AlertDestination;
 
@@ -13,10 +9,19 @@ use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Psr\Log\LoggerInterface;
 
-class Http extends AlertDestinationInterface
+class Http extends AlertDestinationHandler
 {
+    /**
+     * @var Client
+     */
     protected $client;
+    /**
+     * @var string
+     */
     protected $url;
+    /**
+     * @var LoggerInterface
+     */
     protected $logger;
 
     public function __construct(Client $client, LoggerInterface $logger)
@@ -25,14 +30,14 @@ class Http extends AlertDestinationInterface
         $this->logger = $logger;
     }
 
-    public function setParameters(array $parameters)
+    public function setParameters(array $parameters): void
     {
         if ($parameters) {
-            $this->url = $parameters['url'];
+            $this->url = (string) $parameters['url'];
         }
     }
 
-    public function trigger(Alert $alert)
+    public function trigger(Alert $alert): void
     {
         if (!$this->url) {
             return;
@@ -44,19 +49,10 @@ class Http extends AlertDestinationInterface
         }
     }
 
-    public function clear(Alert $alert)
-    {
-        if (!$this->url) {
-            return;
-        }
-        try {
-            $this->client->post($this->url, array(RequestOptions::JSON => $this->getData($alert, 'cleared')));
-        } catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
-        }
-    }
-
-    protected function getData(Alert $alert, $state)
+    /**
+     * @return array<string, string|array<string, int|string>>
+     */
+    protected function getData(Alert $alert, string $state): array
     {
         return array(
             'device' => array(
@@ -73,5 +69,17 @@ class Http extends AlertDestinationInterface
             ),
             'state' => $state
         );
+    }
+
+    public function clear(Alert $alert): void
+    {
+        if (!$this->url) {
+            return;
+        }
+        try {
+            $this->client->post($this->url, array(RequestOptions::JSON => $this->getData($alert, 'cleared')));
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+        }
     }
 }
