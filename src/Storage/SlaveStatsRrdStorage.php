@@ -18,7 +18,7 @@ class SlaveStatsRrdStorage
 {
     protected $logger = null;
     protected $path = null;
-    protected $step = 1;
+
     protected $archives = [
         ['function' => 'AVERAGE', 'steps' => 1, 'rows' => 3600],
         ['function' => 'AVERAGE', 'steps' => 10, 'rows' => 8640],
@@ -71,17 +71,18 @@ class SlaveStatsRrdStorage
         $filename = $this->getFilePath($slave, $type);
 
         $start = $timestamp - 1;
+        $step = $type == "posts" ? 60 : 1;
 
         $options = array(
             "--start", $start,
-            "--step", $this->step
+            "--step", $step
         );
         foreach ($data as $key => $value) {
             $options[] = sprintf(
                 "DS:%s:%s:%s:%s:%s",
                 $key,
                 'GAUGE',
-                $this->step * 2,
+                $step * 2,
                 0,
                 "U"
             );
@@ -110,7 +111,9 @@ class SlaveStatsRrdStorage
         $info = rrd_info($filename);
         $update = rrd_lastupdate($filename);
 
-        if ($info['step'] != $this->step) {
+        $step = $type == "posts" ? 60 : 1;
+
+        if ($info['step'] != $step) {
             throw new RrdException("Steps are not equal, ".$this->step." is configured, RRD file is using ".$info['step']);
         }
 
@@ -144,11 +147,11 @@ class SlaveStatsRrdStorage
     }
 
     /**
-     * @param $filename
+     * @param string $filename
      * @return array
      * @throws RrdException
      */
-    public function getDataSources($filename)
+    public function getDataSources(string $filename)
     {
         $sources = [];
         $info = rrd_info($filename);
@@ -174,7 +177,7 @@ class SlaveStatsRrdStorage
             "DS:%s:%s:%s:%s:%s",
             $name,
             'GAUGE',
-            $this->step * 2,
+            2,
             0,
             "U"
         );
