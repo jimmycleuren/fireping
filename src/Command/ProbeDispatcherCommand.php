@@ -5,10 +5,12 @@ namespace App\Command;
 
 use App\DependencyInjection\SlaveConfiguration;
 use App\DependencyInjection\Queue;
+use App\DependencyInjection\StatsManager;
 use App\DependencyInjection\WorkerManager;
 use App\Instruction\Instruction;
 use App\Probe\ProbeDefinition;
 use App\ShellCommand\GetConfigHttpWorkerCommand;
+use App\ShellCommand\PostStatsHttpWorkerCommand;
 use Exception;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
@@ -79,6 +81,8 @@ class ProbeDispatcherCommand extends Command
 
     private $workerManager;
 
+    private $statsManager;
+
     private $devicesPerWorker = 250;
 
     private $randomFactor = 0;
@@ -86,11 +90,13 @@ class ProbeDispatcherCommand extends Command
     /**
      * @param LoggerInterface $logger
      * @param WorkerManager $workerManager
+     * @param StatsManager $statsManager
      */
-    public function __construct(LoggerInterface $logger, WorkerManager $workerManager)
+    public function __construct(LoggerInterface $logger, WorkerManager $workerManager, StatsManager $statsManager)
     {
         $this->logger = $logger;
         $this->workerManager = $workerManager;
+        $this->statsManager = $statsManager;
         $this->configuration = new SlaveConfiguration();
         parent::__construct();
     }
@@ -155,6 +161,7 @@ class ProbeDispatcherCommand extends Command
         for ($i = 0; $i < $this->numberOfQueues; $i++) {
             $this->queues[$i] = new Queue(
                 $this->workerManager,
+                $this->statsManager,
                 $i,
                 $_ENV['SLAVE_NAME'],
                 $this->logger
@@ -191,6 +198,15 @@ class ProbeDispatcherCommand extends Command
                 $this->sendInstruction($instruction);
             }
 
+            if (time() % 60 === (int)floor($this->randomFactor / 2)) {
+                $instruction = [
+                    'type' => PostStatsHttpWorkerCommand::class,
+                    'delay_execution' => 0,
+                    'body' => $this->statsManager->getStats(),
+                ];
+                $this->sendInstruction($instruction, 30);
+            }
+
             foreach ($this->queues as $queue) {
                 $queue->loop();
             }
@@ -216,6 +232,12 @@ class ProbeDispatcherCommand extends Command
                     }
                 }
             }
+
+            $this->statsManager->addWorkerStats(
+                $this->workerManager->getTotalWorkers(),
+                $this->workerManager->getAvailableWorkers(),
+                $this->workerManager->getInUseWorkerTypes()
+            );
         });
 
         $this->loop->addPeriodicTimer(0.1, function () {
@@ -343,6 +365,14 @@ class ProbeDispatcherCommand extends Command
                         $count += ceil($this->configuration->getProbeDeviceCount($probe->getId()) / $this->devicesPerWorker);
                     }
                     $this->workerManager->setNumberOfProbeProcesses(intval($count));
+                } else {
+                    $this->logger->info("Response ($status) from worker $pid received");
+                }
+                break;
+
+            case PostStatsHttpWorkerCommand::class:
+                if ($status === 200) {
+                    $this->logger->info("Stats successfully submitted");
                 } else {
                     $this->logger->info("Response ($status) from worker $pid received");
                 }

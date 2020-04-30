@@ -10,8 +10,10 @@ namespace App\Controller;
 
 use App\Entity\Device;
 use App\Entity\Probe;
+use App\Entity\Slave;
 use App\Entity\SlaveGroup;
 use App\Graph\GraphFactory;
+use App\Graph\SlaveGraph;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -74,6 +76,27 @@ class GraphController extends AbstractController
         $debug = $session->get('debug');
 
         $graph = $graphFactory->create($probe->getType())->getDetailGraph($device, $probe, $slavegroup, $start, $end, $debug);
+        $response = new Response($graph, 200);
+        $response->headers->set('Content-Type', 'image/png');
+
+        return $response;
+    }
+
+    /**
+     * @Route("/api/graphs/slaves/{slave}/{type}", methods={"GET"})
+     *
+     * @param Slave $slave
+     * @param $type
+     * @param Request $request
+     * @param GraphFactory $graphFactory
+     * @return Response
+     */
+    public function slaveAction(Slave $slave, $type, Request $request, SlaveGraph $slaveGraph)
+    {
+        $start = $request->get('start') ?: -3600;
+        $end = $request->get('end') ?: date("U");
+
+        $graph = $slaveGraph->getGraph($slave, $type, $start, $end);
         $response = new Response($graph, 200);
         $response->headers->set('Content-Type', 'image/png');
 

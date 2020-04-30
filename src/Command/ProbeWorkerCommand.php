@@ -6,6 +6,7 @@ namespace App\Command;
 use App\ShellCommand\CommandFactory;
 use App\ShellCommand\GetConfigHttpWorkerCommand;
 use App\ShellCommand\PostResultsHttpWorkerCommand;
+use App\ShellCommand\PostStatsHttpWorkerCommand;
 use Exception;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
@@ -216,6 +217,7 @@ class ProbeWorkerCommand extends Command
             $shellOutput = $command->execute();
 
             switch ($data['type']) {
+                case PostStatsHttpWorkerCommand::class:
                 case PostResultsHttpWorkerCommand::class:
                     $this->sendResponse([
                         'type' => $data['type'],
@@ -275,6 +277,22 @@ class ProbeWorkerCommand extends Command
                         ]
                     ]);
                     break;
+                default:
+                    $this->sendResponse(
+                        [
+                            'type' => 'exception',
+                            'status' => 500,
+                            'body' => [
+                                'timestamp' => $timestamp,
+                                'contents' => "No answer defined for ".$data['type']
+                            ],
+                            'debug' => [
+                                'runtime' => time() - $timestamp,
+                                'request' => $data,
+                                'pid' => getmypid()
+                            ]
+                        ]
+                    );
             }
         } catch (Exception $e) {
             $this->sendResponse(

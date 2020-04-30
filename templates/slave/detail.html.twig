@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Slave {{ slave.id }}</h1>
+
+    <div class="row">
+        <div class="col-md-3">
+            {% if slave.slaveGroup %}
+                <div class="panel panel-default">
+                    <div class="panel-heading">Slavegroup {{ slave.slaveGroup.name }}</div>
+                    <div class="panel-body">
+                        <ul>
+                            {% for item in slave.slaveGroup.slaves %}
+                                <li>{{ item.id }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            {% else %}
+                <div class="panel panel-danger">
+                    <div class="panel-heading">Slavegroup</div>
+                    <div class="panel-body text-center">
+                        <h2>Slave is not part of any slavegroup</h2>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">Targets</div>
+                <div class="panel-body text-center"><h1>0</h1></div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">IP</div>
+                <div class="panel-body text-center"><h1>{{ slave.ip }}</h1></div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">Last contact</div>
+                <div class="panel-body text-center"><h2>{{ slave.lastContact|date("d-m-Y") }}<br/>{{ slave.lastContact|date("H:i:s") }}</h2></div>
+            </div>
+        </div>
+    </div>
+
+
+            <div class="panel panel-default">
+                <div class="panel-heading">Results</div>
+                <div class="panel-body text-center" style="padding:0px; background: #f5f5f5;">
+                    <img style="max-width: 100%; height: auto;" onload="window.dispatchEvent(new Event('resize'));" class="graph" data-src-template="/api/graphs/slaves/{{ slave.id }}/posts{% verbatim %}?start={{start}}&end={{end}}{% endverbatim  %}" />
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">Workers</div>
+                <div class="panel-body text-center" style="padding:0px; background: #f5f5f5;">
+                    <img style="max-width: 100%; height: auto;" onload="window.dispatchEvent(new Event('resize'));" class="graph" data-src-template="/api/graphs/slaves/{{ slave.id }}/workers{% verbatim %}?start={{start}}&end={{end}}{% endverbatim  %}" />
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">Queues</div>
+                <div class="panel-body text-center" style="padding:0px; background: #f5f5f5;">
+                    <img style="max-width: 100%; height: auto;" onload="window.dispatchEvent(new Event('resize'));" class="graph" data-src-template="/api/graphs/slaves/{{ slave.id }}/queues{% verbatim %}?start={{start}}&end={{end}}{% endverbatim  %}" />
+                </div>
+            </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript">
+        q.ready(function(){
+            // 'activate' the charts
+            var graphs = [];
+            q('.graph').forEach(function(item){
+                graphs.push(
+                    q(item).rrdGraphPng({
+                        canvasPadding: 120,
+                        cursorUrl: "/img",
+                    })
+                );
+            });
+
+            // crate a control panel and attach it to the charts
+            q('#ctrl').rrdGraphCtrl(graphs,{
+                initialTimeRange: 'Last 60 Minutes',
+                resetTimeOnDateChange: true
+            });
+        });
+    </script>
+{% endblock %}

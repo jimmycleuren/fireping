@@ -6,7 +6,7 @@ services:
       - "80:80"
     volumes:
       - ./:/app
-  php:
+  fireping-php:
     build: docker/php
     volumes:
       - ./:/app
