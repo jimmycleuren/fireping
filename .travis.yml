@@ -34,13 +34,14 @@ matrix:
   fast_finish: true
   include:
     - php: master
-    - php: 7.3
+    - php: 7.4
+    - php: 7.4
       env: 'HIGHEST_LOWEST="update"'
     - php: 7.3
     - php: 7.2
   allow_failures:
     - php: master
-    - php: 7.3
+    - php: 7.4
       env: 'HIGHEST_LOWEST="update"'
 
 before_install:
