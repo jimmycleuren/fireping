@@ -14,6 +14,7 @@ use App\Exception\WrongTimestampRrdException;
 use App\Processor\ProcessorFactory;
 use App\Repository\DeviceRepository;
 use App\Repository\SlaveRepository;
+use App\Storage\SlaveStatsRrdStorage;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -58,6 +59,21 @@ class SlaveController extends AbstractController
         return $this->render('slave/index.html.twig', array(
             'slaves' => $slaves,
             'targets' => $targets,
+            'active_menu' => 'slave',
+        ));
+    }
+
+    /**
+     * @Route("/slaves/{id}", name="slave_detail", methods={"GET"})
+     *
+     * @param Slave $slave
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function detailAction(Slave $slave)
+    {
+        return $this->render('slave/detail.html.twig', array(
+            'slave' => $slave,
+            //'targets' => $targets,
             'active_menu' => 'slave',
         ));
     }
@@ -271,6 +287,43 @@ class SlaveController extends AbstractController
 
         //TODO: implement slave error handling
         $this->logger->info("Error received from $slave");
+
+        return new JsonResponse(array('code' => 200));
+    }
+
+    /**
+     * @param Slave $slave
+     * @param Request $request
+     *
+     * @param EntityManagerInterface $entityManager
+     * @Route("/api/slaves/{id}/stats", methods={"POST"})
+     * @return JsonResponse
+     */
+    public function statsAction(Slave $slave, Request $request, EntityManagerInterface $entityManager, SlaveStatsRrdStorage $storage, LoggerInterface $logger) {
+        $data = json_decode($request->getContent());
+        //$logger->info($request->getContent());
+
+        $slave->setIp($data->ip);
+        $entityManager->persist($slave);
+        $entityManager->flush();
+
+        foreach ($data->workers as $timestamp => $workerData) {
+            $storage->store($slave, "workers", $timestamp, $workerData);
+        }
+
+
+        foreach ($data->queues as $timestamp => $queues) {
+            $result = [];
+            foreach ($queues as $id => $items) {
+                $result['queue'.$id] = $items;
+            }
+            $storage->store($slave, "queues", $timestamp, $result);
+        }
+
+        $storage->store($slave, "posts", $timestamp, [
+            'failed' => $data->failed_posts,
+            'discarded' => $data->discarded_posts
+        ]);
 
         return new JsonResponse(array('code' => 200));
     }

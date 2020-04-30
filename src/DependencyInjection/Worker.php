@@ -109,7 +109,7 @@ class Worker
             $actualRuntime = microtime(true) - $this->startTime;
             $expectedRuntime = $this->expectedRuntime * 1.25;
             if ($actualRuntime > $expectedRuntime) {
-                throw new WorkerTimedOutException($this->lastCommand);
+                throw new WorkerTimedOutException($expectedRuntime, $this->lastCommand);
             }
         }
         if (!$this->executing) {

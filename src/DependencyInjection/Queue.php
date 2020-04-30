@@ -15,14 +15,16 @@ class Queue
     private $logger;
     private $id;
     private $workerManager;
+    private $statsManager;
     private $targetsPerPacket = 50;
 
-    public function __construct(WorkerManager $workerManager, int $id, string $slaveName, LoggerInterface $logger)
+    public function __construct(WorkerManager $workerManager, StatsManager $statsManager, int $id, string $slaveName, LoggerInterface $logger)
     {
         $this->id = $id;
         $this->logger = $logger;
         $this->slaveName = $slaveName;
         $this->workerManager = $workerManager;
+        $this->statsManager = $statsManager;
         $this->queue = new \SplQueue();
     }
 
@@ -31,6 +33,9 @@ class Queue
         $this->queue->enqueue($data);
     }
 
+    /**
+     * Loop is triggered every second
+     */
     public function loop()
     {
         if (!$this->lock) {
@@ -64,6 +69,7 @@ class Queue
                 }
             }
         }
+        $this->statsManager->addQueueItems($this->id, $this->queue->count());
     }
 
     private function handleResponse($type, $data)
@@ -83,9 +89,11 @@ class Queue
         } elseif ($status === 409) {
             $this->logger->info("Response ($status) from worker $this->worker discarded.");
             $this->current = null;
+            $this->statsManager->addDiscardedPost();
         } else {
             $this->logger->info("Response ($status) from worker $this->worker problem - retrying later.");
             $this->retryPost();
+            $this->statsManager->addFailedPost();
         }
 
         $this->lock = false;

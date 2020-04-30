@@ -44,6 +44,11 @@ class Slave
     private $lastContact;
 
     /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $ip;
+
+    /**
      * Set id
      *
      * @param string $id
@@ -123,5 +128,17 @@ class Slave
     public function __toString()
     {
         return $this->id;
+    }
+
+    public function getIp(): ?string
+    {
+        return $this->ip;
+    }
+
+    public function setIp(?string $ip): self
+    {
+        $this->ip = $ip;
+
+        return $this;
     }
 }

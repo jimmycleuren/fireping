@@ -92,6 +92,19 @@ class WorkerManager
         return $this->numberOfQueues + ($this->numberOfProbeProcesses * 2) + 1;
     }
 
+    public function getInUseWorkerTypes()
+    {
+        return $this->inUseWorkerTypes;
+    }
+
+    public function getTotalWorkers() {
+        return count($this->workers);
+    }
+
+    public function getAvailableWorkers() {
+        return count($this->availableWorkers);
+    }
+
     public function getWorker(string $type) : Worker
     {
         if (!isset($this->inUseWorkerTypes[$type])) {
@@ -192,6 +205,10 @@ class WorkerManager
         if (($key = array_search($worker, $this->workers, true)) !== false) {
             unset($this->workers[$key]);
         }
+
+        if ($worker->getType()) {
+            $this->inUseWorkerTypes[$worker->getType()]--;
+        }
     }
 
     public function loop()
@@ -207,7 +224,7 @@ class WorkerManager
                 ]);
                 $this->cleanup($worker);
             } catch (WorkerTimedOutException $exception) {
-                $this->logger->warning("Worker $worker timed out when running ".$exception->getMessage(), [
+                $this->logger->warning("Worker $worker timed out after ".$exception->getTimeout()." seconds when running ".$worker->getType(), [
                     'available' => count($this->availableWorkers),
                     'inuse' => count($this->inUseWorkers),
                     'worker' => count($this->workers)

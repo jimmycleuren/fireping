@@ -9,7 +9,9 @@
             <th>Id</th>
             <th>Slavegroup</th>
             <th># of targets</th>
+            <th>IP</th>
             <th>Last contact</th>
+            <th>Details</th>
         </tr>
         </thead>
         <tbody>
@@ -18,7 +20,9 @@
                 <td>{{ slave.id }}</td>
                 <td>{{ slave.slavegroup }}</td>
                 <td>{{ targets[slave.id] }}</td>
+                <td>{{ slave.ip }}</td>
                 <td>{{ slave.lastContact|date("d-m-Y H:i:s") }}</td>
+                <td><a href="{{ path("slave_detail", {id: slave.id}) }}">Show details</a></td>
             </tr>
         {% endfor %}
         </tbody>
