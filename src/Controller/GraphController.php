@@ -86,12 +86,12 @@ class GraphController extends AbstractController
      * @Route("/api/graphs/slaves/{slave}/{type}", methods={"GET"})
      *
      * @param Slave $slave
-     * @param $type
+     * @param string $type
      * @param Request $request
      * @param SlaveGraph $slaveGraph
      * @return Response
      */
-    public function slaveAction(Slave $slave, $type, Request $request, SlaveGraph $slaveGraph)
+    public function slaveAction(Slave $slave, string $type, Request $request, SlaveGraph $slaveGraph)
     {
         $start = $request->get('start') ?: -3600;
         $end = $request->get('end') ?: date("U");

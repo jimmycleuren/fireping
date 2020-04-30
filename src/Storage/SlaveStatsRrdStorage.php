@@ -114,7 +114,7 @@ class SlaveStatsRrdStorage
         $step = $type == "posts" ? 60 : 1;
 
         if ($info['step'] != $step) {
-            throw new RrdException("Steps are not equal, ".$this->step." is configured, RRD file is using ".$info['step']);
+            throw new RrdException("Steps are not equal, ".$step." is configured, RRD file is using ".$info['step']);
         }
 
         if ($update["last_update"] >= $timestamp) {
