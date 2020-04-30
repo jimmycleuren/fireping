@@ -5,6 +5,7 @@ namespace Tests\App\Command;
 
 use App\Command\ProbeDispatcherCommand;
 use App\DependencyInjection\SlaveConfiguration;
+use App\DependencyInjection\StatsManager;
 use App\DependencyInjection\Worker;
 use App\DependencyInjection\WorkerManager;
 use Prophecy\Argument;
@@ -37,7 +38,9 @@ class ProbeDispatcherCommandTest extends KernelTestCase
         $workerManager->loop()->willReturn();
         $workerManager->getWorker(Argument::any())->willReturn($worker);
 
-        $application->add(new ProbeDispatcherCommand($logger, $workerManager->reveal()));
+        $statsManager = $this->prophesize(StatsManager::class);
+
+        $application->add(new ProbeDispatcherCommand($logger, $workerManager->reveal(), $statsManager->reveal()));
 
         $command       = $application->find('app:probe:dispatcher');
         $commandTester = new CommandTester($command);

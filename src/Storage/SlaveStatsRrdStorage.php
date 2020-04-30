@@ -143,10 +143,19 @@ class SlaveStatsRrdStorage
         }
     }
 
+    /**
+     * @param $filename
+     * @return array
+     * @throws RrdException
+     */
     public function getDataSources($filename)
     {
         $sources = [];
         $info = rrd_info($filename);
+
+        if (!is_array($info)) {
+            throw new RrdException("Could not read rrd info from $filename");
+        }
 
         foreach($info as $key => $value) {
             if(preg_match("/ds\[([\w]+)\]/", $key, $match)) {
