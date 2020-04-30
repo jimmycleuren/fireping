@@ -14,6 +14,8 @@ use App\Entity\SlaveGroup;
 use App\Exception\RrdException;
 use App\Exception\WrongTimestampRrdException;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Lock\Factory;
+use Symfony\Component\Lock\Store\FlockStore;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 
@@ -137,13 +139,56 @@ class RrdStorage extends Storage
             throw new WrongTimestampRrdException("RRD $filename last update was ".$update["last_update"].", cannot update at ".$timestamp);
         }
 
+        $originalData = $data;
+
+        $sources = $this->getDatasources($device, $probe, $group);
+
         $template = array();
         $values = array($timestamp);
 
-        foreach($data as $key => $value) {
-            $template[] = $key;
-            $values[] = $value;
+        foreach($sources as $source) {
+            $template[] = $source;
+            if (isset($data[$source])) {
+                $values[] = $data[$source];
+                unset($data[$source]);
+            } else {
+                $values[] = "U";
+            }
         }
+
+        if ($addNewSources) {
+            $store = new FlockStore(sys_get_temp_dir());
+            $factory = new Factory($store);
+            $lock = $factory->createLock('update-'.$filename);
+
+            if ($lock->acquire(true)) {
+                try {
+                    foreach ($data as $name => $value) {
+                        $this->logger->info("Adding new datasource $name to $filename");
+                        $this->addDataSource($device, $filename, $name, $probe);
+                    }
+
+                    $sources = $this->getDatasources($device, $probe, $group);
+
+                    $data = $originalData;
+
+                    $template = array();
+                    $values = array($timestamp);
+                    foreach ($sources as $source) {
+                        $template[] = $source;
+                        if (isset($data[$source])) {
+                            $values[] = $data[$source];
+                        } else {
+                            $values[] = "U";
+                        }
+                    }
+                } catch(\Exception $e) {
+                    $this->logger->error($e->getMessage());
+                }
+                $lock->release();
+            }
+        }
+
         $options = array("-t", implode(":", $template), implode(":", $values));
 
         $return = rrd_update($filename, $options);
@@ -155,9 +200,42 @@ class RrdStorage extends Storage
         }
     }
 
-    public function getDatasources(Device $device, Probe $probe, SlaveGroup $group)
+    public function getDatasources(Device $device, Probe $probe, SlaveGroup $group, $daemon = null)
     {
-        return null;
+        $filename = $this->getFilePath($device, $probe, $group);
+
+        $sources = [];
+        $info = rrd_info($filename);
+
+        foreach($info as $key => $value) {
+            if(preg_match("/ds\[([\w]+)\]/", $key, $match)) {
+                if (!in_array($match[1], $sources)) {
+                    $sources[] = $match[1];
+                }
+            }
+        }
+
+        return $sources;
+    }
+
+    protected function addDataSource(Device $device, $filename, $name, Probe $probe)
+    {
+        $ds = sprintf(
+            "DS:%s:%s:%s:%s:%s",
+            $name,
+            'GAUGE',
+            $probe->getStep() * 2,
+            0,
+            "U"
+        );
+
+        $process = new Process(["rrdtool", "tune", $filename, $ds]);
+        $process->run();
+        $error = $process->getErrorOutput();
+
+        if ($error) {
+            throw new RrdException(trim($error));
+        }
     }
 
     public function fetch(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $key, $function)
