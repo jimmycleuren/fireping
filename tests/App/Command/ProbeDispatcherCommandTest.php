@@ -37,6 +37,9 @@ class ProbeDispatcherCommandTest extends KernelTestCase
         $workerManager->initialize(Argument::type('int'), Argument::type('int'), Argument::type('int'))->shouldBeCalledTimes(1);
         $workerManager->loop()->willReturn();
         $workerManager->getWorker(Argument::any())->willReturn($worker);
+        $workerManager->getTotalWorkers()->willReturn(10);
+        $workerManager->getAvailableWorkers()->willReturn(5);
+        $workerManager->getInUseWorkerTypes()->willReturn(['ping' => 2, 'traceroute' => 3]);
 
         $statsManager = $this->prophesize(StatsManager::class);
 
