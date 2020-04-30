@@ -88,7 +88,7 @@ class GraphController extends AbstractController
      * @param Slave $slave
      * @param $type
      * @param Request $request
-     * @param GraphFactory $graphFactory
+     * @param SlaveGraph $slaveGraph
      * @return Response
      */
     public function slaveAction(Slave $slave, $type, Request $request, SlaveGraph $slaveGraph)

@@ -98,7 +98,7 @@ class StatsManager
 
     private function getMemoryUsage() {
         $free = shell_exec('free');
-        $free = (string)trim($free);
+        $free = trim($free);
         $free = explode("\n", $free);
         if (!isset($free[1])) {
             $this->logger->warning("'free' executable not found");

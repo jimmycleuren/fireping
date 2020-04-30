@@ -299,9 +299,9 @@ class SlaveController extends AbstractController
      * @Route("/api/slaves/{id}/stats", methods={"POST"})
      * @return JsonResponse
      */
-    public function statsAction(Slave $slave, Request $request, EntityManagerInterface $entityManager, SlaveStatsRrdStorage $storage, LoggerInterface $logger) {
+    public function statsAction(Slave $slave, Request $request, EntityManagerInterface $entityManager, SlaveStatsRrdStorage $storage)
+    {
         $data = json_decode($request->getContent());
-        //$logger->info($request->getContent());
 
         $slave->setIp($data->ip);
         $entityManager->persist($slave);
@@ -320,7 +320,7 @@ class SlaveController extends AbstractController
             $storage->store($slave, "queues", $timestamp, $result);
         }
 
-        $storage->store($slave, "posts", $timestamp, [
+        $storage->store($slave, "posts", date("U"), [
             'failed' => $data->failed_posts,
             'discarded' => $data->discarded_posts
         ]);

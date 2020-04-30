@@ -6,7 +6,7 @@ namespace App\ShellCommand;
 
 use App\Client\FirepingClient;
 use Psr\Log\LoggerInterface;
-use GuzzleHttp\GuzzleException;
+use GuzzleHttp\Exception\GuzzleException;
 
 class PostStatsHttpWorkerCommand implements CommandInterface
 {
