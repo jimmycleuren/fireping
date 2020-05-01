@@ -88,7 +88,7 @@ class ProbeWorkerCommand extends Command
      * @return void
      * @throws InvalidArgumentException
      */
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->output = $output;
         $this->maxRuntime = (int)$input->getOption('max-runtime');
@@ -115,6 +115,8 @@ class ProbeWorkerCommand extends Command
         }
 
         $this->loop->run();
+
+        return 0;
     }
 
     /**

@@ -62,5 +62,7 @@ class TestAlertDestinationCommand extends Command
         $instance = $this->alertDestinationFactory->create($destination);
         $instance->trigger($alert);
         $instance->clear($alert);
+
+        return 0;
     }
 }
