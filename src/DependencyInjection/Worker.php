@@ -34,7 +34,7 @@ class Worker
 
     private $type;
 
-    private $name;
+    private $name = "unknown";
 
     private $executing = false;
 
