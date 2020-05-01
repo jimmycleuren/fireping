@@ -4,15 +4,12 @@ env:
     - GIT_COMMITTED_AT=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then git log -1 --pretty=format:%ct; else git log -1 --skip 1 --pretty=format:%ct; fi)
     - DATABASE_URL=mysql://root@127.0.0.1:3306/fireping_test
 
-# Project language
 language: php
-
-# Allows use container-based infrastructure
-sudo: false
+os: linux
 
 # Start mysql service
 services:
-  - redis-server
+  - redis
   - mysql
 
 # Cache composer packages so "composer install" is faster
@@ -28,19 +25,19 @@ addons:
     - mysql-server
     - mysql-client
 
-# Matrix to test in every php version
-matrix:
+jobs:
   # Fast finish allows to set the build as "finished" even if the "allow_failures" matrix elements are not finished yet.
   fast_finish: true
   include:
     - php: master
-    - php: 7.3
+    - php: 7.4
+    - php: 7.4
       env: 'HIGHEST_LOWEST="update"'
     - php: 7.3
     - php: 7.2
   allow_failures:
     - php: master
-    - php: 7.3
+    - php: 7.4
       env: 'HIGHEST_LOWEST="update"'
 
 before_install:
