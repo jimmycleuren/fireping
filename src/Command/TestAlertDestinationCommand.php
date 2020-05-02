@@ -45,7 +45,7 @@ class TestAlertDestinationCommand extends Command
         $destination = $this->em->getRepository("App:AlertDestination")->findOneById($id);
         if (!$destination) {
             $this->logger->warning("Alertdestination #$id not found");
-            return;
+            return 1;
         }
 
         $rule = new AlertRule();
