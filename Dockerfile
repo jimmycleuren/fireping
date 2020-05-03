@@ -1,4 +1,4 @@
-FROM php:7.2.3-cli-stretch
+FROM php:7.3.17-cli-stretch
 
 ADD . /app
 
