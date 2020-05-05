@@ -25,7 +25,7 @@ class CleanupCommandTest extends KernelTestCase
      */
     private $cleanupService;
 
-    public function setUp()
+    public function setUp() : void
     {
         $kernel = self::bootKernel();
         $container = self::$container;
@@ -110,7 +110,7 @@ class CleanupCommandTest extends KernelTestCase
 
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         $this->fileSystem->remove($this->dirPath);
         parent::tearDown();

@@ -27,6 +27,6 @@ class CleanupAlertCommandTest extends KernelTestCase
         $commandTester->execute(['command' => $command->getName()]);
 
         $output = $commandTester->getDisplay();
-        $this->assertContains('Removed obsolete alerts', $output);
+        $this->assertStringContainsString('Removed obsolete alerts', $output);
     }
 }
