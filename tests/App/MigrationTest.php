@@ -16,6 +16,7 @@ class MigrationTest extends WebTestCase
 
     protected function setUp() : void
     {
+        self::ensureKernelShutdown();
         $client = static::createClient();
         $em = $client->getContainer()->get('doctrine')->getManager();
         $connection = $em->getConnection();
@@ -49,6 +50,7 @@ class MigrationTest extends WebTestCase
     protected static function getApplication()
     {
         if (null === self::$application) {
+            self::ensureKernelShutdown();
             $client = static::createClient();
 
             self::$application = new Application($client->getKernel());
