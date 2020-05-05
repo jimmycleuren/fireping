@@ -96,9 +96,6 @@ class PingGraphTest extends TestCase
         $this->assertNotNull($image);
     }
 
-    /**
-     * @expectedException App\Exception\RrdException
-     */
     public function testSummaryGraphException()
     {
         @unlink('/tmp/3/1/1.rrd');
@@ -134,6 +131,7 @@ class PingGraphTest extends TestCase
         $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
         $storageFactory->create()->willReturn($storage)->shouldBeCalledTimes(1);
 
+        $this->expectException(RrdException::class);
         $graph = new PingGraph($storageFactory->reveal());
         $graph->getSummaryGraph($device, $probe);
     }
@@ -214,9 +212,6 @@ class PingGraphTest extends TestCase
         $this->assertNotNull($image);
     }
 
-    /**
-     * @expectedException App\Exception\RrdException
-     */
     public function testDetailGraphException()
     {
         @unlink('/tmp/6/1/1.rrd');
@@ -252,6 +247,7 @@ class PingGraphTest extends TestCase
         $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
         $storageFactory->create()->willReturn($storage)->shouldBeCalledTimes(1);
 
+        $this->expectException(RrdException::class);
         $graph = new PingGraph($storageFactory->reveal());
         $image = $graph->getDetailGraph($device, $probe, $slavegroup, -3600, null, true);
         $this->assertNotNull($image);

@@ -14,7 +14,7 @@ class CleanupAlertTest extends WebTestCase
     private $alertRepository;
     private $cleanupAlertService;
 
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 
