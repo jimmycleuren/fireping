@@ -66,10 +66,10 @@ class MigrationTest extends WebTestCase
 
         // Validate that the mapping files are correct and in sync with the database.
         $output = $this->runCommand('doctrine:schema:validate', '--env=test');
-        $this->assertContains('[OK] The mapping files are correct.', $output);
+        $this->assertStringContainsString('[OK] The mapping files are correct.', $output);
 
         $output = $this->runCommand('doctrine:schema:update', '--env=test --dump-sql');
-        $this->assertContains('[OK] Nothing to update', $output);
+        $this->assertStringContainsString('[OK] Nothing to update', $output);
     }
 
     public function testRollback()
