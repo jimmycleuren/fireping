@@ -30,6 +30,6 @@ class ProbeWorkerCommandTest extends KernelTestCase
         ));
 
         $output = $commandTester->getDisplay();
-        $this->assertContains("Max runtime reached", $output);
+        $this->assertStringContainsString("Max runtime reached", $output);
     }
 }

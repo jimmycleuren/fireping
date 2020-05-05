@@ -41,9 +41,6 @@ class StorageFactoryTest extends TestCase
         $_ENV['STORAGE'] = $existing;
     }
 
-    /**
-     * @@expectedException \RuntimeException
-     */
     public function testException()
     {
         $logger = $this->prophesize(LoggerInterface::class)->reveal();
@@ -60,6 +57,7 @@ class StorageFactoryTest extends TestCase
 
         $factory = new StorageFactory($rrdStorage, $rrdCachedStorage, $rrdDistributedStorage);
 
+        $this->expectException(\RuntimeException::class);
         $existing = $_ENV['STORAGE'];
         $_ENV['STORAGE'] = 'bla';
         $factory->create();

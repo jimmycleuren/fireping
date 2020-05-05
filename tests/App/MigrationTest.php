@@ -14,7 +14,7 @@ class MigrationTest extends WebTestCase
 {
     protected static $application;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $client = static::createClient();
         $em = $client->getContainer()->get('doctrine')->getManager();
@@ -87,7 +87,7 @@ class MigrationTest extends WebTestCase
         $this->assertRegExp('/\d+ sql queries\n$/', $output);
     }
 
-    protected function tearDown()
+    protected function tearDown() : void
     {
         $output = $this->runCommand('doctrine:schema:create --force', '--no-interaction --env=test');
     }
