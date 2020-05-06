@@ -99,7 +99,7 @@ abstract class Processor
 
     protected function matchPattern($pattern, $value)
     {
-        $value = array_values($value);
+        $value = is_array($value) ? array_values($value) : [];
         if (count($pattern) != count($value)) {
             $this->logger->warning("Number of values does not equal pattern: (".count($value)." vs ".count($pattern).")");
             return false;
