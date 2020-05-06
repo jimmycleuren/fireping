@@ -8,6 +8,7 @@
 
 namespace App\DependencyInjection;
 
+use App\Exception\WorkerTimedOutException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
@@ -199,7 +200,14 @@ class WorkerManager
             try {
                 $worker->loop();
             } catch (ProcessTimedOutException $exception) {
-                $this->logger->info("Worker $worker timed out", [
+                $this->logger->info("Process $worker timed out", [
+                    'available' => count($this->availableWorkers),
+                    'inuse' => count($this->inUseWorkers),
+                    'worker' => count($this->workers)
+                ]);
+                $this->cleanup($worker);
+            } catch (WorkerTimedOutException $exception) {
+                $this->logger->warning("Worker $worker timed out when running ".$exception->getMessage(), [
                     'available' => count($this->availableWorkers),
                     'inuse' => count($this->inUseWorkers),
                     'worker' => count($this->workers)

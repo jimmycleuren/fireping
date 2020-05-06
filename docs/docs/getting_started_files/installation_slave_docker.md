@@ -12,7 +12,7 @@ sudo docker run -d \
     -e slave_NAME="myslave" \
     -e slave_PASSWORD="password" \
     -e slave_URL="http://fireping.myserver.com" \
-    -v /tmp/logs:/app/var/logs \
+    -v /tmp/logs:/app/var/log \
     --restart=unless-stopped \
     --name fireping \
     jimmycleuren/fireping

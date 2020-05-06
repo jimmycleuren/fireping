@@ -15,15 +15,17 @@ use Symfony\Component\Filesystem\Filesystem;
  */
 class CleanupCommandTest extends KernelTestCase
 {
-
     private $logger;
     private $em;
     private $fileSystem;
     private $dirPath;
     private $application;
+    /**
+     * @var CleanupService
+     */
     private $cleanupService;
 
-    public function setUp()
+    public function setUp() : void
     {
         $kernel = self::bootKernel();
         $container = self::$container;
@@ -98,7 +100,7 @@ class CleanupCommandTest extends KernelTestCase
                 $this->fileSystem->mkdir($this->dirPath .'/'.$i.'/'.$j);
                 //create 3 rrd folders
                 for($k=1; $k<=3; $k++){
-                    $this->fileSystem->touch($this->dirPath . '/' . $i . '/' . $j . '/' .$k.'.rrd', '');
+                    $this->fileSystem->touch($this->dirPath . '/' . $i . '/' . $j . '/' .$k.'.rrd');
                 }
             }
         }
@@ -108,7 +110,7 @@ class CleanupCommandTest extends KernelTestCase
 
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         $this->fileSystem->remove($this->dirPath);
         parent::tearDown();

@@ -23,7 +23,7 @@ class DebugControllerTest extends WebTestCase
         $link =$crawler->filter('.label-danger');
         $this->assertEquals('a', $link->nodeName());
 
-        $link = $crawler->selectLink("Debug mode")->link();
+        $link = $crawler->selectLink('Display Trends')->link();
         $crawler = $client->click($link);
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());

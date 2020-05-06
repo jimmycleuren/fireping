@@ -8,6 +8,7 @@
 
 namespace App\DependencyInjection;
 
+use App\Exception\WorkerTimedOutException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Process\InputStream;
@@ -33,9 +34,11 @@ class Worker
 
     private $type;
 
-    private $name;
+    private $name = "unknown";
 
     private $executing = false;
+
+    private $lastCommand = null;
 
     public function __construct(WorkerManager $manager, KernelInterface $kernel, LoggerInterface $logger, int $timeout, int $idleTimeout)
     {
@@ -96,6 +99,7 @@ class Worker
         $this->expectedRuntime = $expectedRuntime;
         $this->callback = $callback;
 
+        $this->lastCommand = $data;
         $this->input->write($data);
     }
 
@@ -105,8 +109,7 @@ class Worker
             $actualRuntime = microtime(true) - $this->startTime;
             $expectedRuntime = $this->expectedRuntime * 1.25;
             if ($actualRuntime > $expectedRuntime) {
-                $this->logger->info("Worker $this has exceeded the expected runtime, terminating.");
-                $this->process->stop();
+                throw new WorkerTimedOutException($this->lastCommand);
             }
         }
         if (!$this->executing) {
