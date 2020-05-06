@@ -101,9 +101,9 @@
                             href="{{ path('easyadmin') }}">Admin</a></li>
                 {% endif %}
                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                <li><a href="{{ path('fos_user_security_logout') }}">Logout</a></li>
+                <li><a href="{{ path('app_logout') }}">Logout</a></li>
                     {% else %}
-                        <li><a href="{{ path('fos_user_security_login') }}">Login</a></li>
+                        <li><a href="{{ path('app_login') }}">Login</a></li>
                         {% endif %}
 
             </ul>
@@ -124,7 +124,6 @@
 </div>
 <div class="container">
     {% block content %}
-        {% block fos_user_content %}{% endblock %}
     {% endblock %}
 </div>
 <script src="{{ asset('js/q-5.0.2.min.js') }}"></script>
