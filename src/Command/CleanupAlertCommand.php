@@ -45,5 +45,7 @@ class CleanupAlertCommand extends Command
         $this->cleanupAlert->cleanup();
         $event = $stopwatch->stop('CleanupAlert');
         $output->writeln(sprintf('Removed obsolete alerts in %sms', $event->getDuration()));
+
+        return 0;
     }
 }

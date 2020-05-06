@@ -13,6 +13,6 @@ class IndexControllerTest extends WebTestCase
         $crawler = $client->request('GET', '/');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertContains('Fireping', $crawler->filter('.container a')->text());
+        $this->assertStringContainsString('Fireping', $crawler->filter('.container a')->text());
     }
 }

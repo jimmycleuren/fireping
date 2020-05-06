@@ -14,8 +14,9 @@ class MigrationTest extends WebTestCase
 {
     protected static $application;
 
-    protected function setUp()
+    protected function setUp() : void
     {
+        self::ensureKernelShutdown();
         $client = static::createClient();
         $em = $client->getContainer()->get('doctrine')->getManager();
         $connection = $em->getConnection();
@@ -49,6 +50,7 @@ class MigrationTest extends WebTestCase
     protected static function getApplication()
     {
         if (null === self::$application) {
+            self::ensureKernelShutdown();
             $client = static::createClient();
 
             self::$application = new Application($client->getKernel());
@@ -66,10 +68,10 @@ class MigrationTest extends WebTestCase
 
         // Validate that the mapping files are correct and in sync with the database.
         $output = $this->runCommand('doctrine:schema:validate', '--env=test');
-        $this->assertContains('[OK] The mapping files are correct.', $output);
+        $this->assertStringContainsString('[OK] The mapping files are correct.', $output);
 
         $output = $this->runCommand('doctrine:schema:update', '--env=test --dump-sql');
-        $this->assertContains('[OK] Nothing to update', $output);
+        $this->assertStringContainsString('[OK] Nothing to update', $output);
     }
 
     public function testRollback()
@@ -87,7 +89,7 @@ class MigrationTest extends WebTestCase
         $this->assertRegExp('/\d+ sql queries\n$/', $output);
     }
 
-    protected function tearDown()
+    protected function tearDown() : void
     {
         $output = $this->runCommand('doctrine:schema:create --force', '--no-interaction --env=test');
     }

@@ -54,7 +54,8 @@ class CleanupCommand extends Command
 
         $event = $stopwatch->stop('Cleanup');
 
-        echo 'Command took ' . $event->getDuration() . ' ms' . PHP_EOL;
         $this->logger->info('Command took ' . $event->getDuration() . ' ms');
+
+        return 0;
     }
 }

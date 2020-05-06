@@ -19,6 +19,6 @@ class DeviceControllerTest extends WebTestCase
         $crawler = $client->request('GET', '/device/1');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertContains('Device 1 - 8.8.8.8', $crawler->filter('h1')->text());
+        $this->assertStringContainsString('Device 1 - 8.8.8.8', $crawler->filter('h1')->text());
     }
 }

@@ -33,7 +33,7 @@ class TestAlertDestinationCommandTest extends KernelTestCase
             'destination-id' => 9999
         ));
 
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertEquals(1, $commandTester->getStatusCode());
     }
 
     public function testExecute()

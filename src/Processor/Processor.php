@@ -77,7 +77,7 @@ abstract class Processor
                             'active' => 1
                         ));
                         if ($alert) {
-                            //$alert->setActive(0);
+                            $alert->setActive(0);
                             //$this->em->persist($alert); //flush will be done in slavecontroller
                             $destinations = $device->getActiveAlertDestinations();
                             foreach ($destinations as $destination) {
@@ -99,7 +99,7 @@ abstract class Processor
 
     protected function matchPattern($pattern, $value)
     {
-        $value = array_values($value);
+        $value = is_array($value) ? array_values($value) : [];
         if (count($pattern) != count($value)) {
             $this->logger->warning("Number of values does not equal pattern: (".count($value)." vs ".count($pattern).")");
             return false;
