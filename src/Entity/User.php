@@ -209,4 +209,9 @@ class User implements UserInterface
             $this->$property = $value;
         }
     }
+
+    public function __toString() : string
+    {
+        return $this->username;
+    }
 }
