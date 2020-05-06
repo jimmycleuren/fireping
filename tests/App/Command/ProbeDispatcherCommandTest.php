@@ -49,6 +49,6 @@ class ProbeDispatcherCommandTest extends KernelTestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        static::assertContains('Max runtime reached', $output);
+        static::assertStringContainsString('Max runtime reached', $output);
     }
 }

@@ -234,6 +234,8 @@ class ProbeDispatcherCommand extends Command
         }
 
         $this->loop->run();
+
+        return 0;
     }
 
     /**
