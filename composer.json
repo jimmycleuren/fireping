@@ -18,7 +18,6 @@
         "ext-rrd": "*",
         "api-platform/api-pack": "^1.0",
         "doctrine/doctrine-bundle": "^2.0",
-        "doctrine/doctrine-cache-bundle": "^1.2",
         "doctrine/doctrine-migrations-bundle": "^2.0",
         "doctrine/orm": "^2.5",
         "easycorp/easyadmin-bundle": "^2.0",
