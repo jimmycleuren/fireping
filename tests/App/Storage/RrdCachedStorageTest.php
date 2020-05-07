@@ -31,9 +31,9 @@ class RrdCachedStorageTest extends TestCase
             "median" => 5,
             "loss" => 0
         ];
-        $storage->store($device, $probe, $group, date("U"), $data, true, $_ENV['RRDCACHED_TEST']);
+        $storage->store($device, $probe, $group, date("U"), $data, true, $_ENV['RRDCACHED_TEST'] ?? "127.0.0.1:42217");
 
-        $datasources = $storage->getDatasources($device, $probe, $group, $_ENV['RRDCACHED_TEST']);
+        $datasources = $storage->getDatasources($device, $probe, $group, $_ENV['RRDCACHED_TEST'] ?? "127.0.0.1:42217");
 
         $this->assertEquals(["median", "loss"], $datasources);
     }
@@ -58,9 +58,9 @@ class RrdCachedStorageTest extends TestCase
             "median" => 5,
             "loss" => 0
         ];
-        $storage->store($device, $probe, $group, date("U"), $data, true, $_ENV['RRDCACHED_TEST']);
+        $storage->store($device, $probe, $group, date("U"), $data, true, $_ENV['RRDCACHED_TEST'] ?? "127.0.0.1:42217");
 
-        $datasources = $storage->getDatasources($device, $probe, $group, $_ENV['RRDCACHED_TEST']);
+        $datasources = $storage->getDatasources($device, $probe, $group, $_ENV['RRDCACHED_TEST'] ?? "127.0.0.1:42217");
 
         $this->assertEquals(["median", "loss"], $datasources);
     }
