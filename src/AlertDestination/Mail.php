@@ -10,7 +10,7 @@ namespace App\AlertDestination;
 
 use App\Entity\Alert;
 use Psr\Log\LoggerInterface;
-use Symfony\Bundle\TwigBundle\TwigEngine;
+use Twig\Environment;
 
 /**
  * Class Mail
