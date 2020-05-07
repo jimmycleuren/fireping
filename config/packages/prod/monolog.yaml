@@ -2,9 +2,9 @@ monolog:
     channels: ["alert"]
     handlers:
         main:
-        type: stream
-        path: '%kernel.logs_dir%/%kernel.environment%.log'
-        level: info
+            type: stream
+            path: '%kernel.logs_dir%/%kernel.environment%.log'
+            level: info
         alert:
             type: stream
             path:  "%kernel.logs_dir%/alert.%kernel.environment%.log"
