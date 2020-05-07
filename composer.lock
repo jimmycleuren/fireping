@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "59c4dc2c3a61fa6dc2b9b91a1d6af248",
+    "content-hash": "4d7fbf892209231fd3b2afe6bae4b5e0",
     "packages": [
         {
             "name": "api-platform/api-pack",
@@ -4804,20 +4804,20 @@
         },
         {
             "name": "symfony/lock",
-            "version": "v4.4.5",
+            "version": "v5.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/lock.git",
-                "reference": "de412046486269dd3984db757e492ee5f81e0bf2"
+                "reference": "a95c9074c71c650d22c2f66d0e3b0ce70968c786"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/lock/zipball/de412046486269dd3984db757e492ee5f81e0bf2",
-                "reference": "de412046486269dd3984db757e492ee5f81e0bf2",
+                "url": "https://api.github.com/repos/symfony/lock/zipball/a95c9074c71c650d22c2f66d0e3b0ce70968c786",
+                "reference": "a95c9074c71c650d22c2f66d0e3b0ce70968c786",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1.3",
+                "php": "^7.2.5",
                 "psr/log": "~1.0"
             },
             "conflict": {
@@ -4825,13 +4825,12 @@
             },
             "require-dev": {
                 "doctrine/dbal": "~2.5",
-                "mongodb/mongodb": "~1.1",
                 "predis/predis": "~1.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.4-dev"
+                    "dev-master": "5.0-dev"
                 }
             },
             "autoload": {
@@ -4866,7 +4865,7 @@
                 "redlock",
                 "semaphore"
             ],
-            "time": "2020-02-04T09:32:40+00:00"
+            "time": "2020-04-12T11:07:29+00:00"
         },
         {
             "name": "symfony/mime",
