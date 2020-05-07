@@ -1,2 +1,3 @@
 imports:
   - { resource: '../master/snc_redis.yaml'}
+  - { resource: '../master/framework.yaml'}
