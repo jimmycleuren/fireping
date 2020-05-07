@@ -9,6 +9,7 @@ use App\Entity\Device;
 use App\Entity\SlaveGroup;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Twig\Environment;
 
 class MailTest extends TestCase
 {
@@ -17,7 +18,7 @@ class MailTest extends TestCase
         $mailer = $this->prophesize('Swift_Mailer');
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
         $logger->error('MAILER_FROM env variable is not set')->shouldBeCalledTimes(1);
-        $templating = $this->prophesize('Symfony\\Bundle\\TwigBundle\\TwigEngine');
+        $templating = $this->prophesize(Environment::class);
 
         $mail = new Mail($mailer->reveal(), $logger->reveal(), $templating->reveal());
 
@@ -32,7 +33,7 @@ class MailTest extends TestCase
         $mailer = $this->prophesize('Swift_Mailer');
         $mailer->send(Argument::any())->shouldBeCalledTimes(1);
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
-        $templating = $this->prophesize('Symfony\\Bundle\\TwigBundle\\TwigEngine');
+        $templating = $this->prophesize(Environment::class);
         $templating->render(Argument::type('string'), Argument::type('array'))->shouldBeCalledTimes(1);
 
         $mail = new Mail($mailer->reveal(), $logger->reveal(), $templating->reveal());
@@ -58,7 +59,7 @@ class MailTest extends TestCase
         $mailer->send(Argument::any())->shouldNotBeCalled();
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
         $logger->error(Argument::type('string'))->shouldBeCalledTimes(1);
-        $templating = $this->prophesize('Symfony\\Bundle\\TwigBundle\\TwigEngine');
+        $templating = $this->prophesize(Environment::class);
 
         $mail = new Mail($mailer->reveal(), $logger->reveal(), $templating->reveal());
         $mail->setParameters(array('recipient' => 'invalid'));
@@ -82,7 +83,7 @@ class MailTest extends TestCase
         $mailer = $this->prophesize('Swift_Mailer');
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
         $logger->error('MAILER_FROM env variable is not set')->shouldBeCalledTimes(1);
-        $templating = $this->prophesize('Symfony\\Bundle\\TwigBundle\\TwigEngine');
+        $templating = $this->prophesize(Environment::class);
 
         $mail = new Mail($mailer->reveal(), $logger->reveal(), $templating->reveal());
 
@@ -97,7 +98,7 @@ class MailTest extends TestCase
         $mailer = $this->prophesize('Swift_Mailer');
         $mailer->send(Argument::any())->shouldBeCalledTimes(1);
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
-        $templating = $this->prophesize('Symfony\\Bundle\\TwigBundle\\TwigEngine');
+        $templating = $this->prophesize(Environment::class);
         $templating->render(Argument::type('string'), Argument::type('array'))->shouldBeCalledTimes(1);
 
         $mail = new Mail($mailer->reveal(), $logger->reveal(), $templating->reveal());
