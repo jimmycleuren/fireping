@@ -1,0 +1,2 @@
+imports:
+  - { resource: '../master/snc_redis.yaml'}
