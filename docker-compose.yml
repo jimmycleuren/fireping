@@ -22,6 +22,12 @@ services:
     image: redis
     ports:
       - "6379:6379"
+  rrdcached:
+    image: crazymax/rrdcached
+    environment:
+      TZ: "Europe/Paris"
+    ports:
+      - "42217:42217"
   db:
     image: mariadb
     ports:

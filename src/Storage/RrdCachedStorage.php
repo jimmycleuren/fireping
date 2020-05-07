@@ -8,7 +8,7 @@ use App\Entity\SlaveGroup;
 use App\Exception\RrdException;
 use App\Exception\WrongTimestampRrdException;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Lock\Factory;
+use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Lock\Store\FlockStore;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
@@ -202,7 +202,7 @@ class RrdCachedStorage extends RrdStorage
 
         if ($addNewSources) {
             $store = new FlockStore(sys_get_temp_dir());
-            $factory = new Factory($store);
+            $factory = new LockFactory($store);
             $lock = $factory->createLock('update-'.$filename);
 
             if ($lock->acquire(true)) {
