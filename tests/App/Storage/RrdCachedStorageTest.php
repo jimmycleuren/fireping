@@ -31,9 +31,9 @@ class RrdCachedStorageTest extends TestCase
             "median" => 5,
             "loss" => 0
         ];
-        $storage->store($device, $probe, $group, date("U"), $data, true, "rrdcached:42217");
+        $storage->store($device, $probe, $group, date("U"), $data, true, $_ENV['RRDCACHED_TEST']);
 
-        $datasources = $storage->getDatasources($device, $probe, $group, "rrdcached:42217");
+        $datasources = $storage->getDatasources($device, $probe, $group, $_ENV['RRDCACHED_TEST']);
 
         $this->assertEquals(["median", "loss"], $datasources);
     }
