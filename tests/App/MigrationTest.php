@@ -25,6 +25,7 @@ class MigrationTest extends WebTestCase
         if (!$driver instanceof AbstractMySQLDriver) {
             $this->markTestSkipped('This test requires MySQL.');
         }
+
         try {
             if (in_array('fireping_test', $connection->getSchemaManager()->listDatabases())) {
                 $schemaTool = new SchemaTool($em);

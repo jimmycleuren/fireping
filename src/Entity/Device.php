@@ -21,7 +21,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     "get",
  *     "put",
  *     "delete",
- *     "status"={"route_name"="api_devices_status"},
+ *     "status"={"route_name"="api_devices_status","method"="GET"},
  * })
  * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  */
