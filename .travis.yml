@@ -48,7 +48,7 @@ before_install:
   - docker run -d -p 127.0.0.1:42217:42217 --name rrdcached -e TZ="Europe/Paris" crazymax/rrdcached
 
 install:
-  - 'composer -n --prefer-dist'
+  - composer -n install --prefer-dist
 
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
