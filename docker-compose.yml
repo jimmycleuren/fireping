@@ -40,7 +40,7 @@ services:
       MYSQL_USER: fireping
       MYSQL_PASSWORD: fireping
   testdb:
-    image: mariadb
+    image: mysql:5.7
     ports:
       - "3307:3306"
     environment:

@@ -11,6 +11,13 @@ use Psr\Log\LoggerInterface;
 
 class RrdCachedStorageTest extends TestCase
 {
+    private $slaveGroupId = 0;
+
+    public function setUp() : void
+    {
+        $this->slaveGroupId = date("U");
+    }
+
     public function testCreate()
     {
         $logger = $this->prophesize(LoggerInterface::class)->reveal();
@@ -25,7 +32,7 @@ class RrdCachedStorageTest extends TestCase
         $probe->setStep(60);
 
         $group = new SlaveGroup();
-        $group->setId(1);
+        $group->setId($this->slaveGroupId);
 
         $data = [
             "median" => 5,
@@ -52,11 +59,39 @@ class RrdCachedStorageTest extends TestCase
         $probe->setStep(60);
 
         $group = new SlaveGroup();
-        $group->setId(1);
+        $group->setId($this->slaveGroupId);
 
         $data = [
             "median" => 5,
             "loss" => 0
+        ];
+        $storage->store($device, $probe, $group, date("U"), $data, true, $_ENV['RRDCACHED_TEST'] ?? "127.0.0.1:42217");
+
+        $datasources = $storage->getDatasources($device, $probe, $group, $_ENV['RRDCACHED_TEST'] ?? "127.0.0.1:42217");
+
+        $this->assertEquals(["median", "loss"], $datasources);
+    }
+
+    public function testUpdateWithNewDatasource()
+    {
+        $logger = $this->prophesize(LoggerInterface::class)->reveal();
+
+        $storage = new RrdCachedStorage(null, $logger);
+
+        $device = new Device();
+        $device->setId(1);
+
+        $probe = new Probe();
+        $probe->setId(1);
+        $probe->setStep(60);
+
+        $group = new SlaveGroup();
+        $group->setId($this->slaveGroupId);
+
+        $data = [
+            "median" => 5,
+            "loss" => 0,
+            "new" => 5,
         ];
         $storage->store($device, $probe, $group, date("U"), $data, true, $_ENV['RRDCACHED_TEST'] ?? "127.0.0.1:42217");
 
