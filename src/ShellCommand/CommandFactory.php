@@ -29,7 +29,7 @@ final class CommandFactory
         $class = $this->types[$command] ?? null;
 
         if ($class === null) {
-            return null;
+            throw new \RuntimeException("Cannot create a command of type $command");
         }
 
         $class->setArgs($args);
