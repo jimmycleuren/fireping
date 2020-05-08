@@ -97,6 +97,6 @@ class RrdCachedStorageTest extends TestCase
 
         $datasources = $storage->getDatasources($device, $probe, $group, $_ENV['RRDCACHED_TEST'] ?? "127.0.0.1:42217");
 
-        $this->assertEquals(["median", "loss"], $datasources);
+        $this->assertEquals(["median", "loss", "new"], $datasources);
     }
 }
