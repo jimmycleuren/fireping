@@ -71,7 +71,7 @@ class SlaveStatsRrdStorage
         $filename = $this->getFilePath($slave, $type);
 
         $start = $timestamp - 1;
-        $step = $type == "posts" ? 60 : 1;
+        $step = in_array($type,["posts", "load", "memory"]) ? 60 : 1;
 
         $options = array(
             "--start", $start,
@@ -111,7 +111,7 @@ class SlaveStatsRrdStorage
         $info = rrd_info($filename);
         $update = rrd_lastupdate($filename);
 
-        $step = $type == "posts" ? 60 : 1;
+        $step = in_array($type,["posts", "load", "memory"]) ? 60 : 1;
 
         if ($info['step'] != $step) {
             throw new RrdException("Steps are not equal, ".$step." is configured, RRD file is using ".$info['step']);

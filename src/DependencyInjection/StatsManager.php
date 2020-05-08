@@ -105,7 +105,7 @@ class StatsManager
             return [];
         }
         $mem = explode(" ", $free[1]);
-        $mem = array_filter($mem, function($value) { return ($value !== null && $value !== false && $value !== ""); }); // removes nulls from array
+        $mem = array_filter($mem, function($value) { return ($value !== null && $value !== false && $value !== "" && $value !== "Mem:"); }); // removes nulls from array
         $mem = array_merge($mem); // puts arrays back to [0],[1],[2] after filter removes nulls
 
         return $mem;

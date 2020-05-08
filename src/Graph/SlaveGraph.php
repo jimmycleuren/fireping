@@ -54,64 +54,14 @@ class SlaveGraph
             case 'queues':
                 $options = $this->createQueuesGraph($slave, $file, $options);
                 break;
-        }
-        /*
-        $options[] = sprintf("DEF:%s=%s:%s:%s",'median', $this->storage->getFilePath($device, $probe, $slavegroup), 'median', "AVERAGE");
-        $options[] = sprintf("DEF:%s=%s:%s:%s",'loss', $this->storage->getFilePath($device, $probe, $slavegroup), 'loss', "AVERAGE");
-
-        $options[] = "CDEF:dm0=median,0,$max,LIMIT";
-        $options[] = sprintf("CDEF:%s=%s,%s,%s,%s,%s",'loss_percent', "loss", $probe->getSamples(), "/", "100", "*");
-        $this->calculateStdDev($options, $this->storage->getFilePath($device, $probe, $slavegroup), $probe->getSamples(), $slavegroup);
-        $options[] = "CDEF:s2d0=".$slavegroup->getId()."sdev0";
-
-
-        $file = $this->storage->getFilePath($device, $probe, $slavegroup);
-        for ($i = 1; $i <= $probe->getSamples(); $i++) {
-            $options[] = "DEF:".$this->datasource."$i=$file:".$this->datasource."$i:AVERAGE";
-            $options[] = "CDEF:cp$i=".$this->datasource."$i,$max,LT,".$this->datasource."$i,INF,IF";
-        }
-        $half = $probe->getSamples() / 2;
-        $itop = $probe->getSamples();
-        $ibot = 1;
-        for (; $itop > $ibot; $itop--, $ibot++) {
-            $color = (int)((190/$half) * ($half-$ibot))+50;
-            $options[] = "CDEF:smoke$ibot=cp$ibot,UN,UNKN,cp$itop,cp$ibot,-,IF";
-            $options[] = "AREA:cp$ibot";
-            $options[] = "STACK:smoke$ibot#".sprintf("%02x", $color).sprintf("%02x", $color).sprintf("%02x", $color);
+            case 'load':
+                $options = $this->createLoadGraph($slave, $file, $options);
+                break;
+            case 'memory':
+                $options = $this->createMemoryGraph($slave, $file, $options);
+                break;
         }
 
-        if ($debug) {
-            $options[] = sprintf("LINE1:%s%s", 'upper', '#ff0000');
-            $options[] = sprintf("LINE1:%s%s", 'lower', '#0000ff');
-            $options[] = sprintf("LINE1:%s%s", 'hwpredict', '#ff00ff');
-        }
-
-        $options[] = "GPRINT:median:AVERAGE:median rtt\: %6.1lf ms avg";
-        $options[] = "GPRINT:median:MAX:%7.1lf ms max";
-        $options[] = "GPRINT:median:MIN:%7.1lf ms min";
-        $options[] = "GPRINT:median:LAST:%7.1lf ms now";
-        $options[] = "GPRINT:s2d0:AVERAGE:%7.1lf ms sd";
-        $options[] = "COMMENT: \\n";
-
-        $options[] = "GPRINT:loss_percent:AVERAGE:packet loss\: %6.2lf %% avg";
-        $options[] = "GPRINT:loss_percent:MAX:%8.2lf %% max";
-        $options[] = "GPRINT:loss_percent:MIN:%8.2lf %% min";
-        $options[] = "GPRINT:loss_percent:LAST:%8.2lf %% now";
-        $options[] = "COMMENT: \\n";
-        $options[] = "COMMENT:loss color\:  ";
-
-        $swidth = $this->getMedianMax($device, $start, $end, $this->storage->getFilePath($device, $probe, $slavegroup)) / 200;
-        $last = -1;
-        foreach ($lossColors as $loss => $color) {
-            $options[] = "CDEF:me$loss=loss,$last,GT,loss,$loss,LE,*,1,UNKN,IF,median,*";
-            $options[] = "CDEF:meL$loss=me$loss,$swidth,-";
-            $options[] = "CDEF:meH$loss=me$loss,0,*,$swidth,2,*,+";
-            $options[] = "AREA:meL$loss";
-            $options[] = "STACK:meH$loss$color[1]:$color[0]";
-            $last = $loss;
-        }
-
-        */
         $options[] = "COMMENT: \\n";
 
         //$options[] = "COMMENT:".$probe->getName()." (".$probe->getSamples()." probes of type ".$probe->getType()." in ".$probe->getStep()." seconds) from ".$slavegroup->getName()."";
@@ -187,14 +137,6 @@ class SlaveGraph
         $options[] = "GPRINT:available:MIN:%7.1lf min";
         $options[] = "COMMENT: \\n";
 
-        /*
-        $options[] = "GPRINT:total:AVERAGE:total workers     \: %6.1lf avg";
-        $options[] = "GPRINT:total:MAX:%7.1lf max";
-        $options[] = "GPRINT:total:MIN:%7.1lf min";
-        $options[] = "GPRINT:total:LAST:%7.1lf now";
-        $options[] = "COMMENT: \\n";
-        */
-
         return $options;
     }
 
@@ -211,6 +153,51 @@ class SlaveGraph
             $options[] = "GPRINT:queue$i:LAST:%7.1lf now";
             $options[] = "COMMENT: \\n";
         }
+
+        return $options;
+    }
+
+    public function createLoadGraph($slave, $file, $options)
+    {
+        $options[] = sprintf("DEF:%s=%s:%s:%s","load1", $this->storage->getFilePath($slave, 'load'), "load1", "AVERAGE");
+        $options[] = sprintf("DEF:%s=%s:%s:%s","load5", $this->storage->getFilePath($slave, 'load'), "load5", "AVERAGE");
+        $options[] = sprintf("DEF:%s=%s:%s:%s","load15", $this->storage->getFilePath($slave, 'load'), "load15", "AVERAGE");
+
+        $options = $this->addLine($options, 1, 3, " 1 minute load average", "load1");
+        $options = $this->addLine($options, 2, 3, " 5 minute load average", "load5");
+        $options = $this->addLine($options, 3, 3, "15 minute load average", "load15");
+
+        return $options;
+    }
+
+    public function createMemoryGraph($slave, $file, $options)
+    {
+        $options[] = sprintf("DEF:%s=%s:%s:%s","total", $this->storage->getFilePath($slave, 'memory'), "total", "AVERAGE");
+        $options[] = sprintf("DEF:%s=%s:%s:%s","used", $this->storage->getFilePath($slave, 'memory'), "used", "AVERAGE");
+        $options[] = sprintf("DEF:%s=%s:%s:%s","free", $this->storage->getFilePath($slave, 'memory'), "free", "AVERAGE");
+        $options[] = sprintf("DEF:%s=%s:%s:%s","shared", $this->storage->getFilePath($slave, 'memory'), "shared", "AVERAGE");
+        $options[] = sprintf("DEF:%s=%s:%s:%s","buffer", $this->storage->getFilePath($slave, 'memory'), "buffer", "AVERAGE");
+        $options[] = sprintf("DEF:%s=%s:%s:%s","available", $this->storage->getFilePath($slave, 'memory'), "available", "AVERAGE");
+
+        $options = $this->addLine($options, 1, 6, "total", "total");
+        $options = $this->addLine($options, 2, 6, "used", "used");
+        $options = $this->addLine($options, 3, 6, "free", "free");
+        $options = $this->addLine($options, 4, 6, "shared", "shared");
+        $options = $this->addLine($options, 5, 6, "buffer", "buffer");
+        $options = $this->addLine($options, 6, 6, "available", "available");
+
+        return $options;
+    }
+
+    private function addLine($options, $index, $total, $label, $name)
+    {
+        $options[] = sprintf("LINE1:%s%s:%s", $name, $this->getColor($index, $total), sprintf("%-9s", $label));
+
+        $options[] = "GPRINT:$name:AVERAGE:\: %7.1lf%s avg";
+        $options[] = "GPRINT:$name:MAX:%7.1lf%s max";
+        $options[] = "GPRINT:$name:MIN:%7.1lf%s min";
+        $options[] = "GPRINT:$name:LAST:%7.1lf%s now";
+        $options[] = "COMMENT: \\n";
 
         return $options;
     }

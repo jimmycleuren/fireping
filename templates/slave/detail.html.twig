@@ -11,7 +11,7 @@
                     <div class="panel-body">
                         <ul>
                             {% for item in slave.slaveGroup.slaves %}
-                                <li>{{ item.id }}</li>
+                                <li class="h3">{{ item.id }}</li>
                             {% endfor %}
                         </ul>
                     </div>
@@ -29,7 +29,7 @@
         <div class="col-md-3">
             <div class="panel panel-default">
                 <div class="panel-heading">Targets</div>
-                <div class="panel-body text-center"><h1>0</h1></div>
+                <div class="panel-body text-center"><h1>{{ targets }}</h1></div>
             </div>
         </div>
 
@@ -48,6 +48,21 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-md-9">
+            <div class="panel panel-default">
+                <div class="panel-heading">Load</div>
+                <div class="panel-body text-center" style="padding:0px; background: #f5f5f5;">
+                    <img style="max-width: 100%; height: auto;" onload="window.dispatchEvent(new Event('resize'));" class="graph" data-src-template="/api/graphs/slaves/{{ slave.id }}/load{% verbatim %}?start={{start}}&end={{end}}{% endverbatim  %}" />
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">Memory</div>
+                <div class="panel-body text-center" style="padding:0px; background: #f5f5f5;">
+                    <img style="max-width: 100%; height: auto;" onload="window.dispatchEvent(new Event('resize'));" class="graph" data-src-template="/api/graphs/slaves/{{ slave.id }}/memory{% verbatim %}?start={{start}}&end={{end}}{% endverbatim  %}" />
+                </div>
+            </div>
 
             <div class="panel panel-default">
                 <div class="panel-heading">Results</div>
@@ -69,6 +84,16 @@
                     <img style="max-width: 100%; height: auto;" onload="window.dispatchEvent(new Event('resize'));" class="graph" data-src-template="/api/graphs/slaves/{{ slave.id }}/queues{% verbatim %}?start={{start}}&end={{end}}{% endverbatim  %}" />
                 </div>
             </div>
+
+        </div>
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">Navigation</div>
+                <div class="panel-body" id="ctrl"></div>
+            </div>
+        </div>
+    </div>
+
 
 {% endblock %}
 

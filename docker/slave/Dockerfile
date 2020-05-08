@@ -15,4 +15,7 @@ RUN apt-get update \
  && pecl install rrd \
  && docker-php-ext-enable rrd
 
+COPY timezone.ini /usr/local/etc/php/conf.d/timezone.ini
+RUN chmod 755 /usr/local/etc/php/conf.d/timezone.ini
+
 CMD ["php", "/app/bin/console", "app:probe:dispatcher", "--env=slave"]

@@ -22,6 +22,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class SlaveController extends AbstractController
@@ -40,7 +41,7 @@ class SlaveController extends AbstractController
      * @Route("/slaves", name="slave_index", methods={"GET"})
      * @param DeviceRepository $deviceRepository
      * @param SlaveRepository $slaveRepository
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     public function indexAction(EntityManagerInterface $entityManager, DeviceRepository $deviceRepository, SlaveRepository $slaveRepository)
     {
@@ -67,13 +68,21 @@ class SlaveController extends AbstractController
      * @Route("/slaves/{id}", name="slave_detail", methods={"GET"})
      *
      * @param Slave $slave
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @param DeviceRepository $deviceRepository
+     * @param EntityManagerInterface $entityManager
+     * @return Response
      */
-    public function detailAction(Slave $slave)
+    public function detailAction(Slave $slave, DeviceRepository $deviceRepository, EntityManagerInterface $entityManager)
     {
+        $targets = 0;
+        $data = $this->getSlaveConfig($slave, $deviceRepository, $entityManager);
+        foreach ($data as $probe) {
+            $targets += count($probe['targets']);
+        }
+
         return $this->render('slave/detail.html.twig', array(
             'slave' => $slave,
-            //'targets' => $targets,
+            'targets' => $targets,
             'active_menu' => 'slave',
         ));
     }
@@ -294,12 +303,13 @@ class SlaveController extends AbstractController
     /**
      * @param Slave $slave
      * @param Request $request
-     *
      * @param EntityManagerInterface $entityManager
-     * @Route("/api/slaves/{id}/stats", methods={"POST"})
+     * @param SlaveStatsRrdStorage $storage
+     * @param LoggerInterface $logger
      * @return JsonResponse
+     * @Route("/api/slaves/{id}/stats", methods={"POST"})
      */
-    public function statsAction(Slave $slave, Request $request, EntityManagerInterface $entityManager, SlaveStatsRrdStorage $storage)
+    public function statsAction(Slave $slave, Request $request, EntityManagerInterface $entityManager, SlaveStatsRrdStorage $storage, LoggerInterface $logger)
     {
         $data = json_decode($request->getContent());
 
@@ -310,7 +320,6 @@ class SlaveController extends AbstractController
         foreach ($data->workers as $timestamp => $workerData) {
             $storage->store($slave, "workers", $timestamp, $workerData);
         }
-
 
         foreach ($data->queues as $timestamp => $queues) {
             $result = [];
@@ -323,6 +332,21 @@ class SlaveController extends AbstractController
         $storage->store($slave, "posts", date("U"), [
             'failed' => $data->failed_posts,
             'discarded' => $data->discarded_posts
+        ]);
+
+        $storage->store($slave, "load", date("U"), [
+            'load1' => $data->load[0],
+            'load5' => $data->load[1],
+            'load15' => $data->load[2],
+        ]);
+
+        $storage->store($slave, "memory", date("U"), [
+            'total' => $data->memory[0],
+            'used' => $data->memory[1],
+            'free' => $data->memory[2],
+            'shared' => $data->memory[3],
+            'buffer' => $data->memory[4],
+            'available' => $data->memory[5],
         ]);
 
         return new JsonResponse(array('code' => 200));
