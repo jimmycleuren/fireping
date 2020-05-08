@@ -376,7 +376,7 @@ class RrdCachedStorage extends RrdStorage
         $this->send('FLUSH '.$filename, $daemon);
         $message = $this->read($daemon);
 
-        if (!stristr($message, "0 errors")) {
+        if (!stristr($message, "0 Successfully flushed")) {
             $this->logger->warning($message);
         }
     }
