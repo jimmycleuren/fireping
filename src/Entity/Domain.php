@@ -22,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     "get",
  *     "put",
  *     "delete",
- *     "alerts"={"route_name"="api_domains_alerts"},
+ *     "alerts"={"route_name"="api_domains_alerts","method"="GET"},
  * })
  * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  */

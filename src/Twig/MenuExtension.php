@@ -3,8 +3,11 @@
 namespace App\Twig;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Twig\Extension\GlobalsInterface;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 
-class MenuExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface
+class MenuExtension extends AbstractExtension implements GlobalsInterface
 {
     private $em;
 
@@ -23,7 +26,7 @@ class MenuExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
     public function getFunctions()
     {
         return array(
-            new \Twig_Function('menuActive', function($domain, $currentDomain) {
+            new TwigFunction('menuActive', function($domain, $currentDomain) {
                 while($currentDomain != null) {
                     if($currentDomain->getId() == $domain->getId()) {
                         return true;

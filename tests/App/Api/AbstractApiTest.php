@@ -3,6 +3,7 @@
 
 namespace App\Tests\App\Api;
 
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 abstract class AbstractApiTest extends WebTestCase
@@ -17,9 +18,9 @@ abstract class AbstractApiTest extends WebTestCase
     /**
      * Create an HTTP authorized client
      *
-     * @return \Symfony\Bundle\FrameworkBundle\Client
+     * @return KernelBrowser
      */
-    protected function createAuthorizedClient(): \Symfony\Bundle\FrameworkBundle\Client
+    protected function createAuthorizedClient(): KernelBrowser
     {
         return static::createClient(array(), array(
             'PHP_AUTH_USER' => 'test',

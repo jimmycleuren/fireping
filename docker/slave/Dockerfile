@@ -1,4 +1,4 @@
-FROM php:7.2.3-cli-stretch
+FROM php:7.4
 
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
