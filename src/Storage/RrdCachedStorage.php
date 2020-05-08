@@ -245,6 +245,8 @@ class RrdCachedStorage extends RrdStorage
             $daemon = $this->daemon;
         }
 
+        $this->flush($filename, $daemon);
+
         $this->connect($daemon);
 
         $sources = array();
@@ -365,6 +367,17 @@ class RrdCachedStorage extends RrdStorage
 
         if ($error) {
             throw new RrdException(trim($error));
+        }
+    }
+
+    private function flush($filename, $daemon)
+    {
+        $this->connect($daemon);
+        $this->send('FLUSH '.$filename, $daemon);
+        $message = $this->read($daemon);
+
+        if (!stristr($message, "0 errors")) {
+            $this->logger->warning($message);
         }
     }
 }
