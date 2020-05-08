@@ -65,7 +65,7 @@ class RrdCachedStorageTest extends TestCase
             "median" => 5,
             "loss" => 0
         ];
-        $storage->store($device, $probe, $group, date("U"), $data, true, $_ENV['RRDCACHED_TEST'] ?? "127.0.0.1:42217");
+        $storage->store($device, $probe, $group, date("U") + 1, $data, true, $_ENV['RRDCACHED_TEST'] ?? "127.0.0.1:42217");
 
         $datasources = $storage->getDatasources($device, $probe, $group, $_ENV['RRDCACHED_TEST'] ?? "127.0.0.1:42217");
 
@@ -93,7 +93,7 @@ class RrdCachedStorageTest extends TestCase
             "loss" => 0,
             "new" => 5,
         ];
-        $storage->store($device, $probe, $group, date("U"), $data, true, $_ENV['RRDCACHED_TEST'] ?? "127.0.0.1:42217");
+        $storage->store($device, $probe, $group, date("U") + 2, $data, true, $_ENV['RRDCACHED_TEST'] ?? "127.0.0.1:42217");
 
         $datasources = $storage->getDatasources($device, $probe, $group, $_ENV['RRDCACHED_TEST'] ?? "127.0.0.1:42217");
 
