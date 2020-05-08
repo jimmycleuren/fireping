@@ -317,6 +317,7 @@ class SlaveControllerTest extends AbstractApiTest
         $this->assertJson($response->getContent());
 
         //second call for updates with additional datasource
+        sleep(1);
         $statsManager->addWorkerStats(10, 5, ['ping' => 5, 'traceroute' => 1]);
         $this->client->request('POST', '/api/slaves/slave1/stats', array(), array(), array(), json_encode($statsManager->getStats()));
 
