@@ -8,7 +8,7 @@ use App\Entity\SlaveGroup;
 use App\Exception\RrdException;
 use App\Exception\WrongTimestampRrdException;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Lock\Factory;
+use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Lock\Store\FlockStore;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
@@ -202,7 +202,7 @@ class RrdCachedStorage extends RrdStorage
 
         if ($addNewSources) {
             $store = new FlockStore(sys_get_temp_dir());
-            $factory = new Factory($store);
+            $factory = new LockFactory($store);
             $lock = $factory->createLock('update-'.$filename);
 
             if ($lock->acquire(true)) {
@@ -244,6 +244,8 @@ class RrdCachedStorage extends RrdStorage
         if (!$daemon) {
             $daemon = $this->daemon;
         }
+
+        $this->flush($filename, $daemon);
 
         $this->connect($daemon);
 
@@ -365,6 +367,17 @@ class RrdCachedStorage extends RrdStorage
 
         if ($error) {
             throw new RrdException(trim($error));
+        }
+    }
+
+    private function flush($filename, $daemon)
+    {
+        $this->connect($daemon);
+        $this->send('FLUSH '.$filename, $daemon);
+        $message = $this->read($daemon);
+
+        if (!stristr($message, "0 Successfully flushed")) {
+            $this->logger->warning($message);
         }
     }
 }

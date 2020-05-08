@@ -85,5 +85,7 @@ class CreateUserCommand extends Command
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
+
+        return 0;
     }
 }
