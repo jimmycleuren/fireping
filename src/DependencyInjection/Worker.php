@@ -77,7 +77,6 @@ class Worker
     {
         $this->process->stop(3, SIGINT);
         $this->receiveBuffer = null;
-        $this->input = null;
         $this->startTime = null;
         $this->expectedRuntime = null;
         $this->executing = false;

@@ -12,6 +12,7 @@ RUN apt-get update \
       zlib1g-dev \
       mariadb-client \
       libzip-dev \
+      procps \
  && docker-php-ext-install \
       pdo_mysql \
       zip \

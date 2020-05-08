@@ -142,16 +142,20 @@ class SlaveGraph
 
     public function createQueuesGraph($slave, $file, $options)
     {
-        //TODO: get real amount of queues
-        for ($i = 0; $i < 10; $i++) {
-            $options[] = sprintf("DEF:%s=%s:%s:%s","queue$i", $this->storage->getFilePath($slave, 'queues'), "queue$i", "AVERAGE");
-            $options[] = sprintf("LINE1:%s%s:%s", "queue$i", $this->getColor($i, count($this->storage->getDataSources($file))), sprintf("%-7s", "Queue $i"));
+        $sources = $this->storage->getDataSources($file);
 
-            $options[] = "GPRINT:queue$i:AVERAGE:\: %7.1lf avg";
-            $options[] = "GPRINT:queue$i:MAX:%7.1lf max";
-            $options[] = "GPRINT:queue$i:MIN:%7.1lf min";
-            $options[] = "GPRINT:queue$i:LAST:%7.1lf now";
+        $index = 0;
+        foreach ($sources as $source) {
+            $options[] = sprintf("DEF:%s=%s:%s:%s",$source, $this->storage->getFilePath($slave, 'queues'), $source, "AVERAGE");
+            $options[] = sprintf("LINE1:%s%s:%s", $source, $this->getColor($index, count($this->storage->getDataSources($file))), sprintf("%-7s", ucfirst($source)));
+
+            $options[] = "GPRINT:$source:AVERAGE:\: %7.1lf avg";
+            $options[] = "GPRINT:$source:MAX:%7.1lf max";
+            $options[] = "GPRINT:$source:MIN:%7.1lf min";
+            $options[] = "GPRINT:$source:LAST:%7.1lf now";
             $options[] = "COMMENT: \\n";
+
+            $index++;
         }
 
         return $options;
@@ -213,20 +217,5 @@ class SlaveGraph
         $blue = sin($frequency * $id + 4) * $width + $center;
 
         return "#".sprintf("%02x", $red).sprintf("%02x", $green).sprintf("%02x", $blue);
-    }
-
-    protected function getMedianMax(Slave $slave, $type, $start, $end, $file)
-    {
-        $options = array(
-            "--start", $start,
-            "--end", $end,
-            "--width=600",
-            "DEF:max=$file:median:AVERAGE",
-            "PRINT:max:MAX:%le"
-        );
-
-        $maxMedian = $this->storage->getGraphValue($slave, $options);
-
-        return $maxMedian * 1.2;
     }
 }

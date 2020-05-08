@@ -33,18 +33,12 @@ class SlaveStatsRrdStorage
     {
         $this->logger = $logger;
         $this->path = $kernel->getProjectDir()."/var/rrd/slaves/";
-
-        if (!file_exists($this->path)) {
-            mkdir($this->path);
-        }
     }
 
     public function getFilePath(Slave $slave, $type)
     {
-        $path = $this->path.$slave->getId();
-
-        if (!file_exists($path)) {
-            mkdir($path);
+        if (!file_exists($this->path)) {
+            mkdir($this->path);
         }
 
         $path = $this->path.$slave->getId();
