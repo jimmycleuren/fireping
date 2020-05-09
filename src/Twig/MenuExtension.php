@@ -16,14 +16,14 @@ class MenuExtension extends AbstractExtension implements GlobalsInterface
         $this->em = $em;
     }
 
-    public function getGlobals()
+    public function getGlobals() : array
     {
         return array(
             'menu' => $this->em->getRepository("App:Domain")->findBy(array('parent' => null), array('name' => 'ASC')),
         );
     }
 
-    public function getFunctions()
+    public function getFunctions() : array
     {
         return array(
             new TwigFunction('menuActive', function($domain, $currentDomain) {
@@ -38,7 +38,7 @@ class MenuExtension extends AbstractExtension implements GlobalsInterface
         );
     }
 
-    public function getName()
+    public function getName() : string
     {
         return "App:MenuExtension";
     }
