@@ -86,6 +86,7 @@ class Queue
         if ($status === 200) {
             $this->logger->info("Response ($status) from worker $this->worker saved.");
             $this->current = null;
+            $this->statsManager->addSuccessfulPost();
         } elseif ($status === 409) {
             $this->logger->info("Response ($status) from worker $this->worker discarded.");
             $this->current = null;

@@ -314,6 +314,7 @@ class SlaveController extends AbstractController
         $data = json_decode($request->getContent());
 
         $slave->setIp($data->ip);
+        $slave->setLastContact(new \DateTime());
         $entityManager->persist($slave);
         $entityManager->flush();
 
@@ -330,8 +331,9 @@ class SlaveController extends AbstractController
         }
 
         $storage->store($slave, "posts", date("U"), [
-            'failed' => $data->failed_posts,
-            'discarded' => $data->discarded_posts
+            'successful' => $data->posts->success,
+            'failed' => $data->posts->failed,
+            'discarded' => $data->posts->discarded
         ]);
 
         $storage->store($slave, "load", date("U"), [

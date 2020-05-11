@@ -74,9 +74,9 @@ class SlaveGraph
     {
         $options[] = sprintf("DEF:%s=%s:%s:%s",'failed', $this->storage->getFilePath($slave, 'posts'), 'failed', "AVERAGE");
         $options[] = sprintf("DEF:%s=%s:%s:%s",'discarded', $this->storage->getFilePath($slave, 'posts'), 'discarded', "AVERAGE");
+        $options[] = sprintf("DEF:%s=%s:%s:%s",'successful', $this->storage->getFilePath($slave, 'posts'), 'successful', "AVERAGE");
 
         $options[] = sprintf("LINE1:%s%s:%s", 'failed', '#ff0000', "failed\t");
-
 
         $options[] = "GPRINT:failed:AVERAGE:\: %6.1lf avg";
         $options[] = "GPRINT:failed:MAX:%7.1lf max";
@@ -90,6 +90,14 @@ class SlaveGraph
         $options[] = "GPRINT:discarded:MAX:%7.1lf max";
         $options[] = "GPRINT:discarded:MIN:%7.1lf min";
         $options[] = "GPRINT:discarded:LAST:%7.1lf now";
+        $options[] = "COMMENT: \\n";
+
+        $options[] = sprintf("LINE1:%s%s:%s", 'successful', '#00ff00', "successful\t");
+
+        $options[] = "GPRINT:successful:AVERAGE:\: %6.1lf avg";
+        $options[] = "GPRINT:successful:MAX:%7.1lf max";
+        $options[] = "GPRINT:successful:MIN:%7.1lf min";
+        $options[] = "GPRINT:successful:LAST:%7.1lf now";
         $options[] = "COMMENT: \\n";
 
         return $options;

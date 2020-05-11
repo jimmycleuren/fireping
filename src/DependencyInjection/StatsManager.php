@@ -18,6 +18,7 @@ use Symfony\Component\Process\Exception\ProcessTimedOutException;
 
 class StatsManager
 {
+    private $successfulPosts = 0;
     private $failedPosts = 0;
     private $discardedPosts = 0;
     private $workers;
@@ -33,18 +34,26 @@ class StatsManager
             'load' => sys_getloadavg(),
             'memory' => $this->getMemoryUsage(),
             'ip' => gethostbyname(gethostname()),
-            'failed_posts' => $this->failedPosts,
-            'discarded_posts' => $this->discardedPosts,
+            'posts' => [
+                'success' => $this->successfulPosts,
+                'failed' => $this->failedPosts,
+                'discarded' => $this->discardedPosts
+            ],
             'workers' => $this->workers,
             'queues' => $this->queues,
         ];
 
         $this->queues = [];
         $this->workers = [];
+        $this->successfulPosts = 0;
         $this->failedPosts = 0;
         $this->discardedPosts = 0;
 
         return $res;
+    }
+
+    public function addSuccessfulPost() {
+        $this->successfulPosts++;
     }
 
     public function addFailedPost() {

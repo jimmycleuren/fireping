@@ -167,11 +167,13 @@ class SlaveStatsRrdStorage
 
     protected function addDataSource($filename, $name)
     {
+        $step = 1;
+
         $ds = sprintf(
             "DS:%s:%s:%s:%s:%s",
             $name,
             'GAUGE',
-            2,
+            $step * 2,
             0,
             "U"
         );
