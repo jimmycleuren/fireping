@@ -14,7 +14,7 @@ class DeviceApiTest extends AbstractApiTest
 {
     public function testCollection()
     {
-        $crawler = $this->client->request('GET', '/api/devices.json', array(), array(), array(
+        $this->client->request('GET', '/api/devices.json', array(), array(), array(
             "HTTP_Accept" => "application/json"
         ));
 
@@ -26,7 +26,7 @@ class DeviceApiTest extends AbstractApiTest
 
     public function testStatus()
     {
-        $crawler = $this->client->request('GET', '/api/devices/1/status.json', array(), array(), array(
+        $this->client->request('GET', '/api/devices/1/status.json', array(), array(), array(
             "HTTP_Accept" => "application/json"
         ));
 
@@ -38,9 +38,23 @@ class DeviceApiTest extends AbstractApiTest
         $this->assertEquals('unknown', json_decode($response->getContent())->status);
     }
 
+    public function testStatusWithoutSlavegroup()
+    {
+        $this->client->request('GET', '/api/devices/8/status.json', array(), array(), array(
+            "HTTP_Accept" => "application/json"
+        ));
+
+        $response = $this->client->getResponse();
+        $this->assertEquals(500, $response->getStatusCode());
+        $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
+        $this->assertJson($response->getContent());
+
+        $this->assertEquals('No slavegroup assigned', json_decode($response->getContent())->message);
+    }
+
     public function testStatusNoProbe()
     {
-        $crawler = $this->client->request('GET', '/api/devices/3/status.json', array(), array(), array(
+        $this->client->request('GET', '/api/devices/3/status.json', array(), array(), array(
             "HTTP_Accept" => "application/json"
         ));
 

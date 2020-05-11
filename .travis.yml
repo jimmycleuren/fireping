@@ -57,7 +57,7 @@ before_script:
 
 script:
   - php bin/console cache:warmup --env=slave
-  - vendor/bin/phpunit --coverage-text --coverage-clover build/logs/clover.xml
+  - bin/phpunit --coverage-text --coverage-clover build/logs/clover.xml
   - composer phpstan
 
 after_script:

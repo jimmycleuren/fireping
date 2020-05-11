@@ -70,7 +70,7 @@
         ],
         "phpstan": "vendor/bin/phpstan --level=4 --configuration=phpstan.neon analyse src",
         "test": {
-            "tests": "vendor/bin/phpunit --coverage-html public/coverage"
+            "tests": "bin/phpunit --coverage-html public/coverage --debug"
         },
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
