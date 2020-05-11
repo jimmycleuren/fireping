@@ -18,10 +18,10 @@ class StatsManagerTest extends TestCase
 
         $statsManager->addFailedPost();
 
-        $this->assertEquals(1, $statsManager->getStats()['failed_posts']);
+        $this->assertEquals(1, $statsManager->getStats()['posts']['failed']);
 
         //failed posts should reset themself
-        $this->assertEquals(0, $statsManager->getStats()['failed_posts']);
+        $this->assertEquals(0, $statsManager->getStats()['posts']['failed']);
     }
 
     public function testAddDiscardedPosts()
@@ -31,10 +31,23 @@ class StatsManagerTest extends TestCase
 
         $statsManager->addDiscardedPost();
 
-        $this->assertEquals(1, $statsManager->getStats()['discarded_posts']);
+        $this->assertEquals(1, $statsManager->getStats()['posts']['discarded']);
 
         //discarded posts should reset themself
-        $this->assertEquals(0, $statsManager->getStats()['discarded_posts']);
+        $this->assertEquals(0, $statsManager->getStats()['posts']['discarded']);
+    }
+
+    public function testAddSuccessfulPosts()
+    {
+        $logger = $this->prophesize(LoggerInterface::class);
+        $statsManager = new StatsManager($logger->reveal());
+
+        $statsManager->addSuccessfulPost();
+
+        $this->assertEquals(1, $statsManager->getStats()['posts']['success']);
+
+        //successful posts should reset themself
+        $this->assertEquals(0, $statsManager->getStats()['posts']['success']);
     }
 
     public function testLoadAverage()
