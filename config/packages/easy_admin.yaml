@@ -59,6 +59,9 @@ easy_admin:
             class: App\Entity\ProbeArchive
         Slave:
             class: App\Entity\Slave
+            form:
+                fields:
+                    - slavegroup
             disabled_actions: ['new']
         SlaveGroup:
             class: App\Entity\SlaveGroup

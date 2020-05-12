@@ -14,6 +14,7 @@ use App\Exception\WrongTimestampRrdException;
 use App\Processor\ProcessorFactory;
 use App\Repository\DeviceRepository;
 use App\Repository\SlaveRepository;
+use App\Storage\SlaveStatsRrdStorage;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -21,6 +22,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class SlaveController extends AbstractController
@@ -39,7 +41,7 @@ class SlaveController extends AbstractController
      * @Route("/slaves", name="slave_index", methods={"GET"})
      * @param DeviceRepository $deviceRepository
      * @param SlaveRepository $slaveRepository
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     public function indexAction(EntityManagerInterface $entityManager, DeviceRepository $deviceRepository, SlaveRepository $slaveRepository)
     {
@@ -57,6 +59,29 @@ class SlaveController extends AbstractController
 
         return $this->render('slave/index.html.twig', array(
             'slaves' => $slaves,
+            'targets' => $targets,
+            'active_menu' => 'slave',
+        ));
+    }
+
+    /**
+     * @Route("/slaves/{id}", name="slave_detail", methods={"GET"})
+     *
+     * @param Slave $slave
+     * @param DeviceRepository $deviceRepository
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
+    public function detailAction(Slave $slave, DeviceRepository $deviceRepository, EntityManagerInterface $entityManager)
+    {
+        $targets = 0;
+        $data = $this->getSlaveConfig($slave, $deviceRepository, $entityManager);
+        foreach ($data as $probe) {
+            $targets += count($probe['targets']);
+        }
+
+        return $this->render('slave/detail.html.twig', array(
+            'slave' => $slave,
             'targets' => $targets,
             'active_menu' => 'slave',
         ));
@@ -271,6 +296,60 @@ class SlaveController extends AbstractController
 
         //TODO: implement slave error handling
         $this->logger->info("Error received from $slave");
+
+        return new JsonResponse(array('code' => 200));
+    }
+
+    /**
+     * @param Slave $slave
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param SlaveStatsRrdStorage $storage
+     * @param LoggerInterface $logger
+     * @return JsonResponse
+     * @Route("/api/slaves/{id}/stats", methods={"POST"})
+     */
+    public function statsAction(Slave $slave, Request $request, EntityManagerInterface $entityManager, SlaveStatsRrdStorage $storage, LoggerInterface $logger)
+    {
+        $data = json_decode($request->getContent());
+
+        $slave->setIp($data->ip);
+        $slave->setLastContact(new \DateTime());
+        $entityManager->persist($slave);
+        $entityManager->flush();
+
+        foreach ($data->workers as $timestamp => $workerData) {
+            $storage->store($slave, "workers", $timestamp, $workerData);
+        }
+
+        foreach ($data->queues as $timestamp => $queues) {
+            $result = [];
+            foreach ($queues as $id => $items) {
+                $result['queue'.$id] = $items;
+            }
+            $storage->store($slave, "queues", $timestamp, $result);
+        }
+
+        $storage->store($slave, "posts", date("U"), [
+            'successful' => $data->posts->success,
+            'failed' => $data->posts->failed,
+            'discarded' => $data->posts->discarded
+        ]);
+
+        $storage->store($slave, "load", date("U"), [
+            'load1' => $data->load[0],
+            'load5' => $data->load[1],
+            'load15' => $data->load[2],
+        ]);
+
+        $storage->store($slave, "memory", date("U"), [
+            'total' => $data->memory[0],
+            'used' => $data->memory[1],
+            'free' => $data->memory[2],
+            'shared' => $data->memory[3],
+            'buffer' => $data->memory[4],
+            'available' => $data->memory[5],
+        ]);
 
         return new JsonResponse(array('code' => 200));
     }
