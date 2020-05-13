@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\App\AlertDestination;
+namespace App\Tests\App\AlertDestination;
 
 use App\AlertDestination\Mail;
 use App\Entity\Alert;
@@ -9,10 +9,13 @@ use App\Entity\Device;
 use App\Entity\SlaveGroup;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Twig\Environment;
 
 class MailTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testTriggerNoSender()
     {
         $mailer = $this->prophesize('Swift_Mailer');

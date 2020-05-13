@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jimmyc
- * Date: 8/03/2018
- * Time: 20:39
- */
 
 namespace Tests\App\AlertDestination;
 
@@ -15,9 +9,12 @@ use App\Entity\Device;
 use App\Entity\SlaveGroup;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 class MonologTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testTrigger()
     {
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');

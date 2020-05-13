@@ -50,6 +50,7 @@
         "doctrine/doctrine-fixtures-bundle": "^3.0",
         "mi-schi/phpmd-extension": "^4.2",
         "phpmd/phpmd": "^2.6",
+        "phpspec/prophecy-phpunit": "^2.0",
         "phpstan/phpstan": "^0.12",
         "phpunit/phpunit": "^9.1",
         "sensiolabs/security-checker": "^6.0",
