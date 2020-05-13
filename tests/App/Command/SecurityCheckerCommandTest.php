@@ -22,6 +22,6 @@ class SecurityCheckerCommandTest extends KernelTestCase
         $commandTester->execute(array(
             'command'  => $command->getName()
         ));
-        $this->assertRegExp('/No packages have known vulnerabilities/', $commandTester->getDisplay());
+        $this->assertMatchesRegularExpression('/No packages have known vulnerabilities/', $commandTester->getDisplay());
     }
 }

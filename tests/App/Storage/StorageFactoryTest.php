@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\App\Storage;
+namespace App\Tests\App\Storage;
 
 use App\Entity\StorageNode;
 use App\Repository\StorageNodeRepository;
@@ -11,10 +11,13 @@ use App\Storage\StorageFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Log\LoggerInterface;
 
 class StorageFactoryTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testCreate()
     {
         $logger = $this->prophesize(LoggerInterface::class)->reveal();

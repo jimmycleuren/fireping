@@ -4,11 +4,11 @@ declare(strict_types=1);
 namespace Tests\App\Command;
 
 use App\Command\ProbeDispatcherCommand;
-use App\DependencyInjection\SlaveConfiguration;
 use App\DependencyInjection\StatsManager;
 use App\DependencyInjection\Worker;
 use App\DependencyInjection\WorkerManager;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -21,6 +21,8 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 class ProbeDispatcherCommandTest extends KernelTestCase
 {
+    use ProphecyTrait;
+
     public function testExecute(): void
     {
         $kernel      = self::bootKernel();

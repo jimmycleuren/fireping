@@ -4,10 +4,13 @@ namespace App\Tests\App\Controller;
 
 use App\DependencyInjection\StatsManager;
 use App\Tests\App\Api\AbstractApiTest;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Log\LoggerInterface;
 
 class SlaveControllerTest extends AbstractApiTest
 {
+    use ProphecyTrait;
+
     public function testIndex()
     {
         $crawler = $this->client->request('GET', '/slaves');
