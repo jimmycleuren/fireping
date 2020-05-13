@@ -1,12 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jimmyc
- * Date: 1/03/2018
- * Time: 21:28
- */
 
-namespace Tests\App\Graph;
+namespace App\Tests\App\Graph;
 
 use App\Entity\Device;
 use App\Entity\Probe;
@@ -17,9 +11,12 @@ use App\Storage\RrdStorage;
 use PHPUnit\Framework\TestCase;
 use App\Graph\PingGraph;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 class PingGraphTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testSummaryGraphWithoutRrd()
     {
         $storage = $this->prophesize('App\\Storage\\RrdStorage');

@@ -1,13 +1,16 @@
 <?php
 
-namespace Tests\App\Probe;
+namespace App\Tests\App\Probe;
 
 use App\Probe\Http;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Log\LoggerInterface;
 
 class HttpTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testHttp()
     {
         $logger = $this->prophesize(LoggerInterface::class)->reveal();

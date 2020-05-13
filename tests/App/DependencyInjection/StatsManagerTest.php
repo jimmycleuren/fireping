@@ -7,10 +7,13 @@ use App\ShellCommand\GetConfigHttpWorkerCommand;
 use App\ShellCommand\PostResultsHttpWorkerCommand;
 use App\ShellCommand\PostStatsHttpWorkerCommand;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Log\LoggerInterface;
 
 class StatsManagerTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testAddFailedPost()
     {
         $logger = $this->prophesize(LoggerInterface::class);

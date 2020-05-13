@@ -1,12 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jimmyc
- * Date: 8/03/2018
- * Time: 20:39
- */
 
-namespace Tests\App\AlertDestination;
+namespace App\Tests\App\AlertDestination;
 
 use App\AlertDestination\Monolog;
 use App\AlertDestination\Slack;
@@ -16,9 +10,12 @@ use App\Entity\Device;
 use App\Entity\SlaveGroup;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 class SlackTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testNoArguments()
     {
         $client = $this->prophesize('GuzzleHttp\\Client');

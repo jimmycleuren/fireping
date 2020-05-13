@@ -225,7 +225,7 @@
         "version": "1.0.1"
     },
     "php": {
-        "version": "7.2"
+        "version": "7.3"
     },
     "phpdocumentor/reflection-common": {
         "version": "1.0.1"
@@ -242,6 +242,9 @@
     "phpspec/prophecy": {
         "version": "1.7.6"
     },
+    "phpspec/prophecy-phpunit": {
+        "version": "v2.0.0"
+    },
     "phpstan/phpdoc-parser": {
         "version": "0.2"
     },
@@ -253,6 +256,9 @@
     },
     "phpunit/php-file-iterator": {
         "version": "1.4.5"
+    },
+    "phpunit/php-invoker": {
+        "version": "3.0.0"
     },
     "phpunit/php-text-template": {
         "version": "1.2.1"
@@ -321,6 +327,9 @@
     },
     "react/stream": {
         "version": "v0.7.7"
+    },
+    "sebastian/code-unit": {
+        "version": "1.0.2"
     },
     "sebastian/code-unit-reverse-lookup": {
         "version": "1.0.1"

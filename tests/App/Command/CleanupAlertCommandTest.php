@@ -1,10 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\App\Command;
+namespace App\Tests\App\Command;
 
 use App\Command\CleanupAlertCommand;
 use App\DependencyInjection\CleanupAlert;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -12,6 +13,8 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class CleanupAlertCommandTest extends KernelTestCase
 {
+    use ProphecyTrait;
+
     public function testExecute()
     {
         $kernel = self::bootKernel();

@@ -1,16 +1,18 @@
 <?php
 
-namespace Tests\App\DependencyInjection;
+namespace App\Tests\App\DependencyInjection;
 
 use App\DependencyInjection\CleanupAlert;
 use App\Entity\Alert;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 
 class CleanupAlertTest extends WebTestCase
 {
-    private $logger;
+    use ProphecyTrait;
+
     private $alertRepository;
     private $cleanupAlertService;
 
@@ -23,10 +25,10 @@ class CleanupAlertTest extends WebTestCase
 
         $this->alertRepository = $em->getRepository(Alert::class);
 
-        $this->logger = $this->prophesize(LoggerInterface::class);
+        $logger = $this->prophesize(LoggerInterface::class);
 
         $this->cleanupAlertService = new CleanupAlert(
-            $this->logger->reveal(),
+            $logger->reveal(),
             $this->alertRepository,
             $em);
     }
