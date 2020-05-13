@@ -4,10 +4,11 @@ declare(strict_types=1);
 namespace Tests\App\Command;
 
 use App\Command\ProbeDispatcherCommand;
-use App\DependencyInjection\SlaveConfiguration;
+use App\DependencyInjection\StatsManager;
 use App\DependencyInjection\Worker;
 use App\DependencyInjection\WorkerManager;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -20,6 +21,8 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 class ProbeDispatcherCommandTest extends KernelTestCase
 {
+    use ProphecyTrait;
+
     public function testExecute(): void
     {
         $kernel      = self::bootKernel();
@@ -36,8 +39,13 @@ class ProbeDispatcherCommandTest extends KernelTestCase
         $workerManager->initialize(Argument::type('int'), Argument::type('int'), Argument::type('int'))->shouldBeCalledTimes(1);
         $workerManager->loop()->willReturn();
         $workerManager->getWorker(Argument::any())->willReturn($worker);
+        $workerManager->getTotalWorkers()->willReturn(10);
+        $workerManager->getAvailableWorkers()->willReturn(5);
+        $workerManager->getInUseWorkerTypes()->willReturn(['ping' => 2, 'traceroute' => 3]);
 
-        $application->add(new ProbeDispatcherCommand($logger, $workerManager->reveal()));
+        $statsManager = $this->prophesize(StatsManager::class);
+
+        $application->add(new ProbeDispatcherCommand($logger, $workerManager->reveal(), $statsManager->reveal()));
 
         $command       = $application->find('app:probe:dispatcher');
         $commandTester = new CommandTester($command);

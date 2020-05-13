@@ -1,15 +1,19 @@
 <?php
 
-namespace Tests\App\DependencyInjection;
+namespace App\Tests\App\DependencyInjection;
 
 use App\DependencyInjection\Queue;
+use App\DependencyInjection\StatsManager;
 use App\DependencyInjection\Worker;
 use App\DependencyInjection\WorkerManager;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 class QueueTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testQueueSameTimestamp()
     {
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
@@ -23,7 +27,9 @@ class QueueTest extends TestCase
         $workerManager->getWorker(Argument::any())->willReturn($worker->reveal())->shouldBeCalledTimes(1);
         //$workerManager->sendInstruction(Argument::any(), 1234)->shouldBeCalledTimes(1);
 
-        $queue = new Queue($workerManager->reveal(), 1, 'test', $logger->reveal());
+        $statsManager = $this->prophesize(StatsManager::class);
+
+        $queue = new Queue($workerManager->reveal(), $statsManager->reveal(), 1, 'test', $logger->reveal());
 
         $queue->enqueue($this->getData(1, 1000, 10));
         $queue->enqueue($this->getData(1, 1000, 11));
@@ -59,7 +65,9 @@ class QueueTest extends TestCase
         $workerManager->getWorker(Argument::any())->willReturn($worker->reveal())->shouldBeCalledTimes(1);
         //$dispatcher->sendInstruction(Argument::any(), 1234)->shouldBeCalledTimes(3);
 
-        $queue = new Queue($workerManager->reveal(), 1, 'test', $logger->reveal());
+        $statsManager = $this->prophesize(StatsManager::class);
+
+        $queue = new Queue($workerManager->reveal(), $statsManager->reveal(), 1, 'test', $logger->reveal());
 
         $queue->enqueue($this->getData(1, 1000, 10));
         $queue->enqueue($this->getData(1, 1000, 11));

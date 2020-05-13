@@ -1,18 +1,16 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jimmyc
- * Date: 5/01/2018
- * Time: 21:04
- */
 
-namespace Tests\App\Controller;
+namespace App\Tests\App\Controller;
 
+use App\DependencyInjection\StatsManager;
 use App\Tests\App\Api\AbstractApiTest;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
+use Psr\Log\LoggerInterface;
 
 class SlaveControllerTest extends AbstractApiTest
 {
+    use ProphecyTrait;
+
     public function testIndex()
     {
         $crawler = $this->client->request('GET', '/slaves');
@@ -21,9 +19,17 @@ class SlaveControllerTest extends AbstractApiTest
         $this->assertStringContainsString('Slave list', $crawler->filter('h1')->text());
     }
 
+    public function testDetail()
+    {
+        $crawler = $this->client->request('GET', '/slaves/slave1');
+
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertStringContainsString('Slave slave1', $crawler->filter('h1')->text());
+    }
+
     public function testError()
     {
-        $crawler = $this->client->request('POST', '/api/slaves/slave1/error', array("message" => "error"));
+        $this->client->request('POST', '/api/slaves/slave1/error', array("message" => "error"));
 
         $response = $this->client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
@@ -33,7 +39,7 @@ class SlaveControllerTest extends AbstractApiTest
 
     public function testConfig()
     {
-        $crawler = $this->client->request('GET', '/api/slaves/slave1/config');
+        $this->client->request('GET', '/api/slaves/slave1/config');
 
         $response = $this->client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
@@ -43,7 +49,7 @@ class SlaveControllerTest extends AbstractApiTest
 
     public function testConfigUnuedSlave()
     {
-        $crawler = $this->client->request('GET', '/api/slaves/slave-unused/config');
+        $this->client->request('GET', '/api/slaves/slave-unused/config');
 
         $response = $this->client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
@@ -55,7 +61,7 @@ class SlaveControllerTest extends AbstractApiTest
     {
         $id = date("U");
 
-        $crawler = $this->client->request('GET', '/api/slaves/'.$id.'/config');
+        $this->client->request('GET', '/api/slaves/'.$id.'/config');
 
         $response = $this->client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
@@ -68,7 +74,7 @@ class SlaveControllerTest extends AbstractApiTest
 
     public function testEmptyResult()
     {
-        $crawler = $this->client->request('POST', '/api/slaves/slave1/result');
+        $this->client->request('POST', '/api/slaves/slave1/result');
 
         $response = $this->client->getResponse();
         $this->assertEquals(400, $response->getStatusCode());
@@ -78,7 +84,7 @@ class SlaveControllerTest extends AbstractApiTest
 
     public function testResultWithoutTimestamp()
     {
-        $crawler = $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
+        $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
             '1' => array()
         )));
 
@@ -90,7 +96,7 @@ class SlaveControllerTest extends AbstractApiTest
 
     public function testResultInvalidFormat()
     {
-        $crawler = $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
+        $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
             '1' => array(
                 'timestamp' => date("U")
             )
@@ -104,7 +110,7 @@ class SlaveControllerTest extends AbstractApiTest
 
     public function testResultUnknownTarget()
     {
-        $crawler = $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
+        $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
             '1' => array(
                 'timestamp' => date("U"),
                 'targets' => array(
@@ -123,7 +129,7 @@ class SlaveControllerTest extends AbstractApiTest
     {
         $timestamp = date("U");
 
-        $crawler = $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
+        $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
             '1' => array(
                 'timestamp' => $timestamp,
                 'targets' => array(
@@ -144,7 +150,7 @@ class SlaveControllerTest extends AbstractApiTest
     {
         $timestamp = date("U");
 
-        $crawler = $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
+        $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
             '1' => array(
                 'timestamp' => $timestamp,
                 'targets' => array(
@@ -181,7 +187,7 @@ class SlaveControllerTest extends AbstractApiTest
     {
         $timestamp = date("U");
 
-        $crawler = $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
+        $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
             '1' => array(
                 'timestamp' => $timestamp,
                 'targets' => array(
@@ -212,7 +218,7 @@ class SlaveControllerTest extends AbstractApiTest
         $this->assertJson($response->getContent());
 
         //try to update at the same timestamp again
-        $crawler = $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
+        $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
             '1' => array(
                 'timestamp' => $timestamp,
                 'targets' => array(
@@ -249,7 +255,7 @@ class SlaveControllerTest extends AbstractApiTest
     {
         $timestamp = date("U");
 
-        $crawler = $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
+        $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
             '2' => array(
                 'timestamp' => $timestamp,
                 'targets' => array(
@@ -275,7 +281,7 @@ class SlaveControllerTest extends AbstractApiTest
     {
         $timestamp = date("U");
 
-        $crawler = $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
+        $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
             '2' => array(
                 'timestamp' => $timestamp,
                 'targets' => array(
@@ -290,6 +296,33 @@ class SlaveControllerTest extends AbstractApiTest
                 )
             )
         )));
+
+        $response = $this->client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
+        $this->assertJson($response->getContent());
+    }
+
+    public function testStats()
+    {
+        exec("rm -rf ".$this->client->getContainer()->get('kernel')->getProjectDir()."/var/rrd/slaves");
+
+        $logger = $this->prophesize(LoggerInterface::class);
+        $statsManager = new StatsManager($logger->reveal());
+        $statsManager->addQueueItems(0, 5);
+        $statsManager->addWorkerStats(10, 5, ['ping' => 5]);
+
+        $this->client->request('POST', '/api/slaves/slave1/stats', array(), array(), array(), json_encode($statsManager->getStats()));
+
+        $response = $this->client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
+        $this->assertJson($response->getContent());
+
+        //second call for updates with additional datasource
+        sleep(1);
+        $statsManager->addWorkerStats(10, 5, ['ping' => 5, 'traceroute' => 1]);
+        $this->client->request('POST', '/api/slaves/slave1/stats', array(), array(), array(), json_encode($statsManager->getStats()));
 
         $response = $this->client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());

@@ -1,18 +1,20 @@
 <?php
 
-namespace Tests\App\AlertDestination;
+namespace App\Tests\App\AlertDestination;
 
 use App\AlertDestination\Http;
-use App\AlertDestination\Monolog;
 use App\Entity\Alert;
 use App\Entity\AlertRule;
 use App\Entity\Device;
 use App\Entity\SlaveGroup;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 class HttpTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testNoArguments()
     {
         $guzzle = $this->prophesize('GuzzleHttp\\Client');

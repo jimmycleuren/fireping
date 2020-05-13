@@ -65,7 +65,7 @@ class MigrationTest extends WebTestCase
     {
         // Test if all migrations run through
         $output = $this->runCommand('doctrine:migrations:migrate', '--no-interaction --env=test');
-        $this->assertRegExp('/\d+ sql queries\n$/', $output);
+        $this->assertMatchesRegularExpression('/\d+ sql queries\n$/', $output);
 
         // Validate that the mapping files are correct and in sync with the database.
         $output = $this->runCommand('doctrine:schema:validate', '--env=test');
@@ -81,13 +81,13 @@ class MigrationTest extends WebTestCase
 
         // Test if all migrations run through
         $output = $this->runCommand('doctrine:migrations:migrate', '--no-interaction --env=test');
-        $this->assertRegExp('/\d+ sql queries\n$/', $output);
+        $this->assertMatchesRegularExpression('/\d+ sql queries\n$/', $output);
 
         self::$application = null;
 
         // Test if all migrations run back
         $output = $this->runCommand('doctrine:migrations:migrate', 'first --no-interaction --env=test');
-        $this->assertRegExp('/\d+ sql queries\n$/', $output);
+        $this->assertMatchesRegularExpression('/\d+ sql queries\n$/', $output);
     }
 
     protected function tearDown() : void

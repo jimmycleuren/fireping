@@ -77,7 +77,6 @@ class Worker
     {
         $this->process->stop(3, SIGINT);
         $this->receiveBuffer = null;
-        $this->input = null;
         $this->startTime = null;
         $this->expectedRuntime = null;
         $this->executing = false;
@@ -109,7 +108,7 @@ class Worker
             $actualRuntime = microtime(true) - $this->startTime;
             $expectedRuntime = $this->expectedRuntime * 1.25;
             if ($actualRuntime > $expectedRuntime) {
-                throw new WorkerTimedOutException($this->lastCommand);
+                throw new WorkerTimedOutException($expectedRuntime, $this->lastCommand);
             }
         }
         if (!$this->executing) {
