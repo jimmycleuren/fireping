@@ -184,12 +184,19 @@ class SlaveGraph
 
     public function createMemoryGraph($slave, $file, $options)
     {
-        $options[] = sprintf("DEF:%s=%s:%s:%s","total", $this->storage->getFilePath($slave, 'memory'), "total", "AVERAGE");
-        $options[] = sprintf("DEF:%s=%s:%s:%s","used", $this->storage->getFilePath($slave, 'memory'), "used", "AVERAGE");
-        $options[] = sprintf("DEF:%s=%s:%s:%s","free", $this->storage->getFilePath($slave, 'memory'), "free", "AVERAGE");
-        $options[] = sprintf("DEF:%s=%s:%s:%s","shared", $this->storage->getFilePath($slave, 'memory'), "shared", "AVERAGE");
-        $options[] = sprintf("DEF:%s=%s:%s:%s","buffer", $this->storage->getFilePath($slave, 'memory'), "buffer", "AVERAGE");
-        $options[] = sprintf("DEF:%s=%s:%s:%s","available", $this->storage->getFilePath($slave, 'memory'), "available", "AVERAGE");
+        $options[] = sprintf("DEF:%s=%s:%s:%s","total_bytes", $this->storage->getFilePath($slave, 'memory'), "total", "AVERAGE");
+        $options[] = sprintf("DEF:%s=%s:%s:%s","used_bytes", $this->storage->getFilePath($slave, 'memory'), "used", "AVERAGE");
+        $options[] = sprintf("DEF:%s=%s:%s:%s","free_bytes", $this->storage->getFilePath($slave, 'memory'), "free", "AVERAGE");
+        $options[] = sprintf("DEF:%s=%s:%s:%s","shared_bytes", $this->storage->getFilePath($slave, 'memory'), "shared", "AVERAGE");
+        $options[] = sprintf("DEF:%s=%s:%s:%s","buffer_bytes", $this->storage->getFilePath($slave, 'memory'), "buffer", "AVERAGE");
+        $options[] = sprintf("DEF:%s=%s:%s:%s","available_bytes", $this->storage->getFilePath($slave, 'memory'), "available", "AVERAGE");
+
+        $options[] = sprintf("CDEF:%s=%s,%s,%s","total","total_bytes", 1000, "*");
+        $options[] = sprintf("CDEF:%s=%s,%s,%s","used","used_bytes", 1000, "*");
+        $options[] = sprintf("CDEF:%s=%s,%s,%s","free","free_bytes", 1000, "*");
+        $options[] = sprintf("CDEF:%s=%s,%s,%s","shared","shared_bytes", 1000, "*");
+        $options[] = sprintf("CDEF:%s=%s,%s,%s","buffer","buffer_bytes", 1000, "*");
+        $options[] = sprintf("CDEF:%s=%s,%s,%s","available","available_bytes", 1000, "*");
 
         $options = $this->addLine($options, 1, 6, "total", "total");
         $options = $this->addLine($options, 2, 6, "used", "used");
