@@ -6,6 +6,7 @@ namespace App\Probe;
 use App\OutputFormatter\PingOutputFormatter;
 use App\ShellCommand\CommandInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Process\ExecutableFinder;
 
 class Ping implements CommandInterface
 {
@@ -86,6 +87,11 @@ class Ping implements CommandInterface
 
         if ($tooManyArguments) {
             $errors['TooManyArguments'] = 'Should have at most ' . self::MAX_TARGETS . ' targets.';
+        }
+
+        $finder = new ExecutableFinder();
+        if (!$finder->find('fping')) {
+            $errors['FpingNotInstalled'] = 'Fping is not installed.';
         }
 
         return $errors;
