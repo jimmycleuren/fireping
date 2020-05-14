@@ -8,13 +8,11 @@
                 <div class="alert-danger">{{ error.messageKey }}</div>
             {% endif %}
             <br>
-            <form>
-                <label for="inputUsername">Username</label>
-                <input type="text" id="inputUsername" name="username" value="{{ last_username }}" required="required" />
-                <label for="inputPassword">Password</label>
-                <input type="password" id="inputPassword" name="password" required="required" />
-                <input type="submit" class="login login-submit" id="_submit" name="_submit" value="Sign in" />
-            </form>
+            <label for="inputUsername">Username</label>
+            <input type="text" id="inputUsername" name="username" value="{{ last_username }}" required="required" />
+            <label for="inputPassword">Password</label>
+            <input type="password" id="inputPassword" name="password" required="required" />
+            <input type="submit" class="login login-submit" id="_submit" name="_submit" value="Sign in" />
         </div>
     </form>
 {% endblock body %}

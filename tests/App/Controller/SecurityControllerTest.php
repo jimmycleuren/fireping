@@ -14,5 +14,26 @@ class SecurityControllerTest extends WebTestCase
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertStringContainsString('Login', $crawler->filter('h1')->text());
+
+        $form = $crawler->selectButton('Sign in')->form();
+
+        $form['username'] = 'test';
+        $form['password'] = 'test123';
+
+        $client->submit($form);
+
+        $this->assertEquals(302, $client->getResponse()->getStatusCode());
+    }
+
+    public function testLogout()
+    {
+        $client = static::createClient(array(), array(
+            'PHP_AUTH_USER' => 'test',
+            'PHP_AUTH_PW'   => 'test123',
+        ));
+
+        $crawler = $client->request('GET', '/logout');
+
+        $this->assertEquals(302, $client->getResponse()->getStatusCode());
     }
 }
