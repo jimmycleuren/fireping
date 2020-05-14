@@ -3,13 +3,15 @@
 namespace App\Tests\App\Probe;
 
 use App\OutputFormatter\PingOutputFormatter;
-use App\Probe\Http;
 use App\Probe\Ping;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Log\LoggerInterface;
 
 class PingTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testPing()
     {
         $logger = $this->prophesize(LoggerInterface::class)->reveal();
@@ -31,7 +33,7 @@ class PingTest extends TestCase
         $this->assertEquals(2, count($result[1]));
     }
 
-    public function testMissingArrument()
+    public function testMissingArgument()
     {
         $logger = $this->prophesize(LoggerInterface::class)->reveal();
         $ping = new Ping($logger, new PingOutputFormatter());
@@ -54,6 +56,9 @@ class PingTest extends TestCase
     {
         $logger = $this->prophesize(LoggerInterface::class)->reveal();
         $ping = new Ping($logger, new PingOutputFormatter());
+
+        $this->expectException(\Exception::class);
+
         $ping->setArgs([
             'delay_execution' => 0,
             'targets' => [],
@@ -62,8 +67,6 @@ class PingTest extends TestCase
                 'wait_time' => 10000
             ]
         ]);
-
-        $this->expectException(\Exception::class);
 
         $ping->execute();
     }

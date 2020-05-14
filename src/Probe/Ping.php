@@ -34,6 +34,9 @@ class Ping implements CommandInterface
 
     public function setArgs(array $args): void
     {
+        if (count($args['targets']) == 0) {
+            throw new \RuntimeException("No targets set for ping probe");
+        }
         $args['args']['interval'] = $args['args']['wait_time'] / count($args['targets']);
         $args['args']['retries'] = 0;
 
