@@ -1,13 +1,13 @@
-{% extends 'base.html.twig' %}
+{% extends 'base-adminlte.html.twig' %}
 
-{% block body %}
+{% block title %}Fireping - alerts{% endblock %}
+
+{% block page_title %}Active alerts {% if domain is defined %} in {{ domain.name }}{% endif %}{% endblock %}
+{% block page_subtitle %}{% endblock %}
+
+{% block page_content %}
     <div class="row">
-        <div class="col-md-2 sidebar" style="padding:0px;">
-            {% include 'menu/menu.html.twig' %}
-        </div>
         <div class="col-md-8 col-md-offset-2 main">
-            <h1 class="page-header">Active alerts{% if domain is defined %} in {{ domain.name }}{% endif %}</h1>
-
             <span class="row">
             {% for key,domain in alertDomains %}
                 <span class="col-md-2">

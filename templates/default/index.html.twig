@@ -1,9 +1,67 @@
-{% extends 'base.html.twig' %}
+{% extends 'base-adminlte.html.twig' %}
 
-{% block body %}
-<div class="row">
-    <div class="col-sm-3 col-md-2 sidebar" style="padding:0px;">
-        {% include 'menu/menu.html.twig' %}
+{% block title %}Fireping - dashboard{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+{% block page_subtitle %}{% endblock %}
+
+{% block page_content %}
+
+    <div class="row">
+        <div class="col-md-3">
+            {% embed '@AdminLTE/Widgets/infobox-widget.html.twig'  with {
+                'color' : 'green',
+                'icon'  : 'fa fa-microchip',
+            }%}
+                {% block box_text %}Online slaves{% endblock %}
+                {% block box_number %}{{ onlineSlaves }}{% endblock %}
+                {% block progress_description %}test{% endblock %}
+            {% endembed %}
+        </div>
+
+        <div class="col-md-3">
+            {% embed '@AdminLTE/Widgets/infobox-widget.html.twig'  with {
+                'color' : 'green',
+                'icon'  : 'fa fa-bullseye',
+            }%}
+                {% block box_text %}Online targets{% endblock %}
+                {% block box_number %}0{% endblock %}
+                {% block progress_description %}{% endblock %}
+            {% endembed %}
+        </div>
+
+        <div class="col-md-3">
+            {% embed '@AdminLTE/Widgets/infobox-widget.html.twig'  with {
+                'color' : 'aqua',
+                'icon'  : 'fa fa-hdd-o',
+            }%}
+                {% block box_text %}Storage nodes{% endblock %}
+                {% block box_number %}{{ storageNodes|length }}{% endblock %}
+                {% block progress_description %}{% endblock %}
+            {% endembed %}
+        </div>
     </div>
-</div>
+    <div class="row">
+        <div class="col-md-3">
+            {% embed '@AdminLTE/Widgets/infobox-widget.html.twig'  with {
+                'color' : 'red',
+                'icon'  : 'fa fa-microchip',
+            }%}
+                {% block box_text %}Offline slaves{% endblock %}
+                {% block box_number %}{{ offlineSlaves }}{% endblock %}
+                {% block progress_description %}test{% endblock %}
+            {% endembed %}
+        </div>
+
+        <div class="col-md-3">
+            {% embed '@AdminLTE/Widgets/infobox-widget.html.twig'  with {
+                'color' : 'red',
+                'icon'  : 'fa fa-bullseye',
+            }%}
+                {% block box_text %}Offline targets{% endblock %}
+                {% block box_number %}0{% endblock %}
+                {% block progress_description %}{% endblock %}
+            {% endembed %}
+        </div>
+    </div>
 {% endblock %}
