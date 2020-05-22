@@ -28,6 +28,7 @@ class SmokeRrdGraph extends RrdGraph
             "--lower-limit=0",
             "--width=".$width,
             "--height=60",
+            "--color=BACK".$_ENV['RRD_BACKGROUND']
         );
 
         $counter = 0;
@@ -106,6 +107,7 @@ class SmokeRrdGraph extends RrdGraph
             "--rigid",
             "--width=1000",
             "--height=200",
+            "--color=BACK".$_ENV['RRD_BACKGROUND']
         );
 
         $options[] = sprintf("DEF:%s=%s:%s:%s",'median', $this->storage->getFilePath($device, $probe, $slavegroup), 'median', "AVERAGE");

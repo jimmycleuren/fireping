@@ -24,6 +24,7 @@
         "eightpoints/guzzle-bundle": "^8.1",
         "flexihash/flexihash": "^2.0",
         "guzzlehttp/guzzle": "^6.3",
+        "kevinpapst/adminlte-bundle": "^3.0",
         "predis/predis": "^1.1",
         "react/event-loop": "^1.0",
         "react/socket": "^1.0",
@@ -96,7 +97,7 @@
         "symfony-assets-install": "relative",
         "branch-alias": null,
         "symfony": {
-            "allow-contrib": false,
+            "allow-contrib": "true",
             "require": "^5.0"
         }
     }

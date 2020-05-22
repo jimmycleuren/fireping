@@ -1,31 +1,43 @@
-{% extends 'base.html.twig' %}
+{% extends 'base-adminlte.html.twig' %}
 
-{% block body %}
-    <h1>Slave list</h1>
+{% block title %}Fireping - slaves{% endblock %}
 
-    <table class="table table-bordered table-striped">
-        <thead>
-        <tr>
-            <th>Id</th>
-            <th>Slavegroup</th>
-            <th># of targets</th>
-            <th>IP</th>
-            <th>Last contact</th>
-            <th>Details</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for slave in slaves %}
-            <tr>
-                <td>{{ slave.id }}</td>
-                <td>{{ slave.slavegroup }}</td>
-                <td>{{ targets[slave.id] }}</td>
-                <td>{{ slave.ip }}</td>
-                <td>{{ slave.lastContact|date("d-m-Y H:i:s") }}</td>
-                <td><a href="{{ path("slave_detail", {id: slave.id}) }}">Show details</a></td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+{% block page_title %}Slaves{% endblock %}
+{% block page_subtitle %}{% endblock %}
+
+{% block page_content %}
+    {% embed '@AdminLTE/Widgets/box-widget.html.twig' %}
+        {% block box_title %}
+            All slaves
+        {% endblock %}
+        {% block box_body %}
+            <table class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Slavegroup</th>
+                    <th># of targets</th>
+                    <th>IP</th>
+                    <th>Last contact</th>
+                    <th>Details</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for slave in slaves %}
+                    <tr>
+                        <td>{{ slave.id }}</td>
+                        <td>{{ slave.slavegroup }}</td>
+                        <td>{{ targets[slave.id] }}</td>
+                        <td>{{ slave.ip }}</td>
+                        <td>{{ slave.lastContact|date("d-m-Y H:i:s") }}</td>
+                        <td><a href="{{ path("slave_detail", {id: slave.id}) }}">Show details</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endblock %}
+    {% endembed %}
+
+
 
 {% endblock %}

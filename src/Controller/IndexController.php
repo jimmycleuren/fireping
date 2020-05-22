@@ -2,6 +2,9 @@
 
 namespace App\Controller;
 
+use App\Repository\DeviceRepository;
+use App\Repository\SlaveRepository;
+use App\Repository\StorageNodeRepository;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -10,8 +13,22 @@ class IndexController extends AbstractController
     /**
      * @Route("/", name="home")
      */
-    public function indexAction()
+    public function indexAction(StorageNodeRepository $storageNodeRepository, SlaveRepository $slaveRepository, DeviceRepository $deviceRepository)
     {
-        return $this->render('default/index.html.twig');
+        $onlineSlaves = 0;
+        $offlineSlaves = 0;
+        foreach ($slaveRepository->findAll() as $slave) {
+            if ($slave->isOnline()) {
+                $onlineSlaves++;
+            } else {
+                $offlineSlaves++;
+            }
+        }
+
+        return $this->render('default/index.html.twig', [
+            'storageNodes' => $storageNodeRepository->findAll(),
+            'onlineSlaves' => $onlineSlaves,
+            'offlineSlaves' => $offlineSlaves
+        ]);
     }
 }
