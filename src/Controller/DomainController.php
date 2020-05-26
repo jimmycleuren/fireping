@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Domain;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,13 +15,27 @@ class DomainController extends AbstractController
      * @Route("/domain/{id}")
      * @ParamConverter("domain", class="App:Domain")
      */
-    public function getAction(Domain $domain, Request $request)
+    public function getAction(Domain $domain, Request $request, ContainerInterface $container)
     {
         return $this->render('domain/view.html.twig', array(
             'domain' => $domain,
             'current_domain' => $domain,
             'start' => $request->get('start') ?? ((int)date("U")) - 43200,
-            'end' => $request->get('end')
+            'end' => $request->get('end'),
+            'control_sidebar_extra' => [
+                'navigation' => [
+                    'icon' => 'far fa-clock',
+                    'controller' => 'App\Controller\DomainController::sidebarAction'
+                ]
+            ]
         ));
+    }
+
+    public function sidebarAction(Request $originalRequest)
+    {
+        return $this->render("domain/sidebar.html.twig", [
+            'start' => $originalRequest->get('start') ?? ((int)date("U")) - 43200,
+            'end' => $originalRequest->get('end'),
+        ]);
     }
 }

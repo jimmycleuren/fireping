@@ -19,7 +19,13 @@ admin_lte:
 
     routes:
         adminlte_welcome: home
-        adminlte_login: login
+        adminlte_login: app_login
+        adminlte_login_check: app_login
         adminlte_profile: profile
         adminlte_notification: 'app_alert_detail'
         adminlte_notifications: 'app_alert_index'
+
+    control_sidebar:
+        home:
+            icon: fas fa-cogs
+            controller: 'App\Controller\SidebarController::settingsAction'

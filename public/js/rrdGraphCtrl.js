@@ -106,7 +106,7 @@ qxWeb.define('rrdGraphCtrl',{
         },
         __addDatePicker: function(){
             var rrdGraphPngs = this.getProperty('rrdGraphPngs');
-            var start = qxWeb.create('<input  type="text"/>');
+            var start = qxWeb.create('<input  type="text" class="form-control"/>');
             start.appendTo(this);
             var picker = start.datepicker().setConfig('format', function(date) {
                 return date.toDateString();
@@ -116,7 +116,7 @@ qxWeb.define('rrdGraphCtrl',{
             if (! this.getConfig('showDateBox')) {
                 start.hide();
             }
-            var timeBox = qxWeb.create('<input class="qx-datepicker" size="10" type="text" value="00:00:00" />');
+            var timeBox = qxWeb.create('<input class="qx-datepicker form-control" size="10" type="text" value="00:00:00" />');
             if (! this.getConfig('showTimeBox')){
                 timeBox.hide();
             }
@@ -286,7 +286,7 @@ qxWeb.define('rrdGraphCtrl',{
         __addRangePicker: function(){
             var rrdGraphPngs = this.getProperty('rrdGraphPngs');
 
-            var rangeSelector = qxWeb.create('<select class="qx-widget qx-selectbox"/>');
+            var rangeSelector = qxWeb.create('<select class="qx-widget qx-selectbox form-control"/>');
             this.setProperty('rangeSelector',rangeSelector);
             rangeSelector.appendTo(this);
             if (this.getConfig('showTimeRanges') == 'buttons'){

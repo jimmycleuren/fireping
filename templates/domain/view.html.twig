@@ -2,7 +2,7 @@
 
 {% block title %}Fireping - {{ domain.name }}{% endblock %}
 
-{% block page_title %}Domain  {{ domain.name }}{% endblock %}
+{% block page_title %}<i class="fas fa-layer-group"></i> Domain  {{ domain.name }}{% endblock %}
 {% block page_subtitle %}{% endblock %}
 
 {% block page_content %}
@@ -18,7 +18,7 @@
         {% endif %}
         {% for device in domain.devices %}
             {% embed '@AdminLTE/Widgets/box-widget.html.twig' %}
-                {% block box_title %}{{ device.name }} - {{ device.ip }}{% endblock %}
+                {% block box_title %}<i class="fas fa-desktop"></i> {{ device.name }} - {{ device.ip }}{% endblock %}
                 {% block box_body_class %}p-0 text-center{% endblock %}
                 {% block box_body %}
                     <a href="{{ path('app_device_get', {id: device.id}) }}">
@@ -30,33 +30,29 @@
     </div>
 
     <div class="col-md-3">
-        {% if domain.devices|length > 0 %}
-            {% embed '@AdminLTE/Widgets/box-widget.html.twig' %}
-                {% block box_title %}Navigation{% endblock %}
-                {% block box_body %}
-                    <form method="get">
-                        <input type="text" class="form-control datetimepicker" name="start" value="{{ start }}">
-                        <br/>
-                        <input type="text" class="form-control datetimepicker" name="end" value="{{ end }}">
-                        <br/>
-                        <input type="submit" class="btn btn-primary" value="Update">
-                    </form>
-                {% endblock %}
-            {% endembed %}
-        {% endif %}
-
-        {% if domain.subdomains|length > 0 %}
-            {% embed '@AdminLTE/Widgets/box-widget.html.twig' %}
-                {% block box_title %}Subdomains{% endblock %}
-                {% block box_body %}
-                    <ul>
-                    {% for subdomain in domain.subdomains %}
-                        <li><a href="{{ path("app_domain_get", {id: subdomain.id}) }}">{{ subdomain.name }}</a></li>
-                    {% endfor %}
-                    </ul>
-                {% endblock %}
-            {% endembed %}
-        {% endif %}
+        {% embed '@AdminLTE/Widgets/box-widget.html.twig' %}
+            {% block box_title %}Structure{% endblock %}
+            {% block box_body %}
+                {% if domain.parent %}
+                    <div>
+                        <i class="fas fa-layer-group"></i>
+                        <a href="{{ path("app_domain_get", {id: domain.parent.id}) }}">{{ domain.parent.name }}</a>
+                    </div>
+                {% endif %}
+                <div {% if domain.parent %}style="padding-left:5px;"{% endif %}>
+                    {% if domain.parent %}<i class="fas fa-angle-right rotate"></i>{% endif %}
+                    <i class="fas fa-layer-group"></i>
+                    {{ domain.name }}
+                </div>
+                {% for subdomain in domain.subdomains %}
+                    <div {% if domain.parent %}style="padding-left:20px;"{% else %}style="padding-left:5px;"{% endif %}>
+                        <i class="fas fa-angle-right rotate"></i>
+                        <i class="fas fa-layer-group"></i>
+                        <a href="{{ path("app_domain_get", {id: subdomain.id}) }}">{{ subdomain.name }}</a>
+                    </div>
+                {% endfor %}
+            {% endblock %}
+        {% endembed %}
     </div>
 </div>
 {% endblock %}
