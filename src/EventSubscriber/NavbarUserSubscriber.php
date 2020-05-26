@@ -33,31 +33,44 @@ class NavbarUserSubscriber implements EventSubscriberInterface
 
     public function onShowUser(ShowUserEvent $event)
     {
-        if (null === $this->security->getUser()) {
-            return;
-        }
-
-        /* @var $myUser User */
-        $myUser = $this->security->getUser();
-
         $event->setShowProfileLink(false);
-        if ($this->session->get('debug') === true) {
-            $event->addLink(new NavBarUserLink("Hide graph trends", "debug"));
+
+        if (null === $this->security->getUser()) {
+            $user = new UserModel();
+            $user
+                ->setId('guest')
+                ->setName('Guest')
+                //->setUsername($myUser->getUsername())
+                ->setIsOnline(true)
+                ->setTitle('Guest')
+                //->setAvatar($myUser->getAvatar())
+            ;
+
+            $event->setUser($user);
+            $event->setShowLogoutLink(false);
+            $event->addLink(new NavBarUserLink("Login", "app_login"));
+
         } else {
-            $event->addLink(new NavBarUserLink("Show graph trends", "debug"));
+
+            /* @var $myUser User */
+            $myUser = $this->security->getUser();
+
+            if ($this->session->get('debug') === true) {
+                $event->addLink(new NavBarUserLink("Hide graph trends", "debug"));
+            } else {
+                $event->addLink(new NavBarUserLink("Show graph trends", "debug"));
+            }
+
+            $user = new UserModel();
+            $user
+                ->setId($myUser->getId())
+                ->setName($myUser->getUsername())
+                ->setUsername($myUser->getUsername())
+                ->setIsOnline(true)
+                ->setTitle($myUser->getRoles()[0])//->setAvatar($myUser->getAvatar())
+            ;
+
+            $event->setUser($user);
         }
-
-        $user = new UserModel();
-        $user
-            ->setId($myUser->getId())
-            ->setName($myUser->getUsername())
-            ->setUsername($myUser->getUsername())
-            ->setIsOnline(true)
-            ->setTitle($myUser->getRoles()[0])
-            //->setAvatar($myUser->getAvatar())
-            //->setMemberSince($myUser->getRegisteredAt())
-        ;
-
-        $event->setUser($user);
     }
 }

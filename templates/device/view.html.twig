@@ -2,52 +2,30 @@
 
 {% block title %}Fireping - {{ device.name }}{% endblock %}
 
-{% block page_title %}Device  {{ device.name }} - {{ device.ip }}{% endblock %}
+{% block page_title %}<i class="fas fa-desktop"></i> Device  {{ device.name }} - {{ device.ip }}{% endblock %}
 {% block page_subtitle %}{% endblock %}
 
 {% block page_content %}
-    <div class="row">
-        <div class="col-md-9">
-        {% for probe in device.getActiveProbes() %}
-            {% for slavegroup in device.getActiveSlaveGroups() %}
-                {% embed '@AdminLTE/Widgets/box-widget.html.twig' %}
-                    {% block box_title %}{{ probe.name }} - {{ slavegroup.name }}{% endblock %}
-                    {% block box_body_class %}p-0 text-center{% endblock %}
-                    {% block box_body %}
-                        <img style="max-width: 100%; height: auto;" onload="window.dispatchEvent(new Event('resize'));" class="graph" data-src-template="/api/graphs/detail/{{ device.id }}/{{ probe.id }}/{{ slavegroup.id }}{% verbatim %}?start={{start}}&end={{end}}{% endverbatim  %}" />
-                    {% endblock %}
-                {% endembed %}
-            {% endfor %}
+    {% for probe in device.getActiveProbes() %}
+        {% for slavegroup in device.getActiveSlaveGroups() %}
+            {% embed '@AdminLTE/Widgets/box-widget.html.twig' %}
+                {% block box_title %}{{ probe.name }} - {{ slavegroup.name }}{% endblock %}
+                {% block box_body_class %}p-0 text-center{% endblock %}
+                {% block box_body %}
+                    <img style="max-width: 100%; height: auto;" onload="window.dispatchEvent(new Event('resize'));" class="graph" data-src-template="/api/graphs/detail/{{ device.id }}/{{ probe.id }}/{{ slavegroup.id }}{% verbatim %}?start={{start}}&end={{end}}{% endverbatim  %}" />
+                {% endblock %}
+            {% endembed %}
         {% endfor %}
-        </div>
+    {% endfor %}
+{% endblock %}
 
-        <div class="col-md-3">
-            {% embed '@AdminLTE/Widgets/box-widget.html.twig' with {'boxtype' : 'primary'} %}
-                {% block box_title %}Navigation{% endblock %}
-                {% block box_body %}
-                    <div id="ctrl"></div>
-                {% endblock %}
-            {% endembed %}
-
-            {% embed '@AdminLTE/Widgets/box-widget.html.twig' with {'boxtype' : 'primary'} %}
-                {% block box_title %}Alert rules{% endblock %}
-                {% block box_body %}
-                    {% for rule in device.activeAlertRules %}
-                        <li>{{ rule.name }}</li>
-                    {% endfor %}
-                {% endblock %}
-            {% endembed %}
-
-            {% embed '@AdminLTE/Widgets/box-widget.html.twig' with {'boxtype' : 'primary'} %}
-                {% block box_title %}Alert destinations{% endblock %}
-                {% block box_body %}
-                    {% for destination in device.activeAlertDestinations %}
-                        <li>{{ destination.name }}</li>
-                    {% endfor %}
-                {% endblock %}
-            {% endembed %}
-        </div>
-    </div>
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .qx-calendar {
+            z-index:2000;
+        }
+    </style>
 {% endblock %}
 
 {% block javascripts %}
