@@ -4,25 +4,18 @@ namespace App\DataFixtures\ORM;
 
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
-class UserFixtures extends Fixture implements ContainerAwareInterface
+class UserFixtures extends Fixture
 {
-    private $container;
-
     private $encoder;
 
     public function __construct(EncoderFactoryInterface $encoderFactory)
     {
         $this->encoder = $encoderFactory;
-    }
-
-    public function setContainer(ContainerInterface $container = null)
-    {
-        $this->container = $container;
     }
 
     public function load(ObjectManager $manager)
