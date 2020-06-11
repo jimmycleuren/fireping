@@ -10,7 +10,7 @@ namespace App\DataFixtures\ORM;
 
 use App\Entity\Probe;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 
 class ProbeFixtures extends Fixture
 {
