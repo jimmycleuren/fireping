@@ -37,7 +37,7 @@ class AlertController extends AbstractController
     }
 
     /**
-     * @param AlertRepository $alertRepository
+     * @param Alert $alert
      * @return \Symfony\Component\HttpFoundation\Response
      *
      * @Route("/alerts/{id}")
