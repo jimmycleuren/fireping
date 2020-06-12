@@ -83,8 +83,20 @@ class SlaveController extends AbstractController
         return $this->render('slave/detail.html.twig', array(
             'slave' => $slave,
             'targets' => $targets,
-            'active_menu' => 'slave',
+            'control_sidebar_extra' => [
+                'navigation' => [
+                    'icon' => 'far fa-clock',
+                    'controller' => 'App\Controller\SlaveController::sidebarAction'
+                ]
+            ]
         ));
+    }
+
+    public function sidebarAction(Request $originalRequest)
+    {
+        return $this->render("slave/sidebar.html.twig", [
+            'device' => $originalRequest->get('device'),
+        ]);
     }
 
     /**

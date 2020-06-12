@@ -1,57 +1,35 @@
-{% extends 'base.html.twig' %}
+{% extends 'base-adminlte.html.twig' %}
 
-{% block body %}
-    <div class="row">
-        <div class="col-md-2 sidebar" style="padding:0px;">
-            {% include 'menu/menu.html.twig' %}
-        </div>
-        <div class="col-md-10 col-md-offset-2 main">
-            <h1 class="page-header">{{ device.name }} - {{ device.ip }}</h1>
+{% block title %}Fireping - {{ device.name }}{% endblock %}
 
-            <div class="row">
-                <div class="col-md-9">
-                {% for probe in device.getActiveProbes() %}
-                    {% for slavegroup in device.getActiveSlaveGroups() %}
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                {{ probe.name }} - {{ slavegroup.name }}
-                            </div>
-                            <div class="panel-body" style="padding:0px; text-align:center; background-color: #f5f5f5;">
-                                <img style="max-width: 100%; height: auto;" onload="window.dispatchEvent(new Event('resize'));" class="graph" data-src-template="/api/graphs/detail/{{ device.id }}/{{ probe.id }}/{{ slavegroup.id }}{% verbatim %}?start={{start}}&end={{end}}{% endverbatim  %}" />
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% endfor %}
-                </div>
+{% block page_title %}<i class="fas fa-desktop"></i> Device  {{ device.name }} - {{ device.ip }}{% endblock %}
+{% block page_subtitle %}{% endblock %}
 
-                <div class="col-md-3">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Navigation</div>
-                        <div class="panel-body" id="ctrl"></div>
-                    </div>
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Alert rules</div>
-                        <div class="panel-body">
-                            {% for rule in device.activeAlertRules %}
-                                <li>{{ rule.name }}</li>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Alert destinations</div>
-                        <div class="panel-body">
-                            {% for destination in device.activeAlertDestinations %}
-                                <li>{{ destination.name }}</li>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+{% block page_content %}
+    {% for probe in device.getActiveProbes() %}
+        {% for slavegroup in device.getActiveSlaveGroups() %}
+            {% embed '@AdminLTE/Widgets/box-widget.html.twig' %}
+                {% block box_title %}{{ probe.name }} - {{ slavegroup.name }}{% endblock %}
+                {% block box_body_class %}p-0 text-center{% endblock %}
+                {% block box_body %}
+                    <img style="max-width: 100%; height: auto;" onload="window.dispatchEvent(new Event('resize'));" class="graph" data-src-template="/api/graphs/detail/{{ device.id }}/{{ probe.id }}/{{ slavegroup.id }}{% verbatim %}?start={{start}}&end={{end}}{% endverbatim  %}" />
+                {% endblock %}
+            {% endembed %}
+        {% endfor %}
+    {% endfor %}
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .qx-calendar {
+            z-index:2000;
+        }
+    </style>
 {% endblock %}
 
 {% block javascripts %}
+    {{ parent() }}
     <script type="text/javascript">
         q.ready(function(){
             // 'activate' the charts

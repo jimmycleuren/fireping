@@ -16,7 +16,7 @@ class SlaveControllerTest extends AbstractApiTest
         $crawler = $this->client->request('GET', '/slaves');
 
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
-        $this->assertStringContainsString('Slave list', $crawler->filter('h1')->text());
+        $this->assertStringContainsString('Slaves', $crawler->filter('h1')->text());
     }
 
     public function testDetail()

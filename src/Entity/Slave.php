@@ -141,4 +141,23 @@ class Slave
 
         return $this;
     }
+
+    public function getStatusColor()
+    {
+        if ($this->getLastContact() > new \DateTime("2 minutes ago")) {
+            return 'green';
+        } elseif ($this->getLastContact() > new \DateTime("5 minutes ago")) {
+            return 'yellow';
+        } else {
+            return 'red';
+        }
+    }
+
+    public function isOnline()
+    {
+        if ($this->getLastContact() > new \DateTime("2 minutes ago")) {
+            return true;
+        }
+        return false;
+    }
 }

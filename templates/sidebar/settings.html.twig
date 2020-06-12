@@ -1,0 +1,8 @@
+<h3 class="control-sidebar-heading">Graph settings</h3>
+<form action="{{ path('debug') }}">
+    <label class="control-sidebar-subheading">
+        Show graph trends
+        <input type="checkbox" class="pull-right" onChange="this.form.submit()" {% if app.session.get('debug') == true %}checked="checked"{% endif %}>
+    </label>
+    <p>Show predicted trend values on the graphs</p>
+</form>

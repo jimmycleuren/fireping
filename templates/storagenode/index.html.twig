@@ -1,33 +1,43 @@
-{% extends 'base.html.twig' %}
+{% extends 'base-adminlte.html.twig' %}
 
-{% block title %}Storage nodes{% endblock %}
+{% block title %}Fireping - Storage Nodes{% endblock %}
 
-{% block body %}
-    <h1>Storage nodes</h1>
-    <table class="table table-bordered table-striped">
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>IP</th>
-            <th>Status</th>
-            <th>Devices</th>
-            <th>Rrdcached</th>
-            <th>SSH</th>
-            <th>Permissions</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for row in nodes %}
-        <tr>
-            <td>{{ row.node.name }}</td>
-            <td>{{ row.node.ip }}</td>
-            <td>{{ row.node.status }}</td>
-            <td>{{ row.node.devices|length }}</td>
-            <td>{% if row.rrdcached %}<span class="label label-success">OK</span>{% else %}<span class="label label-danger">Failed</span>{% endif %}</td>
-            <td>{% if row.ssh %}<span class="label label-success">{{ row.ssh }}</span>{% else %}<span class="label label-danger">Failed</span>{% endif %}</td>
-            <td>{% if row.permissions %}<span class="label label-success">OK</span>{% else %}<span class="label label-danger">Failed</span>{% endif %}</td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+{% block page_title %}<i class="far fa-hdd"></i> Storage Nodes{% endblock %}
+{% block page_subtitle %}{% endblock %}
+
+{% block page_content %}
+    {% embed '@AdminLTE/Widgets/box-widget.html.twig' %}
+        {% block box_title %}
+            All storage nodes
+        {% endblock %}
+        {% block box_body %}
+            <table class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>IP</th>
+                    <th>Status</th>
+                    <th>Devices</th>
+                    <th>Rrdcached</th>
+                    <th>SSH</th>
+                    <th>Permissions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for row in nodes %}
+                    <tr>
+                        <td>{{ row.node.name }}</td>
+                        <td>{{ row.node.ip }}</td>
+                        <td>{{ row.node.status }}</td>
+                        <td>{{ row.node.devices|length }}</td>
+                        <td>{% if row.rrdcached %}<span class="label label-success">OK</span>{% else %}<span class="label label-danger">Failed</span>{% endif %}</td>
+                        <td>{% if row.ssh %}<span class="label label-success">{{ row.ssh }}</span>{% else %}<span class="label label-danger">Failed</span>{% endif %}</td>
+                        <td>{% if row.permissions %}<span class="label label-success">OK</span>{% else %}<span class="label label-danger">Failed</span>{% endif %}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endblock %}
+    {% endembed %}
+
 {% endblock %}

@@ -1,96 +1,117 @@
-{% extends 'base.html.twig' %}
+{% extends 'base-adminlte.html.twig' %}
 
-{% block body %}
-    <h1>Slave {{ slave.id }}</h1>
+{% block title %}Fireping - Slave {{ slave.id }}{% endblock %}
 
+{% block page_title %}<i class="fas fa-microchip"></i> Slave {{ slave.id }}{% endblock %}
+{% block page_subtitle %}{% endblock %}
+
+{% block page_content %}
     <div class="row">
         <div class="col-md-3">
+
             {% if slave.slaveGroup %}
-                <div class="panel panel-default">
-                    <div class="panel-heading">Slavegroup {{ slave.slaveGroup.name }}</div>
-                    <div class="panel-body">
+                {% embed '@AdminLTE/Widgets/infobox-widget.html.twig'  with {
+                    'color' : 'aqua',
+                    'icon'  : 'fa fa-list',
+                }%}
+                    {% block box_text %}Slavegroup {{ slave.slaveGroup.name }}{% endblock %}
+                    {% block box_number %}
                         <ul>
-                            {% for item in slave.slaveGroup.slaves %}
-                                <li class="h3">{{ item.id }}</li>
-                            {% endfor %}
+                        {% for item in slave.slaveGroup.slaves %}
+                            <li>{{ item.id }}</li>
+                        {% endfor %}
                         </ul>
-                    </div>
-                </div>
+                    {% endblock %}
+                    {% block progress_description %}{% endblock %}
+                {% endembed %}
             {% else %}
-                <div class="panel panel-danger">
-                    <div class="panel-heading">Slavegroup</div>
-                    <div class="panel-body text-center">
-                        <h2>Slave is not part of any slavegroup</h2>
-                    </div>
-                </div>
+                {% embed '@AdminLTE/Widgets/infobox-widget.html.twig'  with {
+                    'color' : 'aqua',
+                    'icon'  : 'fa fa-list',
+                }%}
+                    {% block box_text %}Slavegroup{% endblock %}
+                    {% block box_number %}Slave is not part of any slavegroup{% endblock %}
+                    {% block progress_description %}{% endblock %}
+                {% endembed %}
             {% endif %}
         </div>
 
         <div class="col-md-3">
-            <div class="panel panel-default">
-                <div class="panel-heading">Targets</div>
-                <div class="panel-body text-center"><h1>{{ targets }}</h1></div>
-            </div>
+            {% embed '@AdminLTE/Widgets/infobox-widget.html.twig'  with {
+                'color' : 'aqua',
+                'icon'  : 'fa fa-bullseye',
+            }%}
+                {% block box_text %}Targets{% endblock %}
+                {% block box_number %}{{ targets }}{% endblock %}
+                {% block progress_description %}{% endblock %}
+            {% endembed %}
         </div>
 
         <div class="col-md-3">
-            <div class="panel panel-default">
-                <div class="panel-heading">IP</div>
-                <div class="panel-body text-center"><h1>{{ slave.ip }}</h1></div>
-            </div>
+            {% embed '@AdminLTE/Widgets/infobox-widget.html.twig'  with {
+                'color' : slave.statusColor,
+                'icon'  : 'fa fa-plug',
+            }%}
+                {% block box_text %}IP{% endblock %}
+                {% block box_number %}{{ slave.ip }}{% endblock %}
+                {% block progress_description %}{% endblock %}
+            {% endembed %}
         </div>
 
         <div class="col-md-3">
-            <div class="panel panel-default">
-                <div class="panel-heading">Last contact</div>
-                <div class="panel-body text-center"><h2>{{ slave.lastContact|date("d-m-Y") }}<br/>{{ slave.lastContact|date("H:i:s") }}</h2></div>
-            </div>
+            {% embed '@AdminLTE/Widgets/infobox-widget.html.twig'  with {
+                'color' : slave.statusColor,
+                'icon'  : 'fa fa-clock-o',
+            }%}
+                {% block box_text %}Last contact{% endblock %}
+                {% block box_number %}{{ slave.lastContact|date("d-m-Y") }}<br/>{{ slave.lastContact|date("H:i:s") }}{% endblock %}
+                {% block progress_description %}{% endblock %}
+            {% endembed %}
         </div>
     </div>
 
     <div class="row">
-        <div class="col-md-9">
-            <div class="panel panel-default">
-                <div class="panel-heading">Load</div>
-                <div class="panel-body text-center" style="padding:0px; background: #f5f5f5;">
+        <div class="col-md-12">
+            {% embed '@AdminLTE/Widgets/box-widget.html.twig' %}
+                {% block box_title %}Load{% endblock %}
+                {% block box_body_class %}p-0 text-center{% endblock %}
+                {% block box_body %}
                     <img style="max-width: 100%; height: auto;" onload="window.dispatchEvent(new Event('resize'));" class="graph" data-src-template="/api/graphs/slaves/{{ slave.id }}/load{% verbatim %}?start={{start}}&end={{end}}{% endverbatim  %}" />
-                </div>
-            </div>
+                {% endblock %}
+            {% endembed %}
 
-            <div class="panel panel-default">
-                <div class="panel-heading">Memory</div>
-                <div class="panel-body text-center" style="padding:0px; background: #f5f5f5;">
+            {% embed '@AdminLTE/Widgets/box-widget.html.twig' %}
+                {% block box_title %}Memory{% endblock %}
+                {% block box_body_class %}p-0 text-center{% endblock %}
+                {% block box_body %}
                     <img style="max-width: 100%; height: auto;" onload="window.dispatchEvent(new Event('resize'));" class="graph" data-src-template="/api/graphs/slaves/{{ slave.id }}/memory{% verbatim %}?start={{start}}&end={{end}}{% endverbatim  %}" />
-                </div>
-            </div>
+                {% endblock %}
+            {% endembed %}
 
-            <div class="panel panel-default">
-                <div class="panel-heading">Results</div>
-                <div class="panel-body text-center" style="padding:0px; background: #f5f5f5;">
+            {% embed '@AdminLTE/Widgets/box-widget.html.twig' %}
+                {% block box_title %}Results{% endblock %}
+                {% block box_body_class %}p-0 text-center{% endblock %}
+                {% block box_body %}
                     <img style="max-width: 100%; height: auto;" onload="window.dispatchEvent(new Event('resize'));" class="graph" data-src-template="/api/graphs/slaves/{{ slave.id }}/posts{% verbatim %}?start={{start}}&end={{end}}{% endverbatim  %}" />
-                </div>
-            </div>
+                {% endblock %}
+            {% endembed %}
 
-            <div class="panel panel-default">
-                <div class="panel-heading">Workers</div>
-                <div class="panel-body text-center" style="padding:0px; background: #f5f5f5;">
+            {% embed '@AdminLTE/Widgets/box-widget.html.twig' %}
+                {% block box_title %}Workers{% endblock %}
+                {% block box_body_class %}p-0 text-center{% endblock %}
+                {% block box_body %}
                     <img style="max-width: 100%; height: auto;" onload="window.dispatchEvent(new Event('resize'));" class="graph" data-src-template="/api/graphs/slaves/{{ slave.id }}/workers{% verbatim %}?start={{start}}&end={{end}}{% endverbatim  %}" />
-                </div>
-            </div>
+                {% endblock %}
+            {% endembed %}
 
-            <div class="panel panel-default">
-                <div class="panel-heading">Queues</div>
-                <div class="panel-body text-center" style="padding:0px; background: #f5f5f5;">
+            {% embed '@AdminLTE/Widgets/box-widget.html.twig' %}
+                {% block box_title %}Queues{% endblock %}
+                {% block box_body_class %}p-0 text-center{% endblock %}
+                {% block box_body %}
                     <img style="max-width: 100%; height: auto;" onload="window.dispatchEvent(new Event('resize'));" class="graph" data-src-template="/api/graphs/slaves/{{ slave.id }}/queues{% verbatim %}?start={{start}}&end={{end}}{% endverbatim  %}" />
-                </div>
-            </div>
+                {% endblock %}
+            {% endembed %}
 
-        </div>
-        <div class="col-md-3">
-            <div class="panel panel-default">
-                <div class="panel-heading">Navigation</div>
-                <div class="panel-body" id="ctrl"></div>
-            </div>
         </div>
     </div>
 
@@ -98,6 +119,7 @@
 {% endblock %}
 
 {% block javascripts %}
+    {{ parent() }}
     <script type="text/javascript">
         q.ready(function(){
             // 'activate' the charts
