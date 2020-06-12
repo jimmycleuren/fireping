@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jimmyc
- * Date: 5/01/2018
- * Time: 20:54
- */
 
 namespace Tests\App\Controller;
 
@@ -20,14 +14,13 @@ class DebugControllerTest extends WebTestCase
         $crawler = $client->request('GET', '/');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $link =$crawler->filter('.label-danger');
-        $this->assertEquals('a', $link->nodeName());
+        $checkbox = $crawler->filter('.control-sidebar-subheading input');
+        $this->assertEquals(null, $checkbox->attr('checked'));
 
-        $link = $crawler->selectLink('Display Trends')->link();
-        $crawler = $client->click($link);
+        $crawler = $client->request('GET', '/debug');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $link =$crawler->filter('.label-success');
-        $this->assertEquals('a', $link->nodeName());
+        $checkbox = $crawler->filter('.control-sidebar-subheading input');
+        $this->assertEquals('checked', $checkbox->attr('checked'));
     }
 }
