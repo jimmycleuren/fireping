@@ -42,6 +42,7 @@ class SlaveGraph
             "--rigid",
             "--width=1000",
             "--height=200",
+            "--color=BACK".$_ENV['RRD_BACKGROUND']
         );
 
         switch ($type) {

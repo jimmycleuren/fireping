@@ -22,7 +22,7 @@ class SearchControllerTest extends WebTestCase
         $crawler = $client->request('GET', '/search?q=domain');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertStringContainsString('Domain 1', $crawler->filter('h4')->text());
+        $this->assertStringContainsString('Domain 1', $crawler->filter('.box-primary li')->text());
     }
 
     public function testDeviceSearch()
@@ -32,6 +32,6 @@ class SearchControllerTest extends WebTestCase
         $crawler = $client->request('GET', '/search?q=device');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertStringContainsString('Device 1', $crawler->filter('h4')->text());
+        $this->assertStringContainsString('Device 1', $crawler->filter('h3')->text());
     }
 }

@@ -133,8 +133,6 @@ class SlaveStatsRrdStorage
 
         $return = rrd_update($filename, $options);
 
-        $this->logger->debug("Updating $filename with ".print_r($options, true));
-
         if (!$return) {
             throw new RrdException(rrd_error());
         }

@@ -40,6 +40,7 @@ class TracerouteGraph extends RrdGraph
             "--rigid",
             "--width=1000",
             "--height=300",
+            "--color=BACK".$_ENV['RRD_BACKGROUND']
         );
 
         $datasources = $this->storage->getDatasources($device, $probe, $slavegroup);
