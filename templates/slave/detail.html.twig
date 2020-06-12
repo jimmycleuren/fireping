@@ -71,7 +71,7 @@
     </div>
 
     <div class="row">
-        <div class="col-md-9">
+        <div class="col-md-12">
             {% embed '@AdminLTE/Widgets/box-widget.html.twig' %}
                 {% block box_title %}Load{% endblock %}
                 {% block box_body_class %}p-0 text-center{% endblock %}
@@ -112,14 +112,6 @@
                 {% endblock %}
             {% endembed %}
 
-        </div>
-        <div class="col-md-3">
-            {% embed '@AdminLTE/Widgets/box-widget.html.twig' with {'boxtype' : 'primary'} %}
-                {% block box_title %}Navigation{% endblock %}
-                {% block box_body %}
-                    <div id="ctrl"></div>
-                {% endblock %}
-            {% endembed %}
         </div>
     </div>
 
