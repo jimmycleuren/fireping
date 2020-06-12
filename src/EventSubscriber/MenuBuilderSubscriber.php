@@ -123,7 +123,7 @@ class MenuBuilderSubscriber implements EventSubscriberInterface
                 $menuItem->addChild($deviceMenuItem);
             }
 
-            $parentMenuItem = $this->addRecursiveDomains($menuItem, $domain);
+            $this->addRecursiveDomains($menuItem, $domain);
         }
 
         return $parentMenuItem;
