@@ -1,0 +1,9 @@
+<h3 class="control-sidebar-heading">Alert rules</h3>
+{% for rule in device.activeAlertRules %}
+    <div><i class="fas fa-exclamation-triangle"></i> {{ rule.name }}</div>
+{% endfor %}
+
+<h3 class="control-sidebar-heading">Alert destinations</h3>
+{% for destination in device.activeAlertDestinations %}
+    <div><i class="fas fa-envelope"></i> {{ destination.name }}</div>
+{% endfor %}

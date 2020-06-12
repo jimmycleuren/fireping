@@ -13,6 +13,6 @@ class StorageControllerTest extends WebTestCase
         $crawler = $client->request('GET', '/storagenode');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertStringContainsString('Storage nodes', $crawler->filter('h1')->text());
+        $this->assertStringContainsString('Storage Nodes', $crawler->filter('h1')->text());
     }
 }

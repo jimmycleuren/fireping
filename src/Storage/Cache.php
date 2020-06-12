@@ -14,7 +14,7 @@ class Cache
 
     public function __construct()
     {
-        $connection = RedisAdapter::createConnection("redis://localhost");
+        $connection = RedisAdapter::createConnection($_ENV['REDIS_URL']);
         $this->cache = new RedisAdapter($connection, 'fireping', 3600 * 24);
     }
 

@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Alert;
 use App\Entity\Domain;
 use App\Repository\AlertRepository;
 use App\Repository\DomainRepository;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -32,6 +34,17 @@ class AlertController extends AbstractController
             'alertDomains' => $alertDomains,
             'alerts' => $alerts,
         ));
+    }
+
+    /**
+     * @param Alert $alert
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @Route("/alerts/{id}")
+     */
+    public function detailAction(Alert $alert)
+    {
+        return new JsonResponse();
     }
 
     /**

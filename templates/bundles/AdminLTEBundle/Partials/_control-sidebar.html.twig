@@ -1,0 +1,39 @@
+{% if admin_lte_context.control_sidebar is defined and admin_lte_context.control_sidebar is not empty %}
+    <aside class="control-sidebar control-sidebar-dark">
+        <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+            {% if control_sidebar_extra is defined %}
+                {% for name, tab in control_sidebar_extra | merge (admin_lte_context.control_sidebar) %}
+                    <li{% if loop.first %} class="active"{% endif %}><a href="#control-sidebar-{{ name }}-tab" data-toggle="tab"><i class="{{ tab.icon }}"></i></a></li>
+                {% endfor %}
+            {% else %}
+                {% for name, tab in admin_lte_context.control_sidebar %}
+                    <li{% if loop.first %} class="active"{% endif %}><a href="#control-sidebar-{{ name }}-tab" data-toggle="tab"><i class="{{ tab.icon }}"></i></a></li>
+                {% endfor %}
+            {% endif %}
+        </ul>
+        <div class="tab-content">
+            {% if control_sidebar_extra is defined %}
+                {% for name, tab in control_sidebar_extra | merge (admin_lte_context.control_sidebar) %}
+                    <div class="tab-pane {% if loop.first %}active{% endif %}" id="control-sidebar-{{ name }}-tab">
+                        {% if tab.controller is defined %}
+                            {{ render(controller(tab.controller, {'originalRequest': app.request})) }}
+                        {% elseif tab.template is defined %}
+                            {% include tab.template %}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                {% for name, tab in admin_lte_context.control_sidebar %}
+                    <div class="tab-pane {% if loop.first %}active{% endif %}" id="control-sidebar-{{ name }}-tab">
+                        {% if tab.controller is defined %}
+                            {{ render(controller(tab.controller, {'originalRequest': app.request})) }}
+                        {% elseif tab.template is defined %}
+                            {% include tab.template %}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </aside>
+    <div class="control-sidebar-bg"></div>
+{% endif %}

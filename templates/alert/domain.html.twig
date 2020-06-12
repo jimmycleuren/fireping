@@ -1,47 +1,48 @@
-{% extends 'base.html.twig' %}
+{% extends 'base-adminlte.html.twig' %}
 
-{% block body %}
+{% block title %}Fireping - alerts{% endblock %}
+
+{% block page_title %}<i class="far fa-bell"></i> Active alerts {% if domain is defined %} in {{ domain.name }}{% endif %}{% endblock %}
+{% block page_subtitle %}{% endblock %}
+
+{% block page_content %}
+
     <div class="row">
-        <div class="col-md-2 sidebar" style="padding:0px;">
-            {% include 'menu/menu.html.twig' %}
-        </div>
-        <div class="col-md-8 col-md-offset-2 main">
-            <h1 class="page-header">Active alerts{% if domain is defined %} in {{ domain.name }}{% endif %}</h1>
-
-            <span class="row">
-            {% for domain in alertDomains %}
-                {% if domain.activeAlerts|length > 0 %}
-                    <span class="col-md-2">
-                    <div class="panel {% if domain.activeAlerts|length < 10 %}panel-warning{% else %}panel-danger{% endif %}">
-                        <div class="panel-heading"><a href="{{ path('app_alert_domain', {id: domain.id}) }}">{{ domain.name }}</a></div>
-                        <div class="panel-body text-center"><h4>{{ domain.activeAlerts|length }} active alerts</h4></div>
-                    </div>
+    {% for domain in alertDomains %}
+        {% if domain.activeAlerts|length > 0 %}
+            <span class="col-md-3">
+                {% embed '@AdminLTE/Widgets/infobox-widget.html.twig'  with {
+                    'color' : 'yellow',
+                    'icon'  : 'fas fa-layer-group',
+                }%}
+                    {% block box_text %}<a href="{{ path('app_alert_domain', {id: domain.id}) }}">{{ domain.name }}</a>{% endblock %}
+                    {% block box_number %}{{ domain.activeAlerts|length }} active alerts{% endblock %}
+                    {% block progress_description %}{% endblock %}
+                {% endembed %}
+            </span>
+        {% endif %}
+    {% endfor %}
+    </div>
+    <div class="row">
+    {% if domain is defined %}
+        {% for device in domain.devices %}
+            {% if device.activeAlerts|length > 0 %}
+                <span class="col-md-3">
+                    {% embed '@AdminLTE/Widgets/infobox-widget.html.twig'  with {
+                        'color' : 'yellow',
+                        'icon'  : 'fas fa-desktop',
+                    }%}
+                        {% block box_text %}<a href="{{ path('app_device_get', {id: device.id}) }}">{{ device.name }}</a>{% endblock %}
+                        {% block box_number %}
+                            {% for alert in device.activeAlerts %}
+                                {{ alert.alertRule.name }} from {{ alert.slaveGroup.name }}
+                            {% endfor %}
+                        {% endblock %}
+                        {% block progress_description %}{% endblock %}
+                    {% endembed %}
                 </span>
-                {% endif %}
-            {% endfor %}
-            </span>
-            <span class="row">
-            {% if domain is defined %}
-                {% for device in domain.devices %}
-                    {% if device.activeAlerts|length > 0 %}
-                        <span class="col-md-4">
-                        <div class="panel panel-warning">
-                            <div class="panel-heading"><a href="{{ path('app_device_get', {id: device.id}) }}">{{ device.name }}</a></div>
-                            <div class="panel-body">
-                                <ul>
-                                {% for alert in device.activeAlerts %}
-                                    <li>{{ alert.alertRule.name }} from {{ alert.slaveGroup.name }}</li>
-                                {% endfor %}
-                                </ul>
-                            </div>
-                        </div>
-                    </span>
-                    {% endif %}
-                {% endfor %}
             {% endif %}
-            </span>
-        </div>
-        <div class="col-md-2" id="ctrl" style="position:absolute; right:0px; top: 100px;">
-        </div>
+        {% endfor %}
+    {% endif %}
     </div>
 {% endblock %}
