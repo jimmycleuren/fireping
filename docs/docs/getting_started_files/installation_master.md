@@ -109,6 +109,20 @@ Please choose roles for this user
 root@2e4107ae411f:/app#
 ```
 
+Create a slave user:
+
+```
+root@2e4107ae411f:/app# php bin/console fireping:create:user
+Please enter the username (defaults to admin): slave
+Please enter the password:
+Please enter the email address: slave@localhost.local
+Please choose roles for this user
+  [0] ROLE_ADMIN
+  [1] ROLE_API
+ > 1
+root@2e4107ae411f:/app#
+```
+
 Now you are done with the setup of the master and if you go to `http://fireping.develop`, you should see the dashboard. 
 
 If needed, open the hosts file and add your localhost as `fireping.develop` or the server name you chose in it
