@@ -95,21 +95,18 @@ Now restart nginx
 sudo systemctl restart nginx
 ```
 
-Create a user for admin by running
-```bash
-php bin/console fos:user:create
-```
+Create a default admin user
 
-and follow the steps. When the user is created, you only need to give it admin rights by running
 ```bash
-php bin/console fos:user:promote
-```
-
-Enter the username you created in the previous step and give it the role `role_admin`.
-```
-/opt/fireping$ php bin/console fos:user:promote
-Please choose a username:fireping
-Please choose a role:role_admin
+root@2e4107ae411f:/app# php bin/console fireping:create:user
+Please enter the username (defaults to admin):
+Please enter the password:
+Please enter the email address: admin@localhost.local
+Please choose roles for this user
+  [0] ROLE_ADMIN
+  [1] ROLE_API
+ > 0
+root@2e4107ae411f:/app#
 ```
 
 Now you are done with the setup of the master and if you go to `http://fireping.develop`, you should see the dashboard. 
