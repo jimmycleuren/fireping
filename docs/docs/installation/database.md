@@ -1,5 +1,5 @@
 ---
-title: "Getting Started"
+title: "Database - Installation"
 permalink: /docs/getting-started/database/
 key: docs-getting-started-database
 ---

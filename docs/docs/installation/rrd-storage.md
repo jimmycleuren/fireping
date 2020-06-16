@@ -1,5 +1,5 @@
 ---
-title: "Getting Started"
+title: "RRD Storage - Installation"
 permalink: /docs/getting-started/rrd-storage/
 key: docs-getting-started-rrd-storage
 ---

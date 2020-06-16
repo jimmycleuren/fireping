@@ -1,5 +1,5 @@
 ---
-title: "Getting Started"
+title: "Reverse Proxy - Installation"
 permalink: /docs/getting-started/reverse-proxy/
 key: docs-getting-started-reverse-proxy
 ---
