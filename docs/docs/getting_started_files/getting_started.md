@@ -1,5 +1,5 @@
 ---
-title: "Getting started"
+title: "Getting Started"
 permalink: /docs/
 key: docs-getting-started
 ---
