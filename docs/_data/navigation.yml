@@ -1,25 +1,25 @@
 header:
-  # - titles:
-  #     en      : &EN       Archive
-  #     en-GB   : *EN
-  #     en-US   : *EN
-  #     en-CA   : *EN
-  #     en-AU   : *EN
-  #   url: /archive.html
-  - title: Docs
-    url: /docs
-
-  - title: About
-    url: /about
-
-  - title: GitHub
-    url:  https://github.com/jimmycleuren/fireping
+  - title: ![Github Logo](/fireping/assets/images/github/GitHub-Mark-32px.png)
+    url: https://github.com/jimmycleuren/fireping
 
 side-nav:
-  - title:      Install Fireping
+  - title:      Installation
     children:
-      - title:  Getting started
+      - title:  Getting Started
         url:    /docs/
+      - title:  Database
+        url:    /docs/getting-started/database/
+      - title:  RRD Storage
+        url:    /docs/getting-started/rrd-storage/
+      - title:  Redis
+        url:    /docs/getting-started/redis/
+      - title:  Fireping
+        url:    /docs/getting-started/fireping/
+      - title:  Reverse Proxy
+        url:    /docs/getting-started/reverse-proxy/
+      - title:  Slaves
+        url:    /docs/getting-started/slave/
+
       - title:  Master setup
         url:    /docs/getting-started/master
       - title:  Slave setup
