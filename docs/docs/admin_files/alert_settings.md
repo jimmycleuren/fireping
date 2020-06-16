@@ -4,7 +4,7 @@ permalink: /docs/how-to/admin/alert
 key: docs-how-to-admin-alert
 ---
 
-![Settings for device](/fireping/assets/images/alert_settings.png)
+![Settings for device](/assets/images/alert_settings.png)
 
 # Short Description
 Allows you to edit/remove the alert information.

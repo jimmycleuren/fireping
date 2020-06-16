@@ -30,27 +30,28 @@ Make sure that php7.4-fpm is up and running.
 
 ```bash
 $ sudo service php7.4-fpm status
+[FAIL] php-fpm7.4 is not running ... failed!
 $ sudo service php7.4-fpm start
+$ sudo service php7.4-fpm status
+[ ok ] php-fpm7.4 is running.
 ```
 
 Clone the repository to a location of your choosing.
 
 ```bash
-$ cd /opt
-$ git clone https://github.com/jimmycleuren/fireping.git
-$ cd fireping
+$ mkdir /opt/fireping && cd fireping
+$ git clone https://github.com/jimmycleuren/fireping.git .
 ```
 
 Now [install Composer](https://getcomposer.org/download/) and fetch the vendor dependencies.
 
 ```bash
-$ # in /opt/fireping/
 $ composer install --verbose --prefer-dist --no-dev --optimize-autoloader --no-suggest
 ```
 
 # Configuration
 
-Fireping's configuration file is called `.env.local` and is stored in the installation directory.
+Fireping's configuration file is called `.env.local` and is stored in the installation directory. It is not created by default.
 
 ## APP_SECRET
 
@@ -59,7 +60,6 @@ This is a secret key used to generate CSRF tokens. You must change it. It should
 Example:
 
 ```bash
-$ # in /opt/fireping/
 $ php -r "echo 'APP_SECRET=' . sha1(random_bytes(50)) . PHP_EOL;" >> .env.local
 ```
 
@@ -78,7 +78,7 @@ Example:
 # Connect as user "fireping" with password "my_secret". (db_user:db_password)
 # Connect to localhost on port 3306. (db_host:db_port)
 # Connect to the fireping database. (db_name)
-# The database is running version 5.7. (serverVersion=5.7)
+# The database is running version 10.1. (serverVersion=10.1)
 DATABASE_URL=mysql://fireping:my_secret@127.0.0.1:3306/fireping?serverVersion=10.1
 ```
 
@@ -115,6 +115,8 @@ MAILER_FROM=fireping@organization.example
 
 # Initial Setup
 
+## Execute Migrations
+
 After having installed and configured the Fireping master instance, do the following to complete your setup.
 
 ```bash
@@ -126,7 +128,11 @@ $ php bin/console doctrine:migrations:migrate
 
 
 WARNING! You are about to execute a database migration that could result in schema changes and data loss. Are you sure you wish to continue? (y/n)y
-$ # create the default admin user
+$ 
+
+## Create Admin User 
+
+$ # within project root directory /opt/fireping
 $ php bin/console fireping:create:user
 Please enter the username (defaults to admin): admin
 Please enter the password:
@@ -135,4 +141,30 @@ Please choose roles for this user
   [0] ROLE_ADMIN
   [1] ROLE_API
  > 0
+```
+
+## Slave Registration
+   
+A slave user need to be registered with the master. This can be done via the website or via the master CLI.
+
+### Website
+
+Head to the admin page which can be found in the top right corner after logging in.
+
+![Where to find the Admin Page](/assets/images/admin_where.png)
+
+![Add Slave](/assets/images/adding_slave_user.png)
+
+### CLI
+
+```bash
+$ php bin/console fireping:create:user
+Please enter the username (defaults to admin): foobar
+Please enter the password:
+Please enter the email address: foobar@org.example
+Please choose roles for this user
+ [0] ROLE_ADMIN
+ [1] ROLE_API
+> 1
+$ 
 ```

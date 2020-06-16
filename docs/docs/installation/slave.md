@@ -74,29 +74,3 @@ Example:
 ```bash
 SLAVE_PASSWORD=MySecretPassword
 ```
-
-# Slave Registration
-
-A slave user need to be registered with the master. This can be done via the website or via the master CLI.
-
-## Website
-
-Head to the admin page which can be found in the top right corner after logging in.
-
-![Where to find the Admin Page](/fireping/assets/images/admin_where.png)
-
-![Add Slave](/fireping/assets/images/adding_slave_user.png)
-
-## CLI
-
-```bash
-root@fc436c8b9973:/opt/fireping# php bin/console fireping:create:user
-Please enter the username (defaults to admin): foobar
-Please enter the password:
-Please enter the email address: foobar@org.example
-Please choose roles for this user
-  [0] ROLE_ADMIN
-  [1] ROLE_API
- > 1
-root@fc436c8b9973:/opt/fireping#
-```

@@ -4,7 +4,7 @@ permalink: /docs/how-to/admin/domain
 key: docs-how-to-admin-domain
 ---
 
-![Settings for domain with parent](/fireping/assets/images/settings_domain_with_parent.png)
+![Settings for domain with parent](/assets/images/settings_domain_with_parent.png)
 
 # Short description
 A Domain is a container that connects `slaveGroups`, `Probes`, `Alert rules` and `Alert destinations`. 

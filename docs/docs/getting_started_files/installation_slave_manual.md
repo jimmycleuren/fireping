@@ -71,11 +71,11 @@ fireping-slave: added process group
 Adding slave to master
 Now open your fireping dashboard, go to `Admin > User` and create a new user with these credentials, role as `role_api` and check the `enabled` box.
 
-![Screenshot of adding a slave](/fireping/assets/images/adding_slave_user.png)
+![Screenshot of adding a slave](/assets/images/adding_slave_user.png)
 
 You should now see the slave if you go back to `fireping.develop/slaves`. (it can take a few seconds)
 
-![Screenshot of adding a slave](/fireping/assets/images/slaves_added_list.png)
+![Screenshot of adding a slave](/assets/images/slaves_added_list.png)
 
 ## Logrotate
 slaves will generate a significant amount of logging. In order to mitigate disk usage somewhat, do the following:

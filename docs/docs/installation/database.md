@@ -21,7 +21,20 @@ Make sure it's installed and running:
 
 ```bash
 $ service mysql status
+[info] MariaDB is stopped..
 $ service mysql start
+[ ok ] Starting MariaDB database server: mysqld.
+$ service mysql status
+[info] /usr/bin/mysqladmin  Ver 9.1 Distrib 10.1.44-MariaDB, for debian-linux-gnu on x86_64
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Server version          10.1.44-MariaDB-0+deb9u1
+Protocol version        10
+Connection              Localhost via UNIX socket
+UNIX socket             /var/run/mysqld/mysqld.sock
+Uptime:                 15 sec
+
+Threads: 1  Questions: 61  Slow queries: 0  Opens: 32  Flush tables: 1  Open tables: 26  Queries per second avg: 4.066.
 ```
 
 After the installation has completed, connect to it:

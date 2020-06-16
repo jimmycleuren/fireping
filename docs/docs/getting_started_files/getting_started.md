@@ -4,6 +4,16 @@ permalink: /docs/
 key: docs-getting-started
 ---
 
-# How to install
-You need to install a master and deploy slave nodes. 
-If you want one or more slaves on the same host as the master follow the guide for [Installing master and slave(s) on the same host](/fireping/docs/getting-started/same-host). Otherwise follow the guide for [installing a master](/fireping/docs/getting-started/master) and then [deploying the slave nodes](/fireping/docs/getting-started/slaves).
+# Hardware Requirements
+
+It depends on your needs. We started with a small server with 2 vCPUs and 4GB RAM and 100GB disk space. Initially, we ran all services on this: redis-server, mariadb-server, php, nginx and rrd.
+
+As our setup grew, we grew our server to 16 GB RAM, 4 vCPUs and two storage nodes each with 1TB disks.
+
+# Application Stack
+
+- nginx
+- php7.4
+- rrdtool
+- redis
+- mariadb

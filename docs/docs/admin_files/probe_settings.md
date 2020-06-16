@@ -4,7 +4,7 @@ permalink: /docs/how-to/admin/probe
 key: docs-how-to-admin-probe
 ---
 
-![Settings for device](/fireping/assets/images/probe_settings.png)
+![Settings for device](/assets/images/probe_settings.png)
 
 # Short Description
 A probe will be executed by the slaves to gather data about a device. This data will be kept in a [Probe Archive](/fireping/docs/how-to/admin/probe-archive).
