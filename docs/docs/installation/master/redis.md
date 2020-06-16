@@ -1,7 +1,7 @@
 ---
 title: "Redis - Installation"
-permalink: /docs/getting-started/redis/
-key: docs-getting-started-redis
+permalink: /docs/installation/master/redis/
+key: docs-installation-master-redis
 ---
 
 # Installation

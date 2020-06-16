@@ -1,7 +1,7 @@
 ---
 title: "Database - Installation"
-permalink: /docs/getting-started/database/
-key: docs-getting-started-database
+permalink: /docs/installation/master/database/
+key: docs-installation-master-database
 ---
 
 # Installation

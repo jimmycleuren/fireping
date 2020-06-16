@@ -3,24 +3,32 @@ header:
     url: https://github.com/jimmycleuren/fireping
 
 side-nav:
-  - title:      Installation
+  - title:      Installation - Master
     children:
       - title:  Getting Started
-        url:    /docs/
+        url:    /docs/installation/master/getting-started
       - title:  Database
-        url:    /docs/getting-started/database/
+        url:    /docs/installation/master/database/
       - title:  RRD Storage
-        url:    /docs/getting-started/rrd-storage/
+        url:    /docs/installation/master/rrd-storage/
       - title:  Redis
-        url:    /docs/getting-started/redis/
+        url:    /docs/installation/master/redis/
       - title:  Fireping
-        url:    /docs/getting-started/fireping/
+        url:    /docs/installation/master/fireping/
       - title:  Reverse Proxy
-        url:    /docs/getting-started/reverse-proxy/
+        url:    /docs/installation/master/reverse-proxy/
+      - title:  Logrotate
+        url:    /docs/installation/master/logrotate/
+  - title:      Installation - Slave
+    children:
+      - title:  Getting Started
+        url:    /docs/installation/slave/getting-started/
       - title:  Slaves
-        url:    /docs/getting-started/slave/
-      - title:  Master setup
-        url:    /docs/getting-started/master
+        url:    /docs/installation/slave/fireping/
+      - title:  Supervisord
+        url:    /docs/installation/slave/supervisord/
+      - title:  Logrotate
+        url:    /docs/installation/slave/logrotate/
       - title:  Slave setup
         url:    /docs/getting-started/slaves
       - title:  Docker slave installation (Recommended)

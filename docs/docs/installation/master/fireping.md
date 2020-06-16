@@ -1,7 +1,7 @@
 ---
 title: "Fireping - Installation"
-permalink: /docs/getting-started/fireping/
-key: docs-getting-started-fireping
+permalink: /docs/installation/master/fireping/
+key: docs-installation-master-fireping
 ---
 
 # Installation

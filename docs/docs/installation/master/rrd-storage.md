@@ -1,7 +1,7 @@
 ---
 title: "RRD Storage - Installation"
-permalink: /docs/getting-started/rrd-storage/
-key: docs-getting-started-rrd-storage
+permalink: /docs/installation/master/rrd-storage/
+key: docs-installation-master-rrd-storage
 ---
 
 # Installation

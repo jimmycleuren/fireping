@@ -1,7 +1,7 @@
 ---
 title: "Slave - Installation"
-permalink: /docs/getting-started/slave/
-key: docs-getting-started-slave
+permalink: /docs/installation/master/slave/
+key: docs-installation-master-slave
 ---
 
 This section details how to install and configure a slave instance for Fireping. Within this setup, a slave is responsible for fetching its configuration from the master, performing the requested work and publishing its results back to the master. Periodically, it will also report some stats on itself to the master.

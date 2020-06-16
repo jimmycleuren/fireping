@@ -1,7 +1,7 @@
 ---
 title: "Reverse Proxy - Installation"
-permalink: /docs/getting-started/reverse-proxy/
-key: docs-getting-started-reverse-proxy
+permalink: /docs/installation/master/reverse-proxy/
+key: docs-installation-master-reverse-proxy
 ---
 
 # NGINX Installation

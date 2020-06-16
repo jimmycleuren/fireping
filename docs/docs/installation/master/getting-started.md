@@ -1,7 +1,7 @@
 ---
 title: "Getting Started"
-permalink: /docs/
-key: docs-getting-started
+permalink: /docs/installation/master/getting-started
+key: docs-installation-master-getting-started
 ---
 
 # Hardware Requirements
