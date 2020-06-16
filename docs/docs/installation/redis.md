@@ -17,6 +17,12 @@ $ sudo apt-get update
 $ sudo apt-get install -y redis-server
 ```
 
+Make sure that redis is running.
+
+```bash
+$ service redis-server status
+$ service redis-server start```
+
 Verify that the installation is running and working with the `PING` command.
 
 ```bash
