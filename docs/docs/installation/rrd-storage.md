@@ -16,6 +16,10 @@ We have three supported storage modes: rrd, rrdcached and rrddistributed.
 | rrdcached | local | yes | store all rrd files on the application server and process updates in batches. |
 | rrddistributed | distributed | yes | store all files over various storage nodes and process their updates in batches. |
 
+Choosing the right type strongly depends on your setup needs.
+
+Using `rrd` simply writes all rrd files to the local filesystem of the application server. Every update is sent sequentially to the filesystem via rrdtool. At a certain point if you start processing too many updates at once, the API will be experience an IO bottleneck.
+
 
 
 ## Debian 9
