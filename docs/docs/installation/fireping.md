@@ -10,24 +10,42 @@ In this section we'll explain how to setup the fireping application server. Star
 
 ## Debian 9
 
-First, install the necessary system dependencies.
+Start by adding a new package repository so that we can add the PHP7.4 binaries.
 
 ```bash
-sudo apt-get update
-sudo apt-get install -y php7.4 php7.4-mysql php7.4-mbsting php7.4-zip php7.4-curl php7.4-rrd git
+$ sudo apt-get install -y wget gnupg ca-certificates apt-transport-https
+$ wget -q https://packages.sury.org/php/apt.gpg -O- | sudo apt-key add -
+
+$ echo "deb https://packages.sury.org/php/ stretch main" | sudo tee /etc/apt/sources.list.d/php.list
 ```
 
+Then install the necessary system dependencies.
+
 ```bash
-cd /opt
-sudo git clone https://github.com/jimmycleuren/fireping.git
-cd fireping
+$ sudo apt-get update
+$ sudo apt-get install -y php7.4 php7.4-fpm php7.4-mysql php7.4-mbstring php7.4-zip php7.4-curl php-rrd rrdtool git zip
+```
+
+Make sure that php7.4-fpm is up and running.
+
+```bash
+$ sudo service php7.4-fpm status
+$ sudo service php7.4-fpm start
+```
+
+Clone the repository to a location of your choosing.
+
+```bash
+$ cd /opt
+$ git clone https://github.com/jimmycleuren/fireping.git
+$ cd fireping
 ```
 
 Now [install Composer](https://getcomposer.org/download/) and fetch the vendor dependencies.
 
 ```bash
-# in /opt/fireping/
-composer install --verbose --prefer-dist --no-dev --optimize-autoloader --no-suggest
+$ # in /opt/fireping/
+$ composer install --verbose --prefer-dist --no-dev --optimize-autoloader --no-suggest
 ```
 
 # Configuration
@@ -41,15 +59,17 @@ This is a secret key used to generate CSRF tokens. You must change it. It should
 Example:
 
 ```bash
-# in /opt/fireping/
-php -r "echo 'APP_SECRET=' . sha1(random_bytes(50)) . PHP_EOL;" >> .env.local
+$ # in /opt/fireping/
+$ php -r "echo 'APP_SECRET=' . sha1(random_bytes(50)) . PHP_EOL;" >> .env.local
 ```
 
 ## DATABASE_URL
 
 This is the connection string to connect to the database with. It is dissected as:
 
-`driver://db_user:db_password@db_host:db_port/db_name?connectionParameters`
+```bash
+driver://db_user:db_password@db_host:db_port/db_name?connectionParameters
+```
 
 Example:
 
@@ -59,7 +79,7 @@ Example:
 # Connect to localhost on port 3306. (db_host:db_port)
 # Connect to the fireping database. (db_name)
 # The database is running version 5.7. (serverVersion=5.7)
-DATABASE_URL=mysql://fireping:my_secret@127.0.0.1:3306/fireping?serverVersion=5.7
+DATABASE_URL=mysql://fireping:my_secret@127.0.0.1:3306/fireping?serverVersion=10.1
 ```
 
 ## REDIS_URL
@@ -91,4 +111,28 @@ Configure this to set the e-mail address to use when sending out alerts.
 
 ```bash
 MAILER_FROM=fireping@organization.example
+```
+
+# Initial Setup
+
+After having installed and configured the Fireping master instance, do the following to complete your setup.
+
+```bash
+$ # in /opt/fireping
+$ # execute all migrations
+$ php bin/console doctrine:migrations:migrate
+
+                    Application Migrations
+
+
+WARNING! You are about to execute a database migration that could result in schema changes and data loss. Are you sure you wish to continue? (y/n)y
+$ # create the default admin user
+$ php bin/console fireping:create:user
+Please enter the username (defaults to admin): admin
+Please enter the password:
+Please enter the email address: admin@org.example
+Please choose roles for this user
+  [0] ROLE_ADMIN
+  [1] ROLE_API
+ > 0
 ```
