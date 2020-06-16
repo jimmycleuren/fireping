@@ -8,35 +8,51 @@ key: docs-getting-started-reverse-proxy
 
 In this section we'll talk about the installation and configuration of NGINX to act as a reverse proxy to our application.
 
-This documentation was tested against a MariaDB 10.1 installation.
-
 ## Debian 9
+
+Install NGINX:
 
 ```bash
 $ sudo apt-get update
-$ sudo apt-get install -y mariadb-server
+$ sudo apt-get install -y nginx
 ``` 
 
-After the installation has completed, connect to it:
+Add configuration to `/etc/nginx/sites-available/fireping.conf`
 
-```bash
-$ sudo mariadb
-Welcome to the MariaDB monitor.  Commands end with ; or \g.
-Your MariaDB connection id is 228204187
-Server version: 10.1.26-MariaDB-0+deb9u1 Debian 9.1
+```nginx
+server {
+    listen 443 ssl;
+    server_name fireping.corp.example;
+    ssl_certificate     /etc/nginx/ssl/fireping.corp.example.crt;
+    ssl_certificate_key /etc/nginx/ssl/fireping.corp.example.key;
+    ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers         HIGH:!aNULL:!MD5;
 
-Copyright (c) 2000, 2017, Oracle, MariaDB Corporation Ab and others.
+    root /opt/fireping/public;
 
-Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+    location / {
+        # try to serve file directly, fallback to index.php
+        try_files $uri /index.php$is_args$args;
+    }
 
-MariaDB [(none)]> 
-```
+    location ~ ^/index\.php(/|$) {
+        fastcgi_pass unix:/var/run/php/php7.4-fpm.sock;
+        fastcgi_split_path_info ^(.+\.php)(/.*)$;
+        include fastcgi_params;
 
-Then execute the following:
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        fastcgi_param DOCUMENT_ROOT $realpath_root;
 
-```sql
-CREATE DATABASE fireping;
-CREATE USER 'fireping'@'localhost' IDENTIFIED BY 'PASSWORD_CHANGE_ME';
-GRANT ALL PRIVILEGES ON fireping.* TO 'fireping'@'localhost';
-FLUSH PRIVILEGES;
+        internal;
+        fastcgi_read_timeout 300;
+    }
+
+    location ~ \.php$ {
+        return 404;
+    }
+
+
+    error_log /var/log/nginx/fireping_error.log;
+    access_log /var/log/nginx/fireping_access.log;
+}
 ```
