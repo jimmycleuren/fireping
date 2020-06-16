@@ -27,6 +27,3 @@ RUN sed -i "s|;*listen\s*=\s*9000|listen = 0.0.0.0:9000|g" /usr/local/etc/php-fp
 
 COPY timezone.ini /usr/local/etc/php/conf.d/timezone.ini
 RUN chmod 755 /usr/local/etc/php/conf.d/timezone.ini
-
-#RUN php /app/bin/console doctrine:migrations:migrate -n
-#RUN php bin/console fos:user:create admin admin@fireping.be admin --super-admin
