@@ -17,6 +17,13 @@ $ sudo apt-get update
 $ sudo apt-get install -y mariadb-server
 ``` 
 
+Make sure it's installed and running:
+
+```bash
+$ service mysql status
+$ service mysql start
+```
+
 After the installation has completed, connect to it:
 
 ```bash
@@ -34,11 +41,22 @@ MariaDB [(none)]>
 
 Then execute the following:
 
-```sql
-CREATE DATABASE fireping;
-CREATE USER 'fireping'@'localhost' IDENTIFIED BY 'PASSWORD_CHANGE_ME';
-GRANT ALL PRIVILEGES ON fireping.* TO 'fireping'@'localhost';
-FLUSH PRIVILEGES;
+```bash
+MariaDB [(none)]> CREATE DATABASE fireping;
+Query OK, 1 row affected (0.00 sec)
+
+MariaDB [(none)]> CREATE USER 'fireping'@'localhost' IDENTIFIED BY 'a12dd17b75817cefc00fa8d3016cdc066cfb9134';
+Query OK, 0 rows affected (0.00 sec)
+
+MariaDB [(none)]> GRANT ALL PRIVILEGES ON fireping.* TO 'fireping'@'localhost';
+Query OK, 0 rows affected (0.00 sec)
+
+MariaDB [(none)]> FLUSH PRIVILEGES;
+Query OK, 0 rows affected (0.00 sec)
+
+MariaDB [(none)]>
 ```
 
 Remember the database name, user and password for later.
+
+**WARNING**: DO NOT use the password from the example. Generate a random password.
