@@ -13,11 +13,9 @@ A Domain is a container that connects `slaveGroups`, `Probes`, `Alert rules` and
 - a `Name`
 
 # Optional fields
-- a `Parent`, the domain wil be listed under the parent in the dashboard.
 
-![Domain with parent example](/fireping/assets/images/domain_with_parent.png)
-
-- `slaveGroups`, the `Probes` will be executed on the `slaves` in these `slaveGroup`s.
+- `Parent` defines the parent domain from which this domain and its devices will inherit their settings.
+- `slaveGroups`, the `Probes` will be executed on the `slaves` in these slave groups.
 - `Probes`, these are the probes that will be executed to gather data.
 - `Alert rules`, are the rules describing when to alert.
 - `Alert destinations`, are the destination where the alert will be shown in case one is triggered. 
