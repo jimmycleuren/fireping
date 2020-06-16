@@ -56,3 +56,15 @@ server {
     access_log /var/log/nginx/fireping_access.log;
 }
 ```
+
+Then, enable the configuration.
+
+```bash
+ln -s /etc/nginx/sites-available/fireping.conf /etc/nginx/sites-enabled/fireping.conf
+```
+
+And reload the NGINX configuration.
+
+```bash
+nginx -s reload
+```
