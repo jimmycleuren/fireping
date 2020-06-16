@@ -1,5 +1,5 @@
 header:
-  - title: ![Github Logo](/fireping/assets/images/github/GitHub-Mark-32px.png)
+  - title: GitHub
     url: https://github.com/jimmycleuren/fireping
 
 side-nav:
@@ -19,7 +19,6 @@ side-nav:
         url:    /docs/getting-started/reverse-proxy/
       - title:  Slaves
         url:    /docs/getting-started/slave/
-
       - title:  Master setup
         url:    /docs/getting-started/master
       - title:  Slave setup
