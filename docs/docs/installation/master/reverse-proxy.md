@@ -8,7 +8,7 @@ key: docs-installation-master-reverse-proxy
 
 In this section we'll talk about the installation and configuration of NGINX to act as a reverse proxy to our application.
 
-## Debian 9
+## Debian
 
 Install NGINX:
 

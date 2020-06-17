@@ -8,7 +8,7 @@ key: docs-installation-master-redis
 
 Redis is used to cache certain API results and alert patterns.
 
-## Debian 9
+## Debian
 
 Install Redis.
 

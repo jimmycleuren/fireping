@@ -18,7 +18,7 @@ We have three supported storage modes: rrd, rrdcached and rrddistributed.
 
 All three modes allow running the storage node on localhost. Distributed will spread files equally over all configured storage nodes.
 
-## Debian 9
+## Debian
 
 ```bash
 $ sudo apt-get update

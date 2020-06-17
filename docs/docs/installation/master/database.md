@@ -10,7 +10,7 @@ In this section we'll talk about the installation and configuration of a MariaDB
 
 This documentation was tested against a MariaDB 10.1 installation.
 
-## Debian 9
+## Debian
 
 ```bash
 $ sudo apt-get update

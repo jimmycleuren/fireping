@@ -8,7 +8,7 @@ key: docs-installation-master-fireping
 
 In this section we'll explain how to setup the fireping application server. Start by installing the necessary software.
 
-## Debian 9
+## Debian
 
 Start by adding a new package repository so that we can add the PHP7.4 binaries.
 

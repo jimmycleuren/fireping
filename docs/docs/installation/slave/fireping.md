@@ -8,7 +8,7 @@ This section details how to install and configure a slave instance for Fireping.
 
 A slave is installed from the same code base as the master. In fact, it's possible to run a slave from the same machine if so desired.
 
-## Debian 9
+## Debian
 
 Start by adding a new package repository so that we can add the PHP7.4 binaries.
 

@@ -6,7 +6,7 @@ key: docs-installation-slave-supervisor
 
 # Installation
 
-## Debian 9
+## Debian
 
 ```bash
 $ apt-get update
