@@ -1,6 +1,6 @@
 ---
-title: "Fireping"
-permalink: /docs/installation/master/logrotate
+title: "Logrotate"
+permalink: /docs/installation/slave/logrotate/
 key: docs-installation-master-logrotate
 ---
 

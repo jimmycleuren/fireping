@@ -1,6 +1,6 @@
 ---
 title: "Supervisord"
-permalink: /docs/installation/slave/supervisord
+permalink: /docs/installation/slave/supervisord/
 key: docs-installation-slave-supervisor
 ---
 

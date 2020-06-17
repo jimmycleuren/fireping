@@ -1,6 +1,6 @@
 ---
 title: "Docker"
-permalink: /docs/installation/slave/docker
+permalink: /docs/installation/slave/docker/
 key: docs-installation-slave-docker
 ---
 

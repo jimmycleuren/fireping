@@ -29,6 +29,10 @@ side-nav:
         url:    /docs/installation/slave/supervisord/
       - title:  Logrotate
         url:    /docs/installation/slave/logrotate/
+      - title:  Ansible
+        url:    /docs/installation/slave/ansible/
+      - title:  Docker
+        url:    /docs/installation/slave/docker/
   - title:      Guides
     children:
       - title:  Admin Guide

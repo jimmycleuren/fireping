@@ -1,6 +1,6 @@
 ---
 title: "Getting Started"
-permalink: /docs/installation/slave/getting-started
+permalink: /docs/installation/slave/getting-started/
 key: docs-installation-master-getting-started
 ---
 
