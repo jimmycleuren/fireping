@@ -23,7 +23,7 @@ side-nav:
     children:
       - title:  Getting Started
         url:    /docs/installation/slave/getting-started/
-      - title:  Slaves
+      - title:  Fireping
         url:    /docs/installation/slave/fireping/
       - title:  Supervisord
         url:    /docs/installation/slave/supervisord/
