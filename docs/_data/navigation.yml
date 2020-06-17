@@ -6,7 +6,7 @@ side-nav:
   - title:      Installation - Master
     children:
       - title:  Getting Started
-        url:    /docs/installation/master/getting-started
+        url:    /docs/installation/master/getting-started/
       - title:  Database
         url:    /docs/installation/master/database/
       - title:  RRD Storage
