@@ -129,9 +129,11 @@ $ php bin/console doctrine:migrations:migrate
 
 WARNING! You are about to execute a database migration that could result in schema changes and data loss. Are you sure you wish to continue? (y/n)y
 $ 
+```
 
 ## Create Admin User 
 
+```bash
 $ # within project root directory /opt/fireping
 $ php bin/console fireping:create:user
 Please enter the username (defaults to admin): admin

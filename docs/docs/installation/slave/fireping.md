@@ -13,32 +13,32 @@ A slave is installed from the same code base as the master. In fact, it's possib
 Start by adding a new package repository so that we can add the PHP7.4 binaries.
 
 ```bash
-sudo apt-get install -y wget gnupg ca-certificates apt-transport-https
-wget -q https://packages.sury.org/php/apt.gpg -O- | sudo apt-key add -
+$ sudo apt-get install -y wget gnupg ca-certificates apt-transport-https
+$ wget -q https://packages.sury.org/php/apt.gpg -O- | sudo apt-key add -
 
-echo "deb https://packages.sury.org/php/ stretch main" | sudo tee /etc/apt/sources.list.d/php.list
+$ echo "deb https://packages.sury.org/php/ stretch main" | sudo tee /etc/apt/sources.list.d/php.list
 ```
 
 Then install the required system dependencies.
 
 ```bash
-sudo apt-get update
-sudo apt-get install -y php7.4 php7.4-mysql php7.4-mbstring php7.4-zip php7.4-curl php-rrd rrdtool git zip supervisor fping
+$ sudo apt-get update
+$ sudo apt-get install -y php7.4 php7.4-mysql php7.4-mbstring php7.4-zip php7.4-curl php-rrd rrdtool git zip supervisor fping
 ```
 
 Clone the repository to a location of your choosing.
 
 ```bash
-mkdir /opt/fireping-slave
-git clone https://github.com/jimmycleuren/fireping.git .
-cd fireping
+$ mkdir /opt/fireping-slave
+$ git clone https://github.com/jimmycleuren/fireping.git .
+$ cd fireping
 ```
 
 Now [install Composer](https://getcomposer.org/download/) and fetch the vendor dependencies.
 
 ```bash
-# in /opt/fireping-slave/
-composer install --verbose --prefer-dist --no-dev --optimize-autoloader --no-suggest
+$ # in /opt/fireping-slave/
+$ composer install --verbose --prefer-dist --no-dev --optimize-autoloader --no-suggest
 ```
 
 # Configuration
