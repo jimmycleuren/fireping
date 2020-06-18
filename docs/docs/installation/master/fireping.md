@@ -57,7 +57,7 @@ $ php bin/console cache:warmup --env=prod
 $ php bin/console assets:install --symlink --relative public
 ```
 
-Make sure the log file is writable by the user running the webserver.
+Make sure the log file is writable by the user running the webserver. The example below lists one way to do this, however note that this will make the logs readable for any user on the system.
 
 ```bash
 $ sudo chmod 777 /opt/fireping/var/log/prod.log
