@@ -23,27 +23,41 @@ Then install the required system dependencies.
 
 ```bash
 $ sudo apt-get update
-$ sudo apt-get install -y php7.4 php7.4-mysql php7.4-mbstring php7.4-zip php7.4-curl php-rrd rrdtool git zip supervisor fping
+$ sudo apt-get install -y php7.4 php7.4-xml php7.4-mysql php7.4-mbstring php7.4-zip php7.4-curl php-rrd rrdtool git zip supervisor fping
 ```
 
 Clone the repository to a location of your choosing.
 
 ```bash
-$ mkdir /opt/fireping-slave
-$ git clone https://github.com/jimmycleuren/fireping.git .
-$ cd fireping
+$ mkdir /opt/fireping-slave && cd /opt/fireping-slave
+$ sudo git clone https://github.com/jimmycleuren/fireping.git .
 ```
 
 Now [install Composer](https://getcomposer.org/download/) and fetch the vendor dependencies.
 
 ```bash
 $ # in /opt/fireping-slave/
-$ composer install --verbose --prefer-dist --no-dev --optimize-autoloader --no-suggest
+$ composer install --verbose --prefer-dist --no-dev --optimize-autoloader --no-scripts --no-suggest
+```
+
+Then, run some post-install scripts.
+
+```bash
+$ php bin/console cache:clear --env=slave
+$ php bin/console cache:warmup --env=slave
 ```
 
 # Configuration
 
 Fireping's configuration file is called `.env.local` and is stored in the installation directory.
+
+## APP_ENV
+
+This changes the running application's environment.
+
+```bash
+APP_ENV=slave
+```
 
 ## SLAVE_URL
 

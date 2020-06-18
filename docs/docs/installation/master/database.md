@@ -20,11 +20,11 @@ $ sudo apt-get install -y mariadb-server
 Make sure it's installed and running:
 
 ```bash
-$ service mysql status
+$ sudo service mysql status
 [info] MariaDB is stopped..
-$ service mysql start
+$ sudo service mysql start
 [ ok ] Starting MariaDB database server: mysqld.
-$ service mysql status
+$ sudo service mysql status
 [info] /usr/bin/mysqladmin  Ver 9.1 Distrib 10.1.44-MariaDB, for debian-linux-gnu on x86_64
 Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
 
