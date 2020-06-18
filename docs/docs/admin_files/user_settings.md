@@ -4,7 +4,7 @@ permalink: /docs/how-to/admin/user
 key: docs-how-to-admin-user
 ---
 
-![Settings for device](/fireping/assets/images/user_settings.png)
+![Settings for device](/assets/images/user_settings.png)
 
 # Short Description
 Allows you to create/edit user credetials and roles.

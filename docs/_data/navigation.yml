@@ -1,35 +1,36 @@
 header:
-  # - titles:
-  #     en      : &EN       Archive
-  #     en-GB   : *EN
-  #     en-US   : *EN
-  #     en-CA   : *EN
-  #     en-AU   : *EN
-  #   url: /archive.html
-  - title: Docs
-    url: /docs
-
-  - title: About
-    url: /about
-
   - title: GitHub
-    url:  https://github.com/jimmycleuren/fireping
+    url: https://github.com/jimmycleuren/fireping
 
 side-nav:
-  - title:      Install Fireping
+  - title:      Installation - Master
     children:
-      - title:  Getting started
-        url:    /docs/
-      - title:  Master setup
-        url:    /docs/getting-started/master
-      - title:  Slave setup
-        url:    /docs/getting-started/slaves
-      - title:  Docker slave installation (Recommended)
-        url:    /docs/getting-started/slaves/docker
-      - title:  Deploy multiple slaves with ansible
-        url:    /docs/getting-started/slaves/deploy-with-ansible
-      - title:  Manual slave installation
-        url:    /docs/getting-started/slaves/manual
+      - title:  Getting Started
+        url:    /docs/installation/master/getting-started/
+      - title:  Database
+        url:    /docs/installation/master/database/
+      - title:  RRD Storage
+        url:    /docs/installation/master/rrd-storage/
+      - title:  Redis
+        url:    /docs/installation/master/redis/
+      - title:  Fireping
+        url:    /docs/installation/master/fireping/
+      - title:  Reverse Proxy
+        url:    /docs/installation/master/reverse-proxy/
+      - title:  Logrotate
+        url:    /docs/installation/master/logrotate/
+  - title:      Installation - Slave
+    children:
+      - title:  Getting Started
+        url:    /docs/installation/slave/getting-started/
+      - title:  Fireping
+        url:    /docs/installation/slave/fireping/
+      - title:  Supervisord
+        url:    /docs/installation/slave/supervisord/
+      - title:  Logrotate
+        url:    /docs/installation/slave/logrotate/
+      - title:  Docker
+        url:    /docs/installation/slave/docker/
   - title:      Guides
     children:
       - title:  Admin Guide
