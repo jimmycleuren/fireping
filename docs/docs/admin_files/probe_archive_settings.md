@@ -4,7 +4,7 @@ permalink: /docs/how-to/admin/probe-archive
 key: docs-how-to-admin-probe-archive
 ---
 
-![Settings for device](/fireping/assets/images/probe_archive_settings.png)
+![Settings for device](/assets/images/probe_archive_settings.png)
 
 # Short Description
 A Probe Archive will hold the data gathered by probes for a specified amount of time.

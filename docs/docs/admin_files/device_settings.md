@@ -4,7 +4,7 @@ permalink: /docs/how-to/admin/device
 key: docs-how-to-admin-device
 ---
 
-![Settings for device](/fireping/assets/images/settings_device.png)
+![Settings for device](/assets/images/settings_device.png)
 
 # Short Description
 A Device is the device from which data will be gathered, thus the slaves wil gather response data from this device.

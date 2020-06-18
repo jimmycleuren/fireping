@@ -4,7 +4,7 @@ permalink: /docs/how-to/admin/alert-destination
 key: docs-how-to-admin-alert-destination
 ---
 
-![Settings for device](/fireping/assets/images/alert_destination_settings.png)
+![Settings for device](/assets/images/alert_destination_settings.png)
 
 # Short Description
 An alert destination is used do define where to store alerts.
