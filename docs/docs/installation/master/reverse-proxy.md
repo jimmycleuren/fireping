@@ -60,11 +60,11 @@ server {
 Then, enable the configuration.
 
 ```bash
-ln -s /etc/nginx/sites-available/fireping.conf /etc/nginx/sites-enabled/fireping.conf
+sudo ln -s /etc/nginx/sites-available/fireping.conf /etc/nginx/sites-enabled/fireping.conf
 ```
 
 And reload the NGINX configuration.
 
 ```bash
-nginx -s reload
+sudo nginx -s reload
 ```

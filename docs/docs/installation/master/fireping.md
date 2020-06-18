@@ -23,7 +23,7 @@ Then install the necessary system dependencies.
 
 ```bash
 $ sudo apt-get update
-$ sudo apt-get install -y php7.4 php7.4-fpm php7.4-mysql php7.4-mbstring php7.4-zip php7.4-curl php-rrd rrdtool git zip
+$ sudo apt-get install -y php7.4 php7.4-xml php7.4-fpm php7.4-mysql php7.4-mbstring php7.4-zip php7.4-curl php-rrd rrdtool git zip
 ```
 
 Make sure that php7.4-fpm is up and running.
@@ -40,13 +40,27 @@ Clone the repository to a location of your choosing.
 
 ```bash
 $ mkdir /opt/fireping && cd fireping
-$ git clone https://github.com/jimmycleuren/fireping.git .
+$ sudo git clone https://github.com/jimmycleuren/fireping.git .
 ```
 
 Now [install Composer](https://getcomposer.org/download/) and fetch the vendor dependencies.
 
 ```bash
-$ composer install --verbose --prefer-dist --no-dev --optimize-autoloader --no-suggest
+$ composer install --verbose --prefer-dist --no-dev --optimize-autoloader --no-scripts --no-suggest
+```
+
+Then, run some post-install scripts.
+
+```bash
+$ php bin/console cache:clear --env=prod
+$ php bin/console cache:warmup --env=prod
+$ php bin/console assets:install --symlink --relative public
+```
+
+Make sure the log file is writable by the user running the webserver. The example below lists one way to do this, however note that this will make the logs readable for any user on the system.
+
+```bash
+$ sudo chmod 777 /opt/fireping/var/log/prod.log
 ```
 
 # Configuration
@@ -60,7 +74,7 @@ This is a secret key used to generate CSRF tokens. You must change it. It should
 Example:
 
 ```bash
-$ php -r "echo 'APP_SECRET=' . sha1(random_bytes(50)) . PHP_EOL;" >> .env.local
+$ php -r "echo 'APP_SECRET=' . sha1(random_bytes(50)) . PHP_EOL;" | sudo tee -a .env.local
 ```
 
 ## DATABASE_URL
