@@ -16,11 +16,11 @@ $ apt-get install supervisor
 Make sure it's running
 
 ```bash
-$ service supervisor status
+$ sudo service supervisor status
 supervisord is  not running.
-$ service supervisor start
+$ sudo service supervisor start
 Starting supervisor: supervisord.
-$ service supervisor status
+$ sudo service supervisor status
 supervisord is running
 ```
 
