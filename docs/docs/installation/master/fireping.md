@@ -63,6 +63,12 @@ Make sure the log file is writable by the user running the webserver. The exampl
 $ sudo chmod 777 /opt/fireping/var/log/prod.log
 ```
 
+Make sure the `/opt/fireping/var/rrd` directory is writable by the user running the webserver.
+
+```bash
+$ sudo chmod 777 /opt/fireping/var/rrd/
+```
+
 # Configuration
 
 Fireping's configuration file is called `.env.local` and is stored in the installation directory. It is not created by default.
