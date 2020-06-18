@@ -38,7 +38,14 @@ Now [install Composer](https://getcomposer.org/download/) and fetch the vendor d
 
 ```bash
 $ # in /opt/fireping-slave/
-$ composer install --verbose --prefer-dist --no-dev --optimize-autoloader --no-suggest
+$ composer install --verbose --prefer-dist --no-dev --optimize-autoloader --no-scripts --no-suggest
+```
+
+Then, run some post-install scripts.
+
+```bash
+$ php bin/console cache:clear --env=prod
+$ php bin/console cache:warmup --env=prod
 ```
 
 # Configuration

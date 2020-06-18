@@ -46,7 +46,15 @@ $ sudo git clone https://github.com/jimmycleuren/fireping.git .
 Now [install Composer](https://getcomposer.org/download/) and fetch the vendor dependencies.
 
 ```bash
-$ composer install --verbose --prefer-dist --no-dev --optimize-autoloader --no-suggest
+$ composer install --verbose --prefer-dist --no-dev --optimize-autoloader --no-scripts --no-suggest
+```
+
+Then, run some post-install scripts.
+
+```bash
+$ php bin/console cache:clear --env=prod
+$ php bin/console cache:warmup --env=prod
+$ php bin/console assets:install --symlink --relative public
 ```
 
 # Configuration
