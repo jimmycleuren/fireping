@@ -43,13 +43,21 @@ $ composer install --verbose --prefer-dist --no-dev --optimize-autoloader --no-s
 Then, run some post-install scripts.
 
 ```bash
-$ php bin/console cache:clear --env=prod
-$ php bin/console cache:warmup --env=prod
+$ php bin/console cache:clear --env=slave
+$ php bin/console cache:warmup --env=slave
 ```
 
 # Configuration
 
 Fireping's configuration file is called `.env.local` and is stored in the installation directory.
+
+## APP_ENV
+
+This changes the running application's environment.
+
+```bash
+APP_ENV=slave
+```
 
 ## SLAVE_URL
 
