@@ -23,14 +23,14 @@ Then install the required system dependencies.
 
 ```bash
 $ sudo apt-get update
-$ sudo apt-get install -y php7.4 php7.4-mysql php7.4-mbstring php7.4-zip php7.4-curl php-rrd rrdtool git zip supervisor fping
+$ sudo apt-get install -y php7.4 php7.4-xml php7.4-mysql php7.4-mbstring php7.4-zip php7.4-curl php-rrd rrdtool git zip supervisor fping
 ```
 
 Clone the repository to a location of your choosing.
 
 ```bash
 $ mkdir /opt/fireping-slave
-$ git clone https://github.com/jimmycleuren/fireping.git .
+$ sudo git clone https://github.com/jimmycleuren/fireping.git .
 $ cd fireping
 ```
 
