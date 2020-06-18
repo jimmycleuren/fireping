@@ -37,17 +37,14 @@ class SlaveStatsRrdStorage
 
     public function getFilePath(Slave $slave, $type)
     {
-        if (!mkdir($concurrentDirectory = $this->path) && !is_dir($concurrentDirectory)) {
+        if (!file_exists($concurrentDirectory = $this->path) && !mkdir($concurrentDirectory) && !is_dir($concurrentDirectory)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
 
         $path = $this->path.$slave->getId();
 
-        if (!mkdir($path) && !is_dir($path)) {
+        if (!file_exists($path) && !mkdir($path) && !is_dir($path)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $path));
-        }
-
-        if (!file_exists($path)) {
         }
 
         return $this->path.$slave->getId()."/".$type.'.rrd';

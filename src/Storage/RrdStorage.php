@@ -39,7 +39,7 @@ class RrdStorage extends Storage
         $this->logger = $logger;
         $this->path = $path;
 
-        if ($path && !mkdir($concurrentDirectory = $this->path) && !is_dir($concurrentDirectory)) {
+        if ($path && !file_exists($concurrentDirectory = $this->path) && !mkdir($concurrentDirectory) && !is_dir($concurrentDirectory)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
     }
@@ -48,13 +48,13 @@ class RrdStorage extends Storage
     {
         $path = $this->path.$device->getId();
 
-        if (!mkdir($path) && !is_dir($path)) {
+        if (!file_exists($path) && !mkdir($path) && !is_dir($path)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $path));
         }
 
         $path = $this->path.$device->getId()."/".$probe->getId();
 
-        if (!mkdir($path) && !is_dir($path)) {
+        if (!file_exists($path) && !mkdir($path) && !is_dir($path)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $path));
         }
 
