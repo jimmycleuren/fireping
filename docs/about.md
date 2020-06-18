@@ -22,4 +22,4 @@ You can setup multiple slaves for a single master but only one master per slave.
 This allows for efficient data gathering about a lot of servers with as few as possible slaves.
 For collecting data on big datacenters, you can add a storage node to handle the large amounts of data.
 
-![Master/Slave](/fireping/assets/images/master_slave.png)
+![Master/Slave](/assets/images/master_slave.png)

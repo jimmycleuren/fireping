@@ -4,7 +4,7 @@ permalink: /docs/how-to/admin/slave-group
 key: docs-how-to-admin-slave-group
 ---
 
-![Settings for device](/fireping/assets/images/slave_group_settings.png)
+![Settings for device](/assets/images/slave_group_settings.png)
 
 # Short Description
 In a slave Group, all workload is dispersed over the slaves equaly.
