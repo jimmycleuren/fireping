@@ -16,8 +16,8 @@ use Symfony\Component\Process\Process;
 
 class SlaveStatsRrdStorage
 {
-    protected $logger = null;
-    protected $path = null;
+    protected $logger;
+    protected $path;
 
     protected $archives = [
         ['function' => 'AVERAGE', 'steps' => 1, 'rows' => 3600],
@@ -37,14 +37,17 @@ class SlaveStatsRrdStorage
 
     public function getFilePath(Slave $slave, $type)
     {
-        if (!file_exists($this->path)) {
-            mkdir($this->path);
+        if (!mkdir($concurrentDirectory = $this->path) && !is_dir($concurrentDirectory)) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
 
         $path = $this->path.$slave->getId();
 
+        if (!mkdir($path) && !is_dir($path)) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $path));
+        }
+
         if (!file_exists($path)) {
-            mkdir($path);
         }
 
         return $this->path.$slave->getId()."/".$type.'.rrd';
