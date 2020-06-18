@@ -57,6 +57,12 @@ $ php bin/console cache:warmup --env=prod
 $ php bin/console assets:install --symlink --relative public
 ```
 
+Make sure the log file is writable by the user running the webserver.
+
+```bash
+$ sudo chmod 777 /opt/fireping/var/log/prod.log
+```
+
 # Configuration
 
 Fireping's configuration file is called `.env.local` and is stored in the installation directory. It is not created by default.
