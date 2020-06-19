@@ -2,13 +2,14 @@
 /.idea
 /.vagrant
 /Homestead.yaml
+/public/coverage
+
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
 /.env.*.local
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
-public/coverage
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
