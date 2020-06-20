@@ -12,7 +12,7 @@ abstract class AbstractApiTest extends WebTestCase
 
     public function setUp() : void
     {
-       $this->client = $this->createAuthorizedClient();
+        $this->client = $this->createAuthorizedClient();
     }
 
     /**
