@@ -4,6 +4,14 @@ env:
     - GIT_COMMITTED_AT=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then git log -1 --pretty=format:%ct; else git log -1 --skip 1 --pretty=format:%ct; fi)
     - DATABASE_URL=mysql://root@127.0.0.1:3306/fireping_test
     - RRDCACHED_TEST=127.0.0.1:42217
+    # Symfony's PHPUnit bridge provides a modified version of PHPUnit. The modified PHPUnit is
+    # written to a directory that can be configured by the SYMFONY_PHPUNIT_DIR env var, or in
+    # the same directory as the simple-phpunit if it is not provided. It's also possible to set
+    # this env var in the phpunit.xml.dist file.
+    - SYMFONY_PHPUNIT_DIR=./bin/.phpunit
+    - SYMFONY_DEPRECATIONS_HELPER=9
+    - ACTION="install"
+    # Add the Symfony binary's path
 
 language: php
 os: linux
@@ -17,7 +25,12 @@ services:
 # Cache composer packages so "composer install" is faster
 cache:
   directories:
+    # Cache composer packages so "composer install" is faster.
     - $HOME/.composer/cache/files
+    # Cache the directory where Symfony stores its slightly modified version of PHPUnit.
+    - ./bin/.phpunit
+    # Cache the Symfony binary's directory so that it does not have to be reinstalled.
+    - $HOME/.symfony
 
 addons:
   apt:
@@ -31,23 +44,42 @@ jobs:
   # Fast finish allows to set the build as "finished" even if the "allow_failures" matrix elements are not finished yet.
   fast_finish: true
   include:
-    - php: master
-    - php: 7.4
+    # Run tests with the dependencies from composer.lock
+    - php: 7.2
     - php: 7.3
-  allow_failures:
-    - php: master
+    - php: 7.4
+
+    # Run tests against dev (currently 5.1.x-dev)
+    - php: 7.3
+      env: STABILITY=dev ACTION=update
+
+    # Run tests against dev-master (currently 5.2.x-dev)
+    - php: 7.3
+      env: STABILITY=dev SYMFONY=5.* ACTION=update
 
 before_install:
+  - phpenv config-rm xdebug.ini || true
+  - # Change minimum-stability to allow upcoming versions (dev | alpha | beta | RC)
+  - '[[ -z $STABILITY ]] || composer config minimum-stability "$STABILITY"'
+  # Change extra.symfony.require used by symfony flex
+  - '[[ -z $SYMFONY ]] || composer config extra.symfony.require "$SYMFONY"'
+  # If it is available update the Symfony binary, if not install it.
+  - if symfony self:version; then symfony self:update --yes ; else wget https://get.symfony.com/cli/installer -O - | bash ; fi
+  # Install rrd
   - sudo apt-get -qq update
   - sudo apt-get install -y librrd-dev rrdtool
-  - composer self-update
   - mkdir build
   - pecl install rrd
+  # Create test database
   - mysql -e 'CREATE DATABASE fireping_test;'
+  # Start rrdcached
   - docker run -d -p 127.0.0.1:42217:42217 --name rrdcached -e TZ="Europe/Paris" crazymax/rrdcached
 
 install:
-  - composer -n install --prefer-dist
+  - php -r "echo ini_get('memory_limit').PHP_EOL;"
+  # Install or update Composer packages including dev dependencies listed in require-dev.
+  - COMPOSER_MEMORY_LIMIT=-1 composer $ACTION
+  - ./bin/phpunit install
 
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
@@ -56,8 +88,26 @@ before_script:
 
 script:
   - php bin/console cache:warmup --env=slave
-  - vendor/bin/phpunit --coverage-text --coverage-clover build/logs/clover.xml
+  #- vendor/bin/phpunit --coverage-text --coverage-clover build/logs/clover.xml
+  - ./bin/phpunit
   - composer phpstan
+  # This checks that the source code follows the Symfony Code Syntax rules.
+  - '[[ $TRAVIS_PHP_VERSION != "7.4" ]] || ./vendor/bin/php-cs-fixer fix --diff --dry-run -v'
+  # This checks that the YAML config files contain no syntax errors.
+  - ./bin/console lint:yaml config --parse-tags
+  # This checks that the Twig template files contain no syntax errors.
+  - ./bin/console lint:twig templates --env=prod
+  # This checks that the XLIFF translations contain no syntax errors.
+  - ./bin/console lint:xliff translations
+  # This checks that arguments injected into services match type declarations.
+  - ./bin/console lint:container
+  # This checks that the application doesn't use dependencies with known security vulnerabilities.
+  - symfony check:security
+  # This checks that Doctrine's mapping configurations are valid.
+  - ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction
+  # Fail CI if the repo is in a dirty state after building assets (only for current release ie install).
+  #-  if [[ "$ACTION" == "install" ]]; then yarn install && yarn encore production && git add --all && git diff --staged --exit-code; fi
+  - composer validate --strict
 
 after_script:
   - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
