@@ -81,7 +81,7 @@ class CreateUserCommand extends Command
         }
 
         $user->setPassword($this->passwordEncoder->encodePassword($user, $user->getPassword()));
-        $user->setEnabled(1);
+        $user->setEnabled(true);
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
