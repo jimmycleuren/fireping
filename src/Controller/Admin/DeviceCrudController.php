@@ -47,5 +47,6 @@ class DeviceCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_EDIT === $pageName) {
             return [$name, $domain, $ip, $slavegroups, $probes, $alertRules, $alertDestinations];
         }
+        return [];
     }
 }

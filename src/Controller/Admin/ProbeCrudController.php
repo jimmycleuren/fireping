@@ -45,5 +45,6 @@ class ProbeCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_EDIT === $pageName) {
             return [$name, $type, $step, $samples, $arguments, $archives];
         }
+        return [];
     }
 }

@@ -51,5 +51,6 @@ class AlertCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_EDIT === $pageName) {
             return [$active, $firstseen, $lastseen, $device, $alertRule, $slaveGroup];
         }
+        return [];
     }
 }

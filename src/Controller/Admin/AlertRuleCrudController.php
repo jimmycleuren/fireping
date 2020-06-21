@@ -46,5 +46,6 @@ class AlertRuleCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_EDIT === $pageName) {
             return [$name, $datasource, $pattern, $messageUp, $messageDown, $probe, $parent, $children];
         }
+        return [];
     }
 }

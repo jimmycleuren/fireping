@@ -42,5 +42,6 @@ class SlaveGroupCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_EDIT === $pageName) {
             return [$name, $devices, $domains, $slaves];
         }
+        return [];
     }
 }

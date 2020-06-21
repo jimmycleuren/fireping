@@ -6,6 +6,7 @@ use App\Entity\StorageNode;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
@@ -29,7 +30,7 @@ class StorageNodeCrudController extends AbstractCrudController
     {
         $name = TextField::new('name');
         $ip = TextField::new('ip');
-        $status = TextField::new('status');
+        $status = ChoiceField::new('status')->setChoices(['active' => 'active', 'inactive' => 'inactive']);
         $id = IntegerField::new('id', 'ID');
         $devices = AssociationField::new('devices');
 
@@ -42,5 +43,6 @@ class StorageNodeCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_EDIT === $pageName) {
             return [$name, $ip, $status];
         }
+        return [];
     }
 }

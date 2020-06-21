@@ -46,5 +46,6 @@ class DomainCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_EDIT === $pageName) {
             return [$name, $parent, $slavegroups, $probes, $alertRules, $alertDestinations];
         }
+        return [];
     }
 }
