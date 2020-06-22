@@ -37,6 +37,8 @@ side-nav:
         url:    /docs/how-to/admin
       - title:  Dashboard Guide
         url:    /docs/how-to/dashboard
+      - title:  Troubleshooting Guide
+        url:    /docs/troubleshooting/
   - title:      Settings
     children:
       - title:  Domain
