@@ -79,7 +79,7 @@ class MenuBuilderSubscriber implements EventSubscriberInterface
         $domains = $this->domainRepository->findByParent(null);
 
         if (count($domains) > 0) {
-            $title = new MenuItemModel('domains', "Root domains", false);
+            $title = new MenuItemModel('domains', "Root domains", '');
             $event->addItem($title);
 
             foreach ($domains as $domain) {
@@ -99,7 +99,7 @@ class MenuBuilderSubscriber implements EventSubscriberInterface
     {
         $event = $this->addStaticMenu($event);
 
-        $domains = new MenuItemModel('domains', "Domains", false, [], '');
+        $domains = new MenuItemModel('domains', "Domains", '', [], '');
         $event->addItem($domains);
         $this->addRecursiveDomains($domains);
 
