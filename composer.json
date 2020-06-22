@@ -72,7 +72,7 @@
         "post-update-cmd": [
             "@auto-scripts"
         ],
-        "phpstan": "vendor/bin/phpstan --level=4 --configuration=phpstan.neon analyse src",
+        "phpstan": "vendor/bin/phpstan --level=5 --configuration=phpstan.neon analyse src",
         "test": {
             "tests": "bin/phpunit --coverage-html public/coverage --debug"
         },
