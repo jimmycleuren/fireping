@@ -57,7 +57,7 @@ class UserCrudController extends AbstractCrudController
         $username = TextField::new('username');
         $email = TextField::new('email');
         $roles = ChoiceField::new('roles')
-                            ->setChoices(['ROLE_USER' => 'ROLE_USER', 'ROLE_ADMIN' => 'ROLE_ADMIN'])
+                            ->setChoices(['ROLE_API' => 'ROLE_API', 'ROLE_ADMIN' => 'ROLE_ADMIN'])
                             ->setFormTypeOption('multiple', true);
         $plainPassword = TextField::new('plainPassword')->setFormType(PasswordType::class);
         $id = IntegerField::new('id', 'ID');
