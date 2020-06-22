@@ -10,6 +10,7 @@ namespace App\Controller;
 
 use App\Entity\Device;
 use App\Entity\Slave;
+use App\Exception\DirtyInputException;
 use App\Exception\WrongTimestampRrdException;
 use App\Processor\ProcessorFactory;
 use App\Repository\DeviceRepository;
@@ -282,7 +283,7 @@ class SlaveController extends AbstractController
             //execute 1 flush at the end, not for every datapoint
             $this->em->flush();
 
-        } catch (WrongTimestampRrdException $e) {
+        } catch (WrongTimestampRrdException | DirtyInputException $e) {
             $this->logger->warning($e->getMessage());
             return new JsonResponse(array('code' => 409, 'message' => $e->getMessage()), 409);
         } catch (\Exception $e) {
