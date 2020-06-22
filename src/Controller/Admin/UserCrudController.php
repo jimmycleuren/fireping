@@ -6,10 +6,9 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\EasyAdminBundle;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
@@ -57,23 +56,32 @@ class UserCrudController extends AbstractCrudController
     {
         $username = TextField::new('username');
         $email = TextField::new('email');
-        $roles = ChoiceField::new('roles')->setChoices(['ROLE_USER' => 'ROLE_USER', 'ROLE_ADMIN' => 'ROLE_ADMIN'])->setFormTypeOption('multiple', true);
+        $roles = ChoiceField::new('roles')
+                            ->setChoices(['ROLE_USER' => 'ROLE_USER', 'ROLE_ADMIN' => 'ROLE_ADMIN'])
+                            ->setFormTypeOption('multiple', true);
         $plainPassword = TextField::new('plainPassword')->setFormType(PasswordType::class);
         $id = IntegerField::new('id', 'ID');
         $password = TextField::new('password');
-        $enabled = Field::new('enabled');
+        $enabled = BooleanField::new('enabled');
         $apiToken = TextField::new('apiToken');
         $lastLogin = DateTimeField::new('lastLogin');
 
         if (Crud::PAGE_INDEX === $pageName) {
             return [$id, $username, $email, $enabled, $apiToken, $lastLogin];
-        } elseif (Crud::PAGE_DETAIL === $pageName) {
-            return [$id, $username, $roles, $password, $email, $enabled, $apiToken, $lastLogin];
-        } elseif (Crud::PAGE_NEW === $pageName) {
-            return [$username, $email, $roles, $plainPassword];
-        } elseif (Crud::PAGE_EDIT === $pageName) {
-            return [$username, $email, $roles, $plainPassword];
         }
+
+        if (Crud::PAGE_DETAIL === $pageName) {
+            return [$id, $username, $roles, $password, $email, $enabled, $apiToken, $lastLogin];
+        }
+
+        if (Crud::PAGE_NEW === $pageName) {
+            return [$username, $email, $roles, $plainPassword, $enabled];
+        }
+
+        if (Crud::PAGE_EDIT === $pageName) {
+            return [$username, $email, $roles, $plainPassword, $enabled];
+        }
+
         return [];
     }
 
