@@ -10,6 +10,8 @@ Ensure that you have a working Fireping master installation before proceeding.
 
 # Installation
 
+This is part of an express install. If you've already done the prior manual steps, skip this page.
+
 First, make sure that [Docker is installed](https://docs.docker.com/engine/install/debian/).
 
 Then, run the following command, replacing the variables SLAVE_NAME, SLAVE_PASSWORD and SLAVE_URL with those matching your setup.
