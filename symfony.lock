@@ -224,9 +224,6 @@
     "ocramius/proxy-manager": {
         "version": "2.1.1"
     },
-    "pagerfanta/pagerfanta": {
-        "version": "v1.1.0"
-    },
     "pdepend/pdepend": {
         "version": "2.5.2"
     },
