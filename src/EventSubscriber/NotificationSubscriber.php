@@ -48,10 +48,6 @@ class NotificationSubscriber implements EventSubscriberInterface
             }
         }
 
-        if (count($alerts) == 0) {
-            $event->setTotal(null); //Let's cheat our way out of this
-        } else {
-            $event->setTotal(count($alerts));
-        }
+        $event->setTotal(count($alerts));
     }
 }
