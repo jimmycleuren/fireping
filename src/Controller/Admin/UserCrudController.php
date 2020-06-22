@@ -27,7 +27,7 @@ class UserCrudController extends AbstractCrudController
     {
         $plainPassword = $user->getPlainPassword();
 
-        if ($plainPassword === '') {
+        if ($plainPassword === '' || $plainPassword === null) {
             return;
         }
 
@@ -83,13 +83,6 @@ class UserCrudController extends AbstractCrudController
         }
 
         return [];
-    }
-
-    public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
-    {
-        $this->hashPassword($entityInstance);
-        $entityManager->persist($entityInstance);
-        $entityManager->flush();
     }
 
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
