@@ -18,7 +18,7 @@ class AlertFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager)
     {
         $alert = new Alert();
-        $alert->setActive(true);
+        $alert->setActive(1);
         $alert->setFirstseen(new \DateTime("1 hour ago"));
         $alert->setLastseen(new \DateTime("now"));
         $alert->setDevice($this->getReference('device-1'));
@@ -28,7 +28,7 @@ class AlertFixtures extends Fixture implements DependentFixtureInterface
 
         //alerts for cleanupAlert
         $alert = new Alert();
-        $alert->setActive(true);
+        $alert->setActive(1);
         $alert->setFirstseen(new \DateTime("1 hour ago"));
         $alert->setLastseen(new \DateTime("now"));
         $alert->setDevice($this->getReference('device-4'));
@@ -37,7 +37,7 @@ class AlertFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($alert);
 
         $alert = new Alert();
-        $alert->setActive(true);
+        $alert->setActive(1);
         $alert->setFirstseen(new \DateTime("1 hour ago"));
         $alert->setLastseen(new \DateTime("now"));
         $alert->setDevice($this->getReference('device-4'));
@@ -46,7 +46,7 @@ class AlertFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($alert);
 
         $alert = new Alert();
-        $alert->setActive(true);
+        $alert->setActive(1);
         $alert->setFirstseen(new \DateTime("1 hour ago"));
         $alert->setLastseen(new \DateTime("now"));
         $alert->setDevice($this->getReference('device-4'));
@@ -55,7 +55,7 @@ class AlertFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($alert);
 
         $alert = new Alert();
-        $alert->setActive(true);
+        $alert->setActive(1);
         $alert->setFirstseen(new \DateTime("1 hour ago"));
         $alert->setLastseen(new \DateTime("now"));
         $alert->setDevice($this->getReference('device-5'));
@@ -64,7 +64,7 @@ class AlertFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($alert);
 
         $alert = new Alert();
-        $alert->setActive(true);
+        $alert->setActive(1);
         $alert->setFirstseen(new \DateTime("1 hour ago"));
         $alert->setLastseen(new \DateTime("now"));
         $alert->setDevice($this->getReference('device-6'));
@@ -73,7 +73,7 @@ class AlertFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($alert);
 
         $alert = new Alert();
-        $alert->setActive(true);
+        $alert->setActive(1);
         $alert->setFirstseen(new \DateTime("1 hour ago"));
         $alert->setLastseen(new \DateTime("now"));
         $alert->setDevice($this->getReference('device-6'));
@@ -82,7 +82,7 @@ class AlertFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($alert);
 
         $alert = new Alert();
-        $alert->setActive(true);
+        $alert->setActive(1);
         $alert->setFirstseen(new \DateTime("1 hour ago"));
         $alert->setLastseen(new \DateTime("now"));
         $alert->setDevice($this->getReference('device-7'));
