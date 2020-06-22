@@ -86,7 +86,7 @@ class RrdDistributedStorage extends RrdCachedStorage
 
     private function getStorageNode(Device $device) : StorageNode
     {
-        $id = $this->hash->lookup($device->getId());
+        $id = $this->hash->lookup(''.$device->getId());
         $node = $this->storageNodes[$id];
 
         if ($node != $device->getStorageNode()) {
