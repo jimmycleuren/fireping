@@ -40,8 +40,7 @@ $ sudo git clone https://github.com/jimmycleuren/fireping.git .
 Now [install Composer](https://getcomposer.org/download/) and fetch the vendor dependencies.
 
 ```bash
-$ # in /opt/fireping-slave/
-$ composer install --verbose --prefer-dist --no-dev --optimize-autoloader --no-scripts --no-suggest
+$ ./composer.phar install --verbose --prefer-dist --no-dev --optimize-autoloader --no-scripts --no-suggest
 ```
 
 Then, run some post-install scripts.
