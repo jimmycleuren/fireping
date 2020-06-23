@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jimmyc
- * Date: 4/09/2018
- * Time: 11:18
- */
 
 namespace App\DependencyInjection;
 

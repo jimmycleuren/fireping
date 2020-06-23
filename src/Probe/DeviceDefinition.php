@@ -1,13 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: kevinr
- * Date: 23/05/2017
- * Time: 16:38
- */
 
 namespace App\Probe;
-
 
 class DeviceDefinition
 {
