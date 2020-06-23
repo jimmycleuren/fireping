@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: kevinr
- * Date: 20/06/2017
- * Time: 9:40
- */
 
 namespace App\OutputFormatter;
 
