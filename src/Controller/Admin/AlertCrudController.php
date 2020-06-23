@@ -29,7 +29,8 @@ class AlertCrudController extends AbstractCrudController
     public function configureActions(Actions $actions): Actions
     {
         return $actions
-            ->disable('new');
+            ->disable('new')
+            ->disable('edit');
     }
 
     public function configureFields(string $pageName): iterable
