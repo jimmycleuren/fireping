@@ -21,7 +21,9 @@ Make sure that redis is running.
 
 ```bash
 $ sudo service redis-server status
+[FAIL] redis-server is not running ... failed!
 $ sudo service redis-server start
+Starting redis-server: redis-server.
 ```
 
 Verify that the installation is running and working with the `PING` command.
