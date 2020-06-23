@@ -40,11 +40,30 @@ $ sudo service php7.4-fpm status
 [ ok ] php-fpm7.4 is running.
 ```
 
-Clone the repository to a location of your choosing.
+Create a fireping system user.
 
 ```bash
-$ sudo mkdir /opt/fireping && cd fireping
-$ sudo git clone https://github.com/jimmycleuren/fireping.git .
+$ sudo addgroup --system fireping
+Adding group `fireping' (GID 101) ...
+Done.
+```
+
+```bash
+$ sudo adduser --system --home /opt/fireping --shell /bin/bash --ingroup fireping --disabled-password --disabled-login fireping
+Adding system user `fireping' (UID 101) ...
+Adding new user `fireping' (UID 101) with group `fireping' ...
+Creating home directory `/opt/fireping' ...
+$ su - fireping
+$ whoami
+fireping
+```
+
+Clone the repository to the system user's home directory.
+
+```bash
+$ cd && pwd
+/opt/fireping
+$ git clone https://github.com/jimmycleuren/fireping.git .
 ```
 
 Now [install Composer](https://getcomposer.org/download/) and fetch the vendor dependencies.
@@ -64,13 +83,15 @@ $ php bin/console assets:install --symlink --relative public
 Make sure the log file is writable by the user running the webserver. The example below lists one way to do this, however note that this will make the logs readable for any user on the system.
 
 ```bash
-$ sudo chmod 777 /opt/fireping/var/log/prod.log
+$ touch ~/var/log/prod.log
+$ chmod 777 ~/var/log/prod.log
 ```
 
-Make sure the `/opt/fireping/var/rrd` directory is writable by the user running the webserver.
+Make sure the `~/var/rrd/` and `~/var/cache/` directories are writable by the webserver user.
 
 ```bash
-$ sudo chmod 777 /opt/fireping/var/rrd/
+$ chmod -R 777 ~/var/rrd/
+$ chmod -R 777 ~/var/cache/
 ```
 
 # Configuration
@@ -102,8 +123,9 @@ Example:
 # Connect as user "fireping" with password "my_secret". (db_user:db_password)
 # Connect to localhost on port 3306. (db_host:db_port)
 # Connect to the fireping database. (db_name)
-# The database is running version 10.1. (serverVersion=10.1)
-DATABASE_URL=mysql://fireping:my_secret@127.0.0.1:3306/fireping?serverVersion=10.1
+# The database is running version MariaDB 10.3.22. (serverVersion=mariadb-10.3.22)
+# For MySQL, just use the version number without a mysql prefix.
+DATABASE_URL=mysql://fireping:my_secret@127.0.0.1:3306/fireping?serverVersion=mariadb-10.3.22
 ```
 
 ## REDIS_URL
@@ -144,21 +166,42 @@ MAILER_FROM=fireping@organization.example
 After having installed and configured the Fireping master instance, do the following to complete your setup.
 
 ```bash
-$ # in /opt/fireping
-$ # execute all migrations
+$ php bin/console doctrine:migrations:status
++----------------------+----------------------+------------------------------------------------------------------------+
+| Configuration                                                                                                        |
++----------------------+----------------------+------------------------------------------------------------------------+
+| Storage              | Type                 | Doctrine\Migrations\Metadata\Storage\TableMetadataStorageConfiguration |
+|                      | Table Name           | migration_versions                                                     |
+|                      | Column Name          | version                                                                |
+|----------------------------------------------------------------------------------------------------------------------|
+| Database             | Driver               | Doctrine\DBAL\Driver\PDOMySql\Driver                                   |
+|                      | Name                 | fireping                                                               |
+|----------------------------------------------------------------------------------------------------------------------|
+| Versions             | Previous             | 0                                                                      |
+|                      | Current              | 0                                                                      |
+|                      | Next                 | DoctrineMigrations\Version20170508115339                               |
+|                      | Latest               | DoctrineMigrations\Version20200430091035                               |
+|----------------------------------------------------------------------------------------------------------------------|
+| Migrations           | Executed             | 0                                                                      |
+|                      | Executed Unavailable | 0                                                                      |
+|                      | Available            | 21                                                                     |
+|                      | New                  | 21                                                                     |
+|----------------------------------------------------------------------------------------------------------------------|
+| Migration Namespaces | DoctrineMigrations   | /opt/fireping/src/Migrations                                           |
++----------------------+----------------------+------------------------------------------------------------------------+
 $ php bin/console doctrine:migrations:migrate
 
-                    Application Migrations
+ WARNING! You are about to execute a database migration that could result in schema changes and data loss. Are you sure you wish to continue? (yes/no) [yes]:
+ > yes
 
-
-WARNING! You are about to execute a database migration that could result in schema changes and data loss. Are you sure you wish to continue? (y/n)y
+[notice] Migrating up to DoctrineMigrations\Version20200430091035
+[notice] finished in 5020.8ms, used 24M memory, 21 migrations executed, 96 sql queries
 $ 
 ```
 
 ## Create Admin User 
 
 ```bash
-$ # within project root directory /opt/fireping
 $ php bin/console fireping:create:user
 Please enter the username (defaults to admin): admin
 Please enter the password:
