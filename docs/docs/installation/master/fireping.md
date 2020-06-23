@@ -137,6 +137,16 @@ Configure this to set the e-mail address to use when sending out alerts.
 MAILER_FROM=fireping@organization.example
 ```
 
+## STORAGE
+
+Configure this to select the storage driver you'd like to use. See [RRD Storage](/docs/installation/master/rrd-storage/) for more information.
+
+Example:
+
+```bash
+STORAGE=rrd
+```
+
 # Initial Setup
 
 ## Execute Migrations
