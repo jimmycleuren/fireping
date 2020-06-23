@@ -61,7 +61,6 @@ class UserCrudController extends AbstractCrudController
                             ->setFormTypeOption('multiple', true);
         $plainPassword = TextField::new('plainPassword')->setFormType(PasswordType::class);
         $id = IntegerField::new('id', 'ID');
-        $password = TextField::new('password');
         $enabled = BooleanField::new('enabled');
         $apiToken = TextField::new('apiToken');
         $lastLogin = DateTimeField::new('lastLogin');
@@ -71,7 +70,7 @@ class UserCrudController extends AbstractCrudController
         }
 
         if (Crud::PAGE_DETAIL === $pageName) {
-            return [$id, $username, $roles, $password, $email, $enabled, $apiToken, $lastLogin];
+            return [$id, $username, $roles, $email, $enabled, $apiToken, $lastLogin];
         }
 
         if (Crud::PAGE_NEW === $pageName) {
