@@ -1,7 +1,5 @@
 env:
   global:
-    - CC_TEST_REPORTER_ID=c0e8e75ad3debbbedee5e22c23696e0b27ae916102c3a65149a1a01cf74f8495
-    - GIT_COMMITTED_AT=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then git log -1 --pretty=format:%ct; else git log -1 --skip 1 --pretty=format:%ct; fi)
     - DATABASE_URL=mysql://root@127.0.0.1:3306/fireping_test
     - RRDCACHED_TEST=127.0.0.1:42217
     # Symfony's PHPUnit bridge provides a modified version of PHPUnit. The modified PHPUnit is
@@ -45,9 +43,9 @@ jobs:
   fast_finish: true
   include:
     # Run tests with the dependencies from composer.lock
-    - php: 7.2
     - php: 7.3
     - php: 7.4
+      env: COVERAGE=true
 
     # Run tests against dev (currently 5.1.x-dev)
     - php: 7.3
@@ -58,7 +56,7 @@ jobs:
       env: STABILITY=dev SYMFONY=5.* ACTION=update
 
 before_install:
-  - phpenv config-rm xdebug.ini || true
+  - if [[ $COVERAGE == "" ]]; then phpenv config-rm xdebug.ini; fi
   - # Change minimum-stability to allow upcoming versions (dev | alpha | beta | RC)
   - '[[ -z $STABILITY ]] || composer config minimum-stability "$STABILITY"'
   # Change extra.symfony.require used by symfony flex
@@ -80,11 +78,6 @@ install:
   # Install or update Composer packages including dev dependencies listed in require-dev.
   - COMPOSER_MEMORY_LIMIT=-1 composer $ACTION
   - ./bin/phpunit install
-
-before_script:
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  - chmod +x ./cc-test-reporter
-  - ./cc-test-reporter before-build
 
 script:
   - php bin/console cache:warmup --env=slave
@@ -110,7 +103,12 @@ script:
   - composer validate --strict
 
 after_script:
-  - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
+  - |
+    if [[ $COVERAGE == true && $TRAVIS_BRANCH == "master" ]]; then
+      vendor/bin/phpunit --coverage-clover coverage.xml
+      wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.1.0/php-coveralls.phar
+      php php-coveralls.phar --verbose
+    fi
 
 after_failure: "cat var/log/*.log"
 
