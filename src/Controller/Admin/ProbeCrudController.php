@@ -38,13 +38,20 @@ class ProbeCrudController extends AbstractCrudController
 
         if (Crud::PAGE_INDEX === $pageName) {
             return [$id, $name, $type, $step, $samples, $archives];
-        } elseif (Crud::PAGE_DETAIL === $pageName) {
+        }
+
+        if (Crud::PAGE_DETAIL === $pageName) {
             return [$id, $name, $type, $step, $samples, $arguments, $archives];
-        } elseif (Crud::PAGE_NEW === $pageName) {
-            return [$name, $type, $step, $samples, $arguments, $archives];
-        } elseif (Crud::PAGE_EDIT === $pageName) {
+        }
+
+        if (Crud::PAGE_NEW === $pageName) {
             return [$name, $type, $step, $samples, $arguments, $archives];
         }
+
+        if (Crud::PAGE_EDIT === $pageName) {
+            return [$name];
+        }
+
         return [];
     }
 }
