@@ -141,7 +141,7 @@ class SlaveControllerTest extends AbstractApiTest
         )));
 
         $response = $this->client->getResponse();
-        $this->assertEquals(500, $response->getStatusCode());
+        $this->assertEquals(409, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
     }
@@ -272,7 +272,7 @@ class SlaveControllerTest extends AbstractApiTest
         )));
 
         $response = $this->client->getResponse();
-        $this->assertEquals(500, $response->getStatusCode());
+        $this->assertEquals(409, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
     }
