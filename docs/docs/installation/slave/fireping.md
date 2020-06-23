@@ -33,7 +33,7 @@ $ sudo apt-get install -y php7.4 php7.4-xml php7.4-mysql php7.4-mbstring php7.4-
 Clone the repository to a location of your choosing.
 
 ```bash
-$ mkdir /opt/fireping-slave && cd /opt/fireping-slave
+$ sudo mkdir /opt/fireping-slave && cd /opt/fireping-slave
 $ sudo git clone https://github.com/jimmycleuren/fireping.git .
 ```
 

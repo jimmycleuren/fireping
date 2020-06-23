@@ -43,7 +43,7 @@ $ sudo service php7.4-fpm status
 Clone the repository to a location of your choosing.
 
 ```bash
-$ mkdir /opt/fireping && cd fireping
+$ sudo mkdir /opt/fireping && cd fireping
 $ sudo git clone https://github.com/jimmycleuren/fireping.git .
 ```
 
