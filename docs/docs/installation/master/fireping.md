@@ -16,7 +16,11 @@ Start by adding a new package repository so that we can add the PHP7.4 binaries.
 $ sudo apt-get install -y wget gnupg ca-certificates apt-transport-https
 $ wget -q https://packages.sury.org/php/apt.gpg -O- | sudo apt-key add -
 
-$ echo "deb https://packages.sury.org/php/ stretch main" | sudo tee /etc/apt/sources.list.d/php.list
+# Automatically add for your Debian release. Make sure that https://packages.sury.org/php/dists/ has an entry for your release.
+$ env -i bash -c '. /etc/os-release; echo "deb https://packages.sury.org/php/ $VERSION_CODENAME main"' | sudo tee /etc/apt/sources.list.d/php.list
+# Alternatively, just do it manually for these known supported releases:
+# Debian 9: echo "deb https://packages.sury.org/php/ stretch main" | sudo tee /etc/apt/sources.list.d/php.list
+# Debian 10: echo "deb https://packages.sury.org/php/ buster main" | sudo tee /etc/apt/sources.list.d/php.list
 ```
 
 Then install the necessary system dependencies.
