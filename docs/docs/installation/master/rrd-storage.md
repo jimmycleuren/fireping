@@ -22,6 +22,5 @@ All three modes allow running the storage node on localhost. Distributed will sp
 
 ```bash
 $ sudo apt-get update
-$ sudo apt-get install -y rrdtool
-$ sudo apt-get install -y rrdcached
+$ sudo apt-get install -y rrdtool rrdcached
 ```
