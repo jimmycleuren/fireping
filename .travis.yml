@@ -44,7 +44,7 @@ before_install:
   - mkdir build
   - pecl install rrd
   - mysql -e 'CREATE DATABASE fireping_test;'
-  - docker run -d -p 127.0.0.1:42217:42217 --name rrdcached -e TZ="Europe/Paris" crazymax/rrdcached
+  - docker run -d -p 127.0.0.1:42217:42217 --name rrdcached -v "${TRAVIS_BUILD_DIR}/var/rrd/test:/data/db" -e TZ="Europe/Paris" crazymax/rrdcached
 
 install:
   - composer -n install --prefer-dist
