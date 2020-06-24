@@ -14,7 +14,7 @@ final class Version20200624202240 extends AbstractMigration
 {
     public function getDescription() : string
     {
-        return '';
+        return 'Add uniqueness constraint on domain parent/name combinations.';
     }
 
     public function up(Schema $schema) : void
