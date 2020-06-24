@@ -25,7 +25,9 @@ class RrdCachedStorageTest extends TestCase
     {
         $logger = $this->prophesize(LoggerInterface::class)->reveal();
 
-        $storage = new RrdCachedStorage(null, $logger);
+        $path = realpath('/tmp/fireping/rrd') . '/';
+
+        $storage = new RrdCachedStorage($path, $logger);
 
         $device = new Device();
         $device->setId(1);
@@ -52,7 +54,9 @@ class RrdCachedStorageTest extends TestCase
     {
         $logger = $this->prophesize(LoggerInterface::class)->reveal();
 
-        $storage = new RrdCachedStorage(null, $logger);
+        $path = realpath('/tmp/fireping/rrd/') . '/';
+
+        $storage = new RrdCachedStorage($path, $logger);
 
         $device = new Device();
         $device->setId(1);
@@ -79,7 +83,9 @@ class RrdCachedStorageTest extends TestCase
     {
         $logger = $this->prophesize(LoggerInterface::class)->reveal();
 
-        $storage = new RrdCachedStorage(null, $logger);
+        $path = realpath('/tmp/fireping/rrd') . '/';
+
+        $storage = new RrdCachedStorage($path, $logger);
 
         $device = new Device();
         $device->setId(1);
@@ -100,9 +106,6 @@ class RrdCachedStorageTest extends TestCase
 
         $datasources = $storage->getDatasources($device, $probe, $group, $_ENV['RRDCACHED_TEST'] ?? "127.0.0.1:42217");
 
-        //TODO: this is correct, but we cannot rrdtune over ssh connections in the test suite
-        //$this->assertEquals(["median", "loss", "new"], $datasources);
-
-        $this->assertEquals(["median", "loss"], $datasources);
+        $this->assertEquals(["median", "loss", "new"], $datasources);
     }
 }

@@ -44,7 +44,12 @@ before_install:
   - mkdir build
   - pecl install rrd
   - mysql -e 'CREATE DATABASE fireping_test;'
-  - docker run -d -p 127.0.0.1:42217:42217 --name rrdcached -e TZ="Europe/Paris" crazymax/rrdcached
+  # Setup the rrdcached container.
+  # We are forcing the PUID and PGID of the rrdcached daemon to the same UID/GID of the host so that we can pretend it's
+  # A locally running rrdcached, which for instance RrdCachedStorage assumes it to be.
+  - HOST_USERID=$(id -u $(whoami))
+  - HOST_GROUPID=$(id -g $(whoami))
+  - docker run -d -p 127.0.0.1:42217:42217 --name rrdcached -v /tmp/fireping/rrd:/data/db -e TZ="Europe/Paris" -e PUID=$HOST_USERID -e PGID=$HOST_GROUPID crazymax/rrdcached
 
 install:
   - composer -n install --prefer-dist
