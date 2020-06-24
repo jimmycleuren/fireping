@@ -56,16 +56,17 @@ class Http implements CommandInterface
                 $promises[$target['id']] = $client->getAsync('http://'.$target['ip'].$path, [
                     'on_stats' => function (TransferStats $stats) use ($id){
                         $this->times[$id] = $stats->getTransferTime() * 1000;
-                    }
+                    },
+                    'http_errors' => false
                 ]);
             }
 
             $responses = Promise\settle($promises)->wait();
             foreach($responses as $id => $response) {
-                if (isset($response['value']) && in_array($response['value']->getStatusCode(), $this->allowedCodes)) {
-                    $result[$id][] = $this->times[$id];
-                } else {
-                    $result[$id][] = -1;
+                try {
+                    $result[$id][] = ['time' => $this->times[$id], 'code' => $response['value']->getStatusCode()];
+                } catch (\Exception $exception) {
+                    $this->logger->error(get_class($exception) . ": " . $exception->getMessage());
                 }
             }
 
@@ -76,7 +77,7 @@ class Http implements CommandInterface
             if ($sleep > 0 && $i < $this->samples) {
                 usleep((int) $sleep);
             } elseif($sleep < 0) {
-                $this->logger->warning("HTTP probe did not have enough time");
+                $this->logger->warning("HTTP probe did not have enough time, sleep time was $sleep");
             }
         }
 
