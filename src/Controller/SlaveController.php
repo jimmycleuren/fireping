@@ -330,16 +330,20 @@ class SlaveController extends AbstractController
         $entityManager->persist($slave);
         $entityManager->flush();
 
-        foreach ($data->workers as $timestamp => $workerData) {
-            $storage->store($slave, "workers", $timestamp, $workerData);
+        if (isset($data->workers) && is_array($data->workers)) {
+            foreach ($data->workers as $timestamp => $workerData) {
+                $storage->store($slave, "workers", $timestamp, $workerData);
+            }
         }
 
-        foreach ($data->queues as $timestamp => $queues) {
-            $result = [];
-            foreach ($queues as $id => $items) {
-                $result['queue'.$id] = $items;
+        if (isset($data->queues) && is_array($data->queues)) {
+            foreach ($data->queues as $timestamp => $queues) {
+                $result = [];
+                foreach ($queues as $id => $items) {
+                    $result['queue' . $id] = $items;
+                }
+                $storage->store($slave, "queues", $timestamp, $result);
             }
-            $storage->store($slave, "queues", $timestamp, $result);
         }
 
         $storage->store($slave, "posts", date("U"), [

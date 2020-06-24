@@ -69,7 +69,7 @@ class SmokeRrdGraph extends RrdGraph
         return $this->storage->graph($device, $options);
     }
 
-    public function getDetailGraph(Device $device, Probe $probe, SlaveGroup $slavegroup, $start = -3600, $end = null, $debug = false)
+    public function getDetailGraph(Device $device, Probe $probe, SlaveGroup $slavegroup, $start = -3600, $end = null, $type = "default", $debug = false)
     {
         if (!$end) $end = date("U");
 
@@ -187,7 +187,7 @@ class SmokeRrdGraph extends RrdGraph
         return $this->storage->graph($device, $options);
     }
 
-    private function calculateStdDev(&$options, $file, $samples, $slavegroup)
+    protected function calculateStdDev(&$options, $file, $samples, $slavegroup)
     {
         $temp = array();
         $temp2 = array();

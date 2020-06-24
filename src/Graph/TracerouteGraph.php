@@ -14,7 +14,7 @@ class TracerouteGraph extends RrdGraph
         return file_get_contents(dirname(__FILE__)."/../../public/notfound.png");
     }
 
-    public function getDetailGraph(Device $device, Probe $probe, SlaveGroup $slavegroup, $start = -3600, $end = null, $debug = false)
+    public function getDetailGraph(Device $device, Probe $probe, SlaveGroup $slavegroup, $start = -3600, $end = null, $type = "default", $debug = false)
     {
 
         if (!$end) $end = date("U");

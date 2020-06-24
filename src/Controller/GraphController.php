@@ -73,9 +73,10 @@ class GraphController extends AbstractController
     {
         $start = $request->get('start') ?: -3600;
         $end = $request->get('end') ?: date("U");
+        $type = $request->get('type') ?: "default";
         $debug = $session->get('debug');
 
-        $graph = $graphFactory->create($probe->getType())->getDetailGraph($device, $probe, $slavegroup, $start, $end, $debug);
+        $graph = $graphFactory->create($probe->getType())->getDetailGraph($device, $probe, $slavegroup, $start, $end, $type, $debug);
         $response = new Response($graph, 200);
         $response->headers->set('Content-Type', 'image/png');
 

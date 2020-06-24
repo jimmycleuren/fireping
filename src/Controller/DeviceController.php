@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\DependencyInjection\Helper;
 use App\Entity\Device;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,10 +15,11 @@ class DeviceController extends AbstractController
      * @Route("/device/{id}")
      * @ParamConverter("device", class="App:Device")
      */
-    public function getAction(Device $device, Request $request)
+    public function getAction(Device $device, Request $request, Helper $helper)
     {
         return $this->render('device/view.html.twig', array(
             'device' => $device,
+            'helper' => $helper,
             'control_sidebar_extra' => [
                 'navigation' => [
                     'icon' => 'far fa-clock',
