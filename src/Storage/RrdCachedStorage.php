@@ -352,6 +352,7 @@ class RrdCachedStorage extends RrdStorage
 
     protected function addDataSource(Device $device, $filename, $name, Probe $probe)
     {
+        dump("Adding datasource $name to $filename");
         $ds = sprintf(
             "DS:%s:%s:%s:%s:%s",
             $name,
@@ -368,6 +369,7 @@ class RrdCachedStorage extends RrdStorage
         $process = new Process(["rrdtool", "tune", $this->path.$filename, $ds]);
         $process->run();
         $error = $process->getErrorOutput();
+        dump(['out' => $process->getOutput(), 'err' => $process->getErrorOutput(), 'path' => $this->path . $filename]);
 
         if ($error) {
             throw new RrdException(trim($error));
