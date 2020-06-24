@@ -424,4 +424,13 @@ class Domain
     {
         return $this->name;
     }
+
+    public function getFqdn(): string
+    {
+        if ($this->getParent() !== null) {
+            return $this->getParent()->getFqdn() . '/' . $this->getName();
+        }
+
+        return '/' . $this->getName();
+    }
 }
