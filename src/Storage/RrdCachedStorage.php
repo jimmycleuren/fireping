@@ -361,6 +361,9 @@ class RrdCachedStorage extends RrdStorage
             "U"
         );
 
+        $process = new Process(['ls', '-al', '/tmp/fireping/rrd']);
+        $process->run();
+
         $process = new Process(["rrdtool", "tune", $this->path.$filename, $ds]);
         $process->run();
         $error = $process->getErrorOutput();
