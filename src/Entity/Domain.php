@@ -433,4 +433,13 @@ class Domain
 
         return '/' . $this->getName();
     }
+
+    public function getParentFqdn(): string
+    {
+        if ($this->getParent() === null) {
+            return '/';
+        }
+
+        return $this->getParent()->getFqdn();
+    }
 }
