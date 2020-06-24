@@ -45,6 +45,8 @@ before_install:
   - pecl install rrd
   - mysql -e 'CREATE DATABASE fireping_test;'
   - docker run -d -p 127.0.0.1:42217:42217 --name rrdcached -v /tmp/fireping/rrd:/data/db -e TZ="Europe/Paris" crazymax/rrdcached
+  - docker inspect rrdcached
+  - ls -al /tmp/fireping/rrd
 
 install:
   - composer -n install --prefer-dist
