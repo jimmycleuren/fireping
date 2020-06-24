@@ -44,10 +44,8 @@ before_install:
   - mkdir build
   - pecl install rrd
   - mysql -e 'CREATE DATABASE fireping_test;'
-  - id -u $(whoami)
-  - id -g $(whoami)
-  - id -u $(whoami) && HOST_USERID=$! && echo $HOST_USERID
-  - id -g $(whoami) && HOST_GROUPID=$! && echo $HOST_GROUPID
+  - HOST_USERID=$(id -u $(whoami))
+  - HOST_GROUPID=$(id -g $(whoami))
   - docker run -d -p 127.0.0.1:42217:42217 --name rrdcached -v /tmp/fireping/rrd:/data/db -e TZ="Europe/Paris" -e PUID=$HOST_USERID -e PGID=$HOST_GROUPID crazymax/rrdcached
   - docker inspect rrdcached
   - ls -al /tmp/fireping/rrd
