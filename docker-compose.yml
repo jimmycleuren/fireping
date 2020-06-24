@@ -10,7 +10,7 @@ services:
     build: docker/php
     volumes:
       - ./:/app
-      - rrd:/app/var/rrd/test
+      - rrd:/tmp/fireping/rrd/
     working_dir: /app
   slave:
     build: docker/slave

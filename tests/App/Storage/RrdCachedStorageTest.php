@@ -25,7 +25,7 @@ class RrdCachedStorageTest extends TestCase
     {
         $logger = $this->prophesize(LoggerInterface::class)->reveal();
 
-        $path = realpath(__DIR__.'/../../../var/rrd/test') . '/';
+        $path = realpath('/tmp/fireping/rrd') . '/';
 
         $storage = new RrdCachedStorage($path, $logger);
 
@@ -54,7 +54,7 @@ class RrdCachedStorageTest extends TestCase
     {
         $logger = $this->prophesize(LoggerInterface::class)->reveal();
 
-        $path = realpath(__DIR__.'/../../../var/rrd/test') . '/';
+        $path = realpath('/tmp/fireping/rrd/') . '/';
 
         $storage = new RrdCachedStorage($path, $logger);
 
@@ -83,7 +83,7 @@ class RrdCachedStorageTest extends TestCase
     {
         $logger = $this->prophesize(LoggerInterface::class)->reveal();
 
-        $path = realpath(__DIR__.'/../../../var/rrd/test') . '/';
+        $path = realpath('/tmp/fireping/rrd') . '/';
 
         $storage = new RrdCachedStorage($path, $logger);
 
