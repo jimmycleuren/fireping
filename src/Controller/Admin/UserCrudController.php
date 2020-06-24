@@ -48,7 +48,7 @@ class UserCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('User')
             ->setEntityLabelInPlural('User')
-            ->setSearchFields(['id', 'username', 'roles', 'email', 'apiToken'])
+            ->setSearchFields(['id', 'username', 'roles', 'email'])
             ->setPaginatorPageSize(30);
     }
 
@@ -62,15 +62,14 @@ class UserCrudController extends AbstractCrudController
         $plainPassword = TextField::new('plainPassword')->setFormType(PasswordType::class);
         $id = IntegerField::new('id', 'ID');
         $enabled = BooleanField::new('enabled');
-        $apiToken = TextField::new('apiToken');
         $lastLogin = DateTimeField::new('lastLogin');
 
         if (Crud::PAGE_INDEX === $pageName) {
-            return [$id, $username, $email, $enabled, $apiToken, $lastLogin];
+            return [$id, $username, $email, $enabled, $lastLogin];
         }
 
         if (Crud::PAGE_DETAIL === $pageName) {
-            return [$id, $username, $roles, $email, $enabled, $apiToken, $lastLogin];
+            return [$id, $username, $roles, $email, $enabled, $lastLogin];
         }
 
         if (Crud::PAGE_NEW === $pageName) {
