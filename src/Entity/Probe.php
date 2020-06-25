@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\PingArguments;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -201,15 +202,13 @@ class Probe
     }
 
     /**
-     * Set arguments
-     *
-     * @param string $arguments
+     * @param PingArguments $arguments
      *
      * @return Probe
      */
-    public function setArguments($arguments)
+    public function setArguments(PingArguments $arguments)
     {
-        $this->arguments = $arguments;
+        $this->arguments = json_encode($arguments->asArray(), JSON_THROW_ON_ERROR, 512);
 
         return $this;
     }
@@ -217,11 +216,11 @@ class Probe
     /**
      * Get arguments
      *
-     * @return string
+     * @return PingArguments
      */
     public function getArguments()
     {
-        return $this->arguments;
+        return PingArguments::fromJsonString($this->arguments ?? '{}');
     }
 
     /**
