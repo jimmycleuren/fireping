@@ -1,0 +1,5 @@
+{% block ping_arguments_row %}
+    {% for child in form.children %}
+        {{ form_row(child) }}
+    {% endfor %}
+{% endblock %}
