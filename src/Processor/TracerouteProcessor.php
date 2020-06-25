@@ -6,7 +6,6 @@ use App\Entity\Device;
 use App\Entity\Probe;
 use App\Entity\SlaveGroup;
 use App\Exception\DirtyInputException;
-use App\Exception\TracerouteException;
 
 class TracerouteProcessor extends Processor
 {
