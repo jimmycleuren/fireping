@@ -52,11 +52,6 @@ class User implements UserInterface
     private $enabled;
 
     /**
-     * @ORM\Column(type="string", length=180, unique=true, nullable=true)
-     */
-    private $apiToken;
-
-    /**
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $lastLogin;
@@ -173,22 +168,6 @@ class User implements UserInterface
         $this->enabled = $enabled;
 
         return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getApiToken()
-    {
-        return $this->apiToken;
-    }
-
-    /**
-     * @param mixed $apiToken
-     */
-    public function setApiToken($apiToken): void
-    {
-        $this->apiToken = $apiToken;
     }
 
     public function getLastLogin(): ?\DateTimeInterface

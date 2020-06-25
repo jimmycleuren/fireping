@@ -6,13 +6,14 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Domain
  *
- * @ORM\Table(name="domain")
+ * @ORM\Table(name="domain", uniqueConstraints={@ORM\UniqueConstraint(name="unique_name_in_parent", columns={"parent_id", "name"})})
  * @ORM\Entity(repositoryClass="App\Repository\DomainRepository")
  * @ApiResource(attributes={
  *     "normalization_context"={"groups"={"domain"}},
@@ -25,6 +26,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     "alerts"={"route_name"="api_domains_alerts","method"="GET"},
  * })
  * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
+ * @UniqueEntity(fields={"parent", "name"}, errorPath="name", message="This name is already in use within this parent domain.", ignoreNull=false)
  */
 class Domain
 {
