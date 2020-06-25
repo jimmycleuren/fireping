@@ -5,14 +5,14 @@ namespace App\Processor;
 use App\Entity\Device;
 use App\Entity\Probe;
 use App\Entity\SlaveGroup;
-use App\Exception\WrongTimestampRrdException;
+use App\Exception\DirtyInputException;
 
 class HttpProcessor extends SmokeProcessor
 {
     public function storeResult(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data)
     {
         if (count($data) != $probe->getSamples()) {
-            throw new \Exception(count($data)." ".$this->datasource." samples received, should have been ".$probe->getSamples());
+            throw new DirtyInputException(count($data)." ".$this->datasource." samples received, should have been ".$probe->getSamples());
         }
 
         $datasources = array();
