@@ -2,12 +2,13 @@
 
 namespace App\Controller\Admin;
 
+use App\Admin\Field\ProbeArgumentsField;
 use App\Entity\Probe;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
 class ProbeCrudController extends AbstractCrudController
@@ -23,7 +24,8 @@ class ProbeCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('Probe')
             ->setEntityLabelInPlural('Probe')
             ->setSearchFields(['id', 'name', 'type', 'step', 'samples', 'arguments'])
-            ->setPaginatorPageSize(30);
+            ->setPaginatorPageSize(30)
+            ->setFormThemes(['admin/crud/probe/_fields.html.twig', '@EasyAdmin/crud/form_theme.html.twig']);
     }
 
     public function configureFields(string $pageName): iterable
@@ -32,9 +34,9 @@ class ProbeCrudController extends AbstractCrudController
         $type = TextField::new('type');
         $step = IntegerField::new('step');
         $samples = IntegerField::new('samples');
-        $arguments = TextareaField::new('arguments');
         $archives = AssociationField::new('archives');
         $id = IntegerField::new('id', 'ID');
+        $arguments = ProbeArgumentsField::new('arguments');
 
         if (Crud::PAGE_INDEX === $pageName) {
             return [$id, $name, $type, $step, $samples, $archives];
@@ -45,11 +47,11 @@ class ProbeCrudController extends AbstractCrudController
         }
 
         if (Crud::PAGE_NEW === $pageName) {
-            return [$name, $type, $step, $samples, $arguments, $archives];
+            return [$name, $type, $step, $samples, $archives, FormField::addPanel('Arguments'), $arguments];
         }
 
         if (Crud::PAGE_EDIT === $pageName) {
-            return [$name];
+            return [$name, FormField::addPanel('Arguments'), $arguments];
         }
 
         return [];
