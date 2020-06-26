@@ -68,7 +68,11 @@ class Http implements CommandInterface
             $responses = Promise\settle($promises)->wait();
             foreach($responses as $id => $response) {
                 try {
-                    $result[$id][] = ['time' => $this->times[$id], 'code' => $response['value']->getStatusCode()];
+                    if (isset($response['value'])) {
+                        $result[$id][] = ['time' => $this->times[$id], 'code' => $response['value']->getStatusCode()];
+                    } else {
+                        $result[$id][] = ['time' => -1, 'code' => -1];
+                    }
                 } catch (\Exception $exception) {
                     $this->logger->error(get_class($exception) . ": " . $exception->getMessage());
                 }
