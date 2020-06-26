@@ -57,7 +57,7 @@ class RrdDistributedStorage extends RrdCachedStorage
         $node = $this->getStorageNode($device);
         $daemon  = $node->getIp().":42217";
 
-        parent::fetch($device, $probe, $group, $timestamp, $key, $function, $daemon);
+        return parent::fetch($device, $probe, $group, $timestamp, $key, $function, $daemon);
     }
 
     public function fetchAll(Device $device, Probe $probe, SlaveGroup $group, $start, $end, $datasource, $function, $daemon = null)
@@ -65,7 +65,7 @@ class RrdDistributedStorage extends RrdCachedStorage
         $node = $this->getStorageNode($device);
         $daemon  = $node->getIp().":42217";
 
-        parent::fetchAll($device, $probe, $group, $start, $end, $datasource, $function, $daemon);
+        return parent::fetchAll($device, $probe, $group, $start, $end, $datasource, $function, $daemon);
     }
 
     public function fileExists(Device $device, $path, $daemon = null)
