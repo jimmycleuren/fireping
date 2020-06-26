@@ -9,6 +9,14 @@ use Psr\Log\LoggerInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise;
 
+/**
+ * Class Http
+ *
+ * Arguments:
+ * - host
+ * - path
+ * - protocol
+ */
 class Http implements CommandInterface
 {
     private $args;
@@ -18,11 +26,6 @@ class Http implements CommandInterface
     private $samples;
     private $waitTime;
     private $times;
-    private $allowedCodes = [
-        200,
-        301,
-        302
-    ];
 
     public function __construct(LoggerInterface $logger)
     {
@@ -47,13 +50,14 @@ class Http implements CommandInterface
         $client = new Client($options);
 
         $path = isset($this->args['path']) ? $this->args['path'] : "/";
+        $protocol = isset($this->args['protocol']) ? $this->args['protocol'] : "http";
 
         for($i = 0; $i < $this->samples; $i++) {
             $start = microtime(true);
             $promises = [];
             foreach ($this->targets as $target) {
                 $id = $target['id'];
-                $promises[$target['id']] = $client->getAsync('http://'.$target['ip'].$path, [
+                $promises[$target['id']] = $client->getAsync($protocol.'://'.$target['ip'].$path, [
                     'on_stats' => function (TransferStats $stats) use ($id){
                         $this->times[$id] = $stats->getTransferTime() * 1000;
                     },
