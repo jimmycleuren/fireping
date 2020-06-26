@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App;
 
-class PingArguments implements \ArrayAccess
+class PingArguments extends ProbeArguments
 {
     /**
      * @var int|null
@@ -20,7 +20,7 @@ class PingArguments implements \ArrayAccess
         $this->packetSize = $packetSize;
     }
 
-    public static function fromJsonString(string $json): self
+    public static function fromJsonString(string $json): ProbeArgumentsInterface
     {
         $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
         return new self($data['retries'] ?? null, $data['packetSize'] ?? null);
@@ -32,37 +32,5 @@ class PingArguments implements \ArrayAccess
             'retries' => $this->retries,
             'packetSize' => $this->packetSize
         ];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function offsetExists($offset)
-    {
-        return isset($this->asArray()[$offset]);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function offsetGet($offset)
-    {
-        return $this->asArray()[$offset];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function offsetSet($offset, $value)
-    {
-        $this->$offset = $value;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function offsetUnset($offset)
-    {
-        $this->$offset = null;
     }
 }
