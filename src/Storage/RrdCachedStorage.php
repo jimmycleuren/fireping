@@ -326,6 +326,24 @@ class RrdCachedStorage extends RrdStorage
         */
     }
 
+    /**
+     * TODO: implement further
+     * @param Device $device
+     * @param Probe $probe
+     * @param SlaveGroup $group
+     * @param $start
+     * @param $end
+     * @param $datasource
+     * @param $function
+     * @return mixed|void|null
+     */
+    public function fetchAll(Device $device, Probe $probe, SlaveGroup $group, $start, $end, $datasource, $function, $daemon = null)
+    {
+        if (!$daemon) {
+            $daemon = $this->daemon;
+        }
+    }
+
     public function getGraphValue(Device $device, $options, $daemon = null)
     {
         if (!$daemon) {
