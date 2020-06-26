@@ -51,55 +51,58 @@ class HttpGraph extends SmokeRrdGraph
         );
 
         $datasources = $this->storage->getDatasources($device, $probe, $slavegroup);
+        $datasources = array_filter($datasources, function($value) {
+            return substr($value, 0, 4) === "code";
+        });
 
-        $first = true;
+        $codes = [];
+        for ($i = 1; $i <= $probe->getSamples(); $i++) {
+            $codes = array_merge($codes, $this->storage->fetchAll($device, $probe, $slavegroup, $start, $end, "code$i", "LAST"));
+        }
+        $codes = array_diff(array_unique($codes), ["U"]);
+        sort($codes);
+
+        //TODO: find out why rrd is creating floating values and remove this dirty hack
+        foreach($codes as $key => $code) {
+            $codes[$key] = floor($code);
+        }
+        $codes = array_diff(array_unique($codes), ["U"]);
+        //end dirty hack
+
+        if(count($codes) == 0) {
+            return file_get_contents(dirname(__FILE__)."/../../public/notfound.png");
+        }
+
         $options[] = "COMMENT:HTTP status codes\\n";
         foreach ($datasources as $key => $data)
         {
-            if(substr($data, 0, 4) !== "code") {
-                continue;
-            }
-
             $options[] = sprintf("DEF:%s=%s:%s:%s", $data, $this->storage->getFilePath($device, $probe, $slavegroup), $data, "AVERAGE");
 
-            $options[] = sprintf("CDEF:%s=%s", $data."_1", "$data,100,GE,$data,199,LE,*");
-            $options[] = sprintf("CDEF:%s=%s", $data."_2", "$data,200,GE,$data,299,LE,*");
-            $options[] = sprintf("CDEF:%s=%s", $data."_3", "$data,300,GE,$data,399,LE,*");
-            $options[] = sprintf("CDEF:%s=%s", $data."_4", "$data,400,GE,$data,499,LE,*");
-            $options[] = sprintf("CDEF:%s=%s", $data."_5", "$data,500,GE,$data,599,LE,*");
+            foreach ($codes as $code) {
+                $options[] = sprintf("CDEF:%s=%s", $data."_".$code, "$data,$code,EQ");
+            }
         }
 
-        $options[] = sprintf("CDEF:%s=%s", "total_1", $this->getRpn($probe->getSamples(), 1));
-        $options[] = sprintf("CDEF:%s=%s", "total_2", $this->getRpn($probe->getSamples(), 2));
-        $options[] = sprintf("CDEF:%s=%s", "total_3", $this->getRpn($probe->getSamples(), 3));
-        $options[] = sprintf("CDEF:%s=%s", "total_4", $this->getRpn($probe->getSamples(), 4));
-        $options[] = sprintf("CDEF:%s=%s", "total_5", $this->getRpn($probe->getSamples(), 5));
+        foreach ($codes as $code) {
+            $options[] = sprintf("CDEF:%s=%s", "total_".$code, $this->getRpn($probe->getSamples(), $code));
+        }
 
+        $firstDraw = true;
+        $firstLegend = true;
         foreach ($datasources as $key => $data)
         {
-            if(substr($data, 0, 4) !== "code") {
-                continue;
+            foreach ($codes as $code) {
+                if ($firstDraw) {
+                    $options[] = "AREA:" . $data . "_$code#" . $this->getColor($code, $codes) . ($firstLegend ? ":HTTP/$code" : "");
+                } else {
+                    $options[] = "STACK:" . $data . "_$code#" . $this->getColor($code, $codes) . ($firstLegend ? ":HTTP/$code" : "");
+                }
+                if ($firstLegend) {
+                    $options[] = "GPRINT:total_$code:AVERAGE:%5.1lf %%\\n";
+                }
+                $firstDraw = false;
             }
-
-            if ($first === true) {
-                $options[] = "AREA:".$data."_1#" . $this->getColor(100) . ":1xx";
-                $options[] = "GPRINT:total_1:AVERAGE:%5.1lf %%\\n";
-                $options[] = "STACK:".$data."_2#" . $this->getColor(200) . ":2xx";
-                $options[] = "GPRINT:total_2:AVERAGE:%5.1lf %%\\n";
-                $options[] = "STACK:".$data."_3#" . $this->getColor(300) . ":3xx";
-                $options[] = "GPRINT:total_3:AVERAGE:%5.1lf %%\\n";
-                $options[] = "STACK:".$data."_4#" . $this->getColor(400) . ":4xx";
-                $options[] = "GPRINT:total_4:AVERAGE:%5.1lf %%\\n";
-                $options[] = "STACK:".$data."_5#" . $this->getColor(500) . ":5xx";
-                $options[] = "GPRINT:total_5:AVERAGE:%5.1lf %%\\n";
-            } else {
-                $options[] = "STACK:".$data."_1#" . $this->getColor(100);
-                $options[] = "STACK:".$data."_2#" . $this->getColor(200);
-                $options[] = "STACK:".$data."_3#" . $this->getColor(300);
-                $options[] = "STACK:".$data."_4#" . $this->getColor(400);
-                $options[] = "STACK:".$data."_5#" . $this->getColor(500);
-            }
-            $first = false;
+            $firstLegend = false;
         }
 
         $options[] = "COMMENT:".$probe->getName()." (".$probe->getSamples()." probes of type ".$probe->getType()." in ".$probe->getStep()." seconds) from ".$slavegroup->getName()."";
@@ -127,14 +130,37 @@ class HttpGraph extends SmokeRrdGraph
         return parent::getDetailGraph($device, $probe, $slavegroup, $start, $end);
     }
 
-    public function getColor($code)
+    public function getColor($code, $codes)
     {
+        $total = [1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0];
+        $categories = [1 => [], 2 => [], 3 => [], 4 => [], 5 => []];
+
+        foreach ($codes as $temp) {
+            $total[floor($temp / 100)]++;
+            $categories[floor($temp / 100)][] = $temp;
+        }
+        $categories[2] = array_unique($categories[2]);
+        $categories[3] = array_unique($categories[3]);
+        $categories[4] = array_unique($categories[4]);
+        $categories[5] = array_unique($categories[5]);
+
+        sort($categories[2]);
+        sort($categories[3]);
+        sort($categories[4]);
+        sort($categories[5]);
+
+        if ($total[floor($code / 100)] == 1) {
+            $step = 150;
+        } else {
+            $step = floor(150 / ($total[floor($code / 100)] - 1));
+        }
+
         switch(floor($code / 100)) {
-            case 1: return "999999";
-            case 2: return "00ff00";
-            case 3: return "0000ff";
-            case 4: return "ff0000";
-            case 5: return "ff00ff";
+            //case 1: return "999999";
+            case 2: return "00".sprintf("%02x", 105 + ($step * array_search($code, $categories[floor($code / 100)])))."00";
+            case 3: return "0000".sprintf("%02x", 105 + ($step * array_search($code, $categories[floor($code / 100)])));
+            case 4: return sprintf("%02x", 105 + ($step * array_search($code, $categories[floor($code / 100)])))."0000";
+            case 5: return sprintf("%02x", 105 + ($step * array_search($code, $categories[floor($code / 100)])))."00".sprintf("%02x", 105 + ($step * array_search($code, $categories[floor($code / 100)])));
             default: return "333333";
         }
     }

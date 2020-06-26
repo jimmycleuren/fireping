@@ -328,6 +328,104 @@ class SlaveControllerTest extends AbstractApiTest
         $this->assertJson($response->getContent());
     }
 
+    public function testResultHttpIncorrectSampleCount()
+    {
+        $timestamp = date("U");
+
+        $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
+            '3' => array(
+                'timestamp' => $timestamp,
+                'targets' => array(
+                    '1' => array(
+                        0 => ['time' => -1, 'code' => -1],
+                        1 => ['time' => -1, 'code' => -1],
+                    )
+                )
+            )
+        )));
+
+        $response = $this->client->getResponse();
+        $this->assertEquals(409, $response->getStatusCode());
+        $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
+        $this->assertJson($response->getContent());
+    }
+
+    public function testResultHttpUnreachable()
+    {
+        $timestamp = date("U");
+
+        $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
+            '3' => array(
+                'timestamp' => $timestamp,
+                'targets' => array(
+                    '1' => array(
+                        0 => ['time' => -1, 'code' => -1],
+                        1 => ['time' => -1, 'code' => -1],
+                        2 => ['time' => -1, 'code' => -1],
+                        3 => ['time' => -1, 'code' => -1],
+                        4 => ['time' => -1, 'code' => -1],
+                    )
+                )
+            )
+        )));
+
+        $response = $this->client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
+        $this->assertJson($response->getContent());
+    }
+
+    public function testResultTracerouteNoIp()
+    {
+        $timestamp = date("U");
+
+        $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
+            '2' => array(
+                'timestamp' => $timestamp,
+                'targets' => array(
+                    '1' => array(
+                        'hop' => array(
+                            0 => array(
+                                'latencies' => array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
+                            ),
+                        )
+                    )
+                )
+            )
+        )));
+
+        $response = $this->client->getResponse();
+        $this->assertEquals(409, $response->getStatusCode());
+        $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
+        $this->assertJson($response->getContent());
+    }
+
+    public function testResultTracerouteUnreachable()
+    {
+        $timestamp = date("U");
+
+        $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
+            '2' => array(
+                'timestamp' => $timestamp,
+                'targets' => array(
+                    '1' => array(
+                        'hop' => array(
+                            0 => array(
+                                'ip' => "1.1.1.1",
+                                'latencies' => array(-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1)
+                            ),
+                        )
+                    )
+                )
+            )
+        )));
+
+        $response = $this->client->getResponse();
+        $this->assertEquals(409, $response->getStatusCode());
+        $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
+        $this->assertJson($response->getContent());
+    }
+
     public function testStats()
     {
         exec("rm -rf ".$this->client->getContainer()->get('kernel')->getProjectDir()."/var/rrd/slaves");
