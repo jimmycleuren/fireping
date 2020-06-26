@@ -16,4 +16,9 @@ class PingArgumentsType extends AbstractType
             ->add('packetSize', NumberType::class, ['required' => false, 'label' => 'Packet Size'])
         ;
     }
+
+    public function getParent()
+    {
+        return ProbeArgumentsType::class;
+    }
 }

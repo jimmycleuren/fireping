@@ -12,4 +12,9 @@ class TracerouteArgumentsType extends AbstractType
     {
         // Construct your arguments form here.
     }
+
+    public function getParent()
+    {
+        return ProbeArgumentsType::class;
+    }
 }
