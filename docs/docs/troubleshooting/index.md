@@ -16,3 +16,13 @@ Suggested fixes:
 
 - `php bin/console cache:clear`
 - `php bin/console cache:warmup`
+
+## Some links do not work (for example deleting an object)
+
+Make sure you have set the TRUSTED_PROXIES variable if you are using a reverse proxy in front of nginx. 
+
+If your reverse proxy also does http to https redirection, make sure the X-Forwarded-Proto header is passed correctly.
+
+Example for apache:
+
+- `RequestHeader set X-Forwarded-Proto "https"`
