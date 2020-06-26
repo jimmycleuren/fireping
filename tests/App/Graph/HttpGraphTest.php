@@ -55,6 +55,7 @@ class HttpGraphTest extends TestCase
             $data["code$i"] = 200;
         }
 
+        $storage->store($device, $probe, $slavegroup, date("U") - 60, $data);
         $storage->store($device, $probe, $slavegroup, date("U"), $data);
 
         $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
@@ -87,5 +88,10 @@ class HttpGraphTest extends TestCase
         $this->assertEquals("690000", $graph->getColor(400, $codes));
         $this->assertEquals("7b0000", $graph->getColor(401, $codes));
         $this->assertEquals("f90000", $graph->getColor(499, $codes));
+
+        $codes = [500, 501];
+
+        $this->assertEquals("690069", $graph->getColor(500, $codes));
+        $this->assertEquals("ff00ff", $graph->getColor(501, $codes));
     }
 }
