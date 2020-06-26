@@ -23,7 +23,7 @@ class ProbeCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('Probe')
             ->setEntityLabelInPlural('Probe')
-            ->setSearchFields(['id', 'name', 'type', 'step', 'samples', 'arguments'])
+            ->setSearchFields(['id', 'name', 'type', 'step', 'samples'])
             ->setPaginatorPageSize(30)
             ->setFormThemes(['admin/crud/probe/_fields.html.twig', '@EasyAdmin/crud/form_theme.html.twig']);
     }
