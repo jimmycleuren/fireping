@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\PingArguments;
+use App\ProbeArgumentsInterface;
+use App\TracerouteArguments;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -202,11 +204,11 @@ class Probe
     }
 
     /**
-     * @param PingArguments $arguments
+     * @param ProbeArgumentsInterface $arguments
      *
      * @return Probe
      */
-    public function setArguments(PingArguments $arguments)
+    public function setArguments(ProbeArgumentsInterface $arguments): Probe
     {
         $this->arguments = json_encode($arguments->asArray(), JSON_THROW_ON_ERROR, 512);
 
@@ -214,13 +216,16 @@ class Probe
     }
 
     /**
-     * Get arguments
-     *
-     * @return PingArguments
+     * @return ProbeArgumentsInterface
      */
-    public function getArguments()
+    public function getArguments(): ProbeArgumentsInterface
     {
-        return PingArguments::fromJsonString($this->arguments ?? '{}');
+        switch ($this->type) {
+            case 'ping': return PingArguments::fromJsonString($this->arguments ?? '{}');
+            case 'traceroute': return TracerouteArguments::fromJsonString($this->arguments ?? '{}');
+            case 'http': return HttpArguments::fromJsonString($this->arguments ?? '{}');
+            default: throw new \InvalidArgumentException("unsupported type {$this->type}");
+        }
     }
 
     /**
