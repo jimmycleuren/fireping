@@ -18,7 +18,7 @@ class ProbeArgumentsField implements FieldInterface
             ->setProperty($propertyName)
             ->setLabel($label)
             ->setFormType(PingArgumentsType::class)
-            ->setTemplatePath('admin/field/ping_arguments.html.twig')
+            ->setTemplatePath('admin/field/probe_arguments.html.twig')
             ->setRequired(false)
         ;
     }
