@@ -29,7 +29,6 @@ class HttpProcessor extends SmokeProcessor
                 $failed++;
             }
             $datasources['code'.$datasourceCounter++] = $result->code == 0 ? "U" : $result->code;
-            $this->logger->warning($result->code);
         }
         sort($times);
 

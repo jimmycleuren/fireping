@@ -303,6 +303,31 @@ class SlaveControllerTest extends AbstractApiTest
         $this->assertJson($response->getContent());
     }
 
+    public function testResultHttp()
+    {
+        $timestamp = date("U");
+
+        $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
+            '3' => array(
+                'timestamp' => $timestamp,
+                'targets' => array(
+                    '1' => array(
+                        0 => ['time' => -1, 'code' => -1],
+                        1 => ['time' => -1, 'code' => -1],
+                        2 => ['time' => 100, 'code' => 200],
+                        3 => ['time' => 100, 'code' => 200],
+                        4 => ['time' => 100, 'code' => 200],
+                    )
+                )
+            )
+        )));
+
+        $response = $this->client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
+        $this->assertJson($response->getContent());
+    }
+
     public function testStats()
     {
         exec("rm -rf ".$this->client->getContainer()->get('kernel')->getProjectDir()."/var/rrd/slaves");
