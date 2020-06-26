@@ -426,4 +426,22 @@ class Domain
     {
         return $this->name;
     }
+
+    private function getFqdn(): string
+    {
+        if ($this->getParent() !== null) {
+            return $this->getParent()->getFqdn() . ' > ' . $this->getName();
+        }
+
+        return $this->getName();
+    }
+
+    public function getParentFqdn(): string
+    {
+        if ($this->getParent() === null) {
+            return '';
+        }
+
+        return $this->getParent()->getFqdn();
+    }
 }
