@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\HttpArguments;
 use App\PingArguments;
 use App\ProbeArgumentsInterface;
 use App\TracerouteArguments;
@@ -43,7 +44,7 @@ class Probe
      * @ORM\Column(name="type", type="string", length=255)
      * @Assert\NotBlank
      */
-    private $type;
+    private $type = 'ping';
 
     /**
      * @var int
@@ -66,7 +67,7 @@ class Probe
      *
      * @ORM\Column(name="arguments", type="text")
      */
-    private $arguments;
+    private $arguments = '{}';
 
     /**
      * @var ArrayCollection
