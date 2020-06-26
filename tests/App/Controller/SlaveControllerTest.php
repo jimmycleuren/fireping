@@ -308,7 +308,7 @@ class SlaveControllerTest extends AbstractApiTest
         $timestamp = date("U");
 
         $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
-            '3' => array(
+            '4' => array(
                 'timestamp' => $timestamp,
                 'targets' => array(
                     '1' => array(
@@ -333,7 +333,7 @@ class SlaveControllerTest extends AbstractApiTest
         $timestamp = date("U");
 
         $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
-            '3' => array(
+            '4' => array(
                 'timestamp' => $timestamp,
                 'targets' => array(
                     '1' => array(
@@ -355,7 +355,7 @@ class SlaveControllerTest extends AbstractApiTest
         $timestamp = date("U");
 
         $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
-            '3' => array(
+            '4' => array(
                 'timestamp' => $timestamp,
                 'targets' => array(
                     '1' => array(

@@ -331,10 +331,10 @@ class RrdCachedStorage extends RrdStorage
      * @param Device $device
      * @param Probe $probe
      * @param SlaveGroup $group
-     * @param $start
-     * @param $end
-     * @param $datasource
-     * @param $function
+     * @param int $start
+     * @param int $end
+     * @param string $datasource
+     * @param string $function
      * @return mixed|void|null
      */
     public function fetchAll(Device $device, Probe $probe, SlaveGroup $group, $start, $end, $datasource, $function, $daemon = null)

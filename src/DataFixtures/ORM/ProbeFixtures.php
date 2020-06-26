@@ -29,15 +29,6 @@ class ProbeFixtures extends Fixture
         $this->addReference('probe-traceroute', $probe);
 
         $probe = new Probe();
-        $probe->setName("Http");
-        $probe->setStep(60);
-        $probe->setSamples(5);
-        $probe->setType('http');
-        $probe->setArguments("");
-        $manager->persist($probe);
-        $this->addReference('probe-http', $probe);
-
-        $probe = new Probe();
         $probe->setName("Dummy");
         $probe->setStep(60);
         $probe->setSamples(15);
@@ -45,6 +36,15 @@ class ProbeFixtures extends Fixture
         $probe->setArguments("");
         $manager->persist($probe);
         $this->addReference('probe-dummy', $probe);
+
+        $probe = new Probe();
+        $probe->setName("Http");
+        $probe->setStep(60);
+        $probe->setSamples(5);
+        $probe->setType('http');
+        $probe->setArguments("");
+        $manager->persist($probe);
+        $this->addReference('probe-http', $probe);
 
         $manager->flush();
     }
