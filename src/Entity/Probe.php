@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\HttpArguments;
+use App\NullArguments;
 use App\PingArguments;
 use App\ProbeArgumentsInterface;
 use App\TracerouteArguments;
@@ -225,7 +226,7 @@ class Probe
             case 'ping': return PingArguments::fromJsonString($this->arguments ?? '{}');
             case 'traceroute': return TracerouteArguments::fromJsonString($this->arguments ?? '{}');
             case 'http': return HttpArguments::fromJsonString($this->arguments ?? '{}');
-            default: throw new \InvalidArgumentException("unsupported type {$this->type}");
+            default: return new NullArguments();
         }
     }
 
