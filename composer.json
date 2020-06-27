@@ -1,5 +1,6 @@
 {
     "name": "jimmycleuren/fireping",
+    "description": "A tool to monitor network latency",
     "license": "GPL-3.0",
     "type": "project",
     "autoload": {

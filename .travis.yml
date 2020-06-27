@@ -57,7 +57,7 @@ jobs:
 
 before_install:
   - export PATH="$HOME/.symfony/bin:$PATH"
-  - if [[ $COVERAGE == "" ]]; then phpenv config-rm xdebug.ini; fi
+  #- if [[ $COVERAGE == "" ]]; then phpenv config-rm xdebug.ini; fi
   - # Change minimum-stability to allow upcoming versions (dev | alpha | beta | RC)
   - '[[ -z $STABILITY ]] || composer config minimum-stability "$STABILITY"'
   # Change extra.symfony.require used by symfony flex
