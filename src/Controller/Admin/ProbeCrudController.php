@@ -6,6 +6,7 @@ use App\Admin\Field\ProbeArgumentsField;
 use App\Entity\Probe;
 use App\Form\Type\HttpArgumentsType;
 use App\Form\Type\PingArgumentsType;
+use App\Form\Type\ProbeArgumentsType;
 use App\Form\Type\TracerouteArgumentsType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
@@ -68,11 +69,12 @@ class ProbeCrudController extends AbstractCrudController
     {
         $type = $entityDto->getInstance()->getType();
 
+        $arguments = $entityDto->getFields()->get('arguments');
         switch ($type) {
-            case 'ping': $entityDto->getFields()->get('arguments')->setFormType(PingArgumentsType::class); break;
-            case 'traceroute': $entityDto->getFields()->get('arguments')->setFormType(TracerouteArgumentsType::class); break;
-            case 'http': $entityDto->getFields()->get('arguments')->setFormType(HttpArgumentsType::class); break;
-            default: throw new \InvalidArgumentException("unsupported type $type");
+            case 'ping': $arguments->setFormType(PingArgumentsType::class); break;
+            case 'traceroute': $arguments->setFormType(TracerouteArgumentsType::class); break;
+            case 'http': $arguments->setFormType(HttpArgumentsType::class); break;
+            default: $arguments->setFormType(ProbeArgumentsType::class);
         }
 
         return parent::createEditForm($entityDto, $formOptions, $context);
