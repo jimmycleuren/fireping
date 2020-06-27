@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Device;
+use App\Entity\Probe;
 use App\Entity\Slave;
 use App\Exception\DirtyInputException;
 use App\Exception\WrongTimestampRrdException;
@@ -379,7 +380,7 @@ class SlaveController extends AbstractController
             $config[$probe->getId()]['type'] = $probe->getType();
             $config[$probe->getId()]['step'] = $probe->getStep();
             $config[$probe->getId()]['samples'] = $probe->getSamples();
-            $config[$probe->getId()]['args'] = json_decode($probe->getArguments());
+            $config[$probe->getId()]['args'] = $probe->getArguments()->asArray();
             $config[$probe->getId()]['targets'][$device->getId()] = $device->getIp();
         }
     }
@@ -401,6 +402,9 @@ class SlaveController extends AbstractController
         return new ArrayCollection();
     }
 
+    /**
+     * @return ArrayCollection|Probe[]
+     */
     private function getActiveProbes(Device $device)
     {
         if (isset($this->deviceProbeCache[$device->getId()])) {
