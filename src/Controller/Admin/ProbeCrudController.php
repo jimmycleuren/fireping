@@ -4,12 +4,19 @@ namespace App\Controller\Admin;
 
 use App\Admin\Field\ProbeArgumentsField;
 use App\Entity\Probe;
+use App\Form\Type\HttpArgumentsType;
+use App\Form\Type\PingArgumentsType;
+use App\Form\Type\TracerouteArgumentsType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
+use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Symfony\Component\Form\FormInterface;
 
 class ProbeCrudController extends AbstractCrudController
 {
@@ -55,5 +62,19 @@ class ProbeCrudController extends AbstractCrudController
         }
 
         return [];
+    }
+
+    public function createEditForm(EntityDto $entityDto, KeyValueStore $formOptions, AdminContext $context): FormInterface
+    {
+        $type = $entityDto->getInstance()->getType();
+
+        switch ($type) {
+            case 'ping': $entityDto->getFields()->get('arguments')->setFormType(PingArgumentsType::class); break;
+            case 'traceroute': $entityDto->getFields()->get('arguments')->setFormType(TracerouteArgumentsType::class); break;
+            case 'http': $entityDto->getFields()->get('arguments')->setFormType(HttpArgumentsType::class); break;
+            default: throw new \InvalidArgumentException("unsupported type $type");
+        }
+
+        return parent::createEditForm($entityDto, $formOptions, $context);
     }
 }
