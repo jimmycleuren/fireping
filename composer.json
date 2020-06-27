@@ -52,6 +52,7 @@
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.0",
+        "friendsofphp/php-cs-fixer": "^2.16",
         "mi-schi/phpmd-extension": "^4.2",
         "phpmd/phpmd": "^2.6",
         "phpspec/prophecy-phpunit": "^2.0",
