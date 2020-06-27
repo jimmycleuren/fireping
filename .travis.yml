@@ -82,12 +82,12 @@ install:
   - php -r "echo ini_get('memory_limit').PHP_EOL;"
   # Install or update Composer packages including dev dependencies listed in require-dev.
   - COMPOSER_MEMORY_LIMIT=-1 composer $ACTION
-  - ./bin/phpunit install
+  # - ./bin/phpunit install
 
 script:
   - php bin/console cache:warmup --env=slave
   #- vendor/bin/phpunit --coverage-text --coverage-clover build/logs/clover.xml
-  - ./bin/phpunit
+  - vendor/bin/phpunit
   - composer phpstan
   # This checks that the source code follows the Symfony Code Syntax rules.
   - '[[ $TRAVIS_PHP_VERSION != "7.4" ]] || ./vendor/bin/php-cs-fixer fix --diff --dry-run -v'
