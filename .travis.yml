@@ -26,7 +26,7 @@ cache:
     # Cache composer packages so "composer install" is faster.
     - $HOME/.composer/cache/files
     # Cache the directory where Symfony stores its slightly modified version of PHPUnit.
-    - ./bin/.phpunit
+    #- ./bin/.phpunit
     # Cache the Symfony binary's directory so that it does not have to be reinstalled.
     - $HOME/.symfony
 
@@ -58,7 +58,7 @@ jobs:
 before_install:
   - export PATH="$HOME/.symfony/bin:$PATH"
   - if [[ $COVERAGE == "" ]]; then phpenv config-rm xdebug.ini; fi
-  - # Change minimum-stability to allow upcoming versions (dev | alpha | beta | RC)
+  # Change minimum-stability to allow upcoming versions (dev | alpha | beta | RC)
   - '[[ -z $STABILITY ]] || composer config minimum-stability "$STABILITY"'
   # Change extra.symfony.require used by symfony flex
   - '[[ -z $SYMFONY ]] || composer config extra.symfony.require "$SYMFONY"'
