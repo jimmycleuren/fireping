@@ -57,7 +57,6 @@
         "phpmd/phpmd": "^2.6",
         "phpspec/prophecy-phpunit": "^2.0",
         "phpstan/phpstan": "^0.12",
-        "phpstan/phpstan-doctrine": "^0.12.17",
         "phpunit/phpunit": "^9.1",
         "sensiolabs/security-checker": "^6.0",
         "squizlabs/php_codesniffer": "^3.3",

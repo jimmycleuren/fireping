@@ -1,10 +1,7 @@
-includes:
-    - vendor/phpstan/phpstan-doctrine/extension.neon
-    - vendor/phpstan/phpstan-doctrine/rules.neon
 parameters:
     inferPrivatePropertyTypeFromConstructor: true
     excludes_analyse:
         - %rootDir%/../../../src/Migrations/*
     ignoreErrors:
-        - '#Call to an undefined method [a-zA-Z0-9\\_]+::findOneBy[A-Z][a-zA-Z]*\(\)#'
-        - '#Call to an undefined method [a-zA-Z0-9\\_]+::findBy[A-Z][a-zA-Z]*\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_\<\>]+::findOneBy[A-Z][a-zA-Z]*\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_\<\>]+::findBy[A-Z][a-zA-Z]*\(\)#'
