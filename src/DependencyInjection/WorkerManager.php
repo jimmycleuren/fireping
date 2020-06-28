@@ -51,7 +51,6 @@ class WorkerManager
 
     private $numberOfProbeProcesses = 0;
 
-
     public function __construct(KernelInterface $kernel, LoggerInterface $logger)
     {
         $this->kernel = $kernel;
@@ -64,13 +63,13 @@ class WorkerManager
         $this->numberOfQueues = $numberOfQueues;
 
         if ($startWorkers < $this->getWorkerBaseline()) {
-            $this->logger->warning("Increasing initial workers to ".$this->getWorkerBaseline());
+            $this->logger->warning('Increasing initial workers to '.$this->getWorkerBaseline());
             $startWorkers = $this->getWorkerBaseline();
         }
 
         $this->logger->info("Starting $startWorkers initial workers.");
 
-        for ($w = 0; $w < $startWorkers; $w++) {
+        for ($w = 0; $w < $startWorkers; ++$w) {
             $this->startWorker();
             sleep(1);
         }
@@ -91,33 +90,35 @@ class WorkerManager
         return $this->inUseWorkerTypes;
     }
 
-    public function getTotalWorkers() {
+    public function getTotalWorkers()
+    {
         return count($this->workers);
     }
 
-    public function getAvailableWorkers() {
+    public function getAvailableWorkers()
+    {
         return count($this->availableWorkers);
     }
 
-    public function getWorker(string $type) : Worker
+    public function getWorker(string $type): Worker
     {
         if (!isset($this->inUseWorkerTypes[$type])) {
             $this->inUseWorkerTypes[$type] = 0;
         }
 
         if (count($this->availableWorkers) > 0) {
-
             $worker = array_shift($this->availableWorkers);
             $this->inUseWorkers[] = $worker;
 
             $this->logger->info("Marking worker $worker as in-use.");
 
             $worker->setType($type);
-            $this->inUseWorkerTypes[$type]++;
+            ++$this->inUseWorkerTypes[$type];
 
-            foreach($this->inUseWorkerTypes as $type => $value) {
+            foreach ($this->inUseWorkerTypes as $type => $value) {
                 $this->logger->info("$value workers with type $type");
             }
+
             return $worker;
         }
 
@@ -125,8 +126,6 @@ class WorkerManager
     }
 
     /**
-     *
-     * @return Worker
      * @throws \Symfony\Component\Process\Exception\InvalidArgumentException
      * @throws \Symfony\Component\Process\Exception\LogicException
      * @throws \Symfony\Component\Process\Exception\RuntimeException
@@ -144,16 +143,13 @@ class WorkerManager
             [
                 'available' => count($this->availableWorkers),
                 'inuse' => count($this->inUseWorkers),
-                'worker' => count($this->workers)
+                'worker' => count($this->workers),
             ]
         );
 
         return $worker;
     }
 
-    /**
-     * @param Worker $worker
-     */
     public function release(Worker $worker): void
     {
         foreach ($this->inUseWorkers as $index => $inUseWorker) {
@@ -171,37 +167,35 @@ class WorkerManager
 
         $this->logger->info("Marking worker $worker as available.");
         $this->availableWorkers[] = $worker;
-        $this->inUseWorkerTypes[$worker->getType()]--;
+        --$this->inUseWorkerTypes[$worker->getType()];
         $worker->setType(null);
 
-        foreach($this->inUseWorkerTypes as $type => $value) {
+        foreach ($this->inUseWorkerTypes as $type => $value) {
             $this->logger->info("$value workers with type $type");
         }
     }
 
     /**
      * Clean up tracking, inputs, processes and receive buffers.
-     *
-     * @param Worker $worker
      */
     private function cleanup(Worker $worker): void
     {
         $worker->stop();
 
-        if (($key = array_search($worker, $this->availableWorkers, true)) !== false) {
+        if (false !== ($key = array_search($worker, $this->availableWorkers, true))) {
             unset($this->availableWorkers[$key]);
         }
 
-        if (($key = array_search($worker, $this->inUseWorkers, true)) !== false) {
+        if (false !== ($key = array_search($worker, $this->inUseWorkers, true))) {
             unset($this->inUseWorkers[$key]);
         }
 
-        if (($key = array_search($worker, $this->workers, true)) !== false) {
+        if (false !== ($key = array_search($worker, $this->workers, true))) {
             unset($this->workers[$key]);
         }
 
         if ($worker->getType()) {
-            $this->inUseWorkerTypes[$worker->getType()]--;
+            --$this->inUseWorkerTypes[$worker->getType()];
         }
     }
 
@@ -214,14 +208,14 @@ class WorkerManager
                 $this->logger->info("Process $worker timed out", [
                     'available' => count($this->availableWorkers),
                     'inuse' => count($this->inUseWorkers),
-                    'worker' => count($this->workers)
+                    'worker' => count($this->workers),
                 ]);
                 $this->cleanup($worker);
             } catch (WorkerTimedOutException $exception) {
-                $this->logger->warning("Worker $worker timed out after ".$exception->getTimeout()." seconds when running ".$worker->getType(), [
+                $this->logger->warning("Worker $worker timed out after ".$exception->getTimeout().' seconds when running '.$worker->getType(), [
                     'available' => count($this->availableWorkers),
                     'inuse' => count($this->inUseWorkers),
-                    'worker' => count($this->workers)
+                    'worker' => count($this->workers),
                 ]);
                 $this->cleanup($worker);
             }
@@ -229,11 +223,11 @@ class WorkerManager
 
         //check if we have enough workers available and start 1 if needed
         if (count($this->workers) < $this->getWorkerBaseline()) {
-            if(count($this->workers) < $this->maximumWorkers) {
-                $this->logger->info("Not enough workers available, starting 1");
+            if (count($this->workers) < $this->maximumWorkers) {
+                $this->logger->info('Not enough workers available, starting 1');
                 $this->startWorker();
             } else {
-                $this->logger->error("Maximum amount of workers (".$this->maximumWorkers.") reached");
+                $this->logger->error('Maximum amount of workers ('.$this->maximumWorkers.') reached');
             }
         }
     }

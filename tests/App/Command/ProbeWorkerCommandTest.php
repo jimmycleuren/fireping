@@ -23,13 +23,13 @@ class ProbeWorkerCommandTest extends KernelTestCase
 
         $command = $application->find('app:probe:worker');
         $commandTester = new CommandTester($command);
-        $commandTester->execute(array(
-            'command'  => $command->getName(),
+        $commandTester->execute([
+            'command' => $command->getName(),
             '--env' => 'slave',
-            '--max-runtime' => 20
-        ));
+            '--max-runtime' => 20,
+        ]);
 
         $output = $commandTester->getDisplay();
-        $this->assertStringContainsString("Max runtime reached", $output);
+        $this->assertStringContainsString('Max runtime reached', $output);
     }
 }

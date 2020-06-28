@@ -15,32 +15,32 @@ class DomainApiController extends AbstractController
      */
     public function alertsAction(Domain $domain, EntityManagerInterface $entityManager)
     {
-        if (extension_loaded ('newrelic')) {
-            newrelic_name_transaction("api_domains_alerts");
+        if (extension_loaded('newrelic')) {
+            newrelic_name_transaction('api_domains_alerts');
         }
 
         $devices = $this->getDevices($domain);
 
         $alerts = $entityManager
-            ->createQuery("SELECT a FROM App:Alert a WHERE a.active = 1 AND a.device IN (:devices)")
-            ->setParameter("devices", $devices)
+            ->createQuery('SELECT a FROM App:Alert a WHERE a.active = 1 AND a.device IN (:devices)')
+            ->setParameter('devices', $devices)
             ->getResult();
 
-        $result = array();
-        foreach($alerts as $alert) {
-            $result[] = array(
+        $result = [];
+        foreach ($alerts as $alert) {
+            $result[] = [
                 'message' => $alert->__toString(),
-                'device' => array(
+                'device' => [
                     'id' => $alert->getDevice()->getId(),
                     'name' => $alert->getDevice()->getName(),
-                ),
-                'alertRule' => array(
+                ],
+                'alertRule' => [
                     'id' => $alert->getAlertRule()->getId(),
-                    'name' => $alert->getAlertRule()->getName()
-                ),
+                    'name' => $alert->getAlertRule()->getName(),
+                ],
                 'firstseen' => $alert->getFirstSeen(),
-                'lastseen' => $alert->getLastSeen()
-            );
+                'lastseen' => $alert->getLastSeen(),
+            ];
         }
 
         return new JsonResponse($result);

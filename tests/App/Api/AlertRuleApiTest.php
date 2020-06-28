@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: jimmyc
  * Date: 8/03/2018
- * Time: 21:45
+ * Time: 21:45.
  */
 
 namespace Tests\App\Api;
@@ -14,9 +14,9 @@ class AlertRuleApiTest extends AbstractApiTest
 {
     public function testCollection()
     {
-        $crawler = $this->client->request('GET', '/api/alert_rules.json', array(), array(), array(
-            "HTTP_Accept" => "application/json"
-        ));
+        $crawler = $this->client->request('GET', '/api/alert_rules.json', [], [], [
+            'HTTP_Accept' => 'application/json',
+        ]);
 
         $response = $this->client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
@@ -26,24 +26,23 @@ class AlertRuleApiTest extends AbstractApiTest
 
     public function testAddRemove()
     {
-
         $crawler = $this->client->request(
             'POST',
             '/api/alert_rules.json',
-            array(),
-            array(),
-            array(
-                "CONTENT_TYPE" => "application/json"
-            ),
-            json_encode(array(
-                'name' => "rule",
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/json',
+            ],
+            json_encode([
+                'name' => 'rule',
                 'datasource' => 'loss',
                 'pattern' => '=0,>0,>0',
                 'probe' => '/api/probes/1',
                 'parent' => '/api/alert_rules/1',
                 'messageUp' => 'Device up',
-                'messageDown' => 'Device down'
-            ))
+                'messageDown' => 'Device down',
+            ])
         );
 
         $response = $this->client->getResponse();

@@ -4,9 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Domain;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 class SearchController extends AbstractController
 {
@@ -17,8 +17,8 @@ class SearchController extends AbstractController
     {
         $q = $request->get('q');
 
-        if (!$q || $q == "") {
-            return $this->redirect("/");
+        if (!$q || '' == $q) {
+            return $this->redirect('/');
         }
 
         $searchDevices = $em->createQuery("
@@ -36,11 +36,11 @@ class SearchController extends AbstractController
 
         $domains = $em->getRepository(Domain::class)->findBy(array('parent' => null), array('name' => 'ASC'));
 
-        return $this->render('search/index.html.twig', array(
+        return $this->render('search/index.html.twig', [
             'q' => $q,
             'domains' => $domains,
             'search_devices' => $searchDevices,
-            'search_domains' => $searchDomains
-        ));
+            'search_domains' => $searchDomains,
+        ]);
     }
 }

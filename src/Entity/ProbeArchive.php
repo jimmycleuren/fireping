@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * ProbeArchive
+ * ProbeArchive.
  *
  * @ORM\Table(name="probe_archive")
  * @ORM\Entity(repositoryClass="App\Repository\ProbeArchiveRepository")
@@ -74,9 +74,6 @@ class ProbeArchive
         return $this->function;
     }
 
-    /**
-     * @param string $function
-     */
     public function setFunction(string $function): void
     {
         $this->function = $function;
@@ -90,9 +87,6 @@ class ProbeArchive
         return $this->steps;
     }
 
-    /**
-     * @param int $steps
-     */
     public function setSteps(int $steps): void
     {
         $this->steps = $steps;
@@ -106,9 +100,6 @@ class ProbeArchive
         return $this->rows;
     }
 
-    /**
-     * @param int $rows
-     */
     public function setRows(int $rows): void
     {
         $this->rows = $rows;
@@ -122,9 +113,6 @@ class ProbeArchive
         return $this->probe;
     }
 
-    /**
-     * @param Probe $probe
-     */
     public function setProbe(Probe $probe): void
     {
         $this->probe = $probe;
@@ -132,6 +120,6 @@ class ProbeArchive
 
     public function __toString()
     {
-        return $this->function."-".$this->steps."-".$this->rows;
+        return $this->function.'-'.$this->steps.'-'.$this->rows;
     }
 }

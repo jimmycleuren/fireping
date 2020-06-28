@@ -18,7 +18,7 @@ class HttpTest extends TestCase
     public function testNoArguments()
     {
         $guzzle = $this->prophesize('GuzzleHttp\\Client');
-        $guzzle->post("url", Argument::any())->shouldBeCalledTimes(0);
+        $guzzle->post('url', Argument::any())->shouldBeCalledTimes(0);
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
 
         $http = new Http($guzzle->reveal(), $logger->reveal());
@@ -41,12 +41,12 @@ class HttpTest extends TestCase
     public function testException()
     {
         $guzzle = $this->prophesize('GuzzleHttp\\Client');
-        $guzzle->post("url", Argument::any())->shouldBeCalledTimes(2)->willThrow(new \Exception('test'));
+        $guzzle->post('url', Argument::any())->shouldBeCalledTimes(2)->willThrow(new \Exception('test'));
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
         $logger->error(Argument::type('string'))->shouldBeCalledTimes(2);
 
         $http = new Http($guzzle->reveal(), $logger->reveal());
-        $http->setParameters(array('url' => 'url'));
+        $http->setParameters(['url' => 'url']);
 
         $device = new Device();
         $device->setName('device');
@@ -66,11 +66,11 @@ class HttpTest extends TestCase
     public function testTrigger()
     {
         $guzzle = $this->prophesize('GuzzleHttp\\Client');
-        $guzzle->post("url", Argument::any())->shouldBeCalledTimes(1);
+        $guzzle->post('url', Argument::any())->shouldBeCalledTimes(1);
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
 
         $http = new Http($guzzle->reveal(), $logger->reveal());
-        $http->setParameters(array('url' => 'url'));
+        $http->setParameters(['url' => 'url']);
 
         $device = new Device();
         $device->setName('device');
@@ -89,11 +89,11 @@ class HttpTest extends TestCase
     public function testClear()
     {
         $guzzle = $this->prophesize('GuzzleHttp\\Client');
-        $guzzle->post("url", Argument::any())->shouldBeCalledTimes(1);
+        $guzzle->post('url', Argument::any())->shouldBeCalledTimes(1);
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
 
         $http = new Http($guzzle->reveal(), $logger->reveal());
-        $http->setParameters(array('url' => 'url'));
+        $http->setParameters(['url' => 'url']);
 
         $device = new Device();
         $device->setName('device');

@@ -94,14 +94,14 @@ class QueueTest extends TestCase
 
     private function getData($probeId, $timestamp, $targetId)
     {
-        return array(
-            $probeId => array(
+        return [
+            $probeId => [
                 'type' => 'ping',
                 'timestamp' => $timestamp,
-                'targets' => array(
-                    $targetId => array(1,2,3,4,5,6)
-                )
-            )
-        );
+                'targets' => [
+                    $targetId => [1, 2, 3, 4, 5, 6],
+                ],
+            ],
+        ];
     }
 }

@@ -27,8 +27,8 @@ class MonologTest extends TestCase
         $slaveGroup->setName('group');
         $alertRule = new AlertRule();
         $alertRule->setName('rule');
-        $alertRule->setMessageUp("Device up");
-        $alertRule->setMessageDown("Device down");
+        $alertRule->setMessageUp('Device up');
+        $alertRule->setMessageDown('Device down');
         $alert = new Alert();
         $alert->setActive(1);
         $alert->setDevice($device);
@@ -50,8 +50,8 @@ class MonologTest extends TestCase
         $slaveGroup->setName('group');
         $alertRule = new AlertRule();
         $alertRule->setName('rule');
-        $alertRule->setMessageUp("Device up");
-        $alertRule->setMessageDown("Device down");
+        $alertRule->setMessageUp('Device up');
+        $alertRule->setMessageDown('Device down');
         $alert = new Alert();
         $alert->setDevice($device);
         $alert->setSlaveGroup($slaveGroup);

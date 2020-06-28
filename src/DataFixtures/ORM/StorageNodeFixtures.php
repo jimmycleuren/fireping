@@ -2,7 +2,6 @@
 
 namespace App\DataFixtures\ORM;
 
-use App\Entity\Probe;
 use App\Entity\StorageNode;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;

@@ -41,6 +41,7 @@ class AlertDestinationCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_EDIT === $pageName) {
             return [$name, $type, $parameters];
         }
+
         return [];
     }
 }

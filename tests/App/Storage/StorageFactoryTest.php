@@ -28,9 +28,9 @@ class StorageFactoryTest extends TestCase
 
         $entityManager = $this->prophesize(EntityManagerInterface::class)->reveal();
 
-        $rrdStorage = new RrdStorage("", $logger);
-        $rrdCachedStorage = new RrdCachedStorage("", $logger);
-        $rrdDistributedStorage = new RrdDistributedStorage("", $logger, $storageNodeRepository, $entityManager);
+        $rrdStorage = new RrdStorage('', $logger);
+        $rrdCachedStorage = new RrdCachedStorage('', $logger);
+        $rrdDistributedStorage = new RrdDistributedStorage('', $logger, $storageNodeRepository, $entityManager);
 
         $factory = new StorageFactory($rrdStorage, $rrdCachedStorage, $rrdDistributedStorage);
 
@@ -54,9 +54,9 @@ class StorageFactoryTest extends TestCase
 
         $entityManager = $this->prophesize(EntityManagerInterface::class)->reveal();
 
-        $rrdStorage = new RrdStorage("", $logger);
-        $rrdCachedStorage = new RrdCachedStorage("", $logger);
-        $rrdDistributedStorage = new RrdDistributedStorage("", $logger, $storageNodeRepository, $entityManager);
+        $rrdStorage = new RrdStorage('', $logger);
+        $rrdCachedStorage = new RrdCachedStorage('', $logger);
+        $rrdDistributedStorage = new RrdDistributedStorage('', $logger, $storageNodeRepository, $entityManager);
 
         $factory = new StorageFactory($rrdStorage, $rrdCachedStorage, $rrdDistributedStorage);
 

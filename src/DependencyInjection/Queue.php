@@ -34,7 +34,7 @@ class Queue
     }
 
     /**
-     * Loop is triggered every second
+     * Loop is triggered every second.
      */
     public function loop()
     {
@@ -46,26 +46,26 @@ class Queue
                     }
                     if (!$this->worker) {
                         $this->logger->warning("Queue $this->id had no worker");
+
                         return;
                     }
                     $this->lock = true;
                     $this->current = $this->getNextPacket();
 
-                    $instruction = array(
+                    $instruction = [
                         'type' => PostResultsHttpWorkerCommand::class,
                         'delay_execution' => 0,
                         'body' => $this->current,
-                    );
+                    ];
 
-                    $this->worker->send(json_encode($instruction), 60, function($type, $response){
+                    $this->worker->send(json_encode($instruction), 60, function ($type, $response) {
                         $this->handleResponse($type, $response);
                     });
 
-                    $this->logger->info('COMMUNICATION_FLOW: Queue '.$this->id.' sent ' . $instruction['type'] . " instruction to worker $this->worker.");
-
+                    $this->logger->info('COMMUNICATION_FLOW: Queue '.$this->id.' sent '.$instruction['type']." instruction to worker $this->worker.");
                 } catch (\Exception $e) {
                     $this->lock = false;
-                    $this->logger->warning($e->getMessage()." at ".$e->getFile().":".$e->getLine());
+                    $this->logger->warning($e->getMessage().' at '.$e->getFile().':'.$e->getLine());
                 }
             }
         }
@@ -78,16 +78,17 @@ class Queue
 
         if (!$response) {
             $this->logger->warning('COMMUNICATION_FLOW: Response from worker could not be decoded to JSON.');
+
             return;
         }
 
         $status = $response['status'];
 
-        if ($status === 200) {
+        if (200 === $status) {
             $this->logger->info("Response ($status) from worker $this->worker saved.");
             $this->current = null;
             $this->statsManager->addSuccessfulPost();
-        } elseif ($status === 409) {
+        } elseif (409 === $status) {
             $this->logger->info("Response ($status) from worker $this->worker discarded.");
             $this->current = null;
             $this->statsManager->addDiscardedPost();
@@ -99,7 +100,7 @@ class Queue
 
         $this->lock = false;
         $this->worker = null;
-        $this->logger->info("Queue $this->id items remain: " . $this->queue->count() . ".");
+        $this->logger->info("Queue $this->id items remain: ".$this->queue->count().'.');
     }
 
     private function getNextPacket()
@@ -109,18 +110,18 @@ class Queue
 
         $counter = count($first[$firstProbeId]['targets']);
         $stop = false;
-        while($counter < $this->targetsPerPacket && !$this->queue->isEmpty() && !$stop) {
+        while ($counter < $this->targetsPerPacket && !$this->queue->isEmpty() && !$stop) {
             $next = $this->queue->shift();
             $nextProbeId = array_keys($next)[0];
 
-            if($firstProbeId == $nextProbeId && $first[$firstProbeId]['timestamp'] == $next[$nextProbeId]['timestamp'] && $first[$firstProbeId]['type'] == $next[$nextProbeId]['type']) {
+            if ($firstProbeId == $nextProbeId && $first[$firstProbeId]['timestamp'] == $next[$nextProbeId]['timestamp'] && $first[$firstProbeId]['type'] == $next[$nextProbeId]['type']) {
                 $nextTargetId = array_keys($next[$nextProbeId]['targets'])[0];
                 $first[$firstProbeId]['targets'][$nextTargetId] = $next[$nextProbeId]['targets'][$nextTargetId];
             } else {
                 $this->queue->unshift($next);
                 $stop = true;
             }
-            $counter++;
+            ++$counter;
         }
 
         $this->logger->info("Queue $this->id will send $counter items");
@@ -134,14 +135,14 @@ class Queue
             $this->worker = $this->workerManager->getWorker('queue');
             $this->logger->info("Worker $this->worker reserved to post data for queue ".$this->id);
         } catch (\Exception $e) {
-            $this->logger->critical("Could not reserve a worker to post data for queue ".$this->id);
+            $this->logger->critical('Could not reserve a worker to post data for queue '.$this->id);
         }
     }
 
     private function retryPost()
     {
         if (isset($this->current)) {
-            $this->logger->info("Retrying " . json_encode($this->current) . " at a later date.");
+            $this->logger->info('Retrying '.json_encode($this->current).' at a later date.');
             $this->queue->unshift($this->current);
             $this->current = null;
         }

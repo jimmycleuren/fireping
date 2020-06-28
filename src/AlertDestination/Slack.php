@@ -36,20 +36,20 @@ class Slack extends AlertDestinationInterface
             return false;
         }
         try {
-            $data = array(
-                'username' => "fireping",
-                'attachments' => array(
-                    array(
-                        "fallback" => $this->getAlertMessage($alert),
-                        "color" => "#FF4136",
-                        "text" => $this->getAlertMessage($alert)
-                    )
-                )
-            );
+            $data = [
+                'username' => 'fireping',
+                'attachments' => [
+                    [
+                        'fallback' => $this->getAlertMessage($alert),
+                        'color' => '#FF4136',
+                        'text' => $this->getAlertMessage($alert),
+                    ],
+                ],
+            ];
             if ($this->channel) {
-                $data['channel'] = "#".$this->channel;
+                $data['channel'] = '#'.$this->channel;
             }
-            $this->client->post($this->url, array(RequestOptions::JSON => $data));
+            $this->client->post($this->url, [RequestOptions::JSON => $data]);
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
         }
@@ -61,20 +61,20 @@ class Slack extends AlertDestinationInterface
             return false;
         }
         try {
-            $data = array(
-                'username' => "fireping",
-                'attachments' => array(
-                    array(
-                        "fallback" => $this->getAlertMessage($alert),
-                        "color" => "#2ECC40",
-                        "text" => $this->getAlertMessage($alert)
-                    )
-                )
-            );
+            $data = [
+                'username' => 'fireping',
+                'attachments' => [
+                    [
+                        'fallback' => $this->getAlertMessage($alert),
+                        'color' => '#2ECC40',
+                        'text' => $this->getAlertMessage($alert),
+                    ],
+                ],
+            ];
             if ($this->channel) {
-                $data['channel'] = "#".$this->channel;
+                $data['channel'] = '#'.$this->channel;
             }
-            $this->client->post($this->url, array(RequestOptions::JSON => $data));
+            $this->client->post($this->url, [RequestOptions::JSON => $data]);
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
         }

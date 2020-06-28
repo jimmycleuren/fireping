@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Command;
 
 use App\Entity\Device;
@@ -39,7 +40,7 @@ class ValidateRrdCommand extends Command
         foreach ($devices as $device) {
             $probes = $device->getActiveProbes();
             $slavegroups = $device->getActiveSlaveGroups();
-            foreach($probes as $probe) {
+            foreach ($probes as $probe) {
                 foreach ($slavegroups as $slavegroup) {
                     $this->storage->validate($device, $probe, $slavegroup);
                 }
@@ -49,7 +50,7 @@ class ValidateRrdCommand extends Command
         }
 
         $progress->finish();
-        $output->writeln("");
+        $output->writeln('');
 
         return 0;
     }

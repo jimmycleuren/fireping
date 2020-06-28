@@ -2,10 +2,9 @@
 
 namespace App\OutputFormatter;
 
-
 class PingOutputFormatter implements OutputFormatterInterface
 {
-    public function format($input) : array
+    public function format($input): array
     {
         $output = [];
         foreach ($input as $target) {
@@ -14,16 +13,18 @@ class PingOutputFormatter implements OutputFormatterInterface
                 $output[] = $parsed;
             }
         }
+
         return $output;
     }
 
-    private function parseInput(string $input) : array
+    private function parseInput(string $input): array
     {
-        if (strpos($input, ':') === false) {
+        if (false === strpos($input, ':')) {
             return [];
         }
 
         [$hostname, $results] = explode(':', $input);
+
         return ['ip' => trim($hostname), 'result' => $this->transformResult(trim($results))];
     }
 
