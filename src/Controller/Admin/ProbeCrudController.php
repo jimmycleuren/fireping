@@ -71,10 +71,17 @@ class ProbeCrudController extends AbstractCrudController
 
         $arguments = $entityDto->getFields()->get('arguments');
         switch ($type) {
-            case 'ping': $arguments->setFormType(PingArgumentsType::class); break;
-            case 'traceroute': $arguments->setFormType(TracerouteArgumentsType::class); break;
-            case 'http': $arguments->setFormType(HttpArgumentsType::class); break;
-            default: $arguments->setFormType(ProbeArgumentsType::class);
+            case 'ping':
+                $arguments->setFormType(PingArgumentsType::class);
+                break;
+            case 'traceroute':
+                $arguments->setFormType(TracerouteArgumentsType::class);
+                break;
+            case 'http':
+                $arguments->setFormType(HttpArgumentsType::class);
+                break;
+            default:
+                $arguments->setFormType(ProbeArgumentsType::class);
         }
 
         return parent::createEditForm($entityDto, $formOptions, $context);

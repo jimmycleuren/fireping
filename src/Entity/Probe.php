@@ -225,10 +225,14 @@ class Probe
         $arguments = $this->arguments ?? '{}';
 
         switch ($this->type) {
-            case 'ping': return PingArguments::fromJsonString($arguments);
-            case 'traceroute': return TracerouteArguments::fromJsonString($arguments);
-            case 'http': return HttpArguments::fromJsonString($arguments);
-            default: return NullArguments::fromJsonString($arguments);
+            case 'ping':
+                return PingArguments::fromJsonString($arguments);
+            case 'traceroute':
+                return TracerouteArguments::fromJsonString($arguments);
+            case 'http':
+                return HttpArguments::fromJsonString($arguments);
+            default:
+                return NullArguments::fromJsonString($arguments);
         }
     }
 

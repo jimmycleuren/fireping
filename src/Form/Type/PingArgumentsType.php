@@ -12,9 +12,15 @@ class PingArgumentsType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('retries', IntegerType::class, ['required' => false, 'row_attr' => ['class' => 'field-number']])
-            ->add('packetSize', IntegerType::class, ['required' => false, 'label' => 'Packet Size', 'row_attr' => ['class' => 'field-number']])
-        ;
+            ->add('retries', IntegerType::class, [
+                'required' => false,
+                'row_attr' => ['class' => 'field-number']
+            ])
+            ->add('packetSize', IntegerType::class, [
+                'required' => false,
+                'label' => 'Packet Size',
+                'row_attr' => ['class' => 'field-number']
+            ]);
     }
 
     public function getParent()
