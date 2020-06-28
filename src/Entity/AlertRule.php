@@ -3,12 +3,12 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * Alert
+ * Alert.
  *
  * @ORM\Table(name="alert_rule")
  * @ORM\Entity(repositoryClass="App\Repository\AlertRuleRepository")
@@ -88,7 +88,7 @@ class AlertRule
     private $children;
 
     /**
-     * Get id
+     * Get id.
      *
      * @return int
      */
@@ -98,7 +98,7 @@ class AlertRule
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
      *
@@ -112,7 +112,7 @@ class AlertRule
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string
      */
@@ -122,7 +122,7 @@ class AlertRule
     }
 
     /**
-     * Set datasource
+     * Set datasource.
      *
      * @param string $datasource
      *
@@ -136,7 +136,7 @@ class AlertRule
     }
 
     /**
-     * Get datasource
+     * Get datasource.
      *
      * @return string
      */
@@ -146,7 +146,7 @@ class AlertRule
     }
 
     /**
-     * Set pattern
+     * Set pattern.
      *
      * @param string $pattern
      *
@@ -160,7 +160,7 @@ class AlertRule
     }
 
     /**
-     * Get pattern
+     * Get pattern.
      *
      * @return string
      */
@@ -170,9 +170,7 @@ class AlertRule
     }
 
     /**
-     * Set probe
-     *
-     * @param \App\Entity\Probe $probe
+     * Set probe.
      *
      * @return AlertRule
      */
@@ -184,7 +182,7 @@ class AlertRule
     }
 
     /**
-     * Get probe
+     * Get probe.
      *
      * @return \App\Entity\Probe
      */
@@ -194,7 +192,7 @@ class AlertRule
     }
 
     /**
-     * Set parent
+     * Set parent.
      *
      * @param \App\Entity\AlertRule $parent
      *
@@ -208,7 +206,7 @@ class AlertRule
     }
 
     /**
-     * Get parent
+     * Get parent.
      *
      * @return \App\Entity\AlertRule
      */
@@ -227,6 +225,7 @@ class AlertRule
 
     /**
      * @param ArrayCollection $children
+     *
      * @return $this
      */
     public function setChildren($children)
@@ -237,7 +236,7 @@ class AlertRule
     }
 
     /**
-     * Set messageUp
+     * Set messageUp.
      *
      * @param string $messageUp
      *
@@ -251,7 +250,7 @@ class AlertRule
     }
 
     /**
-     * Get messageUp
+     * Get messageUp.
      *
      * @return string
      */
@@ -261,7 +260,7 @@ class AlertRule
     }
 
     /**
-     * Set messageDown
+     * Set messageDown.
      *
      * @param string $messageDown
      *
@@ -275,7 +274,7 @@ class AlertRule
     }
 
     /**
-     * Get messageDown
+     * Get messageDown.
      *
      * @return string
      */

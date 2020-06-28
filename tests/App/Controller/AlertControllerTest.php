@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: jimmyc
  * Date: 5/01/2018
- * Time: 21:04
+ * Time: 21:04.
  */
 
 namespace Tests\App\Controller;

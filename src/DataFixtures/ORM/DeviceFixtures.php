@@ -73,9 +73,9 @@ class DeviceFixtures extends Fixture implements DependentFixtureInterface
 
     public function getDependencies()
     {
-        return array(
+        return [
             DomainFixtures::class,
             ProbeFixtures::class,
-        );
+        ];
     }
 }

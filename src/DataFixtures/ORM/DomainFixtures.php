@@ -13,7 +13,7 @@ class DomainFixtures extends Fixture implements DependentFixtureInterface
     {
         $domain = new Domain();
         $domain->setId(1);
-        $domain->setName("Domain 1");
+        $domain->setName('Domain 1');
         $domain->addProbe($this->getReference('probe-ping'));
         $domain->addProbe($this->getReference('probe-dummy'));
         $domain->addSlaveGroup($this->getReference('slavegroup-1'));
@@ -25,14 +25,14 @@ class DomainFixtures extends Fixture implements DependentFixtureInterface
 
         $domain = new Domain();
         $domain->setId(2);
-        $domain->setName("Subdomain 2");
+        $domain->setName('Subdomain 2');
         $domain->setParent($this->getReference('domain-1'));
         $manager->persist($domain);
         $this->addReference('subdomain-2', $domain);
 
         $domain = new Domain();
         $domain->setId(3);
-        $domain->setName("Domain 3");
+        $domain->setName('Domain 3');
         $domain->addProbe($this->getReference('probe-dummy'));
         $domain->addSlaveGroup($this->getReference('slavegroup-1'));
         $manager->persist($domain);
@@ -40,7 +40,7 @@ class DomainFixtures extends Fixture implements DependentFixtureInterface
 
         $domain = new Domain();
         $domain->setId(4);
-        $domain->setName("Domain 4");
+        $domain->setName('Domain 4');
         $manager->persist($domain);
         $this->addReference('domain-4', $domain);
 
@@ -49,10 +49,10 @@ class DomainFixtures extends Fixture implements DependentFixtureInterface
 
     public function getDependencies()
     {
-        return array(
+        return [
             ProbeFixtures::class,
             SlaveGroupFixtures::class,
             AlertRuleFixtures::class,
-        );
+        ];
     }
 }

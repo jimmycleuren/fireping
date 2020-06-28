@@ -13,8 +13,8 @@ class AlertFixtures extends Fixture implements DependentFixtureInterface
     {
         $alert = new Alert();
         $alert->setActive(1);
-        $alert->setFirstseen(new \DateTime("1 hour ago"));
-        $alert->setLastseen(new \DateTime("now"));
+        $alert->setFirstseen(new \DateTime('1 hour ago'));
+        $alert->setLastseen(new \DateTime('now'));
         $alert->setDevice($this->getReference('device-1'));
         $alert->setSlaveGroup($this->getReference('slavegroup-1'));
         $alert->setAlertRule($this->getReference('alertrule-1'));
@@ -23,8 +23,8 @@ class AlertFixtures extends Fixture implements DependentFixtureInterface
         //alerts for cleanupAlert
         $alert = new Alert();
         $alert->setActive(1);
-        $alert->setFirstseen(new \DateTime("1 hour ago"));
-        $alert->setLastseen(new \DateTime("now"));
+        $alert->setFirstseen(new \DateTime('1 hour ago'));
+        $alert->setLastseen(new \DateTime('now'));
         $alert->setDevice($this->getReference('device-4'));
         $alert->setSlaveGroup($this->getReference('slavegroup-1'));
         $alert->setAlertRule($this->getReference('alertrule-1'));
@@ -32,8 +32,8 @@ class AlertFixtures extends Fixture implements DependentFixtureInterface
 
         $alert = new Alert();
         $alert->setActive(1);
-        $alert->setFirstseen(new \DateTime("1 hour ago"));
-        $alert->setLastseen(new \DateTime("now"));
+        $alert->setFirstseen(new \DateTime('1 hour ago'));
+        $alert->setLastseen(new \DateTime('now'));
         $alert->setDevice($this->getReference('device-4'));
         $alert->setSlaveGroup($this->getReference('slavegroup-1'));
         $alert->setAlertRule($this->getReference('alertrule-1'));
@@ -41,8 +41,8 @@ class AlertFixtures extends Fixture implements DependentFixtureInterface
 
         $alert = new Alert();
         $alert->setActive(1);
-        $alert->setFirstseen(new \DateTime("1 hour ago"));
-        $alert->setLastseen(new \DateTime("now"));
+        $alert->setFirstseen(new \DateTime('1 hour ago'));
+        $alert->setLastseen(new \DateTime('now'));
         $alert->setDevice($this->getReference('device-4'));
         $alert->setSlaveGroup($this->getReference('slavegroup-1'));
         $alert->setAlertRule($this->getReference('alertrule-1'));
@@ -50,8 +50,8 @@ class AlertFixtures extends Fixture implements DependentFixtureInterface
 
         $alert = new Alert();
         $alert->setActive(1);
-        $alert->setFirstseen(new \DateTime("1 hour ago"));
-        $alert->setLastseen(new \DateTime("now"));
+        $alert->setFirstseen(new \DateTime('1 hour ago'));
+        $alert->setLastseen(new \DateTime('now'));
         $alert->setDevice($this->getReference('device-5'));
         $alert->setSlaveGroup($this->getReference('slavegroup-1'));
         $alert->setAlertRule($this->getReference('alertrule-1'));
@@ -59,8 +59,8 @@ class AlertFixtures extends Fixture implements DependentFixtureInterface
 
         $alert = new Alert();
         $alert->setActive(1);
-        $alert->setFirstseen(new \DateTime("1 hour ago"));
-        $alert->setLastseen(new \DateTime("now"));
+        $alert->setFirstseen(new \DateTime('1 hour ago'));
+        $alert->setLastseen(new \DateTime('now'));
         $alert->setDevice($this->getReference('device-6'));
         $alert->setSlaveGroup($this->getReference('slavegroup-1'));
         $alert->setAlertRule($this->getReference('alertrule-1'));
@@ -68,8 +68,8 @@ class AlertFixtures extends Fixture implements DependentFixtureInterface
 
         $alert = new Alert();
         $alert->setActive(1);
-        $alert->setFirstseen(new \DateTime("1 hour ago"));
-        $alert->setLastseen(new \DateTime("now"));
+        $alert->setFirstseen(new \DateTime('1 hour ago'));
+        $alert->setLastseen(new \DateTime('now'));
         $alert->setDevice($this->getReference('device-6'));
         $alert->setSlaveGroup($this->getReference('slavegroup-2'));
         $alert->setAlertRule($this->getReference('alertrule-1'));
@@ -77,8 +77,8 @@ class AlertFixtures extends Fixture implements DependentFixtureInterface
 
         $alert = new Alert();
         $alert->setActive(1);
-        $alert->setFirstseen(new \DateTime("1 hour ago"));
-        $alert->setLastseen(new \DateTime("now"));
+        $alert->setFirstseen(new \DateTime('1 hour ago'));
+        $alert->setLastseen(new \DateTime('now'));
         $alert->setDevice($this->getReference('device-7'));
         $alert->setSlaveGroup($this->getReference('slavegroup-2'));
         $alert->setAlertRule($this->getReference('alertrule-1'));
@@ -89,10 +89,10 @@ class AlertFixtures extends Fixture implements DependentFixtureInterface
 
     public function getDependencies()
     {
-        return array(
+        return [
             DeviceFixtures::class,
             SlaveGroupFixtures::class,
-            AlertRuleFixtures::class
-        );
+            AlertRuleFixtures::class,
+        ];
     }
 }

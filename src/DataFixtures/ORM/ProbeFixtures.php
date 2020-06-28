@@ -11,29 +11,29 @@ class ProbeFixtures extends Fixture
     public function load(ObjectManager $manager)
     {
         $probe = new Probe();
-        $probe->setName("Ping");
+        $probe->setName('Ping');
         $probe->setStep(60);
         $probe->setSamples(15);
         $probe->setType('ping');
-        $probe->setArguments("");
+        $probe->setArguments('');
         $manager->persist($probe);
         $this->addReference('probe-ping', $probe);
 
         $probe = new Probe();
-        $probe->setName("Traceroute");
+        $probe->setName('Traceroute');
         $probe->setStep(60);
         $probe->setSamples(15);
         $probe->setType('traceroute');
-        $probe->setArguments("");
+        $probe->setArguments('');
         $manager->persist($probe);
         $this->addReference('probe-traceroute', $probe);
 
         $probe = new Probe();
-        $probe->setName("Dummy");
+        $probe->setName('Dummy');
         $probe->setStep(60);
         $probe->setSamples(15);
         $probe->setType('dummy');
-        $probe->setArguments("");
+        $probe->setArguments('');
         $manager->persist($probe);
         $this->addReference('probe-dummy', $probe);
 

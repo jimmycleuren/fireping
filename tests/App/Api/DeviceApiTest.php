@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: jimmyc
  * Date: 12/01/2018
- * Time: 22:48
+ * Time: 22:48.
  */
 
 namespace Tests\App\Api;
@@ -14,9 +14,9 @@ class DeviceApiTest extends AbstractApiTest
 {
     public function testCollection()
     {
-        $crawler = $this->client->request('GET', '/api/devices.json', array(), array(), array(
-            "HTTP_Accept" => "application/json"
-        ));
+        $crawler = $this->client->request('GET', '/api/devices.json', [], [], [
+            'HTTP_Accept' => 'application/json',
+        ]);
 
         $response = $this->client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
@@ -26,9 +26,9 @@ class DeviceApiTest extends AbstractApiTest
 
     public function testStatus()
     {
-        $crawler = $this->client->request('GET', '/api/devices/1/status.json', array(), array(), array(
-            "HTTP_Accept" => "application/json"
-        ));
+        $crawler = $this->client->request('GET', '/api/devices/1/status.json', [], [], [
+            'HTTP_Accept' => 'application/json',
+        ]);
 
         $response = $this->client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
@@ -40,9 +40,9 @@ class DeviceApiTest extends AbstractApiTest
 
     public function testStatusNoProbe()
     {
-        $crawler = $this->client->request('GET', '/api/devices/3/status.json', array(), array(), array(
-            "HTTP_Accept" => "application/json"
-        ));
+        $crawler = $this->client->request('GET', '/api/devices/3/status.json', [], [], [
+            'HTTP_Accept' => 'application/json',
+        ]);
 
         $response = $this->client->getResponse();
         $this->assertEquals(500, $response->getStatusCode());

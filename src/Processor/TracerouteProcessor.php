@@ -11,37 +11,37 @@ class TracerouteProcessor extends Processor
 {
     public function storeResult(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data)
     {
-        $datasources = array();
+        $datasources = [];
 
         $prevTotal = 0;
         foreach ($data->hop as $hop => $details) {
-            if (!isset($details->ip) ) {
+            if (!isset($details->ip)) {
                 throw new DirtyInputException("No ip specified for hop $hop");
             }
             if (isset($details->latencies) && count($details->latencies) != $probe->getSamples()) {
-                throw new DirtyInputException(count((array)$details)." samples received for hop $hop, should have been ".$probe->getSamples());
+                throw new DirtyInputException(count((array) $details)." samples received for hop $hop, should have been ".$probe->getSamples());
             }
             $total = 0;
             $failed = 0;
             $success = 0;
             if (isset($details->latencies)) {
                 foreach ($details->latencies as $latency) {
-                    if ($latency != -1) {
+                    if (-1 != $latency) {
                         $total += $latency;
-                        $success++;
+                        ++$success;
                     } else {
-                        $failed++;
+                        ++$failed;
                     }
                 }
-                $name = $hop."_".str_replace(".", "_", $details->ip);
+                $name = $hop.'_'.str_replace('.', '_', $details->ip);
 
-                $datasources[$name . "l"] = $failed;
-                if ($success == 0) {
-                    $datasources[$name . "m"] = "U";
+                $datasources[$name.'l'] = $failed;
+                if (0 == $success) {
+                    $datasources[$name.'m'] = 'U';
                 } else {
                     $absolute = $total / $success;
                     $delta = $absolute - $prevTotal;
-                    $datasources[$name . "m"] = $absolute;
+                    $datasources[$name.'m'] = $absolute;
                     $prevTotal += $delta;
                 }
             }

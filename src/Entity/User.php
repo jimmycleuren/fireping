@@ -120,14 +120,10 @@ class User implements UserInterface
         return $this->plainPassword;
     }
 
-    /**
-     * @param string $plainPassword
-     */
     public function setPlainPassword(string $plainPassword): void
     {
         $this->plainPassword = $plainPassword;
     }
-
 
     /**
      * @see UserInterface
@@ -189,7 +185,7 @@ class User implements UserInterface
         }
     }
 
-    public function __toString() : string
+    public function __toString(): string
     {
         return $this->username;
     }
