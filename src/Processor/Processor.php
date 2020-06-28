@@ -42,7 +42,7 @@ abstract class Processor
                     $pattern   = explode(",", $alertRule->getPattern());
                     $value = $this->cache->getPatternValues($device, $alertRule, $group);
                     if ($this->matchPattern($pattern, $value)) {
-                        $alert = $this->em->getRepository("App:Alert")->findOneBy(array(
+                        $alert = $this->em->getRepository(Alert::class)->findOneBy(array(
                             'device' => $device,
                             'alertRule' => $alertRule,
                             'slaveGroup' => $group,
@@ -64,7 +64,7 @@ abstract class Processor
                         $this->em->persist($alert); //flush will be done in slavecontroller
 
                     } else {
-                        $alert = $this->em->getRepository("App:Alert")->findOneBy(array(
+                        $alert = $this->em->getRepository(Alert::class)->findOneBy(array(
                             'device' => $device,
                             'alertRule' => $alertRule,
                             'slaveGroup' => $group,
