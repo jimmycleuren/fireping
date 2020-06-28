@@ -1,9 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
-namespace App;
+namespace App\Model\ProbeArgument;
 
-class TracerouteArguments extends ProbeArguments
+class NullArguments extends ProbeArguments
 {
     public static function fromJsonString(string $json): ProbeArgumentsInterface
     {

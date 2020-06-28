@@ -3,11 +3,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
-use App\HttpArguments;
-use App\NullArguments;
-use App\PingArguments;
-use App\ProbeArgumentsInterface;
-use App\TracerouteArguments;
+use App\Model\ProbeArgument\HttpArguments;
+use App\Model\ProbeArgument\NullArguments;
+use App\Model\ProbeArgument\PingArguments;
+use App\Model\ProbeArgument\ProbeArgumentsInterface;
+use App\Model\ProbeArgument\TracerouteArguments;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
