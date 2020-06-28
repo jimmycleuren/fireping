@@ -28,7 +28,7 @@ class Worker
 
     private $type;
 
-    private $name = "unknown";
+    private $name = 'unknown';
 
     private $executing = false;
 
@@ -38,7 +38,7 @@ class Worker
     {
         $this->manager = $manager;
         $this->logger = $logger;
-        $executable = $kernel->getProjectDir() . '/bin/console';
+        $executable = $kernel->getProjectDir().'/bin/console';
         $environment = $kernel->getEnvironment();
         $this->process = Process::fromShellCommandline("exec php $executable app:probe:worker --env=$environment");
         $this->input = new InputStream();
@@ -64,7 +64,7 @@ class Worker
             }
         );
 
-        $this->name = "#".$this->process->getPid();
+        $this->name = '#'.$this->process->getPid();
     }
 
     public function stop()
@@ -98,7 +98,7 @@ class Worker
 
     public function loop()
     {
-        if ($this->startTime != null && $this->expectedRuntime != null) {
+        if (null != $this->startTime && null != $this->expectedRuntime) {
             $actualRuntime = microtime(true) - $this->startTime;
             $expectedRuntime = $this->expectedRuntime * 1.25;
             if ($actualRuntime > $expectedRuntime) {

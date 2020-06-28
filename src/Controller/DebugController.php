@@ -2,11 +2,11 @@
 
 namespace App\Controller;
 
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Routing\Annotation\Route;
 
 class DebugController extends AbstractController
 {
@@ -19,6 +19,7 @@ class DebugController extends AbstractController
         $session->set('debug', $debug);
 
         $referer = $request->headers->get('referer');
+
         return new RedirectResponse($referer);
     }
 }

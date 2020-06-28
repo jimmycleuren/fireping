@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\DependencyInjection;
 
-use App\Probe\ProbeDefinition;
 use App\Probe\DeviceDefinition;
+use App\Probe\ProbeDefinition;
 
 class SlaveConfiguration
 {
@@ -46,18 +47,21 @@ class SlaveConfiguration
     {
         if ($probe = $this->getProbeById($id)) {
             $probe->setConfiguration($id, $type, $step, $samples, $args);
+
             return $probe;
         }
 
         $probe = new ProbeDefinition($id, $type, $step, $samples, $args);
         $this->addProbe($probe);
+
         return $probe;
     }
 
     public function getProbeDeviceCount($id): int
     {
         $probe = $this->getProbeById($id);
-        return $probe !== null ? count($probe->getDevices()) : 0;
+
+        return null !== $probe ? count($probe->getDevices()) : 0;
     }
 
     public function getAllProbesDeviceCount(): int
@@ -66,6 +70,7 @@ class SlaveConfiguration
         foreach ($this->getProbes() as $probe) {
             $total += count($probe->getDevices());
         }
+
         return $total;
     }
 
@@ -83,7 +88,8 @@ class SlaveConfiguration
         }
     }
 
-    public function updateConfig($configuration, $etag = null) {
+    public function updateConfig($configuration, $etag = null)
+    {
         $this->deactivateAllDevices();
         foreach ($configuration as $id => $probeConfig) {
             // TODO: More checks to make sure all of this data is here?

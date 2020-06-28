@@ -7,8 +7,7 @@ use Psr\Log\LoggerInterface;
 use Twig\Environment;
 
 /**
- * Class Mail
- * @package App\AlertDestination
+ * Class Mail.
  */
 class Mail extends AlertDestinationInterface
 {
@@ -19,9 +18,6 @@ class Mail extends AlertDestinationInterface
 
     /**
      * Mail constructor.
-     * @param \Swift_Mailer $mailer
-     * @param LoggerInterface $logger
-     * @param Environment $twig
      */
     public function __construct(\Swift_Mailer $mailer, LoggerInterface $logger, Environment $twig)
     {
@@ -30,9 +26,6 @@ class Mail extends AlertDestinationInterface
         $this->twig = $twig;
     }
 
-    /**
-     * @param array $parameters
-     */
     public function setParameters(array $parameters)
     {
         if ($parameters) {
@@ -40,38 +33,28 @@ class Mail extends AlertDestinationInterface
         }
     }
 
-    /**
-     * @param Alert $alert
-     */
     public function trigger(Alert $alert)
     {
         if (!isset($_ENV['MAILER_FROM'])) {
             $this->logger->error('MAILER_FROM env variable is not set');
+
             return;
         }
 
         $this->sendMail($this->recipient, $this->getAlertMessage($alert), $alert, 'ALERT');
     }
 
-    /**
-     * @param Alert $alert
-     */
     public function clear(Alert $alert)
     {
         if (!isset($_ENV['MAILER_FROM'])) {
             $this->logger->error('MAILER_FROM env variable is not set');
+
             return;
         }
 
-        $this->sendMail($this->recipient, $this->getAlertMessage($alert), $alert, "CLEAR");
+        $this->sendMail($this->recipient, $this->getAlertMessage($alert), $alert, 'CLEAR');
     }
 
-    /**
-     * @param string $to
-     * @param string $subject
-     * @param Alert $alert
-     * @param string $action
-     */
     private function sendMail(string $to, string $subject, Alert $alert, string $action)
     {
         try {
@@ -81,10 +64,10 @@ class Mail extends AlertDestinationInterface
                 ->setBody(
                     $this->twig->render(
                         'emails/alert.html.twig',
-                        array(
+                        [
                             'alert' => $alert,
-                            'action' => $action
-                        )
+                            'action' => $action,
+                        ]
                     ),
                     'text/html'
                 );

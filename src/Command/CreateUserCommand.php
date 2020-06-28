@@ -12,8 +12,7 @@ use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
- * Class CleanupCommand
- * @package App\Command
+ * Class CleanupCommand.
  */
 class CreateUserCommand extends Command
 {
@@ -29,8 +28,6 @@ class CreateUserCommand extends Command
 
     /**
      * CleanupCommand constructor.
-     * @param EntityManagerInterface $entityManager
-     * @param UserPasswordEncoderInterface $passwordEncoder
      */
     public function __construct(EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder)
     {
@@ -39,7 +36,7 @@ class CreateUserCommand extends Command
         $this->passwordEncoder = $passwordEncoder;
     }
 
-    protected function configure() : void
+    protected function configure(): void
     {
         $this
             ->setDescription('Create a fireping user');
@@ -47,9 +44,6 @@ class CreateUserCommand extends Command
 
     /**
      * Executes the current command.
-     *
-     * @param InputInterface $input
-     * @param OutputInterface $output
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

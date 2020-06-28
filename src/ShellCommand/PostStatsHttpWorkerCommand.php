@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\ShellCommand;
 
 use App\Client\FirepingClient;
-use Psr\Log\LoggerInterface;
 use GuzzleHttp\Exception\GuzzleException;
+use Psr\Log\LoggerInterface;
 
 class PostStatsHttpWorkerCommand implements CommandInterface
 {
@@ -22,7 +22,7 @@ class PostStatsHttpWorkerCommand implements CommandInterface
     private $endpoint;
     private $body;
 
-    function __construct(LoggerInterface $logger, FirepingClient $client)
+    public function __construct(LoggerInterface $logger, FirepingClient $client)
     {
         $this->logger = $logger;
         $this->client = $client;
@@ -32,7 +32,8 @@ class PostStatsHttpWorkerCommand implements CommandInterface
     {
         try {
             $response = $this->client->request($this->method, $this->endpoint, ['json' => $this->body]);
-            return ['code' => $response->getStatusCode(), 'contents' => (string)$response->getBody()];
+
+            return ['code' => $response->getStatusCode(), 'contents' => (string) $response->getBody()];
         } catch (GuzzleException $exception) {
             return ['code' => $exception->getCode(), 'contents' => $exception->getMessage()];
         }

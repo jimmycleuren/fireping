@@ -28,7 +28,9 @@ class DomainCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         $name = TextField::new('name');
-        $parent = AssociationField::new('parent');
+        $parent = AssociationField::new('parent')->formatValue(function (?string $value, Domain $entity) {
+            return null === $value ? null : $entity->getParentFqdn();
+        });
         $slavegroups = AssociationField::new('slavegroups');
         $probes = AssociationField::new('probes');
         $alertRules = AssociationField::new('alertRules');
@@ -46,6 +48,7 @@ class DomainCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_EDIT === $pageName) {
             return [$name, $parent, $slavegroups, $probes, $alertRules, $alertDestinations];
         }
+
         return [];
     }
 }

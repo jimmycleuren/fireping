@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Probe
+ * Probe.
  *
  * @ORM\Table(name="probe")
  * @ORM\Entity(repositoryClass="App\Repository\ProbeRepository")
@@ -78,7 +78,7 @@ class Probe
     private $archives;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -86,7 +86,7 @@ class Probe
     }
 
     /**
-     * Set id
+     * Set id.
      *
      * @param int $id
      *
@@ -100,7 +100,7 @@ class Probe
     }
 
     /**
-     * Get id
+     * Get id.
      *
      * @return int
      */
@@ -110,7 +110,7 @@ class Probe
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
      *
@@ -124,7 +124,7 @@ class Probe
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string
      */
@@ -134,7 +134,7 @@ class Probe
     }
 
     /**
-     * Set type
+     * Set type.
      *
      * @param string $type
      *
@@ -148,7 +148,7 @@ class Probe
     }
 
     /**
-     * Get type
+     * Get type.
      *
      * @return string
      */
@@ -158,9 +158,9 @@ class Probe
     }
 
     /**
-     * Set step
+     * Set step.
      *
-     * @param integer $step
+     * @param int $step
      *
      * @return Probe
      */
@@ -172,7 +172,7 @@ class Probe
     }
 
     /**
-     * Get step
+     * Get step.
      *
      * @return int
      */
@@ -182,9 +182,9 @@ class Probe
     }
 
     /**
-     * Set samples
+     * Set samples.
      *
-     * @param integer $samples
+     * @param int $samples
      *
      * @return Probe
      */
@@ -196,7 +196,7 @@ class Probe
     }
 
     /**
-     * Get samples
+     * Get samples.
      *
      * @return int
      */
@@ -239,9 +239,7 @@ class Probe
     }
 
     /**
-     * Add ProbeArchive
-     *
-     * @param ProbeArchive $archive
+     * Add ProbeArchive.
      *
      * @return Probe
      */
@@ -253,9 +251,7 @@ class Probe
     }
 
     /**
-     * Remove ProbeArchive
-     *
-     * @param ProbeArchive $archive
+     * Remove ProbeArchive.
      */
     public function removeArchive(ProbeArchive $archive)
     {

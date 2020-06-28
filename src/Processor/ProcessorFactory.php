@@ -25,9 +25,9 @@ class ProcessorFactory
         $this->cache = $cache;
     }
 
-    public function create(string $type) : Processor
+    public function create(string $type): Processor
     {
-        switch($type) {
+        switch ($type) {
             case 'ping': return new PingProcessor($this->storageFactory, $this->alertDestinationFactory, $this->logger, $this->entityManager, $this->cache);
             case 'http': return new HttpProcessor($this->storageFactory, $this->alertDestinationFactory, $this->logger, $this->entityManager, $this->cache);
             case 'traceroute': return new TracerouteProcessor($this->storageFactory, $this->alertDestinationFactory, $this->logger, $this->entityManager, $this->cache);

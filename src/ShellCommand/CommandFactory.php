@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\ShellCommand;
@@ -28,11 +29,12 @@ final class CommandFactory
     {
         $class = $this->types[$command] ?? null;
 
-        if ($class === null) {
+        if (null === $class) {
             throw new \RuntimeException("Cannot create a command of type $command");
         }
 
         $class->setArgs($args);
+
         return $class;
     }
 

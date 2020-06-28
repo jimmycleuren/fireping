@@ -11,7 +11,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Domain
+ * Domain.
  *
  * @ORM\Table(name="domain", uniqueConstraints={@ORM\UniqueConstraint(name="unique_name_in_parent", columns={"parent_id", "name"})})
  * @ORM\Entity(repositoryClass="App\Repository\DomainRepository")
@@ -118,7 +118,7 @@ class Domain
     private $subdomains;
 
     /**
-     * Set id
+     * Set id.
      *
      * @param int $id
      *
@@ -132,7 +132,7 @@ class Domain
     }
 
     /**
-     * Get id
+     * Get id.
      *
      * @return int
      */
@@ -142,7 +142,7 @@ class Domain
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
      *
@@ -156,7 +156,7 @@ class Domain
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string
      */
@@ -164,8 +164,9 @@ class Domain
     {
         return $this->name;
     }
+
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -176,7 +177,7 @@ class Domain
     }
 
     /**
-     * Set parent
+     * Set parent.
      *
      * @param \App\Entity\Domain $parent
      *
@@ -190,7 +191,7 @@ class Domain
     }
 
     /**
-     * Get parent
+     * Get parent.
      *
      * @return \App\Entity\Domain|null
      */
@@ -200,9 +201,7 @@ class Domain
     }
 
     /**
-     * Add slavegroup
-     *
-     * @param \App\Entity\SlaveGroup $slavegroup
+     * Add slavegroup.
      *
      * @return Domain
      */
@@ -214,9 +213,7 @@ class Domain
     }
 
     /**
-     * Remove slavegroup
-     *
-     * @param \App\Entity\SlaveGroup $slavegroup
+     * Remove slavegroup.
      */
     public function removeSlaveGroup(\App\Entity\SlaveGroup $slavegroup)
     {
@@ -224,7 +221,7 @@ class Domain
     }
 
     /**
-     * Get slavegroups
+     * Get slavegroups.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
@@ -234,9 +231,7 @@ class Domain
     }
 
     /**
-     * Add probe
-     *
-     * @param \App\Entity\Probe $probe
+     * Add probe.
      *
      * @return Domain
      */
@@ -248,9 +243,7 @@ class Domain
     }
 
     /**
-     * Remove probe
-     *
-     * @param \App\Entity\Probe $probe
+     * Remove probe.
      */
     public function removeProbe(\App\Entity\Probe $probe)
     {
@@ -258,7 +251,7 @@ class Domain
     }
 
     /**
-     * Get probes
+     * Get probes.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
@@ -268,9 +261,7 @@ class Domain
     }
 
     /**
-     * Add alert rule
-     *
-     * @param \App\Entity\AlertRule $alertRule
+     * Add alert rule.
      *
      * @return Domain
      */
@@ -282,9 +273,7 @@ class Domain
     }
 
     /**
-     * Remove alert rule
-     *
-     * @param \App\Entity\AlertRule $alertRule
+     * Remove alert rule.
      */
     public function removeAlertRule(\App\Entity\AlertRule $alertRule)
     {
@@ -292,7 +281,7 @@ class Domain
     }
 
     /**
-     * Get alert rules
+     * Get alert rules.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
@@ -302,9 +291,7 @@ class Domain
     }
 
     /**
-     * Add alert destination
-     *
-     * @param \App\Entity\AlertDestination $alertDestination
+     * Add alert destination.
      *
      * @return Domain
      */
@@ -316,9 +303,7 @@ class Domain
     }
 
     /**
-     * Remove alert destination
-     *
-     * @param \App\Entity\AlertDestination $alertDestination
+     * Remove alert destination.
      */
     public function removeAlertDestination(\App\Entity\AlertDestination $alertDestination)
     {
@@ -326,7 +311,7 @@ class Domain
     }
 
     /**
-     * Get alert destinations
+     * Get alert destinations.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
@@ -336,9 +321,7 @@ class Domain
     }
 
     /**
-     * Add device
-     *
-     * @param \App\Entity\Device $device
+     * Add device.
      *
      * @return Domain
      */
@@ -350,9 +333,7 @@ class Domain
     }
 
     /**
-     * Remove device
-     *
-     * @param \App\Entity\Device $device
+     * Remove device.
      */
     public function removeDevice(\App\Entity\Device $device)
     {
@@ -360,7 +341,7 @@ class Domain
     }
 
     /**
-     * Get devices
+     * Get devices.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
@@ -370,9 +351,7 @@ class Domain
     }
 
     /**
-     * Add subdomain
-     *
-     * @param \App\Entity\Domain $subdomain
+     * Add subdomain.
      *
      * @return Domain
      */
@@ -384,9 +363,7 @@ class Domain
     }
 
     /**
-     * Remove subdomain
-     *
-     * @param \App\Entity\Domain $subdomain
+     * Remove subdomain.
      */
     public function removeSubdomain(\App\Entity\Domain $subdomain)
     {
@@ -394,7 +371,7 @@ class Domain
     }
 
     /**
-     * Get subdomains
+     * Get subdomains.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
@@ -425,5 +402,23 @@ class Domain
     public function __toString()
     {
         return $this->name;
+    }
+
+    private function getFqdn(): string
+    {
+        if (null !== $this->getParent()) {
+            return $this->getParent()->getFqdn().' > '.$this->getName();
+        }
+
+        return $this->getName();
+    }
+
+    public function getParentFqdn(): string
+    {
+        if (null === $this->getParent()) {
+            return '';
+        }
+
+        return $this->getParent()->getFqdn();
     }
 }
