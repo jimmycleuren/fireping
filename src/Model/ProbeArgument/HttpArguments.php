@@ -5,28 +5,17 @@ namespace App\Model\ProbeArgument;
 
 class HttpArguments extends ProbeArguments
 {
-    /**
-     * @var bool
-     */
-    private $allowRedirectsEnabled;
-    /**
-     * @var array
-     */
-    private $allowRedirectOptions;
-
-    private function __construct(bool $allowRedirectsEnabled, array $allowRedirectOptions)
+    private function __construct()
     {
-        $this->allowRedirectsEnabled = $allowRedirectsEnabled;
-        $this->allowRedirectOptions = $allowRedirectOptions;
     }
 
     public static function fromJsonString(string $json): ProbeArgumentsInterface
     {
-        return new self(true, ['someArg' => 'ok']);
+        return new self();
     }
 
     public function asArray(): array
     {
-        return ['allowRedirectsEnabled' => $this->allowRedirectsEnabled, 'allowRedirectOptions' => $this->allowRedirectOptions];
+        return [];
     }
 }
