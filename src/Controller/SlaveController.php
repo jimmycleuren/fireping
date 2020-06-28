@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Device;
+use App\Entity\Probe;
 use App\Entity\Slave;
 use App\Exception\DirtyInputException;
 use App\Exception\WrongTimestampRrdException;
@@ -237,8 +238,8 @@ class SlaveController extends AbstractController
         $this->em->persist($slave);
         $this->em->flush();
 
-        $probeRepository = $this->em->getRepository("App:Probe");
-        $deviceRepository = $this->em->getRepository("App:Device");
+        $probeRepository = $this->em->getRepository(Probe::class);
+        $deviceRepository = $this->em->getRepository(Device::class);
 
         $probes = json_decode($request->getContent());
 

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Domain;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,7 +34,7 @@ class SearchController extends AbstractController
             WHERE d.name LIKE '%".$q."%'
         ")->getResult();
 
-        $domains = $em->getRepository("App:Domain")->findBy(array('parent' => null), array('name' => 'ASC'));
+        $domains = $em->getRepository(Domain::class)->findBy(array('parent' => null), array('name' => 'ASC'));
 
         return $this->render('search/index.html.twig', array(
             'q' => $q,
