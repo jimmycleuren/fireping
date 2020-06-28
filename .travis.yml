@@ -7,7 +7,7 @@ env:
     # the same directory as the simple-phpunit if it is not provided. It's also possible to set
     # this env var in the phpunit.xml.dist file.
     - SYMFONY_PHPUNIT_DIR=./bin/.phpunit
-    - SYMFONY_DEPRECATIONS_HELPER=9
+    - SYMFONY_DEPRECATIONS_HELPER=max[direct]=0
     - ACTION="install"
     # Add the Symfony binary's path
 
