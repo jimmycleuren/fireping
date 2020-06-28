@@ -1,6 +1,3 @@
-includes:
-    - vendor/phpstan/phpstan-doctrine/extension.neon
-    - vendor/phpstan/phpstan-doctrine/rules.neon
 parameters:
     inferPrivatePropertyTypeFromConstructor: true
     excludes_analyse:
