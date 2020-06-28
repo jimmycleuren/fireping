@@ -106,7 +106,7 @@ class StatsManagerTest extends TestCase
             PostStatsHttpWorkerCommand::class => 1,
             GetConfigHttpWorkerCommand::class => 1,
             PostResultsHttpWorkerCommand::class => 1,
-            'bla' => 0
+            'bla' => 0,
         ]);
 
         $stats = $statsManager->getStats();

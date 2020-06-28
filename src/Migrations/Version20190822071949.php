@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace DoctrineMigrations;
@@ -21,7 +20,7 @@ final class Version20190822071949 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('CREATE TABLE user (id INT AUTO_INCREMENT NOT NULL, username VARCHAR(180) NOT NULL, roles LONGTEXT NOT NULL COMMENT \'(DC2Type:json)\', password VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, enabled TINYINT(1) NOT NULL, api_token VARCHAR(180) DEFAULT NULL, last_login DATETIME DEFAULT NULL, UNIQUE INDEX UNIQ_8D93D649F85E0677 (username), UNIQUE INDEX UNIQ_8D93D6497BA2F5EB (api_token), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB');
     }
@@ -29,7 +28,7 @@ final class Version20190822071949 extends AbstractMigration
     public function postUp(Schema $schema): void
     {
         // ... update the entities
-        $query = "SELECT * FROM fos_user";
+        $query = 'SELECT * FROM fos_user';
         $stmt = $this->connection->prepare($query);
         $stmt->execute();
 
@@ -58,20 +57,18 @@ final class Version20190822071949 extends AbstractMigration
                 'email' => $email,
                 'enabled' => $enabled,
                 'roles' => $roles,
-                'last_login' => $last_login
+                'last_login' => $last_login,
             ];
 
             $this->connection->insert('user', $data);
         }
-
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('DROP TABLE user');
     }
-
 }

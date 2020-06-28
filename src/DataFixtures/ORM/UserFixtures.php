@@ -5,8 +5,6 @@ namespace App\DataFixtures\ORM;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 class UserFixtures extends Fixture
@@ -28,7 +26,7 @@ class UserFixtures extends Fixture
 
         //$user->setPassword('3NCRYPT3D-V3R51ON');
         $user->setEnabled(true);
-        $user->setRoles(array('ROLE_ADMIN'));
+        $user->setRoles(['ROLE_ADMIN']);
 
         // Update the user
         $encoder = $this->encoder->getEncoder($user);
@@ -37,5 +35,4 @@ class UserFixtures extends Fixture
         $manager->persist($user);
         $manager->flush();
     }
-
 }

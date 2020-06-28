@@ -8,7 +8,6 @@ use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-
 class CleanupAlertTest extends WebTestCase
 {
     use ProphecyTrait;
@@ -16,7 +15,7 @@ class CleanupAlertTest extends WebTestCase
     private $alertRepository;
     private $cleanupAlertService;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 

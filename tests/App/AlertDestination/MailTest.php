@@ -40,7 +40,7 @@ class MailTest extends TestCase
         $templating->render(Argument::type('string'), Argument::type('array'))->shouldBeCalledTimes(1);
 
         $mail = new Mail($mailer->reveal(), $logger->reveal(), $templating->reveal());
-        $mail->setParameters(array('recipient' => 'test@test.com'));
+        $mail->setParameters(['recipient' => 'test@test.com']);
 
         $device = new Device();
         $device->setName('device');
@@ -65,7 +65,7 @@ class MailTest extends TestCase
         $templating = $this->prophesize(Environment::class);
 
         $mail = new Mail($mailer->reveal(), $logger->reveal(), $templating->reveal());
-        $mail->setParameters(array('recipient' => 'invalid'));
+        $mail->setParameters(['recipient' => 'invalid']);
 
         $device = new Device();
         $device->setName('device');
@@ -105,7 +105,7 @@ class MailTest extends TestCase
         $templating->render(Argument::type('string'), Argument::type('array'))->shouldBeCalledTimes(1);
 
         $mail = new Mail($mailer->reveal(), $logger->reveal(), $templating->reveal());
-        $mail->setParameters(array('recipient' => 'test@test.com'));
+        $mail->setParameters(['recipient' => 'test@test.com']);
 
         $device = new Device();
         $device->setName('device');

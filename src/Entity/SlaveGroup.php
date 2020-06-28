@@ -5,11 +5,11 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * SlaveGroup
+ * SlaveGroup.
  *
  * @ORM\Table(name="slave_group")
  * @ORM\Entity(repositoryClass="App\Repository\SlaveGroupRepository")
@@ -55,9 +55,8 @@ class SlaveGroup
      */
     private $slaves;
 
-
     /**
-     * Set id
+     * Set id.
      *
      * @param int $id
      *
@@ -71,7 +70,7 @@ class SlaveGroup
     }
 
     /**
-     * Get id
+     * Get id.
      *
      * @return int
      */
@@ -81,7 +80,7 @@ class SlaveGroup
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
      *
@@ -95,7 +94,7 @@ class SlaveGroup
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string
      */
@@ -105,7 +104,7 @@ class SlaveGroup
     }
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -114,9 +113,7 @@ class SlaveGroup
     }
 
     /**
-     * Add device
-     *
-     * @param \App\Entity\Device $device
+     * Add device.
      *
      * @return SlaveGroup
      */
@@ -128,9 +125,7 @@ class SlaveGroup
     }
 
     /**
-     * Remove device
-     *
-     * @param \App\Entity\Device $device
+     * Remove device.
      */
     public function removeDevice(\App\Entity\Device $device)
     {
@@ -138,7 +133,7 @@ class SlaveGroup
     }
 
     /**
-     * Get devices
+     * Get devices.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
@@ -148,9 +143,7 @@ class SlaveGroup
     }
 
     /**
-     * Add domain
-     *
-     * @param \App\Entity\Domain $domain
+     * Add domain.
      *
      * @return SlaveGroup
      */
@@ -162,9 +155,7 @@ class SlaveGroup
     }
 
     /**
-     * Remove domain
-     *
-     * @param \App\Entity\Domain $domain
+     * Remove domain.
      */
     public function removeDomain(\App\Entity\Domain $domain)
     {
@@ -172,7 +163,7 @@ class SlaveGroup
     }
 
     /**
-     * Get domains
+     * Get domains.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
@@ -187,9 +178,7 @@ class SlaveGroup
     }
 
     /**
-     * Add slave
-     *
-     * @param \App\Entity\Slave $slave
+     * Add slave.
      *
      * @return SlaveGroup
      */
@@ -201,9 +190,7 @@ class SlaveGroup
     }
 
     /**
-     * Remove slave
-     *
-     * @param \App\Entity\Slave $slave
+     * Remove slave.
      */
     public function removeSlave(\App\Entity\Slave $slave)
     {
@@ -211,7 +198,7 @@ class SlaveGroup
     }
 
     /**
-     * Get slaves
+     * Get slaves.
      *
      * @return \Doctrine\Common\Collections\Collection
      */

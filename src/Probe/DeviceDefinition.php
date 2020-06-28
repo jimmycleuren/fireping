@@ -8,7 +8,7 @@ class DeviceDefinition
     protected $ip;
     protected $active;
 
-    function __construct($hostname, $ip)
+    public function __construct($hostname, $ip)
     {
         $this->id = $hostname;
         $this->ip = $ip;
@@ -57,9 +57,9 @@ class DeviceDefinition
 
     public function asArray()
     {
-        return array(
-            "id" => $this->id,
-            "ip" => $this->ip,
-        );
+        return [
+            'id' => $this->id,
+            'ip' => $this->ip,
+        ];
     }
 }

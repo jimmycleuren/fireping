@@ -16,16 +16,16 @@ class RrdCachedStorageTest extends TestCase
 
     private $slaveGroupId = 0;
 
-    public function setUp() : void
+    public function setUp(): void
     {
-        $this->slaveGroupId = date("U");
+        $this->slaveGroupId = date('U');
     }
 
     public function testCreate()
     {
         $logger = $this->prophesize(LoggerInterface::class)->reveal();
 
-        $path = realpath('/tmp/fireping/rrd') . '/';
+        $path = realpath('/tmp/fireping/rrd').'/';
 
         $storage = new RrdCachedStorage($path, $logger);
 
@@ -40,21 +40,21 @@ class RrdCachedStorageTest extends TestCase
         $group->setId($this->slaveGroupId);
 
         $data = [
-            "median" => 5,
-            "loss" => 0
+            'median' => 5,
+            'loss' => 0,
         ];
-        $storage->store($device, $probe, $group, date("U"), $data, true, $_ENV['RRDCACHED_TEST'] ?? "127.0.0.1:42217");
+        $storage->store($device, $probe, $group, date('U'), $data, true, $_ENV['RRDCACHED_TEST'] ?? '127.0.0.1:42217');
 
-        $datasources = $storage->getDatasources($device, $probe, $group, $_ENV['RRDCACHED_TEST'] ?? "127.0.0.1:42217");
+        $datasources = $storage->getDatasources($device, $probe, $group, $_ENV['RRDCACHED_TEST'] ?? '127.0.0.1:42217');
 
-        $this->assertEquals(["median", "loss"], $datasources);
+        $this->assertEquals(['median', 'loss'], $datasources);
     }
 
     public function testUpdate()
     {
         $logger = $this->prophesize(LoggerInterface::class)->reveal();
 
-        $path = realpath('/tmp/fireping/rrd/') . '/';
+        $path = realpath('/tmp/fireping/rrd/').'/';
 
         $storage = new RrdCachedStorage($path, $logger);
 
@@ -69,21 +69,21 @@ class RrdCachedStorageTest extends TestCase
         $group->setId($this->slaveGroupId);
 
         $data = [
-            "median" => 5,
-            "loss" => 0
+            'median' => 5,
+            'loss' => 0,
         ];
-        $storage->store($device, $probe, $group, date("U") + 1, $data, true, $_ENV['RRDCACHED_TEST'] ?? "127.0.0.1:42217");
+        $storage->store($device, $probe, $group, date('U') + 1, $data, true, $_ENV['RRDCACHED_TEST'] ?? '127.0.0.1:42217');
 
-        $datasources = $storage->getDatasources($device, $probe, $group, $_ENV['RRDCACHED_TEST'] ?? "127.0.0.1:42217");
+        $datasources = $storage->getDatasources($device, $probe, $group, $_ENV['RRDCACHED_TEST'] ?? '127.0.0.1:42217');
 
-        $this->assertEquals(["median", "loss"], $datasources);
+        $this->assertEquals(['median', 'loss'], $datasources);
     }
 
     public function testUpdateWithNewDatasource()
     {
         $logger = $this->prophesize(LoggerInterface::class)->reveal();
 
-        $path = realpath('/tmp/fireping/rrd') . '/';
+        $path = realpath('/tmp/fireping/rrd').'/';
 
         $storage = new RrdCachedStorage($path, $logger);
 
@@ -98,14 +98,14 @@ class RrdCachedStorageTest extends TestCase
         $group->setId($this->slaveGroupId);
 
         $data = [
-            "median" => 5,
-            "loss" => 0,
-            "new" => 5,
+            'median' => 5,
+            'loss' => 0,
+            'new' => 5,
         ];
-        $storage->store($device, $probe, $group, date("U") + 2, $data, true, $_ENV['RRDCACHED_TEST'] ?? "127.0.0.1:42217");
+        $storage->store($device, $probe, $group, date('U') + 2, $data, true, $_ENV['RRDCACHED_TEST'] ?? '127.0.0.1:42217');
 
-        $datasources = $storage->getDatasources($device, $probe, $group, $_ENV['RRDCACHED_TEST'] ?? "127.0.0.1:42217");
+        $datasources = $storage->getDatasources($device, $probe, $group, $_ENV['RRDCACHED_TEST'] ?? '127.0.0.1:42217');
 
-        $this->assertEquals(["median", "loss", "new"], $datasources);
+        $this->assertEquals(['median', 'loss', 'new'], $datasources);
     }
 }

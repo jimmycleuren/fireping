@@ -6,29 +6,28 @@ use App\Entity\Device;
 use App\Entity\Probe;
 use App\Entity\SlaveGroup;
 use App\Exception\DirtyInputException;
-use App\Exception\WrongTimestampRrdException;
 
 class SmokeProcessor extends Processor
 {
-    protected $datasource = "unknown";
+    protected $datasource = 'unknown';
 
     public function storeResult(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data)
     {
         if (count($data) != $probe->getSamples()) {
-            throw new DirtyInputException(count($data)." ".$this->datasource." samples received, should have been ".$probe->getSamples());
+            throw new DirtyInputException(count($data).' '.$this->datasource.' samples received, should have been '.$probe->getSamples());
         }
 
-        $datasources = array();
+        $datasources = [];
         $failed = 0;
         $success = 0;
 
-        $times = array();
+        $times = [];
         foreach ($data as $key => $result) {
-            if ($result != -1) {
-                $success++;
+            if (-1 != $result) {
+                ++$success;
                 $times[] = $result;
             } else {
-                $failed++;
+                ++$failed;
             }
         }
         sort($times);
@@ -37,19 +36,19 @@ class SmokeProcessor extends Processor
         $upperLoss = $failed - $lowerLoss;
 
         $datasourceCounter = 1;
-        for ($i = 0; $i < $lowerLoss; $i++) {
-            $datasources[$this->datasource.$datasourceCounter++] = "U";
+        for ($i = 0; $i < $lowerLoss; ++$i) {
+            $datasources[$this->datasource.$datasourceCounter++] = 'U';
         }
         foreach ($times as $time) {
             $datasources[$this->datasource.$datasourceCounter++] = $time;
         }
-        for ($i = 0; $i < $upperLoss; $i++) {
-            $datasources[$this->datasource.$datasourceCounter++] = "U";
+        for ($i = 0; $i < $upperLoss; ++$i) {
+            $datasources[$this->datasource.$datasourceCounter++] = 'U';
         }
 
         $datasources['loss'] = $failed;
-        if ($success == 0) {
-            $datasources['median'] = "U";
+        if (0 == $success) {
+            $datasources['median'] = 'U';
         } else {
             $datasources['median'] = $times[floor(count($times) / 2)];
         }

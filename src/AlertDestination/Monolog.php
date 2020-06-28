@@ -16,11 +16,11 @@ class Monolog extends AlertDestinationInterface
 
     public function trigger(Alert $alert)
     {
-        $this->logger->warning("FIREPING.ALERT: " . $this->getAlertMessage($alert));
+        $this->logger->warning('FIREPING.ALERT: '.$this->getAlertMessage($alert));
     }
 
     public function clear(Alert $alert)
     {
-        $this->logger->warning("FIREPING.CLEAR: " . $this->getAlertMessage($alert));
+        $this->logger->warning('FIREPING.CLEAR: '.$this->getAlertMessage($alert));
     }
 }

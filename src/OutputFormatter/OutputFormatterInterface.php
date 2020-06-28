@@ -2,8 +2,7 @@
 
 namespace App\OutputFormatter;
 
-
 interface OutputFormatterInterface
 {
-    function format($input);
+    public function format($input);
 }
