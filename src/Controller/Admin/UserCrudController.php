@@ -27,7 +27,7 @@ class UserCrudController extends AbstractCrudController
     {
         $plainPassword = $user->getPlainPassword();
 
-        if ($plainPassword === '' || $plainPassword === null) {
+        if ('' === $plainPassword || null === $plainPassword) {
             return;
         }
 

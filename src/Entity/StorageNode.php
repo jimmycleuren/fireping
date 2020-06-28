@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class StorageNode
 {
-    const STATUS_ACTIVE = "active";
+    const STATUS_ACTIVE = 'active';
 
     /**
      * @ORM\Id()

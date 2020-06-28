@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Probe;
@@ -50,10 +51,10 @@ class Ping implements CommandInterface
         $errors = $this->validate();
 
         if (count($errors)) {
-            throw new \Exception("ShellCommand validations failed: " . json_encode($errors));
+            throw new \Exception('ShellCommand validations failed: '.json_encode($errors));
         }
 
-        $output = array();
+        $output = [];
         $out = '';
         exec($this->makeCommand(), $out);
         $shellOutput = $this->formatter->format($out);
@@ -86,7 +87,7 @@ class Ping implements CommandInterface
         $tooManyArguments = count($this->targets) > self::MAX_TARGETS;
 
         if ($tooManyArguments) {
-            $errors['TooManyArguments'] = 'Should have at most ' . self::MAX_TARGETS . ' targets.';
+            $errors['TooManyArguments'] = 'Should have at most '.self::MAX_TARGETS.' targets.';
         }
 
         $finder = new ExecutableFinder();
@@ -99,7 +100,7 @@ class Ping implements CommandInterface
 
     private function makeCommand(): string
     {
-        return 'fping' . $this->buildArguments() . ' ' . $this->buildTargets() . ' 2>&1';
+        return 'fping'.$this->buildArguments().' '.$this->buildTargets().' 2>&1';
     }
 
     private function buildArguments(): string
@@ -107,13 +108,13 @@ class Ping implements CommandInterface
         $args = '';
 
         foreach ($this->arguments as $param => $value) {
-            $args .= ' ' . $param;
+            $args .= ' '.$param;
             if (isset($value)) {
-                $args .= ' ' . $value;
+                $args .= ' '.$value;
             }
         }
 
-        return $args . ' -q';
+        return $args.' -q';
     }
 
     private function buildTargets(): string
@@ -121,6 +122,7 @@ class Ping implements CommandInterface
         $ipAddresses = array_map(function ($device) {
             return $device['ip'];
         }, $this->targets);
+
         return implode(' ', $ipAddresses);
     }
 
@@ -130,13 +132,14 @@ class Ping implements CommandInterface
         foreach ($args as $key => $value) {
             if (array_key_exists($key, $this->mappedArguments)) {
                 $mapped_key = $this->mappedArguments[$key];
-                if ($value === true) {
+                if (true === $value) {
                     $mapped[$mapped_key] = null;
                 } else {
                     $mapped[$mapped_key] = $value;
                 }
             }
         }
+
         return $mapped;
     }
 

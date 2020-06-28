@@ -13,9 +13,9 @@ class GraphFactory
         $this->storageFactory = $storageFactory;
     }
 
-    public function create(string $type) : Graph
+    public function create(string $type): Graph
     {
-        switch($type) {
+        switch ($type) {
             case 'ping': return new PingGraph($this->storageFactory);
             case 'http': return new HttpGraph($this->storageFactory);
             case 'traceroute': return new TracerouteGraph($this->storageFactory);

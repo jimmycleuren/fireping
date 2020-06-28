@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\ShellCommand;
@@ -23,7 +24,7 @@ class GetConfigHttpWorkerCommand implements CommandInterface
      */
     private $client;
 
-    function __construct(LoggerInterface $logger, FirepingClient $client)
+    public function __construct(LoggerInterface $logger, FirepingClient $client)
     {
         $this->logger = $logger;
         $this->client = $client;
@@ -33,18 +34,18 @@ class GetConfigHttpWorkerCommand implements CommandInterface
     {
         $endpoint = sprintf('/api/slaves/%s/config', $_ENV['SLAVE_NAME']);
 
-        $headers = $this->etag !== null ? ['If-None-Match' => $this->etag] : [];
+        $headers = null !== $this->etag ? ['If-None-Match' => $this->etag] : [];
         $request = new Request('GET', $endpoint, $headers);
         try {
             $response = $this->client->send($request);
             $eTag = $response->getHeader('ETag')[0] ?? null;
 
-            if ($response->getStatusCode() === 304) {
+            if (304 === $response->getStatusCode()) {
                 return ['code' => 304, 'contents' => 'Configuration unchanged', 'etag' => $eTag];
             }
 
-            $configuration = json_decode((string)$response->getBody(), true);
-            if ($configuration === null) {
+            $configuration = json_decode((string) $response->getBody(), true);
+            if (null === $configuration) {
                 return ['code' => 500, 'contents' => 'Malformed JSON', 'etag' => $eTag];
             }
 

@@ -1,13 +1,14 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Probe;
 
 use App\ShellCommand\CommandInterface;
-use GuzzleHttp\TransferStats;
-use Psr\Log\LoggerInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise;
+use GuzzleHttp\TransferStats;
+use Psr\Log\LoggerInterface;
 
 class Http implements CommandInterface
 {
@@ -21,7 +22,7 @@ class Http implements CommandInterface
     private $allowedCodes = [
         200,
         301,
-        302
+        302,
     ];
 
     public function __construct(LoggerInterface $logger)
@@ -35,7 +36,7 @@ class Http implements CommandInterface
 
         $result = [];
 
-        $options  = [
+        $options = [
             'timeout' => ($this->waitTime / 1000) * 0.9,
             'allow_redirects' => false,
             'headers' => [],
@@ -46,22 +47,22 @@ class Http implements CommandInterface
         }
         $client = new Client($options);
 
-        $path = isset($this->args['path']) ? $this->args['path'] : "/";
+        $path = isset($this->args['path']) ? $this->args['path'] : '/';
 
-        for($i = 0; $i < $this->samples; $i++) {
+        for ($i = 0; $i < $this->samples; ++$i) {
             $start = microtime(true);
             $promises = [];
             foreach ($this->targets as $target) {
                 $id = $target['id'];
                 $promises[$target['id']] = $client->getAsync('http://'.$target['ip'].$path, [
-                    'on_stats' => function (TransferStats $stats) use ($id){
+                    'on_stats' => function (TransferStats $stats) use ($id) {
                         $this->times[$id] = $stats->getTransferTime() * 1000;
-                    }
+                    },
                 ]);
             }
 
             $responses = Promise\settle($promises)->wait();
-            foreach($responses as $id => $response) {
+            foreach ($responses as $id => $response) {
                 if (isset($response['value']) && in_array($response['value']->getStatusCode(), $this->allowedCodes)) {
                     $result[$id][] = $this->times[$id];
                 } else {
@@ -75,8 +76,8 @@ class Http implements CommandInterface
 
             if ($sleep > 0 && $i < $this->samples) {
                 usleep((int) $sleep);
-            } elseif($sleep < 0) {
-                $this->logger->warning("HTTP probe did not have enough time");
+            } elseif ($sleep < 0) {
+                $this->logger->warning('HTTP probe did not have enough time');
             }
         }
 

@@ -2,7 +2,6 @@
 
 namespace App\Probe;
 
-
 class ProbeDefinition
 {
     protected $id;
@@ -10,10 +9,10 @@ class ProbeDefinition
     protected $step;
     protected $samples;
 
-    protected $args = array();
-    protected $devices = array();
+    protected $args = [];
+    protected $devices = [];
 
-    function __construct($id, $type, $step, $samples, array $args = null)
+    public function __construct($id, $type, $step, $samples, array $args = null)
     {
         $this->setConfiguration($id, $type, $step, $samples, $args);
     }
@@ -25,7 +24,7 @@ class ProbeDefinition
         $this->step = $step;
         $this->samples = $samples;
 
-        $this->args = isset($args) ? $args : array();
+        $this->args = isset($args) ? $args : [];
         // TODO: Move to arguments.
         $this->args['samples'] = $samples;
         $this->args['wait_time'] = intval($step / $samples) * 1000;
@@ -63,7 +62,7 @@ class ProbeDefinition
         return $this->samples;
     }
 
-    public function getArgs() : array
+    public function getArgs(): array
     {
         return $this->args;
     }
@@ -73,15 +72,15 @@ class ProbeDefinition
         $this->args[$key] = $value;
     }
 
-    public function getConfiguration($targets = null) : array
+    public function getConfiguration($targets = null): array
     {
-        return array(
+        return [
             'id' => $this->id,
             'type' => $this->type,
             'step' => $this->step,
             'args' => $this->args,
             'targets' => $targets,
-        );
+        ];
     }
 
     /**
@@ -99,6 +98,7 @@ class ProbeDefinition
                 return $device->getId();
             }
         }
+
         return null;
     }
 
@@ -113,18 +113,15 @@ class ProbeDefinition
 
     public function deactivateAllDevices()
     {
-        foreach ($this->devices as $device)
-        {
+        foreach ($this->devices as $device) {
             $device->setActive(false);
         }
     }
 
     public function purgeAllInactiveDevices()
     {
-        foreach ($this->devices as $key => $device)
-        {
-            if (!$device->isActive())
-            {
+        foreach ($this->devices as $key => $device) {
+            if (!$device->isActive()) {
                 unset($this->devices[$key]);
             }
         }

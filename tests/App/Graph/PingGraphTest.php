@@ -7,9 +7,9 @@ use App\Entity\Probe;
 use App\Entity\ProbeArchive;
 use App\Entity\SlaveGroup;
 use App\Exception\RrdException;
+use App\Graph\PingGraph;
 use App\Storage\RrdStorage;
 use PHPUnit\Framework\TestCase;
-use App\Graph\PingGraph;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 
@@ -20,7 +20,7 @@ class PingGraphTest extends TestCase
     public function testSummaryGraphWithoutRrd()
     {
         $storage = $this->prophesize('App\\Storage\\RrdStorage');
-        $storage->fileExists(Argument::type(Device::class), "/tmp/unknown.rrd")->shouldBeCalledTimes(1);
+        $storage->fileExists(Argument::type(Device::class), '/tmp/unknown.rrd')->shouldBeCalledTimes(1);
         $storage->getFilePath(Argument::any(), Argument::any(), Argument::any())->willReturn('/tmp/unknown.rrd')->shouldBeCalledTimes(1);
 
         $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
@@ -38,7 +38,7 @@ class PingGraphTest extends TestCase
 
         $device = new Device();
         $device->setId(1);
-        $device->setName("device1");
+        $device->setName('device1');
         $device->setIp('8.8.8.8');
         $device->addSlaveGroup($slavegroup);
 
@@ -69,21 +69,21 @@ class PingGraphTest extends TestCase
 
         $device = new Device();
         $device->setId(2);
-        $device->setName("device2");
+        $device->setName('device2');
         $device->setIp('8.8.8.8');
         $device->addSlaveGroup($slavegroup);
 
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
         $storage = new RrdStorage('/tmp/', $logger->reveal());
 
-        $data = array();
+        $data = [];
         $data['loss'] = 0;
         $data['median'] = 0;
-        for($i = 1; $i < 16; $i++) {
+        for ($i = 1; $i < 16; ++$i) {
             $data["ping$i"] = 0;
         }
 
-        $storage->store($device, $probe, $slavegroup, date("U"), $data);
+        $storage->store($device, $probe, $slavegroup, date('U'), $data);
 
         $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
         $storageFactory->create()->willReturn($storage)->shouldBeCalledTimes(1);
@@ -109,21 +109,21 @@ class PingGraphTest extends TestCase
 
         $device = new Device();
         $device->setId(3);
-        $device->setName("device3");
+        $device->setName('device3');
         $device->setIp('8.8.8.8');
         $device->addSlaveGroup($slavegroup);
 
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
         $storage = new RrdStorage('/tmp/', $logger->reveal());
 
-        $data = array();
+        $data = [];
         $data['loss'] = 0;
         $data['median'] = 0;
-        for($i = 1; $i < 5; $i++) {
+        for ($i = 1; $i < 5; ++$i) {
             $data["ping$i"] = 0;
         }
 
-        $storage->store($device, $probe, $slavegroup, date("U"), $data);
+        $storage->store($device, $probe, $slavegroup, date('U'), $data);
 
         $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
         $storageFactory->create()->willReturn($storage)->shouldBeCalledTimes(1);
@@ -136,7 +136,7 @@ class PingGraphTest extends TestCase
     public function testDetailGraphWithoutRrd()
     {
         $storage = $this->prophesize('App\\Storage\\RrdStorage');
-        $storage->fileExists(Argument::type(Device::class), "/tmp/unknown.rrd")->shouldBeCalledTimes(1);
+        $storage->fileExists(Argument::type(Device::class), '/tmp/unknown.rrd')->shouldBeCalledTimes(1);
         $storage->getFilePath(Argument::any(), Argument::any(), Argument::any())->willReturn('/tmp/unknown.rrd')->shouldBeCalledTimes(1);
 
         $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
@@ -154,7 +154,7 @@ class PingGraphTest extends TestCase
 
         $device = new Device();
         $device->setId(4);
-        $device->setName("device4");
+        $device->setName('device4');
         $device->setIp('8.8.8.8');
         $device->addSlaveGroup($slavegroup);
 
@@ -185,21 +185,21 @@ class PingGraphTest extends TestCase
 
         $device = new Device();
         $device->setId(5);
-        $device->setName("device5");
+        $device->setName('device5');
         $device->setIp('8.8.8.8');
         $device->addSlaveGroup($slavegroup);
 
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
         $storage = new RrdStorage('/tmp/', $logger->reveal());
 
-        $data = array();
+        $data = [];
         $data['loss'] = 0;
         $data['median'] = 0;
-        for($i = 1; $i < 16; $i++) {
+        for ($i = 1; $i < 16; ++$i) {
             $data["ping$i"] = 0;
         }
 
-        $storage->store($device, $probe, $slavegroup, date("U"), $data);
+        $storage->store($device, $probe, $slavegroup, date('U'), $data);
 
         $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
         $storageFactory->create()->willReturn($storage)->shouldBeCalledTimes(1);
@@ -225,21 +225,21 @@ class PingGraphTest extends TestCase
 
         $device = new Device();
         $device->setId(6);
-        $device->setName("device6");
+        $device->setName('device6');
         $device->setIp('8.8.8.8');
         $device->addSlaveGroup($slavegroup);
 
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
         $storage = new RrdStorage('/tmp/', $logger->reveal());
 
-        $data = array();
+        $data = [];
         $data['loss'] = 0;
         $data['median'] = 0;
-        for($i = 1; $i < 5; $i++) {
+        for ($i = 1; $i < 5; ++$i) {
             $data["ping$i"] = 0;
         }
 
-        $storage->store($device, $probe, $slavegroup, date("U"), $data);
+        $storage->store($device, $probe, $slavegroup, date('U'), $data);
 
         $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
         $storageFactory->create()->willReturn($storage)->shouldBeCalledTimes(1);

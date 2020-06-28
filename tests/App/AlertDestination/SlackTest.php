@@ -2,7 +2,6 @@
 
 namespace App\Tests\App\AlertDestination;
 
-use App\AlertDestination\Monolog;
 use App\AlertDestination\Slack;
 use App\Entity\Alert;
 use App\Entity\AlertRule;
@@ -48,7 +47,7 @@ class SlackTest extends TestCase
         $logger->error(Argument::type('string'))->shouldBeCalledTimes(2);
 
         $slack = new Slack($client->reveal(), $logger->reveal());
-        $slack->setParameters(array('url' => $url, 'channel' => 'general'));
+        $slack->setParameters(['url' => $url, 'channel' => 'general']);
 
         $device = new Device();
         $device->setName('device');
@@ -74,7 +73,7 @@ class SlackTest extends TestCase
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
 
         $slack = new Slack($client->reveal(), $logger->reveal());
-        $slack->setParameters(array('url' => $url, 'channel' => 'general'));
+        $slack->setParameters(['url' => $url, 'channel' => 'general']);
 
         $device = new Device();
         $device->setName('device');
@@ -99,7 +98,7 @@ class SlackTest extends TestCase
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
 
         $slack = new Slack($client->reveal(), $logger->reveal());
-        $slack->setParameters(array('url' => $url, 'channel' => 'general'));
+        $slack->setParameters(['url' => $url, 'channel' => 'general']);
 
         $device = new Device();
         $device->setName('device');
