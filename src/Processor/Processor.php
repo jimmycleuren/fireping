@@ -39,15 +39,15 @@ abstract class Processor
         foreach ($rules as $alertRule) {
             if ($alertRule->getParent() == $parent) {
                 if ($alertRule->getProbe() == $probe) {
-                    $pattern   = explode(",", $alertRule->getPattern());
+                    $pattern = explode(',', $alertRule->getPattern());
                     $value = $this->cache->getPatternValues($device, $alertRule, $group);
                     if ($this->matchPattern($pattern, $value)) {
-                        $alert = $this->em->getRepository("App:Alert")->findOneBy(array(
+                        $alert = $this->em->getRepository('App:Alert')->findOneBy([
                             'device' => $device,
                             'alertRule' => $alertRule,
                             'slaveGroup' => $group,
-                            'active' => 1
-                        ));
+                            'active' => 1,
+                        ]);
                         if (!$alert) {
                             $alert = new Alert();
                             $alert->setDevice($device);
@@ -62,14 +62,13 @@ abstract class Processor
                         }
                         $alert->setLastseen(new \DateTime());
                         $this->em->persist($alert); //flush will be done in slavecontroller
-
                     } else {
-                        $alert = $this->em->getRepository("App:Alert")->findOneBy(array(
+                        $alert = $this->em->getRepository('App:Alert')->findOneBy([
                             'device' => $device,
                             'alertRule' => $alertRule,
                             'slaveGroup' => $group,
-                            'active' => 1
-                        ));
+                            'active' => 1,
+                        ]);
                         if ($alert) {
                             $alert->setActive(0);
                             //$this->em->persist($alert); //flush will be done in slavecontroller
@@ -95,27 +94,28 @@ abstract class Processor
     {
         $value = is_array($value) ? array_values($value) : [];
         if (count($pattern) != count($value)) {
-            $this->logger->warning("Number of values does not equal pattern: (".count($value)." vs ".count($pattern).")");
+            $this->logger->warning('Number of values does not equal pattern: ('.count($value).' vs '.count($pattern).')');
+
             return false;
         }
         $result = true;
-        foreach($pattern as $key => $field) {
-            switch($field[0]) {
-                case "=":
-                    $val = str_replace("=", "", $field);
-                    if($value[$key] != $val) {
+        foreach ($pattern as $key => $field) {
+            switch ($field[0]) {
+                case '=':
+                    $val = str_replace('=', '', $field);
+                    if ($value[$key] != $val) {
                         $result = false;
                     }
                     break;
-                case ">":
-                    $val = str_replace(">", "", $field);
-                    if($value[$key] <= $val) {
+                case '>':
+                    $val = str_replace('>', '', $field);
+                    if ($value[$key] <= $val) {
                         $result = false;
                     }
                     break;
-                case "<":
-                    $val = str_replace("<", "", $field);
-                    if($value[$key] >= $val) {
+                case '<':
+                    $val = str_replace('<', '', $field);
+                    if ($value[$key] >= $val) {
                         $result = false;
                     }
                     break;
@@ -128,18 +128,18 @@ abstract class Processor
     protected function cacheResults(Device $device, SlaveGroup $group, $timestamp, $datasources)
     {
         foreach ($device->getActiveAlertRules() as $alertRule) {
-            $pattern = explode(",", $alertRule->getPattern());
+            $pattern = explode(',', $alertRule->getPattern());
             $value = $this->cache->getPatternValues($device, $alertRule, $group);
             if (!is_array($value)) {
-                $value = array();
+                $value = [];
             }
             if (!isset($datasources[$alertRule->getDatasource()])) {
-                $this->logger->warning("Datasource ".$alertRule->getDatasource()." not found");
+                $this->logger->warning('Datasource '.$alertRule->getDatasource().' not found');
             }
             $value[$timestamp] = $datasources[$alertRule->getDatasource()];
 
             ksort($value);
-            while(count($value) > count($pattern)) {
+            while (count($value) > count($pattern)) {
                 reset($value);
                 unset($value[key($value)]);
             }
@@ -148,5 +148,5 @@ abstract class Processor
         }
     }
 
-    abstract function storeResult(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data);
+    abstract public function storeResult(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data);
 }

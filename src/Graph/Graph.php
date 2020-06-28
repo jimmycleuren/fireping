@@ -10,7 +10,7 @@ abstract class Graph
 {
     protected $storage;
 
-    abstract function getSummaryGraph(Device $device, Probe $probe, $start = -43200, $end = null, $width = 600);
+    abstract public function getSummaryGraph(Device $device, Probe $probe, $start = -43200, $end = null, $width = 600);
 
-    abstract function getDetailGraph(Device $device, Probe $probe, SlaveGroup $slavegroup, $start = -3600, $end = null, $debug = false);
+    abstract public function getDetailGraph(Device $device, Probe $probe, SlaveGroup $slavegroup, $start = -3600, $end = null, $debug = false);
 }

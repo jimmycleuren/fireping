@@ -10,8 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
- * Class CleanupCommand
- * @package App\Command
+ * Class CleanupCommand.
  */
 class CleanupCommand extends Command
 {
@@ -22,8 +21,6 @@ class CleanupCommand extends Command
 
     /**
      * CleanupCommand constructor.
-     * @param LoggerInterface $logger
-     * @param CleanupService $cleanupService
      */
     public function __construct(LoggerInterface $logger, CleanupService $cleanupService)
     {
@@ -33,7 +30,7 @@ class CleanupCommand extends Command
         parent::__construct();
     }
 
-    protected function configure() : void
+    protected function configure(): void
     {
         $this
             ->setDescription('Clean unused rrd-distributed files and folders');
@@ -41,9 +38,6 @@ class CleanupCommand extends Command
 
     /**
      * Executes the current command.
-     *
-     * @param InputInterface $input
-     * @param OutputInterface $output
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -54,7 +48,7 @@ class CleanupCommand extends Command
 
         $event = $stopwatch->stop('Cleanup');
 
-        $this->logger->info('Command took ' . $event->getDuration() . ' ms');
+        $this->logger->info('Command took '.$event->getDuration().' ms');
 
         return 0;
     }

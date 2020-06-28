@@ -4,9 +4,8 @@ namespace App\Tests;
 
 use Doctrine\DBAL\Driver\AbstractMySQLDriver;
 use Doctrine\ORM\Tools\SchemaTool;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
@@ -14,7 +13,7 @@ class MigrationTest extends WebTestCase
 {
     protected static $application;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         self::ensureKernelShutdown();
         $client = static::createClient();
@@ -32,7 +31,7 @@ class MigrationTest extends WebTestCase
                 $schemaTool->dropDatabase();
             }
         } catch (\Exception $e) {
-            $this->fail('Could not cleanup test database for migration test: ' . $e->getMessage());
+            $this->fail('Could not cleanup test database for migration test: '.$e->getMessage());
         }
     }
 
@@ -90,7 +89,7 @@ class MigrationTest extends WebTestCase
         $this->assertMatchesRegularExpression('/\d+ sql queries\n$/', $output);
     }
 
-    protected function tearDown() : void
+    protected function tearDown(): void
     {
         $output = $this->runCommand('doctrine:schema:create --force', '--no-interaction --env=test');
     }

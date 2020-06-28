@@ -2,7 +2,6 @@
 
 namespace App\Storage;
 
-
 class StorageFactory
 {
     private $rrdStorage;
@@ -19,7 +18,7 @@ class StorageFactory
     public function create()
     {
         if (!isset($_ENV['STORAGE'])) {
-            throw new \RuntimeException("Please specify the storage type in the STORAGE env variable");
+            throw new \RuntimeException('Please specify the storage type in the STORAGE env variable');
         }
         switch ($_ENV['STORAGE']) {
             case 'rrd':
@@ -29,7 +28,7 @@ class StorageFactory
             case 'rrddistributed':
                 return $this->rrdDistributedStorage;
             default:
-                throw new \RuntimeException("Could not create storage ".$_ENV['STORAGE']);
+                throw new \RuntimeException('Could not create storage '.$_ENV['STORAGE']);
         }
     }
 }

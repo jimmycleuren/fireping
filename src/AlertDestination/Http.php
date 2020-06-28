@@ -32,7 +32,7 @@ class Http extends AlertDestinationInterface
             return;
         }
         try {
-            $this->client->post($this->url, array(RequestOptions::JSON => $this->getData($alert, 'triggered')));
+            $this->client->post($this->url, [RequestOptions::JSON => $this->getData($alert, 'triggered')]);
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
         }
@@ -44,7 +44,7 @@ class Http extends AlertDestinationInterface
             return;
         }
         try {
-            $this->client->post($this->url, array(RequestOptions::JSON => $this->getData($alert, 'cleared')));
+            $this->client->post($this->url, [RequestOptions::JSON => $this->getData($alert, 'cleared')]);
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
         }
@@ -52,20 +52,20 @@ class Http extends AlertDestinationInterface
 
     protected function getData(Alert $alert, $state)
     {
-        return array(
-            'device' => array(
+        return [
+            'device' => [
                 'id' => $alert->getDevice()->getId(),
-                'name' => $alert->getDevice()->getName()
-            ),
-            'source' => array(
+                'name' => $alert->getDevice()->getName(),
+            ],
+            'source' => [
                 'id' => $alert->getSlaveGroup()->getId(),
-                'name' => $alert->getSlaveGroup()->getName()
-            ),
-            'rule' => array(
+                'name' => $alert->getSlaveGroup()->getName(),
+            ],
+            'rule' => [
                 'id' => $alert->getAlertRule()->getId(),
-                'name' => $alert->getAlertRule()->getName()
-            ),
-            'state' => $state
-        );
+                'name' => $alert->getAlertRule()->getName(),
+            ],
+            'state' => $state,
+        ];
     }
 }

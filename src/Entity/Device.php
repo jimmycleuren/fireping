@@ -9,7 +9,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Device
+ * Device.
  *
  * @ORM\Table(name="device")
  * @ORM\Entity(repositoryClass="App\Repository\DeviceRepository")
@@ -118,9 +118,8 @@ class Device
      */
     private $storageNode;
 
-
     /**
-     * Set id
+     * Set id.
      *
      * @param int $id
      *
@@ -134,7 +133,7 @@ class Device
     }
 
     /**
-     * Get id
+     * Get id.
      *
      * @return int
      * @Groups({"device"})
@@ -145,7 +144,7 @@ class Device
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
      *
@@ -160,7 +159,7 @@ class Device
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string
      * @Groups({"device"})
@@ -171,7 +170,7 @@ class Device
     }
 
     /**
-     * Set ip
+     * Set ip.
      *
      * @param string $ip
      *
@@ -186,7 +185,7 @@ class Device
     }
 
     /**
-     * Get ip
+     * Get ip.
      *
      * @return string
      * @Groups({"device"})
@@ -195,8 +194,9 @@ class Device
     {
         return $this->ip;
     }
+
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -208,7 +208,7 @@ class Device
     }
 
     /**
-     * Set domain
+     * Set domain.
      *
      * @param \App\Entity\Domain $domain
      *
@@ -223,7 +223,7 @@ class Device
     }
 
     /**
-     * Get domain
+     * Get domain.
      *
      * @return \App\Entity\Domain|null
      * @Groups({"device"})
@@ -234,9 +234,7 @@ class Device
     }
 
     /**
-     * Add slavegroup
-     *
-     * @param \App\Entity\SlaveGroup $slavegroup
+     * Add slavegroup.
      *
      * @return Device
      */
@@ -248,9 +246,7 @@ class Device
     }
 
     /**
-     * Remove slavegroup
-     *
-     * @param \App\Entity\SlaveGroup $slavegroup
+     * Remove slavegroup.
      */
     public function removeSlaveGroup(\App\Entity\SlaveGroup $slavegroup)
     {
@@ -258,7 +254,7 @@ class Device
     }
 
     /**
-     * Get slavegroups
+     * Get slavegroups.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
@@ -268,7 +264,7 @@ class Device
     }
 
     /**
-     * Get active slavegroups
+     * Get active slavegroups.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
@@ -278,20 +274,19 @@ class Device
             return $this->slavegroups;
         } else {
             $parent = $this->getDomain();
-            while ($parent != null) {
+            while (null != $parent) {
                 if ($parent->getSlaveGroups()->count() > 0) {
                     return $parent->getSlaveGroups();
                 }
                 $parent = $parent->getParent();
             }
         }
+
         return new ArrayCollection();
     }
 
     /**
-     * Add probe
-     *
-     * @param \App\Entity\Probe $probe
+     * Add probe.
      *
      * @return Device
      */
@@ -303,9 +298,7 @@ class Device
     }
 
     /**
-     * Remove probe
-     *
-     * @param \App\Entity\Probe $probe
+     * Remove probe.
      */
     public function removeProbe(\App\Entity\Probe $probe)
     {
@@ -313,7 +306,7 @@ class Device
     }
 
     /**
-     * Get probes
+     * Get probes.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
@@ -323,7 +316,7 @@ class Device
     }
 
     /**
-     * Get active probes
+     * Get active probes.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
@@ -333,20 +326,19 @@ class Device
             return $this->probes;
         } else {
             $parent = $this->getDomain();
-            while ($parent != null) {
+            while (null != $parent) {
                 if ($parent->getProbes()->count() > 0) {
                     return $parent->getProbes();
                 }
                 $parent = $parent->getParent();
             }
         }
+
         return new ArrayCollection();
     }
 
     /**
-     * Add alert
-     *
-     * @param \App\Entity\AlertRule $alertRule
+     * Add alert.
      *
      * @return Device
      */
@@ -358,9 +350,7 @@ class Device
     }
 
     /**
-     * Remove alert
-     *
-     * @param \App\Entity\AlertRule $alertRule
+     * Remove alert.
      */
     public function removeAlertRule(\App\Entity\AlertRule $alertRule)
     {
@@ -368,7 +358,7 @@ class Device
     }
 
     /**
-     * Get alert rules
+     * Get alert rules.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
@@ -378,7 +368,7 @@ class Device
     }
 
     /**
-     * Get active alert rules. Alert rules can be overridden on every level, so only the lowest level with alert rules configured will be used
+     * Get active alert rules. Alert rules can be overridden on every level, so only the lowest level with alert rules configured will be used.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
@@ -388,20 +378,19 @@ class Device
             return $this->alertRules;
         } else {
             $parent = $this->getDomain();
-            while ($parent != null) {
+            while (null != $parent) {
                 if ($parent->getAlertRules()->count() > 0) {
                     return $parent->getAlertRules();
                 }
                 $parent = $parent->getParent();
             }
         }
+
         return new ArrayCollection();
     }
 
     /**
-     * Add alert destination
-     *
-     * @param \App\Entity\AlertDestination $alertDestination
+     * Add alert destination.
      *
      * @return Device
      */
@@ -413,9 +402,7 @@ class Device
     }
 
     /**
-     * Remove alert destination
-     *
-     * @param \App\Entity\AlertDestination $alertDestination
+     * Remove alert destination.
      */
     public function removeAlertDestination(\App\Entity\AlertDestination $alertDestination)
     {
@@ -423,7 +410,7 @@ class Device
     }
 
     /**
-     * Get alert destinations
+     * Get alert destinations.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
@@ -433,7 +420,7 @@ class Device
     }
 
     /**
-     * Get active alert destinations. Alert destinations can be overridden on every level, so only the lowest level with alert destinations configured will be used
+     * Get active alert destinations. Alert destinations can be overridden on every level, so only the lowest level with alert destinations configured will be used.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
@@ -443,13 +430,14 @@ class Device
             return $this->alertDestinations;
         } else {
             $parent = $this->getDomain();
-            while ($parent != null) {
+            while (null != $parent) {
                 if ($parent->getAlertDestinations()->count() > 0) {
                     return $parent->getAlertDestinations();
                 }
                 $parent = $parent->getParent();
             }
         }
+
         return new ArrayCollection();
     }
 
@@ -464,10 +452,11 @@ class Device
 
         $alerts = $this->getAlerts();
         foreach ($alerts as $alert) {
-            if($alert->getActive()) {
+            if ($alert->getActive()) {
                 $result->add($alert);
             }
         }
+
         return $result;
     }
 
@@ -482,9 +471,7 @@ class Device
     }
 
     /**
-     * Add alert
-     *
-     * @param \App\Entity\Alert $alert
+     * Add alert.
      *
      * @return Device
      */
@@ -496,9 +483,7 @@ class Device
     }
 
     /**
-     * Remove alert
-     *
-     * @param \App\Entity\Alert $alert
+     * Remove alert.
      */
     public function removeAlert(\App\Entity\Alert $alert)
     {
@@ -506,14 +491,15 @@ class Device
     }
 
     /**
-     * Get root domain
+     * Get root domain.
      */
     public function getRootDomain()
     {
         $domain = $this->getDomain();
-        while ($domain->getParent() != null) {
+        while (null != $domain->getParent()) {
             $domain = $domain->getParent();
         }
+
         return $domain;
     }
 

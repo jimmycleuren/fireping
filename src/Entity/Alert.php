@@ -4,9 +4,8 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-
 /**
- * Alert
+ * Alert.
  *
  * @ORM\Table(name="alert", indexes={@ORM\Index(name="slaveresult", columns={"device_id", "alert_rule_id", "slave_group_id", "active"})})
  * @ORM\Entity(repositoryClass="App\Repository\AlertRepository")
@@ -48,7 +47,7 @@ class Alert
     private $slaveGroup;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="active", type="integer")
      */
@@ -68,9 +67,8 @@ class Alert
      */
     private $lastseen;
 
-
     /**
-     * Get id
+     * Get id.
      *
      * @return int
      */
@@ -80,7 +78,7 @@ class Alert
     }
 
     /**
-     * Set device
+     * Set device.
      *
      * @param Device $device
      *
@@ -94,7 +92,7 @@ class Alert
     }
 
     /**
-     * Get device
+     * Get device.
      *
      * @return Device
      */
@@ -104,7 +102,7 @@ class Alert
     }
 
     /**
-     * Set alertRule
+     * Set alertRule.
      *
      * @param AlertRule $alertRule
      *
@@ -118,7 +116,7 @@ class Alert
     }
 
     /**
-     * Get alertRule
+     * Get alertRule.
      *
      * @return AlertRule
      */
@@ -128,7 +126,7 @@ class Alert
     }
 
     /**
-     * Set slave group
+     * Set slave group.
      *
      * @param SlaveGroup $slaveGroup
      *
@@ -142,7 +140,7 @@ class Alert
     }
 
     /**
-     * Get slave group
+     * Get slave group.
      *
      * @return SlaveGroup
      */
@@ -152,9 +150,9 @@ class Alert
     }
 
     /**
-     * Set active
+     * Set active.
      *
-     * @param integer $active
+     * @param int $active
      *
      * @return Alert
      */
@@ -166,9 +164,9 @@ class Alert
     }
 
     /**
-     * Get active
+     * Get active.
      *
-     * @return integer
+     * @return int
      */
     public function getActive()
     {
@@ -176,7 +174,7 @@ class Alert
     }
 
     /**
-     * Set firstseen
+     * Set firstseen.
      *
      * @param \DateTime $firstseen
      *
@@ -190,7 +188,7 @@ class Alert
     }
 
     /**
-     * Get firstseen
+     * Get firstseen.
      *
      * @return \DateTime
      */
@@ -200,7 +198,7 @@ class Alert
     }
 
     /**
-     * Set lastseen
+     * Set lastseen.
      *
      * @param \DateTime $lastseen
      *
@@ -214,7 +212,7 @@ class Alert
     }
 
     /**
-     * Get lastseen
+     * Get lastseen.
      *
      * @return \DateTime
      */
@@ -228,6 +226,6 @@ class Alert
      */
     public function __toString()
     {
-        return $this->alertRule->getName()." on ".$this->device->getName()." from ".$this->slaveGroup->getName();
+        return $this->alertRule->getName().' on '.$this->device->getName().' from '.$this->slaveGroup->getName();
     }
 }

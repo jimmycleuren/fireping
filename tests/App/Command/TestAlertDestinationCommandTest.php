@@ -3,11 +3,8 @@
 namespace App\Tests\App\Command;
 
 use App\Command\TestAlertDestinationCommand;
-use App\Command\ValidateRrdCommand;
-use App\Entity\AlertDestination;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
-use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -31,10 +28,10 @@ class TestAlertDestinationCommandTest extends KernelTestCase
 
         $command = $application->find('app:alert:test');
         $commandTester = new CommandTester($command);
-        $commandTester->execute(array(
-            'command'  => $command->getName(),
-            'destination-id' => 9999
-        ));
+        $commandTester->execute([
+            'command' => $command->getName(),
+            'destination-id' => 9999,
+        ]);
 
         $this->assertEquals(1, $commandTester->getStatusCode());
     }
@@ -53,10 +50,10 @@ class TestAlertDestinationCommandTest extends KernelTestCase
 
         $command = $application->find('app:alert:test');
         $commandTester = new CommandTester($command);
-        $commandTester->execute(array(
-            'command'  => $command->getName(),
-            'destination-id' => 1
-        ));
+        $commandTester->execute([
+            'command' => $command->getName(),
+            'destination-id' => 1,
+        ]);
 
         $this->assertEquals(0, $commandTester->getStatusCode());
     }
