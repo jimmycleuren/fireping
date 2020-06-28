@@ -222,11 +222,13 @@ class Probe
      */
     public function getArguments(): ProbeArgumentsInterface
     {
+        $arguments = $this->arguments ?? '{}';
+
         switch ($this->type) {
-            case 'ping': return PingArguments::fromJsonString($this->arguments ?? '{}');
-            case 'traceroute': return TracerouteArguments::fromJsonString($this->arguments ?? '{}');
-            case 'http': return HttpArguments::fromJsonString($this->arguments ?? '{}');
-            default: return new NullArguments();
+            case 'ping': return PingArguments::fromJsonString($arguments);
+            case 'traceroute': return TracerouteArguments::fromJsonString($arguments);
+            case 'http': return HttpArguments::fromJsonString($arguments);
+            default: return NullArguments::fromJsonString($arguments);
         }
     }
 
