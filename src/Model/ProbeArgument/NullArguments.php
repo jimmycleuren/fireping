@@ -6,6 +6,10 @@ namespace App\Model\ProbeArgument;
 
 class NullArguments extends ProbeArguments
 {
+    private function __construct()
+    {
+    }
+
     public static function fromJsonString(string $json): ProbeArgumentsInterface
     {
         return new self();

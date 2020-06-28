@@ -14,7 +14,7 @@ class HttpArguments extends ProbeArguments
      */
     private $allowRedirectOptions;
 
-    public function __construct(bool $allowRedirectsEnabled, array $allowRedirectOptions)
+    private function __construct(bool $allowRedirectsEnabled, array $allowRedirectOptions)
     {
         $this->allowRedirectsEnabled = $allowRedirectsEnabled;
         $this->allowRedirectOptions = $allowRedirectOptions;
