@@ -12,10 +12,6 @@ class HttpArgumentsType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder
-            ->add('allowRedirectsEnabled', CheckboxType::class)
-            ->add('allowRedirectsOptions', TextType::class)
-        ;
     }
 
     public function getParent()
