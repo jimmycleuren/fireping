@@ -90,7 +90,7 @@ script:
   - vendor/bin/phpunit
   - composer phpstan
   # This checks that the source code follows the Symfony Code Syntax rules.
-  - '[[ $TRAVIS_PHP_VERSION != "7.4" ]] || ./vendor/bin/php-cs-fixer fix --diff --dry-run -v'
+  # - '[[ $TRAVIS_PHP_VERSION != "7.4" ]] || ./vendor/bin/php-cs-fixer fix --diff --dry-run -v'
   # This checks that the YAML config files contain no syntax errors.
   - ./bin/console lint:yaml config --parse-tags
   # This checks that the Twig template files contain no syntax errors.
