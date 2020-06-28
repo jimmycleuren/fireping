@@ -26,7 +26,7 @@ cache:
     # Cache composer packages so "composer install" is faster.
     - $HOME/.composer/cache/files
     # Cache the directory where Symfony stores its slightly modified version of PHPUnit.
-    #- ./bin/.phpunit
+    - ./bin/.phpunit
     # Cache the Symfony binary's directory so that it does not have to be reinstalled.
     - $HOME/.symfony
 
@@ -82,12 +82,12 @@ install:
   - php -r "echo ini_get('memory_limit').PHP_EOL;"
   # Install or update Composer packages including dev dependencies listed in require-dev.
   - COMPOSER_MEMORY_LIMIT=-1 composer $ACTION
-  # - ./bin/phpunit install
+  - ./bin/phpunit install
 
 script:
   - php bin/console cache:warmup --env=slave
   #- vendor/bin/phpunit --coverage-text --coverage-clover build/logs/clover.xml
-  - vendor/bin/phpunit
+  - ./bin/phpunit
   - composer phpstan
   # This checks that the source code follows the Symfony Code Syntax rules.
   # - '[[ $TRAVIS_PHP_VERSION != "7.4" ]] || ./vendor/bin/php-cs-fixer fix --diff --dry-run -v'
@@ -110,7 +110,7 @@ script:
 after_script:
   - |
     if [[ $COVERAGE == true && $TRAVIS_BRANCH == "master" ]]; then
-      vendor/bin/phpunit --coverage-clover coverage.xml
+      ./bin/phpunit --coverage-clover coverage.xml
       wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.1.0/php-coveralls.phar
       php php-coveralls.phar --verbose
     fi
