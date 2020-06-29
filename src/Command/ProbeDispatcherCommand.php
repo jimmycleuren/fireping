@@ -212,10 +212,7 @@ class ProbeDispatcherCommand extends Command
                         $delay = $counter % $probe->getSampleRate();
                         ++$counter;
                         $instruction['delay_execution'] = $delay;
-                        $this->sendInstruction(
-                            $instruction,
-                            $probe->getStep()
-                        );
+                        $this->sendInstruction($instruction, $probe->getStep());
                     }
                 }
             }
