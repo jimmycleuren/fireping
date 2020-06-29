@@ -182,6 +182,7 @@ class ProbeDispatcherCommand extends Command
                     'type' => GetConfigHttpWorkerCommand::class,
                     'delay_execution' => 0,
                     'etag' => $this->configuration->getEtag(),
+                    'timestamp' => $now,
                 ];
                 $this->sendInstruction($instruction);
             }
@@ -191,6 +192,7 @@ class ProbeDispatcherCommand extends Command
                     'type' => PostStatsHttpWorkerCommand::class,
                     'delay_execution' => 0,
                     'body' => $this->statsManager->getStats(),
+                    'timestamp' => $now,
                 ];
                 $this->sendInstruction($instruction, 30);
             }
@@ -212,6 +214,7 @@ class ProbeDispatcherCommand extends Command
                         $delay = $counter % $probe->getSampleRate();
                         ++$counter;
                         $instruction['delay_execution'] = $delay;
+                        $instruction['timestamp'] = $now;
                         $this->sendInstruction($instruction, $probe->getStep());
                     }
                 }
