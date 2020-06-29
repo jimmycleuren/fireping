@@ -142,8 +142,8 @@ class ProbeDispatcherCommand extends Command
         }
 
         $this->workerManager->initialize(
-            intval($input->getOption('workers')),
-            intval($input->getOption('maximum-workers')),
+            (int) $input->getOption('workers'),
+            (int) $input->getOption('maximum-workers'),
             $this->numberOfQueues
         );
 
