@@ -121,29 +121,12 @@ class ProbeWorkerCommand extends Command
      */
     protected function process(string $data)
     {
-        $timestamp = time();
-
-        if (!trim($data)) {
-            $this->sendResponse(
-                [
-                    'type' => 'exception',
-                    'status' => 400,
-                    'body' => [
-                        'timestamp' => $timestamp,
-                        'contents' => 'Input data not received.',
-                    ],
-                    'debug' => [
-                        'runtime' => time() - $timestamp,
-                        'request' => $data,
-                        'pid' => getmypid(),
-                    ],
-                ]
-            );
-
-            return;
-        }
-
         $data = json_decode($data, true);
+        $timestamp = $data['timestamp'] ?? null;
+
+        if ($timestamp === null || !is_int($timestamp)) {
+            throw new \RuntimeException('missing or invalid timestamp');
+        }
 
         if (!$data) {
             $this->sendResponse(
