@@ -39,7 +39,6 @@ class ProbeFixtures extends Fixture
         $probe->setStep(60);
         $probe->setSamples(5);
         $probe->setType('http');
-        $probe->setArguments("");
         $manager->persist($probe);
         $this->addReference('probe-http', $probe);
 
