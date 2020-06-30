@@ -3,8 +3,8 @@
 namespace App\EventSubscriber;
 
 use App\Entity\User;
-use KevinPapst\AdminLTEBundle\Event\ShowUserEvent;
 use KevinPapst\AdminLTEBundle\Event\NavbarUserEvent;
+use KevinPapst\AdminLTEBundle\Event\ShowUserEvent;
 use KevinPapst\AdminLTEBundle\Event\SidebarUserEvent;
 use KevinPapst\AdminLTEBundle\Model\NavBarUserLink;
 use KevinPapst\AdminLTEBundle\Model\UserModel;
@@ -48,17 +48,15 @@ class NavbarUserSubscriber implements EventSubscriberInterface
 
             $event->setUser($user);
             $event->setShowLogoutLink(false);
-            $event->addLink(new NavBarUserLink("Login", "app_login"));
-
+            $event->addLink(new NavBarUserLink('Login', 'app_login'));
         } else {
-
             /* @var $myUser User */
             $myUser = $this->security->getUser();
 
-            if ($this->session->get('debug') === true) {
-                $event->addLink(new NavBarUserLink("Hide graph trends", "debug"));
+            if (true === $this->session->get('debug')) {
+                $event->addLink(new NavBarUserLink('Hide graph trends', 'debug'));
             } else {
-                $event->addLink(new NavBarUserLink("Show graph trends", "debug"));
+                $event->addLink(new NavBarUserLink('Show graph trends', 'debug'));
             }
 
             $user = new UserModel();

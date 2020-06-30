@@ -18,15 +18,15 @@ class RrdStorage extends Storage
     protected $logger = null;
     protected $path = null;
 
-    protected $predictions = array(
-        array(
+    protected $predictions = [
+        [
             'function' => 'HWPREDICT',
             'rows' => 51840,
             'alpha' => 0.1,
             'beta' => 0.0035,
-            'period' => 1440
-        ),
-    );
+            'period' => 1440,
+        ],
+    ];
 
     public function __construct($path, LoggerInterface $logger)
     {
@@ -46,13 +46,13 @@ class RrdStorage extends Storage
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $path));
         }
 
-        $path = $this->path.$device->getId()."/".$probe->getId();
+        $path = $this->path.$device->getId().'/'.$probe->getId();
 
         if (!file_exists($path) && !mkdir($path) && !is_dir($path)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $path));
         }
 
-        return $this->path.$device->getId()."/".$probe->getId()."/".$group->getId().'.rrd';
+        return $this->path.$device->getId().'/'.$probe->getId().'/'.$group->getId().'.rrd';
     }
 
     public function store(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data, bool $addNewSources = false)
@@ -76,24 +76,24 @@ class RrdStorage extends Storage
 
         $start = $timestamp - 1;
 
-        $options = array(
-            "--start", $start,
-            "--step", $probe->getStep()
-        );
+        $options = [
+            '--start', $start,
+            '--step', $probe->getStep(),
+        ];
         foreach ($data as $key => $value) {
             $options[] = sprintf(
-                "DS:%s:%s:%s:%s:%s",
+                'DS:%s:%s:%s:%s:%s',
                 $key,
                 'GAUGE',
                 $probe->getStep() * 2,
                 0,
-                "U"
+                'U'
             );
         }
 
         foreach ($probe->getArchives() as $archive) {
             $options[] = sprintf(
-                "RRA:%s:0.5:%s:%s",
+                'RRA:%s:0.5:%s:%s',
                 strtoupper($archive->getFunction()),
                 $archive->getSteps(),
                 $archive->getRows()
@@ -102,7 +102,7 @@ class RrdStorage extends Storage
 
         foreach ($this->predictions as $value) {
             $options[] = sprintf(
-                "RRA:%s:%s:%s:%s:%s",
+                'RRA:%s:%s:%s:%s:%s',
                 strtoupper($value['function']),
                 $value['rows'],
                 $value['alpha'],
@@ -110,7 +110,6 @@ class RrdStorage extends Storage
                 $value['period']
             );
         }
-
 
         $return = rrd_create($filename, $options);
         if (!$return) {
@@ -126,27 +125,27 @@ class RrdStorage extends Storage
         $update = rrd_lastupdate($filename);
 
         if ($info['step'] != $probe->getStep()) {
-            throw new RrdException("Steps are not equal, ".$probe->getStep()." is configured, RRD file is using ".$info['step']);
+            throw new RrdException('Steps are not equal, '.$probe->getStep().' is configured, RRD file is using '.$info['step']);
         }
 
-        if ($update["last_update"] >= $timestamp) {
-            throw new WrongTimestampRrdException("RRD $filename last update was ".$update["last_update"].", cannot update at ".$timestamp);
+        if ($update['last_update'] >= $timestamp) {
+            throw new WrongTimestampRrdException("RRD $filename last update was ".$update['last_update'].', cannot update at '.$timestamp);
         }
 
         $originalData = $data;
 
         $sources = $this->getDatasources($device, $probe, $group);
 
-        $template = array();
-        $values = array($timestamp);
+        $template = [];
+        $values = [$timestamp];
 
-        foreach($sources as $source) {
+        foreach ($sources as $source) {
             $template[] = $source;
             if (isset($data[$source])) {
                 $values[] = $data[$source];
                 unset($data[$source]);
             } else {
-                $values[] = "U";
+                $values[] = 'U';
             }
         }
 
@@ -166,24 +165,24 @@ class RrdStorage extends Storage
 
                     $data = $originalData;
 
-                    $template = array();
-                    $values = array($timestamp);
+                    $template = [];
+                    $values = [$timestamp];
                     foreach ($sources as $source) {
                         $template[] = $source;
                         if (isset($data[$source])) {
                             $values[] = $data[$source];
                         } else {
-                            $values[] = "U";
+                            $values[] = 'U';
                         }
                     }
-                } catch(\Exception $e) {
+                } catch (\Exception $e) {
                     $this->logger->error($e->getMessage());
                 }
                 $lock->release();
             }
         }
 
-        $options = array("-t", implode(":", $template), implode(":", $values));
+        $options = ['-t', implode(':', $template), implode(':', $values)];
 
         $return = rrd_update($filename, $options);
 
@@ -201,8 +200,8 @@ class RrdStorage extends Storage
         $sources = [];
         $info = rrd_info($filename);
 
-        foreach($info as $key => $value) {
-            if(preg_match("/ds\[([\w]+)\]/", $key, $match)) {
+        foreach ($info as $key => $value) {
+            if (preg_match("/ds\[([\w]+)\]/", $key, $match)) {
                 if (!in_array($match[1], $sources)) {
                     $sources[] = $match[1];
                 }
@@ -215,15 +214,15 @@ class RrdStorage extends Storage
     protected function addDataSource(Device $device, $filename, $name, Probe $probe)
     {
         $ds = sprintf(
-            "DS:%s:%s:%s:%s:%s",
+            'DS:%s:%s:%s:%s:%s',
             $name,
             'GAUGE',
             $probe->getStep() * 2,
             0,
-            "U"
+            'U'
         );
 
-        $process = new Process(["rrdtool", "tune", $filename, $ds]);
+        $process = new Process(['rrdtool', 'tune', $filename, $ds]);
         $process->run();
         $error = $process->getErrorOutput();
 
@@ -236,7 +235,7 @@ class RrdStorage extends Storage
     {
         $path = $this->getFilePath($device, $probe, $group);
 
-        $result = rrd_fetch($path, array($function, "--start", $timestamp - $probe->getStep()));
+        $result = rrd_fetch($path, [$function, '--start', $timestamp - $probe->getStep()]);
 
         if (!$result || !$result['data'] || !isset($result['data'][$key]) || !$result['data'][$key]) {
             return null;
@@ -245,7 +244,7 @@ class RrdStorage extends Storage
         $value = reset($result['data'][$key]);
 
         if (is_nan($value)) {
-            return "U";
+            return 'U';
         }
 
         return $value;
@@ -275,19 +274,20 @@ class RrdStorage extends Storage
         $filename = $this->getFilePath($device, $probe, $group);
 
         $finder = new ExecutableFinder();
-        if (!$rrdtool = $finder->find("rrdtool")) {
-            throw new \Exception("rrdtool is not installed on this system.");
+        if (!$rrdtool = $finder->find('rrdtool')) {
+            throw new \Exception('rrdtool is not installed on this system.');
         }
 
         $info = rrd_info($filename);
 
         if (!$info || !$info['step']) {
             $this->logger->warning("Could not read info from $filename");
+
             return;
         }
 
         if ($info['step'] != $probe->getStep()) {
-            $this->logger->info("Running rrdtune to change step from ".$info['step']." to ".$probe->getStep());
+            $this->logger->info('Running rrdtune to change step from '.$info['step'].' to '.$probe->getStep());
         }
 
         $rra = $this->readArchives($filename);
@@ -295,7 +295,7 @@ class RrdStorage extends Storage
         //add new rra's
         foreach ($probe->getArchives() as $archive) {
             $found = false;
-            foreach($rra as $key => $item) {
+            foreach ($rra as $key => $item) {
                 if ($item['cf'] == $archive->getFunction() && $item['rows'] == $archive->getRows() && $item['pdp_per_row'] == $archive->getSteps()) {
                     $found = true;
                     unset($rra[$key]);
@@ -304,12 +304,12 @@ class RrdStorage extends Storage
             if (!$found) {
                 $this->logger->info("Adding $archive");
                 $rradef = sprintf(
-                    "RRA:%s:0.5:%s:%s",
+                    'RRA:%s:0.5:%s:%s',
                     strtoupper($archive->getFunction()),
                     $archive->getSteps(),
                     $archive->getRows()
                 );
-                $process = new Process(["rrdtool", "tune", $filename, $rradef]);
+                $process = new Process(['rrdtool', 'tune', $filename, $rradef]);
                 $process->run();
             }
         }
@@ -317,7 +317,7 @@ class RrdStorage extends Storage
         $rra = $this->readArchives($filename);
 
         //delete obsolete rra's
-        for($i = count($rra) - 1; $i >=0; $i--) {
+        for ($i = count($rra) - 1; $i >= 0; --$i) {
             $item = $rra[$i];
             $found = false;
             foreach ($probe->getArchives() as $archive) {
@@ -325,9 +325,9 @@ class RrdStorage extends Storage
                     $found = true;
                 }
             }
-            if (!$found && in_array($item['cf'], array("AVERAGE", "MIN", "MAX"))) {
-                $this->logger->info("Removing #$i " . $item['cf'] . "-" . $item['pdp_per_row'] . "-" . $item['rows']);
-                $process = new Process(["rrdtool", "tune", $filename, "DELRRA:$i"]);
+            if (!$found && in_array($item['cf'], ['AVERAGE', 'MIN', 'MAX'])) {
+                $this->logger->info("Removing #$i ".$item['cf'].'-'.$item['pdp_per_row'].'-'.$item['rows']);
+                $process = new Process(['rrdtool', 'tune', $filename, "DELRRA:$i"]);
                 $process->run();
             }
         }
@@ -339,12 +339,13 @@ class RrdStorage extends Storage
 
         if (!$info || !$info['step']) {
             $this->logger->warning("Could not read info from $filename");
+
             return;
         }
 
-        $rra = array();
+        $rra = [];
         foreach ($info as $key => $item) {
-            if (substr($key, 0, 3) == "rra") {
+            if ('rra' == substr($key, 0, 3)) {
                 preg_match("/rra\[([\d]+)\]\.([\w\_]+)/", $key, $matches);
                 $rra[$matches[1]][$matches[2]] = $item;
             }
@@ -355,7 +356,7 @@ class RrdStorage extends Storage
 
     public function graph(Device $device, $options)
     {
-        $imageFile = tempnam("/tmp", 'image');
+        $imageFile = tempnam('/tmp', 'image');
 
         $ret = rrd_graph($imageFile, $options);
         if (!$ret) {
@@ -370,7 +371,7 @@ class RrdStorage extends Storage
 
     public function getGraphValue(Device $device, $options)
     {
-        $tempFile = tempnam("/tmp", 'temp');
+        $tempFile = tempnam('/tmp', 'temp');
 
         $data = rrd_graph($tempFile, $options);
 
@@ -380,16 +381,16 @@ class RrdStorage extends Storage
 
         unlink($tempFile);
 
-        return (float)$data['calcpr'][0];
+        return (float) $data['calcpr'][0];
     }
 
     /**
      * @param string $path
-     * @return array|null|string
+     *
+     * @return array|string|null
      */
     public function listItems($path)
     {
-
         $process = new Process(['ls', $path]);
         $process->run(function ($type, $buffer) {
             if (Process::ERR === $type) {
@@ -397,8 +398,7 @@ class RrdStorage extends Storage
             }
         });
 
-        if(empty($process->getOutput())){
-
+        if (empty($process->getOutput())) {
             return null;
         }
 
@@ -409,36 +409,31 @@ class RrdStorage extends Storage
     }
 
     /**
-     * @param array $items
+     * @param array  $items
      * @param string $path
-     * @return array
      */
     private function concatCollection($items, $path): array
     {
-        return array_map(function($item) use ($path) {
+        return array_map(function ($item) use ($path) {
             return $this->concatPath($item, $path);
         }, $items);
     }
+
     /**
      * @param string $item
      * @param string $path
-     * @return string
      */
     private function concatPath($item, $path): string
     {
-        return $path . $item;
+        return $path.$item;
     }
 
-    /**
-     * @param array $items
-     * @param string $path
-     */
     public function remove(array $items, string $path)
     {
-        $path = rtrim($path, '/') . '/';
+        $path = rtrim($path, '/').'/';
         $items = $this->concatCollection($items, $path);
 
-        $process = new Process(array_merge(["rm", "-rf"], $items));
+        $process = new Process(array_merge(['rm', '-rf'], $items));
         $process->run(function ($type, $buffer) {
             if (Process::ERR === $type) {
                 $this->logger->info($buffer);

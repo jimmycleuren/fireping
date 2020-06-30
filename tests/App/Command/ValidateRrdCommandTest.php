@@ -4,7 +4,6 @@ namespace App\Tests\App\Command;
 
 use App\Command\ValidateRrdCommand;
 use Prophecy\PhpUnit\ProphecyTrait;
-use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -24,10 +23,10 @@ class ValidateRrdCommandTest extends KernelTestCase
 
         $command = $application->find('app:rrd:validate');
         $commandTester = new CommandTester($command);
-        $commandTester->execute(array(
-            'command'  => $command->getName(),
-            '--env' => 'slave'
-        ));
+        $commandTester->execute([
+            'command' => $command->getName(),
+            '--env' => 'slave',
+        ]);
 
         $this->assertEquals(0, $commandTester->getStatusCode());
     }

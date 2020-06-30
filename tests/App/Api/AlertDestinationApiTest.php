@@ -8,9 +8,9 @@ class AlertDestinationApiTest extends AbstractApiTest
 {
     public function testCollection()
     {
-       $this->client->request('GET', '/api/alert_destinations.json', array(), array(), array(
-            "HTTP_Accept" => "application/json"
-        ));
+        $this->client->request('GET', '/api/alert_destinations.json', [], [], [
+            'HTTP_Accept' => 'application/json',
+        ]);
 
         $response = $this->client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
@@ -23,16 +23,16 @@ class AlertDestinationApiTest extends AbstractApiTest
         $this->client->request(
             'POST',
             '/api/alert_destinations.json',
-            array(),
-            array(),
-            array(
-                "CONTENT_TYPE" => "application/json"
-            ),
-            json_encode(array(
-                'name' => "syslogtest",
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/json',
+            ],
+            json_encode([
+                'name' => 'syslogtest',
                 'type' => 'syslog',
-                'parameters' => array(),
-            ))
+                'parameters' => [],
+            ])
         );
 
         $response = $this->client->getResponse();

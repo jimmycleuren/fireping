@@ -1,13 +1,14 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Probe;
 
 use App\ShellCommand\CommandInterface;
-use GuzzleHttp\TransferStats;
-use Psr\Log\LoggerInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise;
+use GuzzleHttp\TransferStats;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class Http
@@ -38,7 +39,7 @@ class Http implements CommandInterface
 
         $result = [];
 
-        $options  = [
+        $options = [
             'timeout' => ($this->waitTime / 1000) * 0.9,
             'allow_redirects' => false,
             'headers' => [],
@@ -52,11 +53,12 @@ class Http implements CommandInterface
         $path = isset($this->args['path']) ? $this->args['path'] : "/";
         $protocol = isset($this->args['protocol']) ? $this->args['protocol'] : "http";
 
-        for($i = 0; $i < $this->samples; $i++) {
+        for ($i = 0; $i < $this->samples; ++$i) {
             $start = microtime(true);
             $promises = [];
             foreach ($this->targets as $target) {
                 $id = $target['id'];
+
                 $promises[$target['id']] = $client->getAsync($protocol.'://'.$target['ip'].$path, [
                     'on_stats' => function (TransferStats $stats) use ($id){
                         $this->times[$id] = $stats->getTransferTime() * 1000;
@@ -66,6 +68,7 @@ class Http implements CommandInterface
             }
 
             $responses = Promise\settle($promises)->wait();
+          
             foreach($responses as $id => $response) {
                 try {
                     if (isset($response['value'])) {

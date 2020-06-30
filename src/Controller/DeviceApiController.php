@@ -18,36 +18,36 @@ class DeviceApiController extends AbstractController
         $selectedProbe = null;
         $probes = $device->getActiveProbes();
         foreach ($probes as $probe) {
-            if ($probe->getType() == "ping") {
+            if ('ping' == $probe->getType()) {
                 $selectedProbe = $probe;
             }
         }
 
         if (!$selectedProbe) {
-            return new JsonResponse(array('message' => 'No ping probe assigned'), 500);
+            return new JsonResponse(['message' => 'No ping probe assigned'], 500);
         }
 
         $slavegroups = $device->getActiveSlaveGroups();
 
-        if ($slavegroups->count() == 0) {
-            return new JsonResponse(array('message' => 'No slavegroup assigned'), 500);
+        if (0 == $slavegroups->count()) {
+            return new JsonResponse(['message' => 'No slavegroup assigned'], 500);
         }
 
         $loss = $cache->fetch($device, $selectedProbe, $slavegroups[0], 'loss');
         $median = $cache->fetch($device, $selectedProbe, $slavegroups[0], 'median');
 
-        if ($median == "U") {
-            $status = "down";
+        if ('U' == $median) {
+            $status = 'down';
         } elseif ($median > 0) {
-            $status = "up";
+            $status = 'up';
         } else {
-            $status = "unknown";
+            $status = 'unknown';
         }
 
-        return new JsonResponse(array(
+        return new JsonResponse([
             'status' => $status,
             'loss' => $loss,
             'median' => $median,
-        ));
+        ]);
     }
 }

@@ -3,27 +3,24 @@
 namespace App\Graph;
 
 use App\Entity\Device;
-use App\Entity\Probe;
-use App\Exception\RrdException;
-use App\Storage\RrdStorage;
 use App\Storage\StorageFactory;
 
 abstract class RrdGraph extends Graph
 {
-    protected $colors = array(
-        array(
+    protected $colors = [
+        [
             'main' => '#0000ff',
-            'stddev' => '#0000ff44'
-        ),
-        array(
+            'stddev' => '#0000ff44',
+        ],
+        [
             'main' => '#00ff00',
-            'stddev' => '#00ff0044'
-        ),
-        array(
+            'stddev' => '#00ff0044',
+        ],
+        [
             'main' => '#ff0000',
-            'stddev' => '#ff000044'
-        ),
-    );
+            'stddev' => '#ff000044',
+        ],
+    ];
 
     public function __construct(StorageFactory $storageFactory)
     {
@@ -32,13 +29,13 @@ abstract class RrdGraph extends Graph
 
     protected function getMedianMax(Device $device, $start, $end, $file)
     {
-        $options = array(
-            "--start", $start,
-            "--end", $end,
-            "--width=600",
+        $options = [
+            '--start', $start,
+            '--end', $end,
+            '--width=600',
             "DEF:max=$file:median:AVERAGE",
-            "PRINT:max:MAX:%le"
-        );
+            'PRINT:max:MAX:%le',
+        ];
 
         $maxMedian = $this->storage->getGraphValue($device, $options);
 

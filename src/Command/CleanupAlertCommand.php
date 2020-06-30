@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Command;
@@ -17,10 +18,6 @@ class CleanupAlertCommand extends Command
     private $logger;
     private $cleanupAlert;
 
-    /**
-     * @param LoggerInterface $logger
-     * @param CleanupAlert $cleanupAlert
-     */
     public function __construct(LoggerInterface $logger, CleanupAlert $cleanupAlert)
     {
         $this->cleanupAlert = $cleanupAlert;
@@ -34,10 +31,6 @@ class CleanupAlertCommand extends Command
         $this->setDescription('Clean alerts when a device is moved from slavegroup/alertrule');
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $stopwatch = new Stopwatch();

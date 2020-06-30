@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: jimmyc
  * Date: 8/03/2018
- * Time: 21:11
+ * Time: 21:11.
  */
 
 namespace Tests\App\AlertDestination;

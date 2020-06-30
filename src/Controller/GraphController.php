@@ -8,18 +8,16 @@ use App\Entity\Slave;
 use App\Entity\SlaveGroup;
 use App\Graph\GraphFactory;
 use App\Graph\SlaveGraph;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 class GraphController extends AbstractController
 {
     /**
-     * @param Device $device
-     * @param GraphFactory $graphFactory
      * @return Response
      *
      * @Route("/api/graphs/summary/{id}", methods={"GET"})
@@ -50,12 +48,10 @@ class GraphController extends AbstractController
     }
 
     /**
-     * @param Device $device
-     * @param Probe $probe
+     * @param Device     $device
+     * @param Probe      $probe
      * @param SlaveGroup $slavegroup
-     * @param Request $request
-     * @param GraphFactory $graphFactory
-     * @param SessionInterface $session
+     *
      * @return Response
      *
      * @Route("/api/graphs/detail/{device_id}/{probe_id}/{slavegroup_id}", methods={"GET"})
@@ -80,16 +76,12 @@ class GraphController extends AbstractController
     /**
      * @Route("/api/graphs/slaves/{slave}/{type}", methods={"GET"})
      *
-     * @param Slave $slave
-     * @param string $type
-     * @param Request $request
-     * @param SlaveGraph $slaveGraph
      * @return Response
      */
     public function slaveAction(Slave $slave, string $type, Request $request, SlaveGraph $slaveGraph)
     {
         $start = $request->get('start') ?: -3600;
-        $end = $request->get('end') ?: date("U");
+        $end = $request->get('end') ?: date('U');
 
         $graph = $slaveGraph->getGraph($slave, $type, $start, $end);
         $response = new Response($graph, 200);

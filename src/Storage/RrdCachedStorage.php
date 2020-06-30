@@ -16,7 +16,7 @@ use Symfony\Component\Process\Process;
 
 class RrdCachedStorage extends RrdStorage
 {
-    private $daemon = "unix:///var/run/rrdcached.sock";
+    private $daemon = 'unix:///var/run/rrdcached.sock';
     private $connections = [];
 
     public function __construct($path, LoggerInterface $logger)
@@ -24,15 +24,15 @@ class RrdCachedStorage extends RrdStorage
         parent::__construct($path, $logger);
 
         $finder = new ExecutableFinder();
-        if (!$rrdtool = $finder->find("rrdtool", null, ['/usr/bin'])) {
-            throw new \Exception("rrdtool is not installed on this system.");
+        if (!$rrdtool = $finder->find('rrdtool', null, ['/usr/bin'])) {
+            throw new \Exception('rrdtool is not installed on this system.');
         }
     }
 
     private function connect($daemon)
     {
-        $socket = stristr($daemon, "unix://") ? $daemon : "tcp://$daemon";
-        if(!isset($this->connections[$daemon]) || !$this->connections[$daemon]) {
+        $socket = stristr($daemon, 'unix://') ? $daemon : "tcp://$daemon";
+        if (!isset($this->connections[$daemon]) || !$this->connections[$daemon]) {
             $this->connections[$daemon] = stream_socket_client($socket, $errno, $errstr, 5);
             stream_set_timeout($this->connections[$daemon], 5);
         }
@@ -40,17 +40,18 @@ class RrdCachedStorage extends RrdStorage
 
     private function send($command, $daemon)
     {
-        if(!fwrite($this->connections[$daemon], $command.PHP_EOL)) {
-            throw new RrdException("Could not write to rrdcached");
+        if (!fwrite($this->connections[$daemon], $command.PHP_EOL)) {
+            throw new RrdException('Could not write to rrdcached');
         }
     }
+
     private function read($daemon)
     {
         $line = fgets($this->connections[$daemon], 8192);
         $result = $line;
-        $code = explode(" ", $line);
+        $code = explode(' ', $line);
         $code = $code[0];
-        for($i = 0; $i < $code; $i++) {
+        for ($i = 0; $i < $code; ++$i) {
             $result .= "\n".fgets($this->connections[$daemon], 8192);
         }
 
@@ -59,17 +60,14 @@ class RrdCachedStorage extends RrdStorage
 
     public function getFilePath(Device $device, Probe $probe, SlaveGroup $group)
     {
-        return $device->getId()."/".$probe->getId()."/".$group->getId().'.rrd';
+        return $device->getId().'/'.$probe->getId().'/'.$group->getId().'.rrd';
     }
 
     /**
-     * @param Device $device
-     * @param Probe $probe
-     * @param SlaveGroup $group
-     * @param int $timestamp
-     * @param array $data
-     * @param bool $addNewSources
+     * @param int    $timestamp
+     * @param array  $data
      * @param string $daemon
+     *
      * @throws RrdException
      * @throws WrongTimestampRrdException
      */
@@ -93,9 +91,10 @@ class RrdCachedStorage extends RrdStorage
 
         $this->send("INFO $path", $daemon);
         $message = $this->read($daemon);
-        if (stristr($message, "rrd_version")) {
+        if (stristr($message, 'rrd_version')) {
             return true;
         }
+
         return false;
     }
 
@@ -109,24 +108,24 @@ class RrdCachedStorage extends RrdStorage
 
         $start = $timestamp - 1;
 
-        $options = array(
-            "-b", $start,
-            "-s", $probe->getStep()
-        );
+        $options = [
+            '-b', $start,
+            '-s', $probe->getStep(),
+        ];
         foreach ($data as $key => $value) {
             $options[] = sprintf(
-                "DS:%s:%s:%s:%s:%s",
+                'DS:%s:%s:%s:%s:%s',
                 $key,
                 'GAUGE',
                 $probe->getStep() * 2,
                 0,
-                "U"
+                'U'
             );
         }
 
         foreach ($probe->getArchives() as $archive) {
             $options[] = sprintf(
-                "RRA:%s:0.5:%s:%s",
+                'RRA:%s:0.5:%s:%s',
                 strtoupper($archive->getFunction()),
                 $archive->getSteps(),
                 $archive->getRows()
@@ -135,7 +134,7 @@ class RrdCachedStorage extends RrdStorage
 
         foreach ($this->predictions as $value) {
             $options[] = sprintf(
-                "RRA:%s:%s:%s:%s:%s",
+                'RRA:%s:%s:%s:%s:%s',
                 strtoupper($value['function']),
                 $value['rows'],
                 $value['alpha'],
@@ -144,9 +143,9 @@ class RrdCachedStorage extends RrdStorage
             );
         }
 
-        $this->send("CREATE $filename ".implode(" ", $options), $daemon);
+        $this->send("CREATE $filename ".implode(' ', $options), $daemon);
         $message = $this->read($daemon);
-        if (!stristr($message, "0 RRD created OK")) {
+        if (!stristr($message, '0 RRD created OK')) {
             throw new RrdException(trim($message));
         }
     }
@@ -159,18 +158,16 @@ class RrdCachedStorage extends RrdStorage
         if (!trim($message)) {
             throw new RrdException(trim($message));
         }
-        $timestamp = explode(" ", $message)[1];
+        $timestamp = explode(' ', $message)[1];
+
         return $timestamp;
     }
 
     /**
-     * @param Device $device
-     * @param Probe $probe
-     * @param SlaveGroup $group
-     * @param int $timestamp
-     * @param array $data
-     * @param bool $addNewSources
+     * @param int    $timestamp
+     * @param array  $data
      * @param string $daemon
+     *
      * @throws RrdException
      * @throws WrongTimestampRrdException
      */
@@ -184,20 +181,20 @@ class RrdCachedStorage extends RrdStorage
 
         $last = $this->getLastUpdate($filename, $daemon);
         if ($last >= $timestamp) {
-            throw new WrongTimestampRrdException("RRD $filename last update was ".$last.", cannot update at ".$timestamp);
+            throw new WrongTimestampRrdException("RRD $filename last update was ".$last.', cannot update at '.$timestamp);
         }
 
         $originalData = $data;
 
         $sources = $this->getDatasources($device, $probe, $group, $daemon);
 
-        $values = array($timestamp);
-        foreach($sources as $source) {
+        $values = [$timestamp];
+        foreach ($sources as $source) {
             if (isset($data[$source])) {
                 $values[] = $data[$source];
                 unset($data[$source]);
             } else {
-                $values[] = "U";
+                $values[] = 'U';
             }
         }
 
@@ -216,24 +213,24 @@ class RrdCachedStorage extends RrdStorage
                     $sources = $this->getDatasources($device, $probe, $group, $daemon);
 
                     $data = $originalData;
-                    $values = array($timestamp);
+                    $values = [$timestamp];
                     foreach ($sources as $source) {
                         if (isset($data[$source])) {
                             $values[] = $data[$source];
                         } else {
-                            $values[] = "U";
+                            $values[] = 'U';
                         }
                     }
-                } catch(\Exception $e) {
+                } catch (\Exception $e) {
                     $this->logger->error($e->getMessage());
                 }
                 $lock->release();
             }
         }
 
-        $this->send("UPDATE $filename ".implode(":", $values), $daemon);
+        $this->send("UPDATE $filename ".implode(':', $values), $daemon);
         $message = $this->read($daemon);
-        if (!stristr($message, "0 errors")) {
+        if (!stristr($message, '0 errors')) {
             $this->logger->warning($message);
         }
     }
@@ -250,12 +247,12 @@ class RrdCachedStorage extends RrdStorage
 
         $this->connect($daemon);
 
-        $sources = array();
+        $sources = [];
         $this->send("INFO $filename", $daemon);
         $message = $this->read($daemon);
         $message = explode("\n", $message);
-        foreach($message as $line) {
-            if(preg_match("/ds\[([\w]+)\]/", $line, $match)) {
+        foreach ($message as $line) {
+            if (preg_match("/ds\[([\w]+)\]/", $line, $match)) {
                 if (!in_array($match[1], $sources)) {
                     $sources[] = $match[1];
                 }
@@ -271,13 +268,13 @@ class RrdCachedStorage extends RrdStorage
             $daemon = $this->daemon;
         }
 
-        $imageFile = tempnam("/tmp", 'image');
+        $imageFile = tempnam('/tmp', 'image');
 
-        foreach($options as $key => $option) {
+        foreach ($options as $key => $option) {
             $options[$key] = '"'.$option.'"';
         }
 
-        $process = Process::fromShellCommandline("rrdtool graph $imageFile -d $daemon ".implode(" ", $options));
+        $process = Process::fromShellCommandline("rrdtool graph $imageFile -d $daemon ".implode(' ', $options));
         $process->run();
         $error = $process->getErrorOutput();
 
@@ -292,15 +289,14 @@ class RrdCachedStorage extends RrdStorage
     }
 
     /**
-     * TODO: implement further
-     * @param Device $device
-     * @param Probe $probe
-     * @param SlaveGroup $group
-     * @param int $timestamp
+     * TODO: implement further.
+     *
+     * @param int    $timestamp
      * @param string $key
      * @param string $function
      * @param string $daemon
-     * @return mixed|null|string|void
+     *
+     * @return mixed|string|void|null
      */
     public function fetch(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $key, $function, $daemon = null)
     {
@@ -389,9 +385,9 @@ class RrdCachedStorage extends RrdStorage
             $daemon = $this->daemon;
         }
 
-        $tempFile = tempnam("/tmp", 'temp');
+        $tempFile = tempnam('/tmp', 'temp');
 
-        $process = new Process(array_merge(["rrdtool", "graph", $tempFile, "-d", $daemon], $options));
+        $process = new Process(array_merge(['rrdtool', 'graph', $tempFile, '-d', $daemon], $options));
         $process->run();
         $data = $process->getOutput();
         $error = $process->getErrorOutput();
@@ -404,24 +400,24 @@ class RrdCachedStorage extends RrdStorage
 
         $data = explode("\n", $data);
 
-        return (float)$data[1];
+        return (float) $data[1];
     }
 
     protected function addDataSource(Device $device, $filename, $name, Probe $probe)
     {
         $ds = sprintf(
-            "DS:%s:%s:%s:%s:%s",
+            'DS:%s:%s:%s:%s:%s',
             $name,
             'GAUGE',
             $probe->getStep() * 2,
             0,
-            "U"
+            'U'
         );
 
         $process = new Process(['ls', '-al', '/tmp/fireping/rrd']);
         $process->run();
 
-        $process = new Process(["rrdtool", "tune", $this->path.$filename, $ds]);
+        $process = new Process(['rrdtool', 'tune', $this->path.$filename, $ds]);
         $process->run();
         $error = $process->getErrorOutput();
 
@@ -436,7 +432,7 @@ class RrdCachedStorage extends RrdStorage
         $this->send('FLUSH '.$filename, $daemon);
         $message = $this->read($daemon);
 
-        if (!stristr($message, "0 Successfully flushed")) {
+        if (!stristr($message, '0 Successfully flushed')) {
             $this->logger->warning($message);
         }
     }
