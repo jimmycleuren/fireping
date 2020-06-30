@@ -15,7 +15,6 @@ class ProbeFixtures extends Fixture
         $probe->setStep(60);
         $probe->setSamples(15);
         $probe->setType('ping');
-        $probe->setArguments('');
         $manager->persist($probe);
         $this->addReference('probe-ping', $probe);
 
@@ -24,7 +23,6 @@ class ProbeFixtures extends Fixture
         $probe->setStep(60);
         $probe->setSamples(15);
         $probe->setType('traceroute');
-        $probe->setArguments('');
         $manager->persist($probe);
         $this->addReference('probe-traceroute', $probe);
 
@@ -33,7 +31,6 @@ class ProbeFixtures extends Fixture
         $probe->setStep(60);
         $probe->setSamples(15);
         $probe->setType('dummy');
-        $probe->setArguments('');
         $manager->persist($probe);
         $this->addReference('probe-dummy', $probe);
 
