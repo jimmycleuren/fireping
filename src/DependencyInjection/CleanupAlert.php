@@ -29,8 +29,7 @@ class CleanupAlert
         LoggerInterface $logger,
         AlertRepository $alertRepository,
         EntityManagerInterface $entityManager
-    )
-    {
+    ) {
         $this->alertRepository = $alertRepository;
         $this->entityManager = $entityManager;
         $this->logger = $logger;
