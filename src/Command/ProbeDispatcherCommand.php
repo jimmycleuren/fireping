@@ -142,8 +142,8 @@ class ProbeDispatcherCommand extends Command
         }
 
         $this->workerManager->initialize(
-            intval($input->getOption('workers')),
-            intval($input->getOption('maximum-workers')),
+            (int) $input->getOption('workers'),
+            (int) $input->getOption('maximum-workers'),
             $this->numberOfQueues
         );
 
@@ -175,20 +175,24 @@ class ProbeDispatcherCommand extends Command
         $this->loop = Factory::create();
 
         $this->loop->addPeriodicTimer(1, function () {
-            if (time() % 120 === $this->randomFactor) {
+            $now = time();
+
+            if ($now % 120 === $this->randomFactor) {
                 $instruction = [
                     'type' => GetConfigHttpWorkerCommand::class,
                     'delay_execution' => 0,
                     'etag' => $this->configuration->getEtag(),
+                    'timestamp' => $now,
                 ];
                 $this->sendInstruction($instruction);
             }
 
-            if (time() % 60 === (int) floor($this->randomFactor / 2)) {
+            if ($now % 60 === (int) floor($this->randomFactor / 2)) {
                 $instruction = [
                     'type' => PostStatsHttpWorkerCommand::class,
                     'delay_execution' => 0,
                     'body' => $this->statsManager->getStats(),
+                    'timestamp' => $now,
                 ];
                 $this->sendInstruction($instruction, 30);
             }
@@ -198,7 +202,7 @@ class ProbeDispatcherCommand extends Command
             }
 
             foreach ($this->configuration->getProbes() as $probe) {
-                $ready = 0 === time() % $probe->getStep();
+                $ready = 0 === $now % $probe->getStep();
 
                 if ($ready) {
                     $instructions = new Instruction($probe, $this->devicesPerWorker);
@@ -210,11 +214,8 @@ class ProbeDispatcherCommand extends Command
                         $delay = $counter % $probe->getSampleRate();
                         ++$counter;
                         $instruction['delay_execution'] = $delay;
-                        $instruction['guid'] = sha1(random_bytes(25));
-                        $this->sendInstruction(
-                            $instruction,
-                            $probe->getStep()
-                        );
+                        $instruction['timestamp'] = $now;
+                        $this->sendInstruction($instruction, $probe->getStep());
                     }
                 }
             }
