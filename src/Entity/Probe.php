@@ -3,6 +3,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Model\ProbeArgument\HttpArguments;
+use App\Model\ProbeArgument\NullArguments;
+use App\Model\ProbeArgument\PingArguments;
+use App\Model\ProbeArgument\ProbeArgumentsInterface;
+use App\Model\ProbeArgument\TracerouteArguments;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -40,7 +45,7 @@ class Probe
      * @ORM\Column(name="type", type="string", length=255)
      * @Assert\NotBlank
      */
-    private $type;
+    private $type = 'ping';
 
     /**
      * @var int
@@ -63,7 +68,7 @@ class Probe
      *
      * @ORM\Column(name="arguments", type="text")
      */
-    private $arguments;
+    private $arguments = '{}';
 
     /**
      * @var ArrayCollection
@@ -201,27 +206,34 @@ class Probe
     }
 
     /**
-     * Set arguments.
-     *
-     * @param string $arguments
+     * @param ProbeArgumentsInterface $arguments
      *
      * @return Probe
      */
-    public function setArguments($arguments)
+    public function setArguments(ProbeArgumentsInterface $arguments): Probe
     {
-        $this->arguments = $arguments;
+        $this->arguments = json_encode($arguments->asArray(), JSON_THROW_ON_ERROR, 512);
 
         return $this;
     }
 
     /**
-     * Get arguments.
-     *
-     * @return string
+     * @return ProbeArgumentsInterface
      */
-    public function getArguments()
+    public function getArguments(): ProbeArgumentsInterface
     {
-        return $this->arguments;
+        $arguments = $this->arguments ?? '{}';
+
+        switch ($this->type) {
+            case 'ping':
+                return PingArguments::fromJsonString($arguments);
+            case 'traceroute':
+                return TracerouteArguments::fromJsonString($arguments);
+            case 'http':
+                return HttpArguments::fromJsonString($arguments);
+            default:
+                return NullArguments::fromJsonString($arguments);
+        }
     }
 
     /**

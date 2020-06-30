@@ -1,0 +1,9 @@
+{# @var ea \EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext #}
+{# @var field \EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto #}
+{# @var entity \EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto #}
+<dl>
+    {% for key, value in field.value.asArray %}
+        <dt>{{ key }}</dt>
+        <dd>{{ value is null ? 'disabled' : value }}</dd>
+    {% endfor %}
+</dl>
