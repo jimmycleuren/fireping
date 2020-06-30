@@ -25,7 +25,7 @@ This shows all the domains with active alerts. Clicking the title will show you 
 The list of all the storage nodes can be found here
 
 ## Admin
-Will redirect to the [admin dashboard](/fireping/docs/how-to/admin).
+Will redirect to the [admin dashboard](/docs/how-to/admin).
 
 ## Login
 The tab where you can log in.

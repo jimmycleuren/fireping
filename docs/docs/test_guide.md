@@ -11,7 +11,7 @@ After setting up a master and adding a slave you can add a test domain.
 
 2. Login with the admin account you created while setting up the master by clicking on the `Login` tab.
 
-3. Now click on the `Admin` tab. Here you can configure all Probes and more (All explained in the [Admin Guide](/fireping/docs/how-to/admin)).
+3. Now click on the `Admin` tab. Here you can configure all Probes and more (All explained in the [Admin Guide](/docs/how-to/admin)).
 
 4. Add a new Domain. (click on `Domain > Add Domain`).
 ![Domain settings](/assets/images/domain.png)
