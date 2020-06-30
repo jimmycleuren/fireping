@@ -121,10 +121,24 @@ class ProbeWorkerCommand extends Command
      */
     protected function process(string $data)
     {
+        $startOfWork = time();
         $data = json_decode($data, true);
         $timestamp = $data['timestamp'] ?? null;
 
         if ($timestamp === null || !is_int($timestamp)) {
+            $this->sendResponse([
+                'type' => 'exception',
+                'status' => 400,
+                'body' => [
+                    'timestamp' => $timestamp,
+                    'contents' => 'Missing timestamp',
+                ],
+                'debug' => [
+                    'runtime' => time() - $startOfWork,
+                    'request' => $data,
+                    'pid' => getmypid(),
+                ],
+            ]);
             throw new \RuntimeException('missing or invalid timestamp');
         }
 
@@ -138,7 +152,7 @@ class ProbeWorkerCommand extends Command
                         'contents' => 'Invalid JSON Received.',
                     ],
                     'debug' => [
-                        'runtime' => time() - $timestamp,
+                        'runtime' => time() - $startOfWork,
                         'request' => $data,
                         'pid' => getmypid(),
                     ],
@@ -158,7 +172,7 @@ class ProbeWorkerCommand extends Command
                         'contents' => 'Command type missing.',
                     ],
                     'debug' => [
-                        'runtime' => time() - $timestamp,
+                        'runtime' => time() - $startOfWork,
                         'request' => $data,
                         'pid' => getmypid(),
                     ],
@@ -184,7 +198,7 @@ class ProbeWorkerCommand extends Command
                         'contents' => $e->getMessage(),
                     ],
                     'debug' => [
-                            'runtime' => time() - $timestamp,
+                            'runtime' => time() - $startOfWork,
                             'request' => $data,
                             'pid' => getmypid(),
                     ],
@@ -212,7 +226,7 @@ class ProbeWorkerCommand extends Command
                             'raw' => $shellOutput,
                         ],
                         'debug' => [
-                            'runtime' => time() - $timestamp,
+                            'runtime' => time() - $startOfWork,
                             'pid' => getmypid(),
                         ],
                     ]);
@@ -231,7 +245,7 @@ class ProbeWorkerCommand extends Command
                             'contents' => $shellOutput['contents'],
                         ],
                         'debug' => [
-                            'runtime' => time() - $timestamp,
+                            'runtime' => time() - $startOfWork,
                             'pid' => getmypid(),
                         ],
                     ]);
@@ -254,7 +268,7 @@ class ProbeWorkerCommand extends Command
                             ],
                         ],
                         'debug' => [
-                            'runtime' => time() - $timestamp,
+                            'runtime' => time() - $startOfWork,
                             //'request' => $data,
                             'pid' => getmypid(),
                         ],
@@ -270,7 +284,7 @@ class ProbeWorkerCommand extends Command
                                 'contents' => 'No answer defined for '.$data['type'],
                             ],
                             'debug' => [
-                                'runtime' => time() - $timestamp,
+                                'runtime' => time() - $startOfWork,
                                 'request' => $data,
                                 'pid' => getmypid(),
                             ],
@@ -287,7 +301,7 @@ class ProbeWorkerCommand extends Command
                         'contents' => $e->getMessage().' on '.$e->getFile().':'.$e->getLine(),
                     ],
                     'debug' => [
-                        'runtime' => time() - $timestamp,
+                        'runtime' => time() - $startOfWork,
                         'request' => $data,
                         'pid' => getmypid(),
                     ],
