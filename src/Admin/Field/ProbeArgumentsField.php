@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Admin\Field;
 
-use App\Form\Type\PingArgumentsType;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FieldTrait;
 

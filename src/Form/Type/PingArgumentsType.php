@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Form\Type;
@@ -14,12 +15,12 @@ class PingArgumentsType extends AbstractType
         $builder
             ->add('retries', IntegerType::class, [
                 'required' => false,
-                'row_attr' => ['class' => 'field-number']
+                'row_attr' => ['class' => 'field-number'],
             ])
             ->add('packetSize', IntegerType::class, [
                 'required' => false,
                 'label' => 'Packet Size',
-                'row_attr' => ['class' => 'field-number']
+                'row_attr' => ['class' => 'field-number'],
             ]);
     }
 

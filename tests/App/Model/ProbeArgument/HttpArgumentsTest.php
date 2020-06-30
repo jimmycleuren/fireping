@@ -22,10 +22,10 @@ class HttpArgumentsTest extends TestCase
     {
         return [
             ['{}', ['host' => null, 'path' => null, 'protocol' => null]],
-            ['{"host": "www.google.be"}', ['host' => "www.google.be", 'path' => null, 'protocol' => null]],
-            ['{"path": "/test"}', ['host' => null, 'path' => "/test", 'protocol' => null]],
-            ['{"protocol": "https"}', ['host' => null, 'path' => null, 'protocol' => "https"]],
-            ['{"host": "www.google.be", "path": "/test", "protocol": "https"}', ['host' => "www.google.be", 'path' => "/test", 'protocol' => "https"]],
+            ['{"host": "www.google.be"}', ['host' => 'www.google.be', 'path' => null, 'protocol' => null]],
+            ['{"path": "/test"}', ['host' => null, 'path' => '/test', 'protocol' => null]],
+            ['{"protocol": "https"}', ['host' => null, 'path' => null, 'protocol' => 'https']],
+            ['{"host": "www.google.be", "path": "/test", "protocol": "https"}', ['host' => 'www.google.be', 'path' => '/test', 'protocol' => 'https']],
         ];
     }
 }

@@ -125,7 +125,7 @@ class ProbeWorkerCommand extends Command
         $data = json_decode($data, true);
         $timestamp = $data['timestamp'] ?? null;
 
-        if ($timestamp === null || !is_int($timestamp)) {
+        if (null === $timestamp || !is_int($timestamp)) {
             $this->sendResponse([
                 'type' => 'exception',
                 'status' => 400,

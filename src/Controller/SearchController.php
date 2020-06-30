@@ -34,7 +34,7 @@ class SearchController extends AbstractController
             WHERE d.name LIKE '%".$q."%'
         ")->getResult();
 
-        $domains = $em->getRepository(Domain::class)->findBy(array('parent' => null), array('name' => 'ASC'));
+        $domains = $em->getRepository(Domain::class)->findBy(['parent' => null], ['name' => 'ASC']);
 
         return $this->render('search/index.html.twig', [
             'q' => $q,

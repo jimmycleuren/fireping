@@ -62,9 +62,6 @@ class SlaveController extends AbstractController
     /**
      * @Route("/slaves/{id}", name="slave_detail", methods={"GET"})
      *
-     * @param Slave $slave
-     * @param DeviceRepository $deviceRepository
-     * @param EntityManagerInterface $entityManager
      * @return Response
      */
     public function detailAction(Slave $slave, DeviceRepository $deviceRepository, EntityManagerInterface $entityManager)

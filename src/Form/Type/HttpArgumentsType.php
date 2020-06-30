@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Form\Type;
@@ -15,11 +16,11 @@ class HttpArgumentsType extends AbstractType
         $builder
             ->add('host', TextType::class, [
                 'required' => false,
-                'help' => "Override the host header, default: hostname/ip from device"
+                'help' => 'Override the host header, default: hostname/ip from device',
             ])
             ->add('path', TextType::class, [
                 'required' => false,
-                'help' => "Override the path, default: /"
+                'help' => 'Override the path, default: /',
             ])
             ->add('protocol', ChoiceType::class, [
                 'choices' => ['http' => 'http', 'https' => 'https'],

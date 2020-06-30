@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Model\ProbeArgument;
@@ -6,10 +7,11 @@ namespace App\Model\ProbeArgument;
 abstract class ProbeArguments implements ProbeArgumentsInterface, \ArrayAccess
 {
     abstract public static function fromJsonString(string $json): ProbeArgumentsInterface;
+
     abstract public function asArray(): array;
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function offsetSet($offset, $value)
     {
@@ -17,7 +19,7 @@ abstract class ProbeArguments implements ProbeArgumentsInterface, \ArrayAccess
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function offsetGet($offset)
     {
@@ -25,7 +27,7 @@ abstract class ProbeArguments implements ProbeArgumentsInterface, \ArrayAccess
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function offsetExists($offset)
     {
@@ -33,7 +35,7 @@ abstract class ProbeArguments implements ProbeArgumentsInterface, \ArrayAccess
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function offsetUnset($offset)
     {

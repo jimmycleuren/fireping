@@ -205,11 +205,6 @@ class Probe
         return $this->samples;
     }
 
-    /**
-     * @param ProbeArgumentsInterface $arguments
-     *
-     * @return Probe
-     */
     public function setArguments(ProbeArgumentsInterface $arguments): Probe
     {
         $this->arguments = json_encode($arguments->asArray(), JSON_THROW_ON_ERROR, 512);
@@ -217,9 +212,6 @@ class Probe
         return $this;
     }
 
-    /**
-     * @return ProbeArgumentsInterface
-     */
     public function getArguments(): ProbeArgumentsInterface
     {
         $arguments = $this->arguments ?? '{}';
