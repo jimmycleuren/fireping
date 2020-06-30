@@ -10,14 +10,6 @@ use GuzzleHttp\Promise;
 use GuzzleHttp\TransferStats;
 use Psr\Log\LoggerInterface;
 
-/**
- * Class Http
- *
- * Arguments:
- * - host
- * - path
- * - protocol
- */
 class Http implements CommandInterface
 {
     private $args;
