@@ -19,29 +19,29 @@ class StorageNodeController extends AbstractController
     public function index(StorageNodeRepository $storageNodeRepository, LoggerInterface $logger)
     {
         $this->logger = $logger;
-        $nodes = array();
+        $nodes = [];
 
-        foreach($storageNodeRepository->findAll() as $node) {
+        foreach ($storageNodeRepository->findAll() as $node) {
             $nodes[] = [
                 'node' => $node,
                 'rrdcached' => $this->checkRrdCached($node),
                 'ssh' => $this->checkSsh($node),
-                'permissions' => $this->checkPermissions($node)
+                'permissions' => $this->checkPermissions($node),
             ];
         }
 
         return $this->render('storagenode/index.html.twig', [
-            'nodes' => $nodes
+            'nodes' => $nodes,
         ]);
     }
 
     private function checkRrdCached(StorageNode $node)
     {
-        $errno = "";
-        $errstr = "";
+        $errno = '';
+        $errstr = '';
         $socket = @fsockopen($node->getIp(), 42217, $errno, $errstr, 1);
 
-        return $socket != null;
+        return null != $socket;
     }
 
     private function checkSsh(StorageNode $node)
@@ -68,7 +68,7 @@ class StorageNodeController extends AbstractController
 
         $error = $process->getErrorOutput();
         if ($error) {
-            $this->logger->warning("Error creating test file on $node: " . trim($error));
+            $this->logger->warning("Error creating test file on $node: ".trim($error));
 
             return false;
         }
@@ -78,7 +78,7 @@ class StorageNodeController extends AbstractController
 
         $error = $process->getErrorOutput();
         if ($error) {
-            $this->logger->warning("Error deleting test file on $node: " . trim($error));
+            $this->logger->warning("Error deleting test file on $node: ".trim($error));
 
             return false;
         }

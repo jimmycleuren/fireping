@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Command;
 
 use App\Storage\RrdStorage;
@@ -30,7 +31,7 @@ class ValidateRrdCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $devices = $this->em->getRepository("App:Device")->findAll();
+        $devices = $this->em->getRepository('App:Device')->findAll();
 
         $progress = new ProgressBar($output);
         $progress->start(count($devices));
@@ -38,7 +39,7 @@ class ValidateRrdCommand extends Command
         foreach ($devices as $device) {
             $probes = $device->getActiveProbes();
             $slavegroups = $device->getActiveSlaveGroups();
-            foreach($probes as $probe) {
+            foreach ($probes as $probe) {
                 foreach ($slavegroups as $slavegroup) {
                     $this->storage->validate($device, $probe, $slavegroup);
                 }
@@ -48,7 +49,7 @@ class ValidateRrdCommand extends Command
         }
 
         $progress->finish();
-        $output->writeln("");
+        $output->writeln('');
 
         return 0;
     }

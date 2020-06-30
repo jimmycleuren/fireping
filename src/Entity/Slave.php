@@ -4,11 +4,10 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * Slave
+ * Slave.
  *
  * @ORM\Table(name="slave")
  * @ORM\Entity(repositoryClass="App\Repository\SlaveRepository")
@@ -49,7 +48,7 @@ class Slave
     private $ip;
 
     /**
-     * Set id
+     * Set id.
      *
      * @param string $id
      *
@@ -63,7 +62,7 @@ class Slave
     }
 
     /**
-     * Get id
+     * Get id.
      *
      * @return string
      */
@@ -73,7 +72,7 @@ class Slave
     }
 
     /**
-     * Set lastContact
+     * Set lastContact.
      *
      * @param \DateTime $lastContact
      *
@@ -87,7 +86,7 @@ class Slave
     }
 
     /**
-     * Get lastcontact
+     * Get lastcontact.
      *
      * @return \DateTime
      */
@@ -97,7 +96,7 @@ class Slave
     }
 
     /**
-     * Set slavegroup
+     * Set slavegroup.
      *
      * @param \App\Entity\SlaveGroup $slavegroup
      *
@@ -112,7 +111,7 @@ class Slave
     }
 
     /**
-     * Get slavegroup
+     * Get slavegroup.
      *
      * @return \App\Entity\SlaveGroup|null
      * @Groups({"slave"})
@@ -144,9 +143,9 @@ class Slave
 
     public function getStatusColor()
     {
-        if ($this->getLastContact() > new \DateTime("2 minutes ago")) {
+        if ($this->getLastContact() > new \DateTime('2 minutes ago')) {
             return 'green';
-        } elseif ($this->getLastContact() > new \DateTime("5 minutes ago")) {
+        } elseif ($this->getLastContact() > new \DateTime('5 minutes ago')) {
             return 'yellow';
         } else {
             return 'red';
@@ -155,9 +154,10 @@ class Slave
 
     public function isOnline()
     {
-        if ($this->getLastContact() > new \DateTime("2 minutes ago")) {
+        if ($this->getLastContact() > new \DateTime('2 minutes ago')) {
             return true;
         }
+
         return false;
     }
 }

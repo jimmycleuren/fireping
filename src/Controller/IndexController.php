@@ -5,8 +5,8 @@ namespace App\Controller;
 use App\Repository\DeviceRepository;
 use App\Repository\SlaveRepository;
 use App\Repository\StorageNodeRepository;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Annotation\Route;
 
 class IndexController extends AbstractController
 {
@@ -19,16 +19,16 @@ class IndexController extends AbstractController
         $offlineSlaves = 0;
         foreach ($slaveRepository->findAll() as $slave) {
             if ($slave->isOnline()) {
-                $onlineSlaves++;
+                ++$onlineSlaves;
             } else {
-                $offlineSlaves++;
+                ++$offlineSlaves;
             }
         }
 
         return $this->render('default/index.html.twig', [
             'storageNodes' => $storageNodeRepository->findAll(),
             'onlineSlaves' => $onlineSlaves,
-            'offlineSlaves' => $offlineSlaves
+            'offlineSlaves' => $offlineSlaves,
         ]);
     }
 }

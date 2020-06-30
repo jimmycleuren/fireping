@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Command;
 
 use App\AlertDestination\AlertDestinationFactory;
@@ -6,11 +7,9 @@ use App\Entity\Alert;
 use App\Entity\AlertRule;
 use App\Entity\Device;
 use App\Entity\SlaveGroup;
-use App\Storage\RrdStorage;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -34,26 +33,27 @@ class TestAlertDestinationCommand extends Command
     {
         $this
             ->setName('app:alert:test')
-            ->addArgument('destination-id', InputArgument::REQUIRED, "The alert destination id to test")
+            ->addArgument('destination-id', InputArgument::REQUIRED, 'The alert destination id to test')
             ->setDescription('Test an alertdestination');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $id = (int)$input->getArgument('destination-id');
+        $id = (int) $input->getArgument('destination-id');
 
-        $destination = $this->em->getRepository("App:AlertDestination")->findOneById($id);
+        $destination = $this->em->getRepository('App:AlertDestination')->findOneById($id);
         if (!$destination) {
             $this->logger->warning("Alertdestination #$id not found");
+
             return 1;
         }
 
         $rule = new AlertRule();
-        $rule->setName("Test rule");
+        $rule->setName('Test rule');
         $device = new Device();
-        $device->setName("Test device");
+        $device->setName('Test device');
         $slavegroup = new SlaveGroup();
-        $slavegroup->setName("Test group");
+        $slavegroup->setName('Test group');
         $alert = new Alert();
         $alert->setAlertRule($rule);
         $alert->setDevice($device);

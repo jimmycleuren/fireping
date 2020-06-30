@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\App\Command;
@@ -15,9 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
- * Class ProbeDispatcherCommandTest
- *
- * @package Tests\App\Command
+ * Class ProbeDispatcherCommandTest.
  */
 class ProbeDispatcherCommandTest extends KernelTestCase
 {
@@ -25,14 +24,14 @@ class ProbeDispatcherCommandTest extends KernelTestCase
 
     public function testExecute(): void
     {
-        $kernel      = self::bootKernel();
+        $kernel = self::bootKernel();
         $application = new Application($kernel);
 
         $logger = self::$container->get(LoggerInterface::class);
 
         $worker = $this->prophesize(Worker::class);
         $worker->send(Argument::any(), Argument::type('int'), Argument::any())->willReturn(true);
-        $worker->__toString()->willReturn("worker");
+        $worker->__toString()->willReturn('worker');
         $worker = $worker->reveal();
 
         $workerManager = $this->prophesize(WorkerManager::class);
@@ -47,13 +46,13 @@ class ProbeDispatcherCommandTest extends KernelTestCase
 
         $application->add(new ProbeDispatcherCommand($logger, $workerManager->reveal(), $statsManager->reveal()));
 
-        $command       = $application->find('app:probe:dispatcher');
+        $command = $application->find('app:probe:dispatcher');
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             'command' => $command->getName(),
             '--env' => 'slave',
             '--max-runtime' => 20,
-            '--workers' => 5
+            '--workers' => 5,
         ]);
 
         $output = $commandTester->getDisplay();

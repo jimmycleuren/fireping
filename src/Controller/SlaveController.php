@@ -13,8 +13,8 @@ use App\Storage\SlaveStatsRrdStorage;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,8 +34,7 @@ class SlaveController extends AbstractController
      * Lists all slave entities.
      *
      * @Route("/slaves", name="slave_index", methods={"GET"})
-     * @param DeviceRepository $deviceRepository
-     * @param SlaveRepository $slaveRepository
+     *
      * @return Response
      */
     public function indexAction(EntityManagerInterface $entityManager, DeviceRepository $deviceRepository, SlaveRepository $slaveRepository)
@@ -43,7 +42,7 @@ class SlaveController extends AbstractController
         $slaves = $slaveRepository->findAll();
 
         $targets = [];
-        foreach($slaves as $slave) {
+        foreach ($slaves as $slave) {
             $count = 0;
             $data = $this->getSlaveConfig($slave, $deviceRepository, $entityManager);
             foreach ($data as $probe) {
@@ -52,19 +51,16 @@ class SlaveController extends AbstractController
             $targets[$slave->getId()] = $count;
         }
 
-        return $this->render('slave/index.html.twig', array(
+        return $this->render('slave/index.html.twig', [
             'slaves' => $slaves,
             'targets' => $targets,
             'active_menu' => 'slave',
-        ));
+        ]);
     }
 
     /**
      * @Route("/slaves/{id}", name="slave_detail", methods={"GET"})
      *
-     * @param Slave $slave
-     * @param DeviceRepository $deviceRepository
-     * @param EntityManagerInterface $entityManager
      * @return Response
      */
     public function detailAction(Slave $slave, DeviceRepository $deviceRepository, EntityManagerInterface $entityManager)
@@ -75,31 +71,28 @@ class SlaveController extends AbstractController
             $targets += count($probe['targets']);
         }
 
-        return $this->render('slave/detail.html.twig', array(
+        return $this->render('slave/detail.html.twig', [
             'slave' => $slave,
             'targets' => $targets,
             'control_sidebar_extra' => [
                 'navigation' => [
                     'icon' => 'far fa-clock',
-                    'controller' => 'App\Controller\SlaveController::sidebarAction'
-                ]
-            ]
-        ));
+                    'controller' => 'App\Controller\SlaveController::sidebarAction',
+                ],
+            ],
+        ]);
     }
 
     public function sidebarAction(Request $originalRequest)
     {
-        return $this->render("slave/sidebar.html.twig", [
+        return $this->render('slave/sidebar.html.twig', [
             'device' => $originalRequest->get('device'),
         ]);
     }
 
     /**
      * @param string $id
-     * @param Request $request
-     * @param EntityManagerInterface $entityManager
-     * @param SlaveRepository $slaveRepository
-     * @param DeviceRepository $deviceRepository
+     *
      * @return JsonResponse
      *
      * @throws \Exception
@@ -107,8 +100,8 @@ class SlaveController extends AbstractController
      */
     public function configAction($id, Request $request, EntityManagerInterface $entityManager, SlaveRepository $slaveRepository, DeviceRepository $deviceRepository)
     {
-        if (extension_loaded ('newrelic')) {
-            newrelic_name_transaction ("api_slaves_config");
+        if (extension_loaded('newrelic')) {
+            newrelic_name_transaction('api_slaves_config');
         }
 
         $slave = $slaveRepository->findOneById($id);
@@ -135,9 +128,9 @@ class SlaveController extends AbstractController
     {
         $this->prepareCache($entityManager);
 
-        $config = array();
+        $config = [];
 
-        $domains = array();
+        $domains = [];
         if ($slave->getSlaveGroup()) {
             foreach ($slave->getSlaveGroup()->getDomains() as $domain) {
                 $domains = array_merge($domains, $this->getDomains($domain));
@@ -162,7 +155,7 @@ class SlaveController extends AbstractController
 
             $slaves = $slave->getSlaveGroup()->getSlaves();
             foreach ($slaves as $key => $value) {
-                if ($value->getLastContact() < new \DateTime("10 minutes ago")) {
+                if ($value->getLastContact() < new \DateTime('10 minutes ago')) {
                     unset($slaves[$key]);
                 }
             }
@@ -177,9 +170,9 @@ class SlaveController extends AbstractController
             $divider = max(1, count($slaves));
             $size = ceil(count($devices) / $divider);
             if ($size > 0) {
-                $subset = array_chunk($devices, (int)$size)[$slavePosition];
+                $subset = array_chunk($devices, (int) $size)[$slavePosition];
             } else {
-                $subset = array();
+                $subset = [];
             }
 
             foreach ($subset as $device) {
@@ -192,31 +185,26 @@ class SlaveController extends AbstractController
 
     private function prepareCache(EntityManagerInterface $entityManager)
     {
-        $devices = $entityManager->createQuery("SELECT d, s FROM App:Device d JOIN d.slavegroups s")->getResult();
+        $devices = $entityManager->createQuery('SELECT d, s FROM App:Device d JOIN d.slavegroups s')->getResult();
         foreach ($devices as $device) {
             $this->deviceSlaveGroupCache[$device->getId()] = $device->getSlaveGroups();
         }
-        $devices = $entityManager->createQuery("SELECT d, p FROM App:Device d JOIN d.probes p")->getResult();
+        $devices = $entityManager->createQuery('SELECT d, p FROM App:Device d JOIN d.probes p')->getResult();
         foreach ($devices as $device) {
             $this->deviceProbeCache[$device->getId()] = $device->getProbes();
         }
 
-        $domains = $entityManager->createQuery("SELECT d, s FROM App:Domain d JOIN d.slavegroups s")->getResult();
+        $domains = $entityManager->createQuery('SELECT d, s FROM App:Domain d JOIN d.slavegroups s')->getResult();
         foreach ($domains as $domain) {
             $this->domainSlaveGroupCache[$domain->getId()] = $domain->getSlaveGroups();
         }
-        $domains = $entityManager->createQuery("SELECT d, p FROM App:Domain d JOIN d.probes p")->getResult();
+        $domains = $entityManager->createQuery('SELECT d, p FROM App:Domain d JOIN d.probes p')->getResult();
         foreach ($domains as $domain) {
             $this->domainProbeCache[$domain->getId()] = $domain->getProbes();
         }
     }
 
     /**
-     * @param Slave $slave
-     * @param Request $request
-     * @param ProcessorFactory $processorFactory
-     * @param LoggerInterface $logger
-     * @param EntityManagerInterface $entityManager
      * @return JsonResponse
      *
      * @Route("/api/slaves/{id}/result", methods={"POST"})
@@ -226,8 +214,8 @@ class SlaveController extends AbstractController
      */
     public function resultAction(Slave $slave, Request $request, ProcessorFactory $processorFactory, LoggerInterface $logger, EntityManagerInterface $entityManager)
     {
-        if (extension_loaded ('newrelic')) {
-            newrelic_name_transaction ("api_slaves_result");
+        if (extension_loaded('newrelic')) {
+            newrelic_name_transaction('api_slaves_result');
         }
 
         $this->em = $entityManager;
@@ -237,30 +225,34 @@ class SlaveController extends AbstractController
         $this->em->persist($slave);
         $this->em->flush();
 
-        $probeRepository = $this->em->getRepository("App:Probe");
-        $deviceRepository = $this->em->getRepository("App:Device");
+        $probeRepository = $this->em->getRepository('App:Probe');
+        $deviceRepository = $this->em->getRepository('App:Device');
 
         $probes = json_decode($request->getContent());
 
-        if ($probes === null || (is_array($probes) && count($probes) == 0)) {
-            return new JsonResponse(array('code' => 400, 'message' => 'Invalid json input'), 400);
+        if (null === $probes || (is_array($probes) && 0 == count($probes))) {
+            return new JsonResponse(['code' => 400, 'message' => 'Invalid json input'], 400);
         }
 
         try {
             foreach ($probes as $probeId => $probeData) {
                 if (!isset($probeData->timestamp)) {
-                    $this->logger->warning("Incorrect data received from slave");
-                    return new JsonResponse(array('code' => 400, 'message' => "No timestamp found in probe data"), 400);
+                    $this->logger->warning('Incorrect data received from slave');
+
+                    return new JsonResponse(['code' => 400, 'message' => 'No timestamp found in probe data'], 400);
                 }
                 if (!isset($probeData->targets)) {
-                    $this->logger->warning("Incorrect data received from slave");
-                    return new JsonResponse(array('code' => 400, 'message' => "No targets found in probe data"), 400);
+                    $this->logger->warning('Incorrect data received from slave');
+
+                    return new JsonResponse(['code' => 400, 'message' => 'No targets found in probe data'], 400);
                 }
                 $probe = $probeRepository->findOneById($probeId);
                 $timestamp = $probeData->timestamp;
                 $targets = $probeData->targets;
 
-                if(!$probe) continue;
+                if (!$probe) {
+                    continue;
+                }
 
                 foreach ($targets as $targetId => $targetData) {
                     $device = $deviceRepository->findOneById($targetId);
@@ -268,7 +260,7 @@ class SlaveController extends AbstractController
                         $this->logger->error("Slave sends data for device '$targetId' but it does not exist");
                         continue;
                     }
-                    $this->logger->debug("Updating data for probe " . $probe->getType() . " on " . $device->getName());
+                    $this->logger->debug('Updating data for probe '.$probe->getType().' on '.$device->getName());
                     $processor = $processorFactory->create($probe->getType());
                     $processor->storeResult($device, $probe, $slave->getSlaveGroup(), $timestamp, $targetData);
                 }
@@ -276,20 +268,20 @@ class SlaveController extends AbstractController
 
             //execute 1 flush at the end, not for every datapoint
             $this->em->flush();
-
         } catch (WrongTimestampRrdException | DirtyInputException $e) {
             $this->logger->warning($e->getMessage());
-            return new JsonResponse(array('code' => 409, 'message' => $e->getMessage()), 409);
+
+            return new JsonResponse(['code' => 409, 'message' => $e->getMessage()], 409);
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage()." ".$e->getFile().":".$e->getLine());
-            return new JsonResponse(array('code' => 500, 'message' => $e->getMessage()), 500);
+            $this->logger->error($e->getMessage().' '.$e->getFile().':'.$e->getLine());
+
+            return new JsonResponse(['code' => 500, 'message' => $e->getMessage()], 500);
         }
 
-        return new JsonResponse(array("code" => 200, "message" => "Results saved"));
+        return new JsonResponse(['code' => 200, 'message' => 'Results saved']);
     }
 
     /**
-     * @param Slave $slave
      * @return JsonResponse
      *
      * @Route("/api/slaves/{id}/error", methods={"POST"})
@@ -304,15 +296,10 @@ class SlaveController extends AbstractController
         //TODO: implement slave error handling
         $this->logger->info("Error received from $slave");
 
-        return new JsonResponse(array('code' => 200));
+        return new JsonResponse(['code' => 200]);
     }
 
     /**
-     * @param Slave $slave
-     * @param Request $request
-     * @param EntityManagerInterface $entityManager
-     * @param SlaveStatsRrdStorage $storage
-     * @param LoggerInterface $logger
      * @return JsonResponse
      * @Route("/api/slaves/{id}/stats", methods={"POST"})
      */
@@ -341,19 +328,19 @@ class SlaveController extends AbstractController
             }
         }
 
-        $storage->store($slave, "posts", date("U"), [
+        $storage->store($slave, 'posts', date('U'), [
             'successful' => $data->posts->success,
             'failed' => $data->posts->failed,
-            'discarded' => $data->posts->discarded
+            'discarded' => $data->posts->discarded,
         ]);
 
-        $storage->store($slave, "load", date("U"), [
+        $storage->store($slave, 'load', date('U'), [
             'load1' => $data->load[0],
             'load5' => $data->load[1],
             'load15' => $data->load[2],
         ]);
 
-        $storage->store($slave, "memory", date("U"), [
+        $storage->store($slave, 'memory', date('U'), [
             'total' => $data->memory[0],
             'used' => $data->memory[1],
             'free' => $data->memory[2],
@@ -362,12 +349,12 @@ class SlaveController extends AbstractController
             'available' => $data->memory[5],
         ]);
 
-        return new JsonResponse(array('code' => 200));
+        return new JsonResponse(['code' => 200]);
     }
 
     private function getDomains($domain)
     {
-        $domains = array($domain);
+        $domains = [$domain];
 
         foreach ($domain->getSubDomains() as $subdomain) {
             $domains = array_merge($domains, $this->getDomains($subdomain));
@@ -379,7 +366,7 @@ class SlaveController extends AbstractController
     private function getDeviceProbes($device, &$config)
     {
         $probes = $this->getActiveProbes($device);
-        foreach($probes as $probe) {
+        foreach ($probes as $probe) {
             $config[$probe->getId()]['type'] = $probe->getType();
             $config[$probe->getId()]['step'] = $probe->getStep();
             $config[$probe->getId()]['samples'] = $probe->getSamples();
@@ -394,7 +381,7 @@ class SlaveController extends AbstractController
             return $this->deviceSlaveGroupCache[$device->getId()];
         } else {
             $parent = $device->getDomain();
-            while ($parent != null) {
+            while (null != $parent) {
                 if (isset($this->domainSlaveGroupCache[$parent->getId()])) {
                     return $this->domainSlaveGroupCache[$parent->getId()];
                 }
@@ -411,7 +398,7 @@ class SlaveController extends AbstractController
             return $this->deviceProbeCache[$device->getId()];
         } else {
             $parent = $device->getDomain();
-            while ($parent != null) {
+            while (null != $parent) {
                 if (isset($this->domainProbeCache[$parent->getId()])) {
                     return $this->domainProbeCache[$parent->getId()];
                 }

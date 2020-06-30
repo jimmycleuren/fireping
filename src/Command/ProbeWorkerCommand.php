@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Command;
@@ -65,7 +66,6 @@ class ProbeWorkerCommand extends Command
     }
 
     /**
-     *
      * @throws InvalidArgumentException
      */
     protected function configure(): void
@@ -83,16 +83,12 @@ class ProbeWorkerCommand extends Command
     }
 
     /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     *
-     * @return int
      * @throws InvalidArgumentException
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->output = $output;
-        $this->maxRuntime = (int)$input->getOption('max-runtime');
+        $this->maxRuntime = (int) $input->getOption('max-runtime');
 
         $this->loop = Factory::create();
 
@@ -121,8 +117,6 @@ class ProbeWorkerCommand extends Command
     }
 
     /**
-     * @param string $data
-     *
      * @throws \LogicException
      */
     protected function process(string $data)
@@ -136,15 +130,16 @@ class ProbeWorkerCommand extends Command
                     'status' => 400,
                     'body' => [
                         'timestamp' => $timestamp,
-                        'contents' => 'Input data not received.'
+                        'contents' => 'Input data not received.',
                     ],
                     'debug' => [
                         'runtime' => time() - $timestamp,
                         'request' => $data,
-                        'pid' => getmypid()
-                    ]
+                        'pid' => getmypid(),
+                    ],
                 ]
             );
+
             return;
         }
 
@@ -157,15 +152,16 @@ class ProbeWorkerCommand extends Command
                     'status' => 400,
                     'body' => [
                         'timestamp' => $timestamp,
-                        'contents' => 'Invalid JSON Received.'
+                        'contents' => 'Invalid JSON Received.',
                     ],
                     'debug' => [
                         'runtime' => time() - $timestamp,
                         'request' => $data,
-                        'pid' => getmypid()
-                    ]
+                        'pid' => getmypid(),
+                    ],
                 ]
             );
+
             return;
         }
 
@@ -176,15 +172,16 @@ class ProbeWorkerCommand extends Command
                     'status' => 400,
                     'body' => [
                         'timestamp' => $timestamp,
-                        'contents' => 'Command type missing.'
+                        'contents' => 'Command type missing.',
                     ],
                     'debug' => [
                         'runtime' => time() - $timestamp,
                         'request' => $data,
-                        'pid' => getmypid()
-                    ]
+                        'pid' => getmypid(),
+                    ],
                 ]
             );
+
             return;
         }
 
@@ -201,15 +198,16 @@ class ProbeWorkerCommand extends Command
                     'status' => 400,
                     'body' => [
                         'timestamp' => $timestamp,
-                        'contents' => $e->getMessage()
+                        'contents' => $e->getMessage(),
                     ],
                     'debug' => [
                             'runtime' => time() - $timestamp,
                             'request' => $data,
-                            'pid' => getmypid()
-                    ]
+                            'pid' => getmypid(),
+                    ],
                 ]
             );
+
             return;
         }
 
@@ -228,12 +226,12 @@ class ProbeWorkerCommand extends Command
                         'body' => [
                             'timestamp' => $timestamp,
                             'contents' => $shellOutput['contents'],
-                            'raw' => $shellOutput
+                            'raw' => $shellOutput,
                         ],
                         'debug' => [
                             'runtime' => time() - $timestamp,
-                            'pid' => getmypid()
-                        ]
+                            'pid' => getmypid(),
+                        ],
                     ]);
                     break;
 
@@ -243,16 +241,16 @@ class ProbeWorkerCommand extends Command
                         'type' => $data['type'],
                         'status' => $shellOutput['code'],
                         'headers' => [
-                            'etag' => $shellOutput['etag']
+                            'etag' => $shellOutput['etag'],
                         ],
                         'body' => [
                             'timestamp' => $timestamp,
-                            'contents' => $shellOutput['contents']
+                            'contents' => $shellOutput['contents'],
                         ],
                         'debug' => [
                             'runtime' => time() - $timestamp,
-                            'pid' => getmypid()
-                        ]
+                            'pid' => getmypid(),
+                        ],
                     ]);
                     break;
 
@@ -268,15 +266,15 @@ class ProbeWorkerCommand extends Command
                                 $data['id'] => [
                                     'type' => $data['type'],
                                     'timestamp' => $timestamp,
-                                    'targets' => $shellOutput
-                                ]
-                            ]
+                                    'targets' => $shellOutput,
+                                ],
+                            ],
                         ],
                         'debug' => [
                             'runtime' => time() - $timestamp,
                             //'request' => $data,
-                            'pid' => getmypid()
-                        ]
+                            'pid' => getmypid(),
+                        ],
                     ]);
                     break;
                 default:
@@ -286,13 +284,13 @@ class ProbeWorkerCommand extends Command
                             'status' => 500,
                             'body' => [
                                 'timestamp' => $timestamp,
-                                'contents' => "No answer defined for ".$data['type']
+                                'contents' => 'No answer defined for '.$data['type'],
                             ],
                             'debug' => [
                                 'runtime' => time() - $timestamp,
                                 'request' => $data,
-                                'pid' => getmypid()
-                            ]
+                                'pid' => getmypid(),
+                            ],
                         ]
                     );
             }
@@ -303,15 +301,16 @@ class ProbeWorkerCommand extends Command
                     'status' => 500,
                     'body' => [
                         'timestamp' => $timestamp,
-                        'contents' => $e->getMessage() . " on " . $e->getFile().":".$e->getLine()
+                        'contents' => $e->getMessage().' on '.$e->getFile().':'.$e->getLine(),
                     ],
                     'debug' => [
                         'runtime' => time() - $timestamp,
                         'request' => $data,
-                        'pid' => getmypid()
-                    ]
+                        'pid' => getmypid(),
+                    ],
                 ]
             );
+
             return;
         }
     }
@@ -321,7 +320,7 @@ class ProbeWorkerCommand extends Command
      */
     protected function sendResponse($data): void
     {
-        $this->logger->info('COMMUNICATION_FLOW: Worker ' . getmypid() . ' sent a ' . $data['type'] . ' response.');
+        $this->logger->info('COMMUNICATION_FLOW: Worker '.getmypid().' sent a '.$data['type'].' response.');
         $json = json_encode($data);
         $this->output->writeln($json);
     }

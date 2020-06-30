@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * AlertDestination
+ * AlertDestination.
  *
  * @ORM\Table(name="alert_destination")
  * @ORM\Entity(repositoryClass="App\Repository\AlertDestinationRepository")
@@ -64,9 +64,6 @@ class AlertDestination
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     */
     public function setName(string $name): void
     {
         $this->name = $name;
@@ -80,9 +77,6 @@ class AlertDestination
         return $this->type;
     }
 
-    /**
-     * @param string $type
-     */
     public function setType(string $type): void
     {
         $this->type = $type;
