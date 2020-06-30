@@ -139,7 +139,6 @@ class ProbeWorkerCommand extends Command
                     'pid' => getmypid(),
                 ],
             ]);
-            throw new \RuntimeException('missing or invalid timestamp');
         }
 
         if (!$data) {
