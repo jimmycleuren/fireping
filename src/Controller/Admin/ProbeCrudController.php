@@ -14,6 +14,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
@@ -39,7 +40,7 @@ class ProbeCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         $name = TextField::new('name');
-        $type = TextField::new('type');
+        $type = ChoiceField::new('type')->setChoices(['ping' => 'ping', 'traceroute' => 'traceroute', 'http' => 'http']);
         $step = IntegerField::new('step');
         $samples = IntegerField::new('samples');
         $archives = AssociationField::new('archives');
@@ -55,7 +56,7 @@ class ProbeCrudController extends AbstractCrudController
         }
 
         if (Crud::PAGE_NEW === $pageName) {
-            return [$name, $type, $step, $samples, $archives];
+            return [$name, $type, $step, $samples];
         }
 
         if (Crud::PAGE_EDIT === $pageName) {

@@ -8,11 +8,11 @@ class PingArguments extends ProbeArguments
     /**
      * @var int|null
      */
-    private $retries;
+    protected $retries;
     /**
      * @var int|null
      */
-    private $packetSize;
+    protected $packetSize;
 
     private function __construct(?int $retries, ?int $packetSize)
     {
