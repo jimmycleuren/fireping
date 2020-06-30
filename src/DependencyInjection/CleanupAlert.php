@@ -28,7 +28,8 @@ class CleanupAlert
     public function __construct(
         LoggerInterface $logger,
         AlertRepository $alertRepository,
-        EntityManagerInterface $entityManager)
+        EntityManagerInterface $entityManager
+    )
     {
         $this->alertRepository = $alertRepository;
         $this->entityManager = $entityManager;
