@@ -250,6 +250,25 @@ class RrdStorage extends Storage
         return $value;
     }
 
+    public function fetchAll(Device $device, Probe $probe, SlaveGroup $group, $start, $end, $datasource, $function)
+    {
+        $path = $this->getFilePath($device, $probe, $group);
+
+        $result = rrd_fetch($path, array($function, "--start", $start, "--end", $end));
+
+        if (!$result || !$result['data'] || !isset($result['data'][$datasource]) || !$result['data'][$datasource]) {
+            return null;
+        }
+
+        foreach($result['data'][$datasource] as $key => $value) {
+            if (is_nan($value)) {
+                $result['data'][$datasource][$key] = "U";
+            }
+        }
+
+        return $result['data'][$datasource];
+    }
+
     public function validate(Device $device, Probe $probe, SlaveGroup $group)
     {
         $filename = $this->getFilePath($device, $probe, $group);
