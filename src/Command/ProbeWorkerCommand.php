@@ -122,7 +122,6 @@ class ProbeWorkerCommand extends Command
                     ],
                     'debug' => [
                         'runtime' => time() - $startOfWork,
-                        'request' => $data,
                         'pid' => getmypid(),
                     ],
                 ]);
@@ -147,7 +146,6 @@ class ProbeWorkerCommand extends Command
                     ],
                     'debug' => [
                         'runtime' => time() - $startOfWork,
-                        'request' => $data,
                         'pid' => getmypid(),
                     ],
                 ]
@@ -173,7 +171,6 @@ class ProbeWorkerCommand extends Command
                         'body' => [
                             'timestamp' => $startOfWork,
                             'contents' => $shellOutput['contents'],
-                            'raw' => $shellOutput,
                         ],
                         'debug' => [
                             'runtime' => time() - $startOfWork,
@@ -218,7 +215,6 @@ class ProbeWorkerCommand extends Command
                         ],
                         'debug' => [
                             'runtime' => time() - $startOfWork,
-                            //'request' => $data,
                             'pid' => getmypid(),
                         ],
                     ]);
@@ -233,7 +229,6 @@ class ProbeWorkerCommand extends Command
                         ],
                         'debug' => [
                             'runtime' => time() - $startOfWork,
-                            'request' => $data,
                             'pid' => getmypid(),
                         ],
                     ]);
@@ -248,7 +243,6 @@ class ProbeWorkerCommand extends Command
                 ],
                 'debug' => [
                     'runtime' => time() - $startOfWork,
-                    'request' => $data,
                     'pid' => getmypid(),
                 ],
             ]);
