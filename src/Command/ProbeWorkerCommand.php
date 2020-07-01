@@ -140,33 +140,13 @@ class ProbeWorkerCommand extends Command
             ]);
         }
 
-        $timestamp = $data['timestamp'] ?? null;
-
-        if ($timestamp === null || !is_int($timestamp)) {
-            $this->sendResponse([
-                'type' => 'exception',
-                'status' => 400,
-                'body' => [
-                    'timestamp' => time(),
-                    'contents' => 'Missing timestamp',
-                ],
-                'debug' => [
-                    'runtime' => time() - $startOfWork,
-                    'request' => $data,
-                    'pid' => getmypid(),
-                ],
-            ]);
-
-            return;
-        }
-
         if (!isset($data['type'])) {
             $this->sendResponse(
                 [
                     'type' => 'exception',
                     'status' => 400,
                     'body' => [
-                        'timestamp' => $timestamp,
+                        'timestamp' => $startOfWork,
                         'contents' => 'Command type missing.',
                     ],
                     'debug' => [
@@ -192,7 +172,7 @@ class ProbeWorkerCommand extends Command
                     'type' => 'exception',
                     'status' => 400,
                     'body' => [
-                        'timestamp' => $timestamp,
+                        'timestamp' => $startOfWork,
                         'contents' => $e->getMessage(),
                     ],
                     'debug' => [
@@ -219,7 +199,7 @@ class ProbeWorkerCommand extends Command
                         'status' => $shellOutput['code'],
                         'headers' => [],
                         'body' => [
-                            'timestamp' => $timestamp,
+                            'timestamp' => $startOfWork,
                             'contents' => $shellOutput['contents'],
                             'raw' => $shellOutput,
                         ],
@@ -239,7 +219,7 @@ class ProbeWorkerCommand extends Command
                             'etag' => $shellOutput['etag'],
                         ],
                         'body' => [
-                            'timestamp' => $timestamp,
+                            'timestamp' => $startOfWork,
                             'contents' => $shellOutput['contents'],
                         ],
                         'debug' => [
@@ -256,11 +236,11 @@ class ProbeWorkerCommand extends Command
                         'type' => 'probe',
                         'status' => 200,
                         'body' => [
-                            'timestamp' => $timestamp,
+                            'timestamp' => $startOfWork,
                             'contents' => [
                                 $data['id'] => [
                                     'type' => $data['type'],
-                                    'timestamp' => $timestamp,
+                                    'timestamp' => $data['timestamp'],
                                     'targets' => $shellOutput,
                                 ],
                             ],
@@ -278,7 +258,7 @@ class ProbeWorkerCommand extends Command
                             'type' => 'exception',
                             'status' => 500,
                             'body' => [
-                                'timestamp' => $timestamp,
+                                'timestamp' => $startOfWork,
                                 'contents' => 'No answer defined for '.$data['type'],
                             ],
                             'debug' => [
@@ -295,7 +275,7 @@ class ProbeWorkerCommand extends Command
                     'type' => 'exception',
                     'status' => 500,
                     'body' => [
-                        'timestamp' => $timestamp,
+                        'timestamp' => $startOfWork,
                         'contents' => $e->getMessage().' on '.$e->getFile().':'.$e->getLine(),
                     ],
                     'debug' => [
