@@ -11,7 +11,6 @@ use App\ShellCommand\PostStatsHttpWorkerCommand;
 use Exception;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
-use React\EventLoop\LoopInterface;
 use React\Stream\ReadableResourceStream;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
@@ -36,11 +35,6 @@ class ProbeWorkerCommand extends Command
      * @var LoggerInterface
      */
     protected $logger;
-
-    /**
-     * @var LoopInterface
-     */
-    protected $loop;
 
     /**
      * @var CommandFactory
@@ -82,9 +76,9 @@ class ProbeWorkerCommand extends Command
     {
         $this->output = $output;
 
-        $this->loop = Factory::create();
+        $loop = Factory::create();
 
-        $read = new ReadableResourceStream(STDIN, $this->loop);
+        $read = new ReadableResourceStream(STDIN, $loop);
 
         $read->on('data', function ($data) {
             $this->receiveBuffer .= $data;
@@ -97,13 +91,13 @@ class ProbeWorkerCommand extends Command
         $maxRuntime = (int)$input->getOption('max-runtime');
         if ($maxRuntime > 0) {
             $this->logger->info("Running for {$maxRuntime} seconds");
-            $this->loop->addTimer($maxRuntime, function () use ($output) {
-                $output->writeln('Max runtime reached');
-                $this->loop->stop();
+            $loop->addTimer($maxRuntime, function () use ($loop) {
+                $this->logger->info('Worker max runtime reached.');
+                $loop->stop();
             });
         }
 
-        $this->loop->run();
+        $loop->run();
 
         return 0;
     }
