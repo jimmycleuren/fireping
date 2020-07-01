@@ -284,31 +284,26 @@ class ProbeDispatcherCommand extends Command
      */
     private function handleResponse($channel, $data): void
     {
+        $bytes = strlen($data);
         $response = json_decode($data, true);
 
         if (!$response) {
-            $this->logger->warning('COMMUNICATION_FLOW: Response from worker could not be decoded to JSON.');
+            $this->logger->error('dispatcher: malformed json received from worker');
 
             return;
         }
 
-        if (!isset(
-            $response['pid'],
-            $response['type'],
-            $response['status'],
-            $response['body']['contents'],
-        )
-        ) {
-            $this->logger->error('COMMUNICATION_FLOW: Response ... was missing keys.');
+        if (!isset($response['pid'], $response['type'], $response['status'], $response['headers'], $response['contents'])) {
+            $this->logger->error('dispatcher: incomplete response received from worker');
         }
 
+        $pid = $response['pid'];
         $type = $response['type'];
         $status = $response['status'];
-        /** @var array $contents */
-        $contents = $response['body']['contents'];
-        $pid = $response['pid'];
+        /** @var array|string $contents */
+        $contents = $response['contents'];
 
-        $this->logger->info("COMMUNICATION_FLOW: Master received $type response from worker $pid");
+        $this->logger->info("dispatcher: $type response ($bytes bytes) received from worker $pid");
 
         switch ($type) {
             case 'exception':
