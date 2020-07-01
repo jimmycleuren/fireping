@@ -10,9 +10,7 @@ use Psr\Log\LoggerInterface;
 
 class PingTest extends TestCase
 {
-    use ProphecyTrait;
-
-    public function testPing()
+    public function testPingUnorderedArguments()
     {
         $logger = $this->prophesize(LoggerInterface::class)->reveal();
 
@@ -20,17 +18,17 @@ class PingTest extends TestCase
         $ping->setArgs([
             'delay_execution' => 0,
             'targets' => [
-                ['id' => 1, 'ip' => '8.8.8.8']
+                ['id' => 1, 'ip' => 'www.google.be']
             ],
             'args' => [
-                'samples' => 2,
-                'wait_time' => 10000
+                'wait_time' => 1000,
+                'samples' => 1,
             ]
         ]);
 
         $result = $ping->execute();
 
-        $this->assertEquals(2, count($result[1]));
+        $this->assertEquals(1, count($result[1]));
     }
 
     public function testMissingArgument()

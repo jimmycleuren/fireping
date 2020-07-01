@@ -72,7 +72,7 @@ class Ping implements CommandInterface
         $errors = [];
 
         $keys = array_keys($this->arguments);
-        $hasRequired = array_intersect($keys, $this->requiredArguments) == $this->requiredArguments;
+        $hasRequired = array_values(array_intersect($keys, $this->requiredArguments)) == $this->requiredArguments;
 
         if (!$hasRequired) {
             $errors['MissingArguments'] = 'Missing required arguments.';
