@@ -330,7 +330,7 @@ class ProbeDispatcherCommand extends Command
                     }
                     $this->workerManager->setNumberOfProbeProcesses(intval($count));
                 } else {
-                    $this->logger->info("Response ($status) from worker $pid received");
+                    $this->logger->warning("dispatcher: configuration response ($status) from worker $pid received");
                 }
                 break;
 
