@@ -19,12 +19,57 @@ class HttpTest extends TestCase
         $http->setArgs([
             'delay_execution' => 0,
             'targets' => [
-                ['id' => 1, 'ip' => '216.58.211.99'],
+                ['id' => 1, 'ip' => 'www.google.be']
             ],
             'args' => [
                 'samples' => 2,
                 'wait_time' => 10000,
+                'host' => 'www.google.be',
+            ]
+        ]);
+
+        $result = $http->execute();
+
+        $this->assertEquals(2, count($result[1]));
+    }
+
+    public function testHttpTooLong()
+    {
+        $logger = $this->prophesize(LoggerInterface::class)->reveal();
+
+        $http = new Http($logger);
+        $http->setArgs([
+            'delay_execution' => 0,
+            'targets' => [
+                ['id' => 1, 'ip' => 'www.google.be']
             ],
+            'args' => [
+                'samples' => 2,
+                'wait_time' => 1,
+                'host' => 'www.google.be',
+            ]
+        ]);
+
+        $result = $http->execute();
+
+        $this->assertEquals(2, count($result[1]));
+    }
+
+    public function testHttps()
+    {
+        $logger = $this->prophesize(LoggerInterface::class)->reveal();
+
+        $http = new Http($logger);
+        $http->setArgs([
+            'delay_execution' => 0,
+            'targets' => [
+                ['id' => 1, 'ip' => 'www.google.be']
+            ],
+            'args' => [
+                'samples' => 2,
+                'wait_time' => 10000,
+                'protocol' => 'https',
+            ]
         ]);
 
         $result = $http->execute();

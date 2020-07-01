@@ -7,6 +7,7 @@ use App\Entity\Probe;
 use App\Entity\SlaveGroup;
 use App\Exception\RrdException;
 use App\Exception\WrongTimestampRrdException;
+use http\Exception\RuntimeException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Lock\Store\FlockStore;
@@ -320,6 +321,62 @@ class RrdCachedStorage extends RrdStorage
 
         return $value;
         */
+    }
+
+    /**
+     * @param Device $device
+     * @param Probe $probe
+     * @param SlaveGroup $group
+     * @param int $start
+     * @param int $end
+     * @param string $datasource
+     * @param string $function
+     * @return mixed|void|null
+     */
+    public function fetchAll(Device $device, Probe $probe, SlaveGroup $group, $start, $end, $datasource, $function, $daemon = null)
+    {
+        if (!$daemon) {
+            $daemon = $this->daemon;
+        }
+
+        $path = $this->getFilePath($device, $probe, $group);
+
+        $this->connect($daemon);
+
+        $this->send("FETCH $path $function $start $end", $daemon);
+        $message = $this->read($daemon);
+        $message = explode("\n", $message);
+        $message = array_filter($message);
+
+        if (!strstr($message[0], "Success")) {
+            throw new \RuntimeException("Failed to fetch from rrdcached: ".$message[0]);
+        }
+
+        $names = [];
+        $started = false;
+        $data = [];
+        foreach($message as $line) {
+            if(preg_match("/DSName: ([\w\s]+)/", $line, $match)) {
+                $names = explode(" ", $match[1]);
+                $started = true;
+                continue;
+            }
+            if ($started) {
+                if(preg_match("/([\d]+): ([\w\s\.\+\-]+)/", $line, $match)) {
+                    $timestamp = $match[1];
+                    $values = explode(" ", $match[2]);
+                    foreach($values as $key => $value) {
+                        $data[$names[$key]][$timestamp] = $value == "-nan" ? "U" : floatval($value);
+                    }
+                }
+            }
+        }
+
+        if (!isset($data[$datasource]) || !$data[$datasource]) {
+            return null;
+        }
+
+        return $data[$datasource];
     }
 
     public function getGraphValue(Device $device, $options, $daemon = null)
