@@ -19,11 +19,6 @@ class Http implements CommandInterface
     private $samples;
     private $waitTime;
     private $times;
-    private $allowedCodes = [
-        200,
-        301,
-        302,
-    ];
 
     public function __construct(LoggerInterface $logger)
     {
@@ -47,26 +42,34 @@ class Http implements CommandInterface
         }
         $client = new Client($options);
 
-        $path = isset($this->args['path']) ? $this->args['path'] : '/';
+        $path = isset($this->args['path']) ? $this->args['path'] : "/";
+        $protocol = isset($this->args['protocol']) ? $this->args['protocol'] : "http";
 
         for ($i = 0; $i < $this->samples; ++$i) {
             $start = microtime(true);
             $promises = [];
             foreach ($this->targets as $target) {
                 $id = $target['id'];
-                $promises[$target['id']] = $client->getAsync('http://'.$target['ip'].$path, [
-                    'on_stats' => function (TransferStats $stats) use ($id) {
+
+                $promises[$target['id']] = $client->getAsync($protocol.'://'.$target['ip'].$path, [
+                    'on_stats' => function (TransferStats $stats) use ($id){
                         $this->times[$id] = $stats->getTransferTime() * 1000;
                     },
+                    'http_errors' => false
                 ]);
             }
 
             $responses = Promise\settle($promises)->wait();
-            foreach ($responses as $id => $response) {
-                if (isset($response['value']) && in_array($response['value']->getStatusCode(), $this->allowedCodes)) {
-                    $result[$id][] = $this->times[$id];
-                } else {
-                    $result[$id][] = -1;
+          
+            foreach($responses as $id => $response) {
+                try {
+                    if (isset($response['value'])) {
+                        $result[$id][] = ['time' => $this->times[$id], 'code' => $response['value']->getStatusCode()];
+                    } else {
+                        $result[$id][] = ['time' => -1, 'code' => -1];
+                    }
+                } catch (\Exception $exception) {
+                    $this->logger->error(get_class($exception) . ": " . $exception->getMessage());
                 }
             }
 
@@ -76,8 +79,8 @@ class Http implements CommandInterface
 
             if ($sleep > 0 && $i < $this->samples) {
                 usleep((int) $sleep);
-            } elseif ($sleep < 0) {
-                $this->logger->warning('HTTP probe did not have enough time');
+            } elseif($sleep < 0) {
+                $this->logger->warning("HTTP probe did not have enough time, sleep time was $sleep");
             }
         }
 
