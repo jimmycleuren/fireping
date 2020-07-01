@@ -295,6 +295,8 @@ class ProbeDispatcherCommand extends Command
 
         if (!isset($response['pid'], $response['type'], $response['status'], $response['headers'], $response['contents'])) {
             $this->logger->error('dispatcher: incomplete response received from worker');
+
+            return;
         }
 
         $pid = $response['pid'];
@@ -306,10 +308,6 @@ class ProbeDispatcherCommand extends Command
         $this->logger->info("dispatcher: $type response ($bytes bytes) received from worker $pid");
 
         switch ($type) {
-            case 'exception':
-                $this->logger->alert("Response ($status) from worker $pid returned an exception: ".print_r($contents, true));
-                break;
-
             case 'probe':
                 if (200 === $status) {
                     $cleaned = [];
@@ -346,14 +344,6 @@ class ProbeDispatcherCommand extends Command
                         $count += ceil($this->configuration->getProbeDeviceCount($probe->getId()) / $this->devicesPerWorker);
                     }
                     $this->workerManager->setNumberOfProbeProcesses(intval($count));
-                } else {
-                    $this->logger->info("Response ($status) from worker $pid received");
-                }
-                break;
-
-            case PostStatsHttpWorkerCommand::class:
-                if (200 === $status) {
-                    $this->logger->info('Stats successfully submitted');
                 } else {
                     $this->logger->info("Response ($status) from worker $pid received");
                 }
