@@ -323,10 +323,13 @@ class ProbeDispatcherCommand extends Command
                 break;
 
             case GetConfigHttpWorkerCommand::class:
+                $this->logger->info('dispatcher: started handling new configuration response');
                 if (200 === $status) {
+                    $this->logger->info('dispatcher: applying new configuration');
                     $etag = $response['headers']['etag'];
                     $this->configuration->updateConfig($contents, $etag);
-                    $this->logger->info("Response ($status) from worker $pid config applied (".$this->configuration->getAllProbesDeviceCount().' devices)');
+                    $this->logger->info(sprintf('dispatcher: new configuration applied (took %.2f seconds)', microtime(true) - $startAt));
+                    $this->logger->info(sprintf('dispatcher: new configuration has %d probes and %d devices', count($this->configuration->getProbes()), $this->configuration->getAllProbesDeviceCount()));
 
                     $count = 0;
                     foreach ($this->configuration->getProbes() as $probe) {
@@ -339,9 +342,7 @@ class ProbeDispatcherCommand extends Command
                 break;
 
             default:
-                $this->logger->error(
-                    "Response ($status) from worker $pid type $type is not supported by the response handler."
-                );
+                $this->logger->warning("dispatcher: unexpected response of type $type");
         }
 
         $runtime = microtime(true) - $startAt;
