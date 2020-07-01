@@ -88,7 +88,6 @@ class SlaveStatsRrdStorage
 
         $return = rrd_create($filename, $options);
         if (!$return) {
-            $this->logger->error(print_r($options, true));
             throw new RrdException(rrd_error());
         }
     }
