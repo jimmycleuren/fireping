@@ -139,11 +139,6 @@ class ProbeWorkerCommand extends Command
             $this->logger->info(sprintf('worker %d finished (took %d second(s))', getmypid(), time() - $startedAt));
 
             switch ($type) {
-                case PostStatsHttpWorkerCommand::class:
-                case PostResultsHttpWorkerCommand::class:
-                    $this->sendResponse($type, $shellOutput['code'], $shellOutput['contents']);
-                    break;
-
                 case GetConfigHttpWorkerCommand::class:
                     $headers = ['etag' => $shellOutput['etag']];
                     $this->sendResponse($type, $shellOutput['code'], $shellOutput['contents'], $headers);
