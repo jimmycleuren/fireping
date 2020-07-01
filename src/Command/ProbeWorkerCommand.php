@@ -123,7 +123,6 @@ class ProbeWorkerCommand extends Command
     {
         $startOfWork = time();
         $data = json_decode($data, true);
-        $timestamp = $data['timestamp'] ?? null;
 
         if (null === $timestamp || !is_int($timestamp)) {
             $this->sendResponse([
@@ -141,22 +140,22 @@ class ProbeWorkerCommand extends Command
             ]);
         }
 
-        if (!$data) {
-            $this->sendResponse(
-                [
-                    'type' => 'exception',
-                    'status' => 400,
-                    'body' => [
-                        'timestamp' => $timestamp,
-                        'contents' => 'Invalid JSON Received.',
-                    ],
-                    'debug' => [
-                        'runtime' => time() - $startOfWork,
-                        'request' => $data,
-                        'pid' => getmypid(),
-                    ],
-                ]
-            );
+        $timestamp = $data['timestamp'] ?? null;
+
+        if ($timestamp === null || !is_int($timestamp)) {
+            $this->sendResponse([
+                'type' => 'exception',
+                'status' => 400,
+                'body' => [
+                    'timestamp' => time(),
+                    'contents' => 'Missing timestamp',
+                ],
+                'debug' => [
+                    'runtime' => time() - $startOfWork,
+                    'request' => $data,
+                    'pid' => getmypid(),
+                ],
+            ]);
 
             return;
         }
