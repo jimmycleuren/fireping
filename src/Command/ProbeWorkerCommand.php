@@ -112,8 +112,7 @@ class ProbeWorkerCommand extends Command
 
         foreach (['type', 'delay_execution'] as $parameter) {
             if (!isset($data[$parameter])) {
-                $this->logger->info(sprintf('worker %d aborting because parameter %s is missing', getmypid(), $parameter));
-                $this->sendResponse('exception', 400, "parameter $parameter missing");
+                $this->logger->error(sprintf('worker %d aborting because parameter %s is missing', getmypid(), $parameter));
 
                 return;
             }
@@ -127,7 +126,6 @@ class ProbeWorkerCommand extends Command
             $this->logger->info(sprintf('worker %d %s command initialized', getmypid(), $type));
         } catch (Exception $e) {
             $this->logger->error(sprintf('worker %d fatal: ' . $e->getMessage()));
-            $this->sendResponse('exception', 400, $e->getMessage());
 
             return;
         }
@@ -165,11 +163,10 @@ class ProbeWorkerCommand extends Command
                     break;
 
                 default:
-                    $this->sendResponse('exception', 500, "no answer defined for $type");
+                    $this->logger->error("no handler defined for $type");
             }
         } catch (Exception $e) {
             $this->logger->error(sprintf('worker %d fatal: ' . $e->getMessage()));
-            $this->sendResponse('exception', 500, $e->getMessage());
 
             return;
         }
