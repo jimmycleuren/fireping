@@ -296,7 +296,6 @@ class ProbeDispatcherCommand extends Command
             $response['pid'],
             $response['type'],
             $response['status'],
-            $response['body']['timestamp'],
             $response['body']['contents'],
         )
         ) {
@@ -305,7 +304,6 @@ class ProbeDispatcherCommand extends Command
 
         $type = $response['type'];
         $status = $response['status'];
-        //$timestamp = $response['body']['timestamp'];
         /** @var array $contents */
         $contents = $response['body']['contents'];
         $pid = $response['pid'];

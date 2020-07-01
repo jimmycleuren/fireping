@@ -117,7 +117,6 @@ class ProbeWorkerCommand extends Command
                     'type' => 'exception',
                     'status' => 400,
                     'body' => [
-                        'timestamp' => $startedAt,
                         'contents' => "parameter $parameter missing",
                     ],
                 ]);
@@ -137,7 +136,6 @@ class ProbeWorkerCommand extends Command
                 'type' => 'exception',
                 'status' => 400,
                 'body' => [
-                    'timestamp' => $startedAt,
                     'contents' => $e->getMessage(),
                 ],
             ]);
@@ -161,7 +159,6 @@ class ProbeWorkerCommand extends Command
                         'status' => $shellOutput['code'],
                         'headers' => [],
                         'body' => [
-                            'timestamp' => $startedAt,
                             'contents' => $shellOutput['contents'],
                         ],
                     ]);
@@ -175,7 +172,6 @@ class ProbeWorkerCommand extends Command
                             'etag' => $shellOutput['etag'],
                         ],
                         'body' => [
-                            'timestamp' => $startedAt,
                             'contents' => $shellOutput['contents'],
                         ],
                     ]);
@@ -188,7 +184,6 @@ class ProbeWorkerCommand extends Command
                         'type' => 'probe',
                         'status' => 200,
                         'body' => [
-                            'timestamp' => $startedAt,
                             'contents' => [
                                 $data['id'] => [
                                     'type' => $data['type'],
@@ -204,7 +199,6 @@ class ProbeWorkerCommand extends Command
                         'type' => 'exception',
                         'status' => 500,
                         'body' => [
-                            'timestamp' => $startedAt,
                             'contents' => 'No answer defined for ' . $data['type'],
                         ],
                     ]);
@@ -215,7 +209,6 @@ class ProbeWorkerCommand extends Command
                 'type' => 'exception',
                 'status' => 500,
                 'body' => [
-                    'timestamp' => $startedAt,
                     'contents' => $e->getMessage() . ' on ' . $e->getFile() . ':' . $e->getLine(),
                 ]
             ]);
