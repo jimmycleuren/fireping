@@ -41,13 +41,6 @@ class ProbeDispatcherCommand extends Command
     protected $queues;
 
     /**
-     * The number of workers that will be created at most.
-     *
-     * @var int
-     */
-    protected $workerLimit;
-
-    /**
      * Used to write to log files.
      *
      * @var LoggerInterface
