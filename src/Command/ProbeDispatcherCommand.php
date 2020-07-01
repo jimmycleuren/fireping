@@ -253,26 +253,32 @@ class ProbeDispatcherCommand extends Command
     public function sendInstruction(array $instruction, int $expectedRuntime = 60): void
     {
         try {
+            $this->logger->info(sprintf('dispatcher: selecting worker for type %s', $instruction['type']));
             $worker = $this->workerManager->getWorker($instruction['type']);
+            $this->logger->info(sprintf('dispatcher: worker %s selected', (string) $worker));
         } catch (Exception $e) {
-            $this->logger->critical($e->getMessage());
+            $this->logger->error('dispatcher: could not select worker: ' . $e->getMessage());
 
             return;
         }
 
         $json = json_encode($instruction);
-        if (false === $json) {
-            $this->logger->critical('Failed to encode instruction: '.json_last_error_msg());
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $this->logger->error('dispatcher: failed to encode instruction: ' . json_last_error_msg());
 
             return;
         }
 
-        $this->logger->debug(sprintf('Sending worker=%s instruction=%s', $worker, $json));
+        $startAt = microtime(true);
+
+        $this->logger->info(sprintf('dispatcher: sending instruction to worker %s (%d bytes)', (string) $worker, strlen($json)));
+        $this->logger->debug(sprintf('dispatcher: worker %s instruction: %s', (string) $worker, $json));
+
         $worker->send($json, $expectedRuntime, function ($type, $response) {
             $this->handleResponse($type, $response);
         });
 
-        $this->logger->info('COMMUNICATION_FLOW: Master sent '.$instruction['type']." instruction to worker $worker.");
+        $this->logger->info(sprintf('dispatcher: sent instruction to worker %s (took %s seconds)', (string) $worker, microtime(true) - $startAt));
     }
 
     /**
@@ -281,6 +287,7 @@ class ProbeDispatcherCommand extends Command
      */
     private function handleResponse($channel, $data): void
     {
+        $startAt = microtime(true);
         $bytes = strlen($data);
         $response = json_decode($data, true);
 
@@ -336,6 +343,9 @@ class ProbeDispatcherCommand extends Command
                     "Response ($status) from worker $pid type $type is not supported by the response handler."
                 );
         }
+
+        $runtime = microtime(true) - $startAt;
+        $this->logger->info(sprintf('dispatcher: finished handling response from worker %d (took %.2f seconds)', $pid, $runtime));
     }
 
     private function expandProbeResult(array $result): array
