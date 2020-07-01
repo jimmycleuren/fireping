@@ -293,11 +293,11 @@ class ProbeDispatcherCommand extends Command
         }
 
         if (!isset(
+            $response['pid'],
             $response['type'],
             $response['status'],
             $response['body']['timestamp'],
             $response['body']['contents'],
-            $response['debug']
         )
         ) {
             $this->logger->error('COMMUNICATION_FLOW: Response ... was missing keys.');
@@ -308,8 +308,7 @@ class ProbeDispatcherCommand extends Command
         //$timestamp = $response['body']['timestamp'];
         /** @var array $contents */
         $contents = $response['body']['contents'];
-        $debug = $response['debug'];
-        $pid = $debug['pid'];
+        $pid = $response['pid'];
 
         $this->logger->info("COMMUNICATION_FLOW: Master received $type response from worker $pid");
 
