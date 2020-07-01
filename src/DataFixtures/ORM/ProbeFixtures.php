@@ -34,6 +34,14 @@ class ProbeFixtures extends Fixture
         $manager->persist($probe);
         $this->addReference('probe-dummy', $probe);
 
+        $probe = new Probe();
+        $probe->setName("Http");
+        $probe->setStep(60);
+        $probe->setSamples(5);
+        $probe->setType('http');
+        $manager->persist($probe);
+        $this->addReference('probe-http', $probe);
+
         $manager->flush();
     }
 }

@@ -7,14 +7,16 @@
 
 {% block page_content %}
     {% for probe in device.getActiveProbes() %}
-        {% for slavegroup in device.getActiveSlaveGroups() %}
-            {% embed '@AdminLTE/Widgets/box-widget.html.twig' %}
-                {% block box_title %}{{ probe.name }} - {{ slavegroup.name }}{% endblock %}
-                {% block box_body_class %}p-0 text-center{% endblock %}
-                {% block box_body %}
-                    <img style="max-width: 100%; height: auto;" onload="window.dispatchEvent(new Event('resize'));" class="graph" data-src-template="/api/graphs/detail/{{ device.id }}/{{ probe.id }}/{{ slavegroup.id }}{% verbatim %}?start={{start}}&end={{end}}{% endverbatim  %}" />
-                {% endblock %}
-            {% endembed %}
+        {% for graphType in helper.probeGraphTypes(probe.type) %}
+            {% for slavegroup in device.getActiveSlaveGroups() %}
+                {% embed '@AdminLTE/Widgets/box-widget.html.twig' %}
+                    {% block box_title %}{{ probe.name }} - {{ graphType }} - {{ slavegroup.name }}{% endblock %}
+                    {% block box_body_class %}p-0 text-center{% endblock %}
+                    {% block box_body %}
+                        <img style="max-width: 100%; height: auto;" onload="window.dispatchEvent(new Event('resize'));" class="graph" data-src-template="/api/graphs/detail/{{ device.id }}/{{ probe.id }}/{{ slavegroup.id }}?type={{graphType}}{% verbatim %}&start={{start}}&end={{end}}{% endverbatim  %}" />
+                    {% endblock %}
+                {% endembed %}
+            {% endfor %}
         {% endfor %}
     {% endfor %}
 {% endblock %}
