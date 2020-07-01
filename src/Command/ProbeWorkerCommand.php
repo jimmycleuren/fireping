@@ -107,8 +107,8 @@ class ProbeWorkerCommand extends Command
      */
     protected function process(array $data)
     {
-        $startOfWork = time();
-        $this->logger->info(sprintf('worker %d has begun processing at %d', getmypid(), $startOfWork));
+        $startedAt = time();
+        $this->logger->info(sprintf('worker %d has begun processing at %d', getmypid(), $startedAt));
 
         foreach (['type', 'delay_execution'] as $parameter) {
             if (!isset($data[$parameter])) {
@@ -117,12 +117,8 @@ class ProbeWorkerCommand extends Command
                     'type' => 'exception',
                     'status' => 400,
                     'body' => [
-                        'timestamp' => $startOfWork,
+                        'timestamp' => $startedAt,
                         'contents' => "parameter $parameter missing",
-                    ],
-                    'debug' => [
-                        'runtime' => time() - $startOfWork,
-                        'pid' => getmypid(),
                     ],
                 ]);
 
@@ -136,20 +132,15 @@ class ProbeWorkerCommand extends Command
             $command = $this->commandFactory->make($data['type'], $data);
             $this->logger->info(sprintf('worker %d %s command initialized', getmypid(), $data['type']));
         } catch (Exception $e) {
-            $this->sendResponse(
-                [
-                    'type' => 'exception',
-                    'status' => 400,
-                    'body' => [
-                        'timestamp' => $startOfWork,
-                        'contents' => $e->getMessage(),
-                    ],
-                    'debug' => [
-                        'runtime' => time() - $startOfWork,
-                        'pid' => getmypid(),
-                    ],
-                ]
-            );
+            $this->logger->error(sprintf('worker %d fatal: ' . $e->getMessage()));
+            $this->sendResponse([
+                'type' => 'exception',
+                'status' => 400,
+                'body' => [
+                    'timestamp' => $startedAt,
+                    'contents' => $e->getMessage(),
+                ],
+            ]);
 
             return;
         }
@@ -160,6 +151,7 @@ class ProbeWorkerCommand extends Command
 
         try {
             $shellOutput = $command->execute();
+            $this->logger->info(sprintf('worker %d finished (took %d second(s))', getmypid(), time() - $startedAt));
 
             switch ($data['type']) {
                 case PostStatsHttpWorkerCommand::class:
@@ -169,12 +161,8 @@ class ProbeWorkerCommand extends Command
                         'status' => $shellOutput['code'],
                         'headers' => [],
                         'body' => [
-                            'timestamp' => $startOfWork,
+                            'timestamp' => $startedAt,
                             'contents' => $shellOutput['contents'],
-                        ],
-                        'debug' => [
-                            'runtime' => time() - $startOfWork,
-                            'pid' => getmypid(),
                         ],
                     ]);
                     break;
@@ -187,12 +175,8 @@ class ProbeWorkerCommand extends Command
                             'etag' => $shellOutput['etag'],
                         ],
                         'body' => [
-                            'timestamp' => $startOfWork,
+                            'timestamp' => $startedAt,
                             'contents' => $shellOutput['contents'],
-                        ],
-                        'debug' => [
-                            'runtime' => time() - $startOfWork,
-                            'pid' => getmypid(),
                         ],
                     ]);
                     break;
@@ -204,7 +188,7 @@ class ProbeWorkerCommand extends Command
                         'type' => 'probe',
                         'status' => 200,
                         'body' => [
-                            'timestamp' => $startOfWork,
+                            'timestamp' => $startedAt,
                             'contents' => [
                                 $data['id'] => [
                                     'type' => $data['type'],
@@ -213,10 +197,6 @@ class ProbeWorkerCommand extends Command
                                 ],
                             ],
                         ],
-                        'debug' => [
-                            'runtime' => time() - $startOfWork,
-                            'pid' => getmypid(),
-                        ],
                     ]);
                     break;
                 default:
@@ -224,41 +204,33 @@ class ProbeWorkerCommand extends Command
                         'type' => 'exception',
                         'status' => 500,
                         'body' => [
-                            'timestamp' => $startOfWork,
+                            'timestamp' => $startedAt,
                             'contents' => 'No answer defined for ' . $data['type'],
-                        ],
-                        'debug' => [
-                            'runtime' => time() - $startOfWork,
-                            'pid' => getmypid(),
                         ],
                     ]);
             }
         } catch (Exception $e) {
+            $this->logger->error(sprintf('worker %d fatal: ' . $e->getMessage()));
             $this->sendResponse([
                 'type' => 'exception',
                 'status' => 500,
                 'body' => [
-                    'timestamp' => $startOfWork,
+                    'timestamp' => $startedAt,
                     'contents' => $e->getMessage() . ' on ' . $e->getFile() . ':' . $e->getLine(),
-                ],
-                'debug' => [
-                    'runtime' => time() - $startOfWork,
-                    'pid' => getmypid(),
-                ],
+                ]
             ]);
 
             return;
         }
     }
 
-    /**
-     * @param array $data
-     */
-    protected function sendResponse($data): void
+    protected function sendResponse(array $data): void
     {
         $start = time();
-        $this->logger->info(sprintf('worker %d sending %s response (took %d seconds)', getmypid(), $data['type'], $data['debug']['runtime']));
-        $this->output->writeln(json_encode($data));
+        $data['pid'] = getmypid();
+        $out = json_encode($data);
+        $this->logger->info(sprintf('worker %d sending %s response (%d bytes)', getmypid(), $data['type'], strlen($out)));
+        $this->output->writeln($out);
         $this->logger->info(sprintf('worker %d sent response (took %d seconds)', getmypid(), time() - $start));
     }
 }
