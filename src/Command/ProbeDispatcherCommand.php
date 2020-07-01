@@ -309,27 +309,12 @@ class ProbeDispatcherCommand extends Command
 
         switch ($type) {
             case 'probe':
-                if (200 === $status) {
-                    $cleaned = [];
+                $this->logger->info("Enqueueing the response from worker $pid.");
 
-                    foreach ($contents as $id => $content) {
-                        if (!isset($content['type'], $content['timestamp'], $content['targets'])) {
-                            // TODO: Good warning
-                            $this->logger->warning("Response ($status) from worker $pid is missing either a type, timestamp or targets key.");
-                        } else {
-                            $cleaned[$id] = $content;
-                        }
-                    }
-
-                    $this->logger->info("Enqueueing the response from worker $pid.");
-
-                    $items = $this->expandProbeResult($cleaned);
-                    foreach ($items as $key => $item) {
-                        $queue = $this->queues[$key % $this->numberOfQueues];
-                        $queue->enqueue($item);
-                    }
-                } else {
-                    $this->logger->error("Response ($status) from worker $pid unexpected.");
+                $items = $this->expandProbeResult($contents);
+                foreach ($items as $key => $item) {
+                    $queue = $this->queues[$key % $this->numberOfQueues];
+                    $queue->enqueue($item);
                 }
                 break;
 
