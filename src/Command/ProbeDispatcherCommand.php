@@ -310,9 +310,8 @@ class ProbeDispatcherCommand extends Command
         $contents = $response['body']['contents'];
         $debug = $response['debug'];
         $pid = $debug['pid'];
-        $runtime = $debug['runtime'];
 
-        $this->logger->info("COMMUNICATION_FLOW: Master received $type response from worker $pid with a runtime of $runtime.");
+        $this->logger->info("COMMUNICATION_FLOW: Master received $type response from worker $pid");
 
         switch ($type) {
             case 'exception':
