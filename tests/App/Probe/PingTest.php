@@ -24,12 +24,12 @@ class PingTest extends TestCase
             ],
             'args' => [
                 'wait_time' => 1000,
-                'samples' => 2,
+                'samples' => 1,
             ]
         ]);
 
         $result = $ping->execute();
 
-        $this->assertEquals(2, count($result[1]));
+        $this->assertEquals(1, count($result[1]));
     }
 }
