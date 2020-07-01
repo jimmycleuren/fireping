@@ -108,33 +108,34 @@ class ProbeWorkerCommand extends Command
     protected function process(array $data)
     {
         $startOfWork = time();
+        $this->logger->info(sprintf('worker %d has begun processing at %d', getmypid(), $startOfWork));
 
-        if (!isset($data['type'])) {
-            $this->sendResponse(
-                [
+        foreach (['type', 'delay_execution'] as $parameter) {
+            if (!isset($data[$parameter])) {
+                $this->logger->info(sprintf('worker %d aborting because parameter %s is missing', getmypid(), $parameter));
+                $this->sendResponse([
                     'type' => 'exception',
                     'status' => 400,
                     'body' => [
                         'timestamp' => $startOfWork,
-                        'contents' => 'Command type missing.',
+                        'contents' => "parameter $parameter missing",
                     ],
                     'debug' => [
                         'runtime' => time() - $startOfWork,
                         'request' => $data,
                         'pid' => getmypid(),
                     ],
-                ]
-            );
+                ]);
 
-            return;
+                return;
+            }
         }
 
-        $str = 'COMMUNICATION_FLOW: Worker ' . getmypid() . ' received a ' . $data['type'] . ' instruction from master.';
-        $this->logger->info($str);
+        $this->logger->info(sprintf('worker %d received %s job from dispatcher', getmypid(), $data['type']));
 
-        $command = null;
         try {
             $command = $this->commandFactory->make($data['type'], $data);
+            $this->logger->info(sprintf('worker %d %s command initialized', getmypid(), $data['type']));
         } catch (Exception $e) {
             $this->sendResponse(
                 [
@@ -155,7 +156,9 @@ class ProbeWorkerCommand extends Command
             return;
         }
 
+        $this->logger->info(sprintf('worker %d starting in %s second(s)', getmypid(), $data['delay_execution']));
         sleep($data['delay_execution']);
+        $this->logger->info(sprintf('worker %d starting', getmypid()));
 
         try {
             $shellOutput = $command->execute();
@@ -180,7 +183,6 @@ class ProbeWorkerCommand extends Command
                     break;
 
                 case GetConfigHttpWorkerCommand::class:
-                    // This is a request to get the latest configuration from the master.
                     $this->sendResponse([
                         'type' => $data['type'],
                         'status' => $shellOutput['code'],
@@ -222,38 +224,34 @@ class ProbeWorkerCommand extends Command
                     ]);
                     break;
                 default:
-                    $this->sendResponse(
-                        [
-                            'type' => 'exception',
-                            'status' => 500,
-                            'body' => [
-                                'timestamp' => $startOfWork,
-                                'contents' => 'No answer defined for ' . $data['type'],
-                            ],
-                            'debug' => [
-                                'runtime' => time() - $startOfWork,
-                                'request' => $data,
-                                'pid' => getmypid(),
-                            ],
-                        ]
-                    );
+                    $this->sendResponse([
+                        'type' => 'exception',
+                        'status' => 500,
+                        'body' => [
+                            'timestamp' => $startOfWork,
+                            'contents' => 'No answer defined for ' . $data['type'],
+                        ],
+                        'debug' => [
+                            'runtime' => time() - $startOfWork,
+                            'request' => $data,
+                            'pid' => getmypid(),
+                        ],
+                    ]);
             }
         } catch (Exception $e) {
-            $this->sendResponse(
-                [
-                    'type' => 'exception',
-                    'status' => 500,
-                    'body' => [
-                        'timestamp' => $startOfWork,
-                        'contents' => $e->getMessage() . ' on ' . $e->getFile() . ':' . $e->getLine(),
-                    ],
-                    'debug' => [
-                        'runtime' => time() - $startOfWork,
-                        'request' => $data,
-                        'pid' => getmypid(),
-                    ],
-                ]
-            );
+            $this->sendResponse([
+                'type' => 'exception',
+                'status' => 500,
+                'body' => [
+                    'timestamp' => $startOfWork,
+                    'contents' => $e->getMessage() . ' on ' . $e->getFile() . ':' . $e->getLine(),
+                ],
+                'debug' => [
+                    'runtime' => time() - $startOfWork,
+                    'request' => $data,
+                    'pid' => getmypid(),
+                ],
+            ]);
 
             return;
         }
@@ -264,8 +262,9 @@ class ProbeWorkerCommand extends Command
      */
     protected function sendResponse($data): void
     {
-        $this->logger->info('COMMUNICATION_FLOW: Worker ' . getmypid() . ' sent a ' . $data['type'] . ' response.');
-        $json = json_encode($data);
-        $this->output->writeln($json);
+        $start = time();
+        $this->logger->info(sprintf('worker %d sending %s response (took %d seconds)', getmypid(), $data['type'], $data['debug']['runtime']));
+        $this->output->writeln(json_encode($data));
+        $this->logger->info(sprintf('worker %d sent response (took %d seconds)', getmypid(), time() - $start));
     }
 }
