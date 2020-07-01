@@ -33,11 +33,6 @@ class ProbeWorkerCommand extends Command
     protected $receiveBuffer;
 
     /**
-     * @var string
-     */
-    protected $temporaryBuffer;
-
-    /**
      * @var LoggerInterface
      */
     protected $logger;
@@ -52,6 +47,9 @@ class ProbeWorkerCommand extends Command
      */
     protected $maxRuntime;
 
+    /**
+     * @var CommandFactory
+     */
     private $commandFactory;
 
     /**
@@ -88,7 +86,7 @@ class ProbeWorkerCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->output = $output;
-        $this->maxRuntime = (int) $input->getOption('max-runtime');
+        $this->maxRuntime = (int)$input->getOption('max-runtime');
 
         $this->loop = Factory::create();
 
@@ -96,10 +94,9 @@ class ProbeWorkerCommand extends Command
 
         $read->on('data', function ($data) {
             $this->receiveBuffer .= $data;
-            if (json_decode($this->receiveBuffer, true)) {
-                $this->temporaryBuffer = $this->receiveBuffer;
+            if ($in = json_decode($this->receiveBuffer, true)) {
                 $this->receiveBuffer = '';
-                $this->process($this->temporaryBuffer);
+                $this->process($in);
             }
         });
 
@@ -119,30 +116,9 @@ class ProbeWorkerCommand extends Command
     /**
      * @throws \LogicException
      */
-    protected function process(string $data)
+    protected function process(array $data)
     {
         $startOfWork = time();
-        $data = json_decode($data, true);
-
-        if (!$data) {
-            $this->sendResponse(
-                [
-                    'type' => 'exception',
-                    'status' => 400,
-                    'body' => [
-                        'timestamp' => $startOfWork,
-                        'contents' => 'Invalid JSON Received.',
-                    ],
-                    'debug' => [
-                        'runtime' => time() - $startOfWork,
-                        'request' => $data,
-                        'pid' => getmypid(),
-                    ],
-                ]
-            );
-
-            return;
-        }
 
         if (!isset($data['type'])) {
             $this->sendResponse(
@@ -164,7 +140,7 @@ class ProbeWorkerCommand extends Command
             return;
         }
 
-        $str = 'COMMUNICATION_FLOW: Worker '.getmypid().' received a '.$data['type'].' instruction from master.';
+        $str = 'COMMUNICATION_FLOW: Worker ' . getmypid() . ' received a ' . $data['type'] . ' instruction from master.';
         $this->logger->info($str);
 
         $command = null;
@@ -180,9 +156,9 @@ class ProbeWorkerCommand extends Command
                         'contents' => $e->getMessage(),
                     ],
                     'debug' => [
-                            'runtime' => time() - $startOfWork,
-                            'request' => $data,
-                            'pid' => getmypid(),
+                        'runtime' => time() - $startOfWork,
+                        'request' => $data,
+                        'pid' => getmypid(),
                     ],
                 ]
             );
@@ -263,7 +239,7 @@ class ProbeWorkerCommand extends Command
                             'status' => 500,
                             'body' => [
                                 'timestamp' => $startOfWork,
-                                'contents' => 'No answer defined for '.$data['type'],
+                                'contents' => 'No answer defined for ' . $data['type'],
                             ],
                             'debug' => [
                                 'runtime' => time() - $startOfWork,
@@ -280,7 +256,7 @@ class ProbeWorkerCommand extends Command
                     'status' => 500,
                     'body' => [
                         'timestamp' => $startOfWork,
-                        'contents' => $e->getMessage().' on '.$e->getFile().':'.$e->getLine(),
+                        'contents' => $e->getMessage() . ' on ' . $e->getFile() . ':' . $e->getLine(),
                     ],
                     'debug' => [
                         'runtime' => time() - $startOfWork,
@@ -299,7 +275,7 @@ class ProbeWorkerCommand extends Command
      */
     protected function sendResponse($data): void
     {
-        $this->logger->info('COMMUNICATION_FLOW: Worker '.getmypid().' sent a '.$data['type'].' response.');
+        $this->logger->info('COMMUNICATION_FLOW: Worker ' . getmypid() . ' sent a ' . $data['type'] . ' response.');
         $json = json_encode($data);
         $this->output->writeln($json);
     }
