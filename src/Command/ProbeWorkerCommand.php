@@ -43,11 +43,6 @@ class ProbeWorkerCommand extends Command
     protected $loop;
 
     /**
-     * @var int
-     */
-    protected $maxRuntime;
-
-    /**
      * @var CommandFactory
      */
     private $commandFactory;
@@ -86,7 +81,6 @@ class ProbeWorkerCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->output = $output;
-        $this->maxRuntime = (int)$input->getOption('max-runtime');
 
         $this->loop = Factory::create();
 
@@ -100,9 +94,10 @@ class ProbeWorkerCommand extends Command
             }
         });
 
-        if ($this->maxRuntime > 0) {
-            $this->logger->info("Running for {$this->maxRuntime} seconds");
-            $this->loop->addTimer($this->maxRuntime, function () use ($output) {
+        $maxRuntime = (int)$input->getOption('max-runtime');
+        if ($maxRuntime > 0) {
+            $this->logger->info("Running for {$maxRuntime} seconds");
+            $this->loop->addTimer($maxRuntime, function () use ($output) {
                 $output->writeln('Max runtime reached');
                 $this->loop->stop();
             });
