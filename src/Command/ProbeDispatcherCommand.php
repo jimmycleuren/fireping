@@ -248,13 +248,10 @@ class ProbeDispatcherCommand extends Command
     }
 
     /**
-     * @param int $expectedRuntime
-     *
      * @throws Exception
      */
-    public function sendInstruction(array $instruction, $expectedRuntime = null): void
+    public function sendInstruction(array $instruction, int $expectedRuntime = 60): void
     {
-        $expectedRuntime = $expectedRuntime ?? 60;
         try {
             $worker = $this->workerManager->getWorker($instruction['type']);
         } catch (Exception $e) {
@@ -309,7 +306,7 @@ class ProbeDispatcherCommand extends Command
 
         switch ($type) {
             case 'probe':
-                $this->logger->info("Enqueueing the response from worker $pid.");
+                $this->logger->info("dispatcher: enqueueing the response from worker $pid.");
 
                 $items = $this->expandProbeResult($contents);
                 foreach ($items as $key => $item) {
