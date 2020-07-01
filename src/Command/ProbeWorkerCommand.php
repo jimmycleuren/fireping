@@ -113,32 +113,21 @@ class ProbeWorkerCommand extends Command
         foreach (['type', 'delay_execution'] as $parameter) {
             if (!isset($data[$parameter])) {
                 $this->logger->info(sprintf('worker %d aborting because parameter %s is missing', getmypid(), $parameter));
-                $this->sendResponse([
-                    'type' => 'exception',
-                    'status' => 400,
-                    'body' => [
-                        'contents' => "parameter $parameter missing",
-                    ],
-                ]);
+                $this->sendResponse('exception', 400, "parameter $parameter missing");
 
                 return;
             }
         }
 
-        $this->logger->info(sprintf('worker %d received %s job from dispatcher', getmypid(), $data['type']));
+        $type = $data['type'];
+        $this->logger->info(sprintf('worker %d received %s job from dispatcher', getmypid(), $type));
 
         try {
-            $command = $this->commandFactory->make($data['type'], $data);
-            $this->logger->info(sprintf('worker %d %s command initialized', getmypid(), $data['type']));
+            $command = $this->commandFactory->make($type, $data);
+            $this->logger->info(sprintf('worker %d %s command initialized', getmypid(), $type));
         } catch (Exception $e) {
             $this->logger->error(sprintf('worker %d fatal: ' . $e->getMessage()));
-            $this->sendResponse([
-                'type' => 'exception',
-                'status' => 400,
-                'body' => [
-                    'contents' => $e->getMessage(),
-                ],
-            ]);
+            $this->sendResponse('exception', 400, $e->getMessage());
 
             return;
         }
@@ -151,79 +140,63 @@ class ProbeWorkerCommand extends Command
             $shellOutput = $command->execute();
             $this->logger->info(sprintf('worker %d finished (took %d second(s))', getmypid(), time() - $startedAt));
 
-            switch ($data['type']) {
+            switch ($type) {
                 case PostStatsHttpWorkerCommand::class:
                 case PostResultsHttpWorkerCommand::class:
-                    $this->sendResponse([
-                        'type' => $data['type'],
-                        'status' => $shellOutput['code'],
-                        'headers' => [],
-                        'body' => [
-                            'contents' => $shellOutput['contents'],
-                        ],
-                    ]);
+                    $this->sendResponse($type, $shellOutput['code'], $shellOutput['contents']);
                     break;
 
                 case GetConfigHttpWorkerCommand::class:
-                    $this->sendResponse([
-                        'type' => $data['type'],
-                        'status' => $shellOutput['code'],
-                        'headers' => [
-                            'etag' => $shellOutput['etag'],
-                        ],
-                        'body' => [
-                            'contents' => $shellOutput['contents'],
-                        ],
-                    ]);
+                    $headers = ['etag' => $shellOutput['etag']];
+                    $this->sendResponse($type, $shellOutput['code'], $shellOutput['contents'], $headers);
                     break;
 
                 case 'ping':
                 case 'traceroute':
                 case 'http':
-                    $this->sendResponse([
-                        'type' => 'probe',
-                        'status' => 200,
-                        'body' => [
-                            'contents' => [
-                                $data['id'] => [
-                                    'type' => $data['type'],
-                                    'timestamp' => $data['timestamp'],
-                                    'targets' => $shellOutput,
-                                ],
-                            ],
+                    $contents = [
+                        $data['id'] => [
+                            'type' => $type,
+                            'timestamp' => $data['timestamp'],
+                            'targets' => $shellOutput,
                         ],
-                    ]);
+                    ];
+                    $this->sendResponse('probe', 200, $contents);
                     break;
+
                 default:
-                    $this->sendResponse([
-                        'type' => 'exception',
-                        'status' => 500,
-                        'body' => [
-                            'contents' => 'No answer defined for ' . $data['type'],
-                        ],
-                    ]);
+                    $this->sendResponse('exception', 500, "no answer defined for $type");
             }
         } catch (Exception $e) {
             $this->logger->error(sprintf('worker %d fatal: ' . $e->getMessage()));
-            $this->sendResponse([
-                'type' => 'exception',
-                'status' => 500,
-                'body' => [
-                    'contents' => $e->getMessage() . ' on ' . $e->getFile() . ':' . $e->getLine(),
-                ]
-            ]);
+            $this->sendResponse('exception', 500, $e->getMessage());
 
             return;
         }
     }
 
-    protected function sendResponse(array $data): void
+    /**
+     * @param string $type
+     * @param int $status
+     * @param array $headers
+     * @param array|string $contents
+     */
+    protected function sendResponse(string $type, int $status, $contents, array $headers = []): void
     {
+        $pid = getmypid();
+
+        $data = [
+            'pid' => $pid,
+            'type' => $type,
+            'status' => $status,
+            'headers' => $headers,
+            'contents' => $contents,
+        ];
+
         $start = time();
-        $data['pid'] = getmypid();
         $out = json_encode($data);
-        $this->logger->info(sprintf('worker %d sending %s response (%d bytes)', getmypid(), $data['type'], strlen($out)));
+        $this->logger->info(sprintf('worker %d sending %s response (%d bytes)', $pid, $type, strlen($out)));
         $this->output->writeln($out);
-        $this->logger->info(sprintf('worker %d sent response (took %d seconds)', getmypid(), time() - $start));
+        $this->logger->info(sprintf('worker %d sent response (took %d seconds)', $pid, time() - $start));
     }
 }
