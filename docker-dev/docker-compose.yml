@@ -9,7 +9,7 @@ services:
   php:
     build: php
     volumes:
-      - ./:/app
+      - ../:/app
       - rrd:/tmp/fireping/rrd/
     working_dir: /app
   slave:
