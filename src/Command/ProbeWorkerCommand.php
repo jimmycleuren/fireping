@@ -92,7 +92,7 @@ class ProbeWorkerCommand extends Command
         if ($maxRuntime > 0) {
             $this->logger->info("Running for {$maxRuntime} seconds");
             $loop->addTimer($maxRuntime, function () use ($loop) {
-                $this->logger->info('Worker max runtime reached.');
+                $this->output->writeln('Max runtime reached');
                 $loop->stop();
             });
         }
