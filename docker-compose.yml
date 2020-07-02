@@ -21,6 +21,7 @@ services:
     working_dir: /app
     environment:
       MODE: master
+      DEV: "true"
       DATABASE_URL: mysql://fireping:fireping@db/fireping
       REDIS_URL: redis://redis
 
@@ -33,6 +34,7 @@ services:
     working_dir: /app
     environment:
       MODE: slave
+      DEV: "true"
       SLAVE_NAME: slave
       SLAVE_PASSWORD: password
       SLAVE_URL: http://nginx
@@ -41,6 +43,7 @@ services:
     image: redis
     ports:
       - "6379:6379"
+
   rrdcached:
     image: crazymax/rrdcached
     environment:
@@ -49,6 +52,7 @@ services:
       - "42217:42217"
     volumes:
       - rrd:/data/db
+
   db:
     image: mariadb
     ports:

@@ -1,6 +1,7 @@
 FROM php:7.4-fpm
 
 ENV MODE slave
+ENV DEV false
 
 ADD . /app
 
@@ -17,4 +18,8 @@ RUN pecl install rrd
 RUN docker-php-ext-enable rrd
 RUN php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer
 
-ENTRYPOINT sh -c 'if [ "$MODE" = "master" ]; then ./docker/docker-master.sh ; else ./docker/docker-slave.sh ; fi'
+RUN if [ "$DEV" = "true" ] ; then \
+    composer install --verbose --prefer-dist --optimize-autoloader --no-scripts --no-suggest ; else \
+    composer install --verbose --prefer-dist --no-dev --optimize-autoloader --no-scripts --no-suggest ; fi
+
+ENTRYPOINT ["docker/entrypoint.sh"]
