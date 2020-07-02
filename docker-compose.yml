@@ -17,6 +17,7 @@ services:
       - redis
     volumes:
       - ./:/app
+      - rrd:/tmp/fireping/rrd/
     working_dir: /app
     environment:
       MODE: master
@@ -40,7 +41,14 @@ services:
     image: redis
     ports:
       - "6379:6379"
-
+  rrdcached:
+    image: crazymax/rrdcached
+    environment:
+      TZ: "Europe/Paris"
+    ports:
+      - "42217:42217"
+    volumes:
+      - rrd:/data/db
   db:
     image: mariadb
     ports:
@@ -62,3 +70,6 @@ services:
       MYSQL_DATABASE: fireping_test
       MYSQL_USER: fireping
       MYSQL_PASSWORD: fireping
+
+volumes:
+  rrd:

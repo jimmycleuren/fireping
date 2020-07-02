@@ -194,9 +194,6 @@
     "ocramius/proxy-manager": {
         "version": "2.1.1"
     },
-    "paragonie/random_compat": {
-        "version": "v9.99.99"
-    },
     "pdepend/pdepend": {
         "version": "2.5.2"
     },
@@ -207,7 +204,7 @@
         "version": "1.0.1"
     },
     "php": {
-        "version": "7.4"
+        "version": "7.3"
     },
     "phpdocumentor/reflection-common": {
         "version": "1.0.1"
@@ -600,9 +597,6 @@
     "symfony/polyfill-php80": {
         "version": "v1.17.0"
     },
-    "symfony/polyfill-uuid": {
-        "version": "v1.17.1"
-    },
     "symfony/process": {
         "version": "v4.3.3"
     },
@@ -712,9 +706,6 @@
             "templates/base.html.twig"
         ]
     },
-    "symfony/uid": {
-        "version": "v5.1.2"
-    },
     "symfony/validator": {
         "version": "4.3",
         "recipe": {
@@ -751,6 +742,15 @@
     },
     "theseer/tokenizer": {
         "version": "1.1.0"
+    },
+    "twig/extensions": {
+        "version": "1.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "1.0",
+            "ref": "4851df0afc426b8f07204379d21fca25b6df5d68"
+        }
     },
     "twig/twig": {
         "version": "v2.4.8"
