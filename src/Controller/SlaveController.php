@@ -313,13 +313,13 @@ class SlaveController extends AbstractController
         $entityManager->persist($slave);
         $entityManager->flush();
 
-        if (isset($data->workers) && is_array($data->workers)) {
+        if (isset($data->workers)) {
             foreach ($data->workers as $timestamp => $workerData) {
                 $storage->store($slave, "workers", $timestamp, $workerData);
             }
         }
 
-        if (isset($data->queues) && is_array($data->queues)) {
+        if (isset($data->queues)) {
             foreach ($data->queues as $timestamp => $queues) {
                 $result = [];
                 foreach ($queues as $id => $items) {
