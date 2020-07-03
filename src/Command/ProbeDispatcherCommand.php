@@ -9,6 +9,7 @@ use App\DependencyInjection\SlaveConfiguration;
 use App\DependencyInjection\StatsManager;
 use App\DependencyInjection\WorkerManager;
 use App\Instruction\Instruction;
+use App\Process\SymfonyProcessFactory;
 use App\ShellCommand\GetConfigHttpWorkerCommand;
 use App\ShellCommand\PostStatsHttpWorkerCommand;
 use App\Version\GitVersionReader;
@@ -158,7 +159,7 @@ class ProbeDispatcherCommand extends Command
             );
         }
 
-        $this->statsManager->setVersion((new GitVersionReader($this->logger))->version());
+        $this->statsManager->setVersion((new GitVersionReader($this->logger, new SymfonyProcessFactory()))->version());
     }
 
     /**
