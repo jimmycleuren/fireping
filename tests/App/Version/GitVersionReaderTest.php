@@ -4,15 +4,32 @@ declare(strict_types=1);
 
 namespace App\Tests\App\Version;
 
+use App\Process\DummyProcessFactory;
+use App\Process\ProcessFixture;
 use App\Version\GitVersionReader;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
 class GitVersionReaderTest extends TestCase
 {
-    public function testReadingCreatesVersionObjects()
+    /**
+     * @dataProvider dataProvider
+     */
+    public function testReadingCreatesVersionObjects(ProcessFixture $fixture, string $version)
     {
-        $reader = new GitVersionReader(new NullLogger());
-        $reader->version();
+        $factory = new DummyProcessFactory();
+        $factory->addFixture(sha1(serialize(['git', 'describe', '--always'])), $fixture);
+        $reader = new GitVersionReader(new NullLogger(), $factory);
+        self::assertEquals($version, $reader->version()->asString());
+    }
+
+    public function dataProvider()
+    {
+        return [
+            [new ProcessFixture('', '', true), ''],
+            [new ProcessFixture('e240044', '', true), 'e240044'],
+            [new ProcessFixture('v1.0', '', true), 'v1.0'],
+            [new ProcessFixture('', 'fatal: No names found, cannot describe anything.', false), ''],
+        ];
     }
 }
