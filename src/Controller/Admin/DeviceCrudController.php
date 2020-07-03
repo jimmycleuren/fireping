@@ -29,7 +29,7 @@ class DeviceCrudController extends AbstractCrudController
     {
         $name = TextField::new('name');
         $domain = AssociationField::new('domain');
-        $ip = TextField::new('ip');
+        $ip = TextField::new('ip')->setLabel('Hostname');
         $slavegroups = AssociationField::new('slavegroups');
         $probes = AssociationField::new('probes');
         $alertRules = AssociationField::new('alertRules');
