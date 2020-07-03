@@ -7,7 +7,6 @@ namespace App\ShellCommand;
 use App\Client\FirepingClient;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
-use JsonException;
 use Psr\Log\LoggerInterface;
 use stdClass;
 
@@ -34,17 +33,9 @@ class PostStatsHttpWorkerCommand implements CommandInterface
     public function execute(): array
     {
         $startedAt = microtime(true);
-        $this->logger->info('worker: attempting to publish stats to master');
+        $this->logger->info(sprintf('worker: publishing stats to master (%d bytes)', strlen(serialize($this->body))));
         try {
             $response = $this->client->request($this->method, $this->endpoint, ['json' => $this->body]);
-
-            try {
-                $out = json_encode($this->body, JSON_THROW_ON_ERROR, 512);
-                $this->logger->debug(sprintf('worker: stats: %s', $out));
-            } catch (JsonException $exception) {
-                $this->logger->error(sprintf('failed to encode statistics as json: %s', $exception->getMessage()));
-                $this->logger->debug(sprintf('worker: stats: %s', serialize($this->body)));
-            }
 
             $this->logger->info(sprintf('worker: published stats (took %.2f seconds)', microtime(true) - $startedAt));
             return ['code' => $response->getStatusCode(), 'contents' => (string) $response->getBody()];
