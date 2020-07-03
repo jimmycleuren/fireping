@@ -5,6 +5,7 @@ namespace App\DependencyInjection;
 use App\ShellCommand\GetConfigHttpWorkerCommand;
 use App\ShellCommand\PostResultsHttpWorkerCommand;
 use App\ShellCommand\PostStatsHttpWorkerCommand;
+use App\Version\Version;
 use App\Version\VersionInterface;
 use Psr\Log\LoggerInterface;
 
@@ -39,7 +40,7 @@ class StatsManager
             ],
             'workers' => $this->workers,
             'queues' => $this->queues,
-            'version' => $this->version->asString()
+            'version' => $this->getVersion()->asString()
         ];
 
         $this->queues = [];
@@ -130,5 +131,10 @@ class StatsManager
     public function setVersion(VersionInterface $version): void
     {
         $this->version = $version;
+    }
+
+    private function getVersion(): VersionInterface
+    {
+        return $this->version ?? new Version('');
     }
 }
