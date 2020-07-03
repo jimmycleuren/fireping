@@ -1,28 +1,49 @@
 version: '2'
 services:
   nginx:
-    build: docker/nginx
+    image: nginx
+    depends_on:
+      - php
     ports:
       - "80:80"
     volumes:
       - ./:/app
+      - ./docker/symfony.conf:/etc/nginx/conf.d/symfony.conf:ro
+
   php:
-    build: docker/php
+    build: ""
+    depends_on:
+      - db
+      - redis
     volumes:
       - ./:/app
       - rrd:/tmp/fireping/rrd/
     working_dir: /app
+    environment:
+      MODE: master
+      DEV: "true"
+      DATABASE_URL: mysql://fireping:fireping@db/fireping
+      REDIS_URL: redis://redis
+
   slave:
-    build: docker/slave
-    links:
-      - "nginx:fireping.develop"
+    build: ""
+    depends_on:
+      - nginx
     volumes:
       - ./:/app
     working_dir: /app
+    environment:
+      MODE: slave
+      DEV: "true"
+      SLAVE_NAME: slave
+      SLAVE_PASSWORD: password
+      SLAVE_URL: http://nginx
+
   redis:
     image: redis
     ports:
       - "6379:6379"
+
   rrdcached:
     image: crazymax/rrdcached
     environment:
@@ -31,6 +52,7 @@ services:
       - "42217:42217"
     volumes:
       - rrd:/data/db
+
   db:
     image: mariadb
     ports:
@@ -42,6 +64,7 @@ services:
       MYSQL_DATABASE: fireping
       MYSQL_USER: fireping
       MYSQL_PASSWORD: fireping
+
   testdb:
     image: mysql:5.7
     ports:

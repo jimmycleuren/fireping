@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ "$MODE" = "master" ]
+then
+  php /app/bin/console cache:warmup
+  php /app/bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
+  php-fpm
+else
+  php /app/bin/console cache:warmup --env=slave
+  php /app/bin/console app:probe:dispatcher --env=slave
+fi
