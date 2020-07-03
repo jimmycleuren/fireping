@@ -53,7 +53,7 @@ class Slave
      * @var string
      * @ORM\Column()
      */
-    private $version;
+    private $version = '';
 
     /**
      * Set id.
