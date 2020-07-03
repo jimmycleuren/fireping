@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Version\Version;
+use App\Version\VersionInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -46,6 +48,12 @@ class Slave
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $ip;
+
+    /**
+     * @var string
+     * @ORM\Column()
+     */
+    private $version;
 
     /**
      * Set id.
@@ -159,5 +167,15 @@ class Slave
         }
 
         return false;
+    }
+
+    public function getVersion(): VersionInterface
+    {
+        return Version::fromString($this->version);
+    }
+
+    public function setVersion(VersionInterface $version): void
+    {
+        $this->version = $version->asString();
     }
 }
