@@ -101,10 +101,6 @@ class SlaveController extends AbstractController
      */
     public function configAction($id, Request $request, EntityManagerInterface $entityManager, SlaveRepository $slaveRepository, DeviceRepository $deviceRepository)
     {
-        if (extension_loaded('newrelic')) {
-            newrelic_name_transaction('api_slaves_config');
-        }
-
         $slave = $slaveRepository->findOneById($id);
         if (!$slave) {
             $slave = new Slave();
@@ -112,6 +108,7 @@ class SlaveController extends AbstractController
         }
 
         $slave->setLastContact(new \DateTime());
+        $slave->setIp($request->getClientIp());
         $entityManager->persist($slave);
         $entityManager->flush();
 
@@ -215,10 +212,6 @@ class SlaveController extends AbstractController
      */
     public function resultAction(Slave $slave, Request $request, ProcessorFactory $processorFactory, LoggerInterface $logger, EntityManagerInterface $entityManager)
     {
-        if (extension_loaded('newrelic')) {
-            newrelic_name_transaction('api_slaves_result');
-        }
-
         $this->em = $entityManager;
         $this->logger = $logger;
 
@@ -308,7 +301,6 @@ class SlaveController extends AbstractController
     {
         $data = json_decode($request->getContent());
 
-        $slave->setIp($data->ip);
         $slave->setLastContact(new \DateTime());
         $entityManager->persist($slave);
         $entityManager->flush();
