@@ -11,6 +11,7 @@ use App\DependencyInjection\WorkerManager;
 use App\Instruction\Instruction;
 use App\ShellCommand\GetConfigHttpWorkerCommand;
 use App\ShellCommand\PostStatsHttpWorkerCommand;
+use App\Version\GitVersionReader;
 use Exception;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
@@ -156,6 +157,8 @@ class ProbeDispatcherCommand extends Command
                 $this->logger
             );
         }
+
+        $this->statsManager->setVersion((new GitVersionReader($this->logger))->version());
     }
 
     /**
