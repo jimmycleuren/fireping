@@ -72,6 +72,16 @@ class RrdStorage extends Storage
 
     protected function create(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data)
     {
+        if (count($probe->getArchives()) == 0) {
+            $this->logger->error("No archives specified for probe ".$probe->getName());
+            return;
+        }
+
+        if (count($data) == 0) {
+            $this->logger->error("No data specified for probe ".$probe->getName());
+            return;
+        }
+
         $filename = $this->getFilePath($device, $probe, $group);
 
         $start = $timestamp - 1;
