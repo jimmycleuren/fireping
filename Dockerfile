@@ -1,4 +1,7 @@
-FROM php:7.3.19-cli-stretch
+FROM php:7.4-fpm
+
+ENV MODE slave
+ENV DEV false
 
 ADD . /app
 
@@ -7,9 +10,16 @@ RUN apt-get install -y fping zip git rrdtool librrd-dev procps
 
 WORKDIR /app
 
-RUN docker-php-ext-install pcntl
+COPY docker/timezone.ini /usr/local/etc/php/conf.d/timezone.ini
+RUN chmod 755 /usr/local/etc/php/conf.d/timezone.ini
+
+RUN docker-php-ext-install pcntl pdo_mysql
 RUN pecl install rrd
 RUN docker-php-ext-enable rrd
 RUN php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer
-RUN APP_ENV=slave composer install
-CMD ["php", "/app/bin/console", "app:probe:dispatcher", "--env=slave"]
+
+RUN if [ "$DEV" = "true" ] ; then \
+    composer install --verbose --prefer-dist --optimize-autoloader --no-scripts --no-suggest ; else \
+    composer install --verbose --prefer-dist --no-dev --optimize-autoloader --no-scripts --no-suggest ; fi
+
+ENTRYPOINT ["docker/entrypoint.sh"]
