@@ -26,7 +26,6 @@ class StatsManager
         $res = [
             'load' => sys_getloadavg(),
             'memory' => $this->getMemoryUsage(),
-            'ip' => gethostbyname(gethostname()),
             'posts' => [
                 'success' => $this->successfulPosts,
                 'failed' => $this->failedPosts,
