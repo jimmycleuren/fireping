@@ -112,6 +112,7 @@ class SlaveController extends AbstractController
         }
 
         $slave->setLastContact(new \DateTime());
+        $slave->setIp($request->getClientIp());
         $entityManager->persist($slave);
         $entityManager->flush();
 
@@ -308,7 +309,6 @@ class SlaveController extends AbstractController
     {
         $data = json_decode($request->getContent());
 
-        $slave->setIp($data->ip);
         $slave->setLastContact(new \DateTime());
         $entityManager->persist($slave);
         $entityManager->flush();
