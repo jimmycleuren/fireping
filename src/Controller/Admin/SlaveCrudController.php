@@ -9,6 +9,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use function PHPUnit\Framework\callback;
 
 class SlaveCrudController extends AbstractCrudController
 {
@@ -38,11 +39,13 @@ class SlaveCrudController extends AbstractCrudController
         $id = TextField::new('id', 'ID');
         $lastContact = DateTimeField::new('lastContact');
         $ip = TextField::new('ip');
+        $version = TextField::new('version')
+            ->setFormTypeOption('disabled', true);
 
         if (Crud::PAGE_INDEX === $pageName) {
-            return [$id, $lastContact, $ip, $slavegroup];
+            return [$id, $lastContact, $ip, $slavegroup, $version];
         } elseif (Crud::PAGE_DETAIL === $pageName) {
-            return [$id, $lastContact, $ip, $slavegroup];
+            return [$id, $lastContact, $ip, $slavegroup, $version];
         } elseif (Crud::PAGE_NEW === $pageName) {
             return [$slavegroup];
         } elseif (Crud::PAGE_EDIT === $pageName) {

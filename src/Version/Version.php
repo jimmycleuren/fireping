@@ -25,5 +25,10 @@ class Version implements VersionInterface
     {
         return $this->version;
     }
+
+    public function __toString()
+    {
+        return $this->version;
+    }
 }
 
