@@ -6,12 +6,12 @@ namespace App\Slave\Task;
 
 use Psr\Log\LoggerInterface;
 
-final class CommandFactory
+final class TaskFactory
 {
     private $logger;
 
     /**
-     * @var CommandInterface[]
+     * @var TaskInterface[]
      */
     private $types = [];
 
@@ -20,12 +20,12 @@ final class CommandFactory
         $this->logger = $logger;
     }
 
-    public function addCommandType(CommandInterface $command)
+    public function addTaskType(TaskInterface $command)
     {
         $this->types[$command->getType()] = $command;
     }
 
-    public function make(string $command, array $args): ?CommandInterface
+    public function make(string $command, array $args): ?TaskInterface
     {
         $class = $this->types[$command] ?? null;
 

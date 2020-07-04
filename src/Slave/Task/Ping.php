@@ -7,7 +7,7 @@ namespace App\Slave\Task;
 use App\OutputFormatter\PingOutputFormatter;
 use Psr\Log\LoggerInterface;
 
-class Ping implements CommandInterface
+class Ping implements TaskInterface
 {
     public const MAX_TARGETS = 1e4;
 

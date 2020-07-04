@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\Slave\Task\CommandFactory;
-use App\Slave\Task\GetConfigHttpWorkerCommand;
-use App\Slave\Task\PostResultsHttpWorkerCommand;
-use App\Slave\Task\PostStatsHttpWorkerCommand;
+use App\Slave\Task\TaskFactory;
+use App\Slave\Task\GetConfigHttpWorkerTask;
+use App\Slave\Task\PostResultsHttpWorkerTask;
+use App\Slave\Task\PostStatsHttpWorkerTask;
 use Exception;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
@@ -37,14 +37,14 @@ class ProbeWorkerCommand extends Command
     protected $logger;
 
     /**
-     * @var CommandFactory
+     * @var TaskFactory
      */
     private $commandFactory;
 
     /**
      * @throws LogicException
      */
-    public function __construct(LoggerInterface $logger, CommandFactory $commandFactory)
+    public function __construct(LoggerInterface $logger, TaskFactory $commandFactory)
     {
         $this->logger = $logger;
         $this->commandFactory = $commandFactory;
@@ -143,12 +143,12 @@ class ProbeWorkerCommand extends Command
             $this->logger->info(sprintf('worker %d finished (took %d second(s))', getmypid(), time() - $startedAt));
 
             switch ($type) {
-                case PostStatsHttpWorkerCommand::class:
-                case PostResultsHttpWorkerCommand::class:
+                case PostStatsHttpWorkerTask::class:
+                case PostResultsHttpWorkerTask::class:
                     $this->sendResponse($type, $shellOutput['code'], $shellOutput['contents']);
                     break;
 
-                case GetConfigHttpWorkerCommand::class:
+                case GetConfigHttpWorkerTask::class:
                     $headers = ['etag' => $shellOutput['etag']];
                     $this->sendResponse($type, $shellOutput['code'], $shellOutput['contents'], $headers);
                     break;

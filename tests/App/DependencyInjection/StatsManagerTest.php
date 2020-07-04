@@ -3,9 +3,9 @@
 namespace App\Tests\App\DependencyInjection;
 
 use App\DependencyInjection\StatsManager;
-use App\Slave\Task\GetConfigHttpWorkerCommand;
-use App\Slave\Task\PostResultsHttpWorkerCommand;
-use App\Slave\Task\PostStatsHttpWorkerCommand;
+use App\Slave\Task\GetConfigHttpWorkerTask;
+use App\Slave\Task\PostResultsHttpWorkerTask;
+use App\Slave\Task\PostStatsHttpWorkerTask;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Log\LoggerInterface;
@@ -103,9 +103,9 @@ class StatsManagerTest extends TestCase
             'traceroute' => 1,
             'queue' => 1,
             'http' => 1,
-            PostStatsHttpWorkerCommand::class => 1,
-            GetConfigHttpWorkerCommand::class => 1,
-            PostResultsHttpWorkerCommand::class => 1,
+            PostStatsHttpWorkerTask::class => 1,
+            GetConfigHttpWorkerTask::class => 1,
+            PostResultsHttpWorkerTask::class => 1,
             'bla' => 0,
         ]);
 

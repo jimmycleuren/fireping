@@ -6,7 +6,7 @@ namespace App\Slave\Task;
 
 use Psr\Log\LoggerInterface;
 
-class Traceroute implements CommandInterface
+class Traceroute implements TaskInterface
 {
     private $maxHops = 30;
     private $delay = null;

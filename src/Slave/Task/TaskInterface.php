@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Slave\Task;
 
-interface CommandInterface
+interface TaskInterface
 {
     public function setArgs(array $args): void;
 
