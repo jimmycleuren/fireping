@@ -34,13 +34,6 @@ class WorkerManager
     private $inUseWorkerTypes = [];
 
     /**
-     * The minimum amount of workers that should be idle at all times.
-     *
-     * @var int
-     */
-    private $minimumIdleWorkers;
-
-    /**
      * At most this many workers should ever be created.
      *
      * @var int
