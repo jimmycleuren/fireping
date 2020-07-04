@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Probe;
+namespace App\Slave\Task;
 
 use App\OutputFormatter\PingOutputFormatter;
-use App\ShellCommand\CommandInterface;
 use Psr\Log\LoggerInterface;
 
 class Ping implements CommandInterface

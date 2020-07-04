@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace App\Probe;
+namespace App\Slave\Task;
 
-use App\ShellCommand\CommandInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise;
 use GuzzleHttp\TransferStats;

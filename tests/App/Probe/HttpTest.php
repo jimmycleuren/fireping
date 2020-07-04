@@ -2,7 +2,7 @@
 
 namespace App\Tests\App\Probe;
 
-use App\Probe\Http;
+use App\Slave\Task\Http;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Log\LoggerInterface;

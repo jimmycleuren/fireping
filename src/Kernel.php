@@ -3,7 +3,7 @@
 namespace App;
 
 use App\DependencyInjection\Compiler\CommandPass;
-use App\ShellCommand\CommandInterface;
+use App\Slave\Task\CommandInterface;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;

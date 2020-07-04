@@ -3,9 +3,9 @@
 namespace App\Tests\App\DependencyInjection;
 
 use App\DependencyInjection\StatsManager;
-use App\ShellCommand\GetConfigHttpWorkerCommand;
-use App\ShellCommand\PostResultsHttpWorkerCommand;
-use App\ShellCommand\PostStatsHttpWorkerCommand;
+use App\Slave\Task\GetConfigHttpWorkerCommand;
+use App\Slave\Task\PostResultsHttpWorkerCommand;
+use App\Slave\Task\PostStatsHttpWorkerCommand;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Log\LoggerInterface;

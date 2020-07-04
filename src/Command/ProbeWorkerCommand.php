@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\ShellCommand\CommandFactory;
-use App\ShellCommand\GetConfigHttpWorkerCommand;
-use App\ShellCommand\PostResultsHttpWorkerCommand;
-use App\ShellCommand\PostStatsHttpWorkerCommand;
+use App\Slave\Task\CommandFactory;
+use App\Slave\Task\GetConfigHttpWorkerCommand;
+use App\Slave\Task\PostResultsHttpWorkerCommand;
+use App\Slave\Task\PostStatsHttpWorkerCommand;
 use Exception;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;

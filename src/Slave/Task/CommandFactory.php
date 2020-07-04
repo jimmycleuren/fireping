@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\ShellCommand;
+namespace App\Slave\Task;
 
 use Psr\Log\LoggerInterface;
 

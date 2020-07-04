@@ -2,7 +2,7 @@
 
 namespace App\DependencyInjection;
 
-use App\ShellCommand\PostResultsHttpWorkerCommand;
+use App\Slave\Task\PostResultsHttpWorkerCommand;
 use Psr\Log\LoggerInterface;
 
 class Queue
