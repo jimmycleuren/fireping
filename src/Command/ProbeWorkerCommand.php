@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Slave\Task\TaskFactory;
-use App\Slave\Task\GetConfigHttpWorkerTask;
-use App\Slave\Task\PostResultsHttpWorkerTask;
-use App\Slave\Task\PostStatsHttpWorkerTask;
+use App\Slave\Task\FetchConfiguration;
+use App\Slave\Task\PublishResults;
+use App\Slave\Task\PublishStatistics;
 use Exception;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
@@ -143,12 +143,12 @@ class ProbeWorkerCommand extends Command
             $this->logger->info(sprintf('worker %d finished (took %d second(s))', getmypid(), time() - $startedAt));
 
             switch ($type) {
-                case PostStatsHttpWorkerTask::class:
-                case PostResultsHttpWorkerTask::class:
+                case PublishStatistics::class:
+                case PublishResults::class:
                     $this->sendResponse($type, $shellOutput['code'], $shellOutput['contents']);
                     break;
 
-                case GetConfigHttpWorkerTask::class:
+                case FetchConfiguration::class:
                     $headers = ['etag' => $shellOutput['etag']];
                     $this->sendResponse($type, $shellOutput['code'], $shellOutput['contents'], $headers);
                     break;

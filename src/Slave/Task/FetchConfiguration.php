@@ -9,7 +9,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
 use Psr\Log\LoggerInterface;
 
-class GetConfigHttpWorkerTask implements TaskInterface
+class FetchConfiguration implements TaskInterface
 {
     /**
      * @var LoggerInterface

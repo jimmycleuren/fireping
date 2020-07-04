@@ -9,8 +9,8 @@ use App\DependencyInjection\SlaveConfiguration;
 use App\DependencyInjection\StatsManager;
 use App\DependencyInjection\WorkerManager;
 use App\Instruction\Instruction;
-use App\Slave\Task\GetConfigHttpWorkerTask;
-use App\Slave\Task\PostStatsHttpWorkerTask;
+use App\Slave\Task\FetchConfiguration;
+use App\Slave\Task\PublishStatistics;
 use Exception;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
@@ -172,7 +172,7 @@ class ProbeDispatcherCommand extends Command
 
             if ($now % 120 === $this->randomFactor) {
                 $instruction = [
-                    'type' => GetConfigHttpWorkerTask::class,
+                    'type' => FetchConfiguration::class,
                     'delay_execution' => 0,
                     'etag' => $this->configuration->getEtag(),
                     'timestamp' => $now,
@@ -182,7 +182,7 @@ class ProbeDispatcherCommand extends Command
 
             if ($now % 60 === (int) floor($this->randomFactor / 2)) {
                 $instruction = [
-                    'type' => PostStatsHttpWorkerTask::class,
+                    'type' => PublishStatistics::class,
                     'delay_execution' => 0,
                     'body' => $this->statsManager->getStats(),
                     'timestamp' => $now,
@@ -315,7 +315,7 @@ class ProbeDispatcherCommand extends Command
                 }
                 break;
 
-            case GetConfigHttpWorkerTask::class:
+            case FetchConfiguration::class:
                 $this->logger->info('dispatcher: started handling new configuration response');
                 if (200 === $status) {
                     $this->logger->info('dispatcher: applying new configuration');

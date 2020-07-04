@@ -8,8 +8,9 @@ use App\Client\FirepingClient;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
+use stdClass;
 
-class PostResultsHttpWorkerTask implements TaskInterface
+class PublishStatistics implements TaskInterface
 {
     /**
      * @var LoggerInterface
@@ -32,7 +33,7 @@ class PostResultsHttpWorkerTask implements TaskInterface
     public function execute(): array
     {
         $startedAt = microtime(true);
-        $this->logger->info(sprintf('worker: publishing results (%d bytes)', strlen(serialize($this->body))));
+        $this->logger->info(sprintf('worker: publishing stats to master (%d bytes)', strlen(serialize($this->body))));
         try {
             $response = $this->client->request($this->method, $this->endpoint, ['json' => $this->body]);
 
@@ -55,8 +56,8 @@ class PostResultsHttpWorkerTask implements TaskInterface
     public function setArgs(array $args): void
     {
         $this->method = $args['method'] ?? 'POST';
-        $this->endpoint = sprintf('/api/slaves/%s/result', $_ENV['SLAVE_NAME']);
-        $this->body = $args['body'] ?? new \stdClass();
+        $this->endpoint = sprintf('/api/slaves/%s/stats', $_ENV['SLAVE_NAME']);
+        $this->body = $args['body'] ?? new stdClass();
     }
 
     public function getType(): string
