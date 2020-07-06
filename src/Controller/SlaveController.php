@@ -303,7 +303,7 @@ class SlaveController extends AbstractController
         $data = json_decode($request->getContent());
 
         $slave->setLastContact(new \DateTime());
-        $slave->setVersion(Version::fromString((string) ($data->version ?? '')));
+        $slave->setVersion(new Version((string) ($data->version ?? '')));
         $entityManager->flush();
 
         if (isset($data->workers)) {

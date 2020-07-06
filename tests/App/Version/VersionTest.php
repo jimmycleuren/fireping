@@ -14,7 +14,7 @@ class VersionTest extends TestCase
      */
     public function testDefault(string $in, string $expected): void
     {
-        self::assertEquals($expected, Version::fromString($in)->asString());
+        self::assertEquals($expected, (new Version($in))->asString());
     }
 
     public function dataProvider(): array

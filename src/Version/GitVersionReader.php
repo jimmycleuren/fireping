@@ -39,7 +39,7 @@ class GitVersionReader implements VersionReaderInterface
             }
         }
 
-        return Version::fromString($output);
+        return new Version($output);
     }
 }
 

@@ -170,7 +170,7 @@ class Slave
 
     public function getVersion(): Version
     {
-        return Version::fromString($this->version);
+        return new Version($this->version);
     }
 
     public function setVersion(Version $version): void

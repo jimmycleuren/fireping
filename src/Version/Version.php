@@ -13,20 +13,10 @@ final class Version
 
     public function __construct(string $version)
     {
-        $this->version = $version;
-    }
-
-    public static function fromString(string $version): self
-    {
-        return new self(trim($version));
+        $this->version = trim($version);
     }
 
     public function asString(): string
-    {
-        return $this->version;
-    }
-
-    public function __toString()
     {
         return $this->version;
     }
