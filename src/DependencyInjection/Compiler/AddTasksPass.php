@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\Reference;
 
 class AddTasksPass implements CompilerPassInterface
 {
-    public const TAG = 'app.slave.command';
+    public const TAG = 'app.slave.task';
 
     /**
      * You can modify the container here before it is dumped to PHP code.
