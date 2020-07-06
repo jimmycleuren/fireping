@@ -9,6 +9,6 @@ use Symfony\Component\Process\Process;
 
 interface VersionReaderInterface
 {
-    public function version(): VersionInterface;
+    public function version(): Version;
 }
 

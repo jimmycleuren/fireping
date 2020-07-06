@@ -6,7 +6,6 @@ use App\ShellCommand\GetConfigHttpWorkerCommand;
 use App\ShellCommand\PostResultsHttpWorkerCommand;
 use App\ShellCommand\PostStatsHttpWorkerCommand;
 use App\Version\Version;
-use App\Version\VersionInterface;
 use Psr\Log\LoggerInterface;
 
 class StatsManager
@@ -19,7 +18,7 @@ class StatsManager
     private $logger;
     /**
      * The running version of the dispatcher. This will either be the tag (v1.0) or the commit id.
-     * @var VersionInterface
+     * @var Version
      */
     private $version;
 
@@ -31,15 +30,15 @@ class StatsManager
     public function getStats()
     {
         $res = [
-            'load' => sys_getloadavg(),
-            'memory' => $this->getMemoryUsage(),
-            'posts' => [
-                'success' => $this->successfulPosts,
-                'failed' => $this->failedPosts,
+            'load'    => sys_getloadavg(),
+            'memory'  => $this->getMemoryUsage(),
+            'posts'   => [
+                'success'   => $this->successfulPosts,
+                'failed'    => $this->failedPosts,
                 'discarded' => $this->discardedPosts,
             ],
             'workers' => $this->workers,
-            'queues' => $this->queues,
+            'queues'  => $this->queues,
             'version' => $this->getVersion()->asString()
         ];
 
@@ -78,7 +77,7 @@ class StatsManager
     public function addWorkerStats($total, $available, $types)
     {
         $temp = [
-            'total' => $total,
+            'total'     => $total,
             'available' => $available,
         ];
 
@@ -128,12 +127,12 @@ class StatsManager
         return $mem;
     }
 
-    public function setVersion(VersionInterface $version): void
+    public function setVersion(Version $version): void
     {
         $this->version = $version;
     }
 
-    private function getVersion(): VersionInterface
+    private function getVersion(): Version
     {
         return $this->version ?? new Version('');
     }

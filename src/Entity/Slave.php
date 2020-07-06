@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Version\Version;
-use App\Version\VersionInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -169,12 +168,12 @@ class Slave
         return false;
     }
 
-    public function getVersion(): VersionInterface
+    public function getVersion(): Version
     {
         return Version::fromString($this->version);
     }
 
-    public function setVersion(VersionInterface $version): void
+    public function setVersion(Version $version): void
     {
         $this->version = $version->asString();
     }

@@ -24,7 +24,7 @@ class GitVersionReader implements VersionReaderInterface
         $this->factory = $factory;
     }
 
-    public function version(): VersionInterface
+    public function version(): Version
     {
         $process = $this->factory->create(['git', 'describe', '--always']);
         $process->run();

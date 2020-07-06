@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Version;
 
-class Version implements VersionInterface
+final class Version
 {
     /**
      * @var string
@@ -16,7 +16,7 @@ class Version implements VersionInterface
         $this->version = $version;
     }
 
-    public static function fromString(string $version): VersionInterface
+    public static function fromString(string $version): self
     {
         return new self(trim($version));
     }
