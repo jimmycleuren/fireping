@@ -22,10 +22,10 @@ class AddTasksPass implements CompilerPassInterface
             return;
         }
 
-        $commandFactory = $container->findDefinition(TaskFactory::class);
+        $factory = $container->findDefinition(TaskFactory::class);
         $services = $container->findTaggedServiceIds(self::TAG);
         foreach ($services as $id => $tags) {
-            $commandFactory->addMethodCall('addTaskType', [new Reference($id)]);
+            $factory->addMethodCall('addTaskType', [new Reference($id)]);
         }
     }
 }

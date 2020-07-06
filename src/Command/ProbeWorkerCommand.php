@@ -39,15 +39,15 @@ class ProbeWorkerCommand extends Command
     /**
      * @var TaskFactory
      */
-    private $commandFactory;
+    private $taskFactory;
 
     /**
      * @throws LogicException
      */
-    public function __construct(LoggerInterface $logger, TaskFactory $commandFactory)
+    public function __construct(LoggerInterface $logger, TaskFactory $taskFactory)
     {
         $this->logger = $logger;
-        $this->commandFactory = $commandFactory;
+        $this->taskFactory = $taskFactory;
 
         parent::__construct();
     }
@@ -124,7 +124,7 @@ class ProbeWorkerCommand extends Command
         $this->logger->info(sprintf('worker %d received %s job from dispatcher', getmypid(), $type));
 
         try {
-            $command = $this->commandFactory->make($type, $data);
+            $command = $this->taskFactory->make($type, $data);
             $this->logger->info(sprintf('worker %d %s command initialized', getmypid(), $type));
         } catch (Exception $e) {
             $errorMessage = sprintf('worker %d fatal: ' . $e->getMessage());
