@@ -1,0 +1,7 @@
+{# backported from @AdminLTE/Sidebar/menu.html.twig #}
+{% from "macros/menu.html.twig" import menu_item %}
+<ul class="sidebar-menu" data-widget="tree">
+    {% for item in menu %}
+        {{ menu_item(item) }}
+    {% endfor %}
+</ul>
