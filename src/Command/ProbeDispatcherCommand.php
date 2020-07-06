@@ -43,13 +43,6 @@ class ProbeDispatcherCommand extends Command
     protected $queues;
 
     /**
-     * The number of workers that will be created at most.
-     *
-     * @var int
-     */
-    protected $workerLimit;
-
-    /**
      * Used to write to log files.
      *
      * @var LoggerInterface
@@ -252,34 +245,37 @@ class ProbeDispatcherCommand extends Command
     }
 
     /**
-     * @param int $expectedRuntime
-     *
      * @throws Exception
      */
-    public function sendInstruction(array $instruction, $expectedRuntime = null): void
+    public function sendInstruction(array $instruction, int $expectedRuntime = 60): void
     {
-        $expectedRuntime = $expectedRuntime ?? 60;
         try {
+            $this->logger->info(sprintf('dispatcher: selecting worker for type %s', $instruction['type']));
             $worker = $this->workerManager->getWorker($instruction['type']);
+            $this->logger->info(sprintf('dispatcher: worker %s selected', (string) $worker));
         } catch (Exception $e) {
-            $this->logger->critical($e->getMessage());
+            $this->logger->error('dispatcher: could not select worker: ' . $e->getMessage());
 
             return;
         }
 
         $json = json_encode($instruction);
-        if (false === $json) {
-            $this->logger->critical('Failed to encode instruction: '.json_last_error_msg());
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $this->logger->error('dispatcher: failed to encode instruction: ' . json_last_error_msg());
 
             return;
         }
 
-        $this->logger->debug(sprintf('Sending worker=%s instruction=%s', $worker, $json));
+        $startAt = microtime(true);
+
+        $this->logger->info(sprintf('dispatcher: sending instruction to worker %s (%d bytes)', (string) $worker, strlen($json)));
+        $this->logger->debug(sprintf('dispatcher: worker %s instruction: %s', (string) $worker, $json));
+
         $worker->send($json, $expectedRuntime, function ($type, $response) {
             $this->handleResponse($type, $response);
         });
 
-        $this->logger->info('COMMUNICATION_FLOW: Master sent '.$instruction['type']." instruction to worker $worker.");
+        $this->logger->info(sprintf('dispatcher: sent instruction to worker %s (took %s seconds)', (string) $worker, microtime(true) - $startAt));
     }
 
     /**
@@ -288,71 +284,49 @@ class ProbeDispatcherCommand extends Command
      */
     private function handleResponse($channel, $data): void
     {
+        $startAt = microtime(true);
+        $bytes = strlen($data);
         $response = json_decode($data, true);
 
         if (!$response) {
-            $this->logger->warning('COMMUNICATION_FLOW: Response from worker could not be decoded to JSON.');
+            $this->logger->error('dispatcher: malformed json received from worker');
 
             return;
         }
 
-        if (!isset(
-            $response['type'],
-            $response['status'],
-            $response['body']['timestamp'],
-            $response['body']['contents'],
-            $response['debug']
-        )
-        ) {
-            $this->logger->error('COMMUNICATION_FLOW: Response ... was missing keys.');
+        if (!isset($response['pid'], $response['type'], $response['status'], $response['headers'], $response['contents'])) {
+            $this->logger->error('dispatcher: incomplete response received from worker');
+
+            return;
         }
 
+        $pid = $response['pid'];
         $type = $response['type'];
         $status = $response['status'];
-        //$timestamp = $response['body']['timestamp'];
-        /** @var array $contents */
-        $contents = $response['body']['contents'];
-        $debug = $response['debug'];
-        $pid = $debug['pid'];
-        $runtime = $debug['runtime'];
+        /** @var array|string $contents */
+        $contents = $response['contents'];
 
-        $this->logger->info("COMMUNICATION_FLOW: Master received $type response from worker $pid with a runtime of $runtime.");
+        $this->logger->info("dispatcher: $type response ($bytes bytes) received from worker $pid");
 
         switch ($type) {
-            case 'exception':
-                $this->logger->alert("Response ($status) from worker $pid returned an exception: ".print_r($contents, true));
-                break;
-
             case 'probe':
-                if (200 === $status) {
-                    $cleaned = [];
+                $this->logger->info("dispatcher: enqueueing the response from worker $pid.");
 
-                    foreach ($contents as $id => $content) {
-                        if (!isset($content['type'], $content['timestamp'], $content['targets'])) {
-                            // TODO: Good warning
-                            $this->logger->warning("Response ($status) from worker $pid is missing either a type, timestamp or targets key.");
-                        } else {
-                            $cleaned[$id] = $content;
-                        }
-                    }
-
-                    $this->logger->info("Enqueueing the response from worker $pid.");
-
-                    $items = $this->expandProbeResult($cleaned);
-                    foreach ($items as $key => $item) {
-                        $queue = $this->queues[$key % $this->numberOfQueues];
-                        $queue->enqueue($item);
-                    }
-                } else {
-                    $this->logger->error("Response ($status) from worker $pid unexpected.");
+                $items = $this->expandProbeResult($contents);
+                foreach ($items as $key => $item) {
+                    $queue = $this->queues[$key % $this->numberOfQueues];
+                    $queue->enqueue($item);
                 }
                 break;
 
             case GetConfigHttpWorkerCommand::class:
+                $this->logger->info('dispatcher: started handling new configuration response');
                 if (200 === $status) {
+                    $this->logger->info('dispatcher: applying new configuration');
                     $etag = $response['headers']['etag'];
                     $this->configuration->updateConfig($contents, $etag);
-                    $this->logger->info("Response ($status) from worker $pid config applied (".$this->configuration->getAllProbesDeviceCount().' devices)');
+                    $this->logger->info(sprintf('dispatcher: new configuration applied (took %.2f seconds)', microtime(true) - $startAt));
+                    $this->logger->info(sprintf('dispatcher: new configuration has %d probes and %d devices', count($this->configuration->getProbes()), $this->configuration->getAllProbesDeviceCount()));
 
                     $count = 0;
                     foreach ($this->configuration->getProbes() as $probe) {
@@ -360,23 +334,16 @@ class ProbeDispatcherCommand extends Command
                     }
                     $this->workerManager->setNumberOfProbeProcesses(intval($count));
                 } else {
-                    $this->logger->info("Response ($status) from worker $pid received");
-                }
-                break;
-
-            case PostStatsHttpWorkerCommand::class:
-                if (200 === $status) {
-                    $this->logger->info('Stats successfully submitted');
-                } else {
-                    $this->logger->info("Response ($status) from worker $pid received");
+                    $this->logger->warning("dispatcher: configuration response ($status) from worker $pid received");
                 }
                 break;
 
             default:
-                $this->logger->error(
-                    "Response ($status) from worker $pid type $type is not supported by the response handler."
-                );
+                $this->logger->warning("dispatcher: unexpected response of type $type");
         }
+
+        $runtime = microtime(true) - $startAt;
+        $this->logger->info(sprintf('dispatcher: finished handling response from worker %d (took %.2f seconds)', $pid, $runtime));
     }
 
     private function expandProbeResult(array $result): array
