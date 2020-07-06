@@ -124,8 +124,8 @@ class ProbeWorkerCommand extends Command
         $this->logger->info(sprintf('worker %d received %s job from dispatcher', getmypid(), $type));
 
         try {
-            $command = $this->taskFactory->make($type, $data);
-            $this->logger->info(sprintf('worker %d %s command initialized', getmypid(), $type));
+            $task = $this->taskFactory->make($type, $data);
+            $this->logger->info(sprintf('worker %d %s task initialized', getmypid(), $type));
         } catch (Exception $e) {
             $errorMessage = sprintf('worker %d fatal: ' . $e->getMessage());
             $this->logger->error($errorMessage);
@@ -139,7 +139,7 @@ class ProbeWorkerCommand extends Command
         $this->logger->info(sprintf('worker %d starting', getmypid()));
 
         try {
-            $shellOutput = $command->execute();
+            $shellOutput = $task->execute();
             $this->logger->info(sprintf('worker %d finished (took %d second(s))', getmypid(), time() - $startedAt));
 
             switch ($type) {

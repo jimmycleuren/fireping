@@ -20,17 +20,17 @@ final class TaskFactory
         $this->logger = $logger;
     }
 
-    public function addTaskType(TaskInterface $command)
+    public function addTaskType(TaskInterface $task)
     {
-        $this->types[$command->getType()] = $command;
+        $this->types[$task->getType()] = $task;
     }
 
-    public function make(string $command, array $args): ?TaskInterface
+    public function make(string $task, array $args): TaskInterface
     {
-        $class = $this->types[$command] ?? null;
+        $class = $this->types[$task] ?? null;
 
         if (null === $class) {
-            throw new \RuntimeException("Cannot create a command of type $command");
+            throw new \RuntimeException("Cannot create a task of type $task");
         }
 
         $class->setArgs($args);
