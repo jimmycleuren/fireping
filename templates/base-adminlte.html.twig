@@ -10,6 +10,14 @@
 {% block logo_mini %}FP{% endblock %}
 {% block logo_large %}Fireping{% endblock %}
 
+{% block sidebar_nav %}
+    {% if admin_lte_context.knp_menu.enable %}
+        {% include '@AdminLTE/Sidebar/knp-menu.html.twig' %}
+    {% else %}
+        {{ render(controller('App\\Controller\\SidebarController::menuAction', {'request':app.request})) }}
+    {% endif %}
+{% endblock %}
+
 {% block javascripts %}
     {{ parent() }}
     <script src="{{ asset('js/q-5.0.2.min.js') }}"></script>
