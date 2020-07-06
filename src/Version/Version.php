@@ -20,5 +20,10 @@ final class Version
     {
         return $this->version;
     }
+
+    public function __toString()
+    {
+        return $this->asString();
+    }
 }
 
