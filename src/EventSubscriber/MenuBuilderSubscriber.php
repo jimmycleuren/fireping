@@ -75,7 +75,7 @@ class MenuBuilderSubscriber implements EventSubscriberInterface
     {
         $event = $this->addStaticMenu($event);
 
-        $domains = $this->domainRepository->findByParent(null);
+        $domains = $this->domainRepository->findBy(['parent' => null]);
 
         if (count($domains) > 0) {
             $title = new MenuItemModel('domains', 'Root domains', '');
