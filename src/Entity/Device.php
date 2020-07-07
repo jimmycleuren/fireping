@@ -73,6 +73,7 @@ class Device
      *      )
      * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
      * @Groups({"device"})
+     * @ORM\OrderBy({"name" = "ASC"})
      */
     private $slavegroups;
 
@@ -84,6 +85,7 @@ class Device
      *      )
      * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
      * @Groups({"device"})
+     * @ORM\OrderBy({"name" = "ASC"})
      */
     private $probes;
 
@@ -95,6 +97,7 @@ class Device
      *      )
      * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
      * @Groups({"device"})
+     * @ORM\OrderBy({"name" = "ASC"})
      */
     private $alertRules;
 
@@ -105,6 +108,7 @@ class Device
      *      inverseJoinColumns={@ORM\JoinColumn(name="alert_destination_id", referencedColumnName="id")}
      *      )
      * @Groups({"device"})
+     * @ORM\OrderBy({"name" = "ASC"})
      */
     private $alertDestinations;
 

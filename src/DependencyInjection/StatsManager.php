@@ -2,9 +2,9 @@
 
 namespace App\DependencyInjection;
 
-use App\ShellCommand\GetConfigHttpWorkerCommand;
-use App\ShellCommand\PostResultsHttpWorkerCommand;
-use App\ShellCommand\PostStatsHttpWorkerCommand;
+use App\Slave\Task\FetchConfiguration;
+use App\Slave\Task\PublishResults;
+use App\Slave\Task\PublishStatistics;
 use App\Version\Version;
 use Psr\Log\LoggerInterface;
 
@@ -83,13 +83,13 @@ class StatsManager
 
         foreach ($types as $type => $count) {
             switch ($type) {
-                case PostStatsHttpWorkerCommand::class:
+                case PublishStatistics::class:
                     $name = 'stats';
                     break;
-                case GetConfigHttpWorkerCommand::class:
+                case FetchConfiguration::class:
                     $name = 'config';
                     break;
-                case PostResultsHttpWorkerCommand::class:
+                case PublishResults::class:
                     $name = 'results';
                     break;
                 case 'ping':

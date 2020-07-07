@@ -22,7 +22,8 @@ class AlertDestinationCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('AlertDestination')
             ->setEntityLabelInPlural('AlertDestination')
             ->setSearchFields(['id', 'name', 'type', 'parameters'])
-            ->setPaginatorPageSize(30);
+            ->setPaginatorPageSize(30)
+            ->setDefaultSort(['name' => 'ASC']);
     }
 
     public function configureFields(string $pageName): iterable

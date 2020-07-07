@@ -32,7 +32,7 @@ class Worker
 
     private $executing = false;
 
-    private $lastCommand = null;
+    private $lastTask = null;
 
     public function __construct(WorkerManager $manager, KernelInterface $kernel, LoggerInterface $logger, int $timeout, int $idleTimeout)
     {
@@ -92,7 +92,7 @@ class Worker
         $this->expectedRuntime = $expectedRuntime;
         $this->callback = $callback;
 
-        $this->lastCommand = $data;
+        $this->lastTask = $data;
         $this->input->write($data);
     }
 
@@ -102,7 +102,7 @@ class Worker
             $actualRuntime = microtime(true) - $this->startTime;
             $expectedRuntime = $this->expectedRuntime * 1.25;
             if ($actualRuntime > $expectedRuntime) {
-                throw new WorkerTimedOutException($expectedRuntime, $this->lastCommand);
+                throw new WorkerTimedOutException($expectedRuntime, $this->lastTask);
             }
         }
         if (!$this->executing) {

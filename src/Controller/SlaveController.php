@@ -41,7 +41,7 @@ class SlaveController extends AbstractController
      */
     public function indexAction(EntityManagerInterface $entityManager, DeviceRepository $deviceRepository, SlaveRepository $slaveRepository)
     {
-        $slaves = $slaveRepository->findAll();
+        $slaves = $slaveRepository->findBy([], ['id' => 'ASC']);
 
         $targets = [];
         foreach ($slaves as $slave) {
