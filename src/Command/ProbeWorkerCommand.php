@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\ShellCommand\CommandFactory;
-use App\ShellCommand\GetConfigHttpWorkerCommand;
-use App\ShellCommand\PostResultsHttpWorkerCommand;
-use App\ShellCommand\PostStatsHttpWorkerCommand;
+use App\Slave\Task\TaskFactory;
+use App\Slave\Task\FetchConfiguration;
+use App\Slave\Task\PublishResults;
+use App\Slave\Task\PublishStatistics;
 use Exception;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
@@ -37,17 +37,17 @@ class ProbeWorkerCommand extends Command
     protected $logger;
 
     /**
-     * @var CommandFactory
+     * @var TaskFactory
      */
-    private $commandFactory;
+    private $taskFactory;
 
     /**
      * @throws LogicException
      */
-    public function __construct(LoggerInterface $logger, CommandFactory $commandFactory)
+    public function __construct(LoggerInterface $logger, TaskFactory $taskFactory)
     {
         $this->logger = $logger;
-        $this->commandFactory = $commandFactory;
+        $this->taskFactory = $taskFactory;
 
         parent::__construct();
     }
@@ -150,8 +150,8 @@ class ProbeWorkerCommand extends Command
         $this->logger->info(sprintf('worker %d received %s job from dispatcher', getmypid(), $type));
 
         try {
-            $command = $this->commandFactory->make($type, $data);
-            $this->logger->info(sprintf('worker %d %s command initialized', getmypid(), $type));
+            $task = $this->taskFactory->make($type, $data);
+            $this->logger->info(sprintf('worker %d %s task initialized', getmypid(), $type));
         } catch (Exception $e) {
             $errorMessage = sprintf('worker %d fatal: ' . $e->getMessage());
             $this->logger->error($errorMessage);
@@ -165,16 +165,16 @@ class ProbeWorkerCommand extends Command
         $this->logger->info(sprintf('worker %d starting', getmypid()));
 
         try {
-            $shellOutput = $command->execute();
+            $shellOutput = $task->execute();
             $this->logger->info(sprintf('worker %d finished (took %d second(s))', getmypid(), time() - $startedAt));
 
             switch ($type) {
-                case PostStatsHttpWorkerCommand::class:
-                case PostResultsHttpWorkerCommand::class:
+                case PublishStatistics::class:
+                case PublishResults::class:
                     $this->sendResponse($type, $shellOutput['code'], $shellOutput['contents']);
                     break;
 
-                case GetConfigHttpWorkerCommand::class:
+                case FetchConfiguration::class:
                     $headers = ['etag' => $shellOutput['etag']];
                     $this->sendResponse($type, $shellOutput['code'], $shellOutput['contents'], $headers);
                     break;
