@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\ShellCommand;
+namespace App\Slave\Task;
 
 use App\Client\FirepingClient;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
 use Psr\Log\LoggerInterface;
 
-class GetConfigHttpWorkerCommand implements CommandInterface
+class FetchConfiguration implements TaskInterface
 {
     /**
      * @var LoggerInterface

@@ -3,7 +3,7 @@
 namespace Tests\App\Command;
 
 use App\Command\ProbeWorkerCommand;
-use App\ShellCommand\CommandFactory;
+use App\Slave\Task\TaskFactory;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -17,7 +17,7 @@ class ProbeWorkerCommandTest extends KernelTestCase
         $application = new Application($kernel);
 
         $logger = self::$container->get(LoggerInterface::class);
-        $factory = new CommandFactory($logger);
+        $factory = new TaskFactory($logger);
 
         $application->add(new ProbeWorkerCommand($logger, $factory));
 
