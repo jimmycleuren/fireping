@@ -22,7 +22,8 @@ class SlaveGroupCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('SlaveGroup')
             ->setEntityLabelInPlural('SlaveGroup')
             ->setSearchFields(['id', 'name'])
-            ->setPaginatorPageSize(30);
+            ->setPaginatorPageSize(30)
+            ->setDefaultSort(['name' => 'ASC']);
     }
 
     public function configureFields(string $pageName): iterable

@@ -22,7 +22,8 @@ class AlertRuleCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('AlertRule')
             ->setEntityLabelInPlural('AlertRule')
             ->setSearchFields(['id', 'name', 'datasource', 'pattern', 'messageUp', 'messageDown'])
-            ->setPaginatorPageSize(30);
+            ->setPaginatorPageSize(30)
+            ->setDefaultSort(['name' => 'ASC']);
     }
 
     public function configureFields(string $pageName): iterable

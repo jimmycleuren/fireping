@@ -22,7 +22,8 @@ class DomainCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('Domain')
             ->setEntityLabelInPlural('Domain')
             ->setSearchFields(['id', 'name'])
-            ->setPaginatorPageSize(30);
+            ->setPaginatorPageSize(30)
+            ->setDefaultSort(['name' => 'ASC']);
     }
 
     public function configureFields(string $pageName): iterable
