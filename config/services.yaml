@@ -57,3 +57,10 @@ services:
     App\Client\FirepingClient: '@eight_points_guzzle.client.api_fireping'
 
     Psr\Container\ContainerInterface: '@service_container'
+
+    App\Version\GitVersionReader:
+        arguments: ['@monolog.logger', '@App\Process\SymfonyProcessFactory']
+
+    App\Version\CacheVersionReader:
+        public: true
+        arguments: ['@App\Version\GitVersionReader', '@cache.app']
