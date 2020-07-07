@@ -23,7 +23,8 @@ class SlaveCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('Slave')
             ->setEntityLabelInPlural('Slave')
             ->setSearchFields(['id', 'ip'])
-            ->setPaginatorPageSize(30);
+            ->setPaginatorPageSize(30)
+            ->setDefaultSort(['id' => 'ASC']);
     }
 
     public function configureActions(Actions $actions): Actions

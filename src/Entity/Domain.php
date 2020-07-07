@@ -67,6 +67,7 @@ class Domain
      *      inverseJoinColumns={@ORM\JoinColumn(name="slavegroup_id", referencedColumnName="id")}
      *      )
      * @Groups({"domain", "write"})
+     * @ORM\OrderBy({"name" = "ASC"})
      */
     private $slavegroups;
 
@@ -77,6 +78,7 @@ class Domain
      *      inverseJoinColumns={@ORM\JoinColumn(name="probe_id", referencedColumnName="id")}
      *      )
      * @Groups({"domain", "write"})
+     * @ORM\OrderBy({"name" = "ASC"})
      */
     private $probes;
 
@@ -87,6 +89,7 @@ class Domain
      *      inverseJoinColumns={@ORM\JoinColumn(name="alert_rule_id", referencedColumnName="id")}
      *      )
      * @Groups({"domain", "write"})
+     * @ORM\OrderBy({"name" = "ASC"})
      */
     private $alertRules;
 
@@ -97,6 +100,7 @@ class Domain
      *      inverseJoinColumns={@ORM\JoinColumn(name="alert_destination_id", referencedColumnName="id")}
      *      )
      * @Groups({"domain", "write"})
+     * @ORM\OrderBy({"name" = "ASC"})
      */
     private $alertDestinations;
 
@@ -105,6 +109,7 @@ class Domain
      * @ORM\OneToMany(targetEntity="Device", mappedBy="domain", fetch="EXTRA_LAZY")
      * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
      * @Groups({"domain", "write"})
+     * @ORM\OrderBy({"name" = "ASC"})
      */
     private $devices;
 
