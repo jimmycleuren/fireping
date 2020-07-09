@@ -1981,16 +1981,16 @@
         },
         {
             "name": "kevinpapst/adminlte-bundle",
-            "version": "3.2.3",
+            "version": "3.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kevinpapst/AdminLTEBundle.git",
-                "reference": "e79543f789ce4b1560c2d113eb40de12d390c74a"
+                "reference": "c7cd7c5f7f3f49fae9df24c70e175be77c2cab61"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kevinpapst/AdminLTEBundle/zipball/e79543f789ce4b1560c2d113eb40de12d390c74a",
-                "reference": "e79543f789ce4b1560c2d113eb40de12d390c74a",
+                "url": "https://api.github.com/repos/kevinpapst/AdminLTEBundle/zipball/c7cd7c5f7f3f49fae9df24c70e175be77c2cab61",
+                "reference": "c7cd7c5f7f3f49fae9df24c70e175be77c2cab61",
                 "shasum": ""
             },
             "require": {
