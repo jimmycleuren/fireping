@@ -22,4 +22,6 @@ RUN if [ "$DEV" = "true" ] ; then \
     composer install --verbose --prefer-dist --optimize-autoloader --no-scripts --no-suggest ; else \
     composer install --verbose --prefer-dist --no-dev --optimize-autoloader --no-scripts --no-suggest ; fi
 
+RUN chmod +x docker/entrypoint.sh
+
 ENTRYPOINT ["docker/entrypoint.sh"]
