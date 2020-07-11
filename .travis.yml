@@ -68,11 +68,6 @@ before_install:
 install:
   - composer -n install --prefer-dist
 
-before_script:
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  - chmod +x ./cc-test-reporter
-  - ./cc-test-reporter before-build
-
 script:
   - php bin/console cache:warmup --env=slave
   - vendor/bin/phpunit
@@ -89,8 +84,6 @@ script:
   - symfony check:security
   # This checks that Doctrine's mapping configurations are valid.
   - ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction
-  # Fail CI if the repo is in a dirty state after building assets (only for current release ie install).
-  #-  if [[ "$ACTION" == "install" ]]; then yarn install && yarn encore production && git add --all && git diff --staged --exit-code; fi
   - composer validate --strict
 
 after_script:
