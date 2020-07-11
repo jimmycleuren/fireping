@@ -330,7 +330,7 @@ class SlaveControllerTest extends AbstractApiTest
 
     public function testResultHttpIncorrectSampleCount()
     {
-        $timestamp = date("U");
+        $timestamp = date("U") + 1;
 
         $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
             '4' => array(
@@ -352,7 +352,7 @@ class SlaveControllerTest extends AbstractApiTest
 
     public function testResultHttpUnreachable()
     {
-        $timestamp = date("U");
+        $timestamp = date("U") + 2;
 
         $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
             '4' => array(
