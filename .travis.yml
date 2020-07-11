@@ -1,7 +1,5 @@
 env:
   global:
-    - CC_TEST_REPORTER_ID=c0e8e75ad3debbbedee5e22c23696e0b27ae916102c3a65149a1a01cf74f8495
-    - GIT_COMMITTED_AT=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then git log -1 --pretty=format:%ct; else git log -1 --skip 1 --pretty=format:%ct; fi)
     - DATABASE_URL=mysql://root@127.0.0.1:3306/fireping_test
     - RRDCACHED_TEST=127.0.0.1:42217
 
@@ -33,6 +31,7 @@ jobs:
   include:
     - php: master
     - php: 7.4
+      env: COVERAGE=true
     - php: 7.3
   allow_failures:
     - php: master
@@ -65,7 +64,12 @@ script:
   - composer phpstan
 
 after_script:
-  - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
+  - |
+    if [[ $COVERAGE == true && $TRAVIS_BRANCH == "master" ]]; then
+      ./bin/phpunit --coverage-clover coverage.xml
+      wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.1.0/php-coveralls.phar
+      php php-coveralls.phar --verbose
+    fi
 
 after_failure: "cat var/log/*.log"
 
