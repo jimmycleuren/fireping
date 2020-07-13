@@ -57,6 +57,11 @@ jobs:
 before_install:
   - export PATH="$HOME/.symfony/bin:$PATH"
   - if [[ $COVERAGE == "" ]]; then phpenv config-rm xdebug.ini; fi
+  # Change minimum-stability to allow upcoming versions (dev | alpha | beta | RC)
+  - '[[ -z $STABILITY ]] || composer config minimum-stability "$STABILITY"'
+  # Change extra.symfony.require used by symfony flex
+  - '[[ -z $SYMFONY ]] || composer config extra.symfony.require "$SYMFONY"'
+  # If it is available update the Symfony binary, if not install it.
   - if symfony self:version; then symfony self:update --yes ; else wget https://get.symfony.com/cli/installer -O - | bash ; fi
   # Install RRDTool
   - sudo apt-get -qq update
