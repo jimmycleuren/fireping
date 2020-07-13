@@ -8,6 +8,7 @@ env:
     # this env var in the phpunit.xml.dist file.
     - SYMFONY_PHPUNIT_DIR=./bin/.phpunit
     - SYMFONY_DEPRECATIONS_HELPER=max[direct]=0
+    - ACTION="install"
 
 language: php
 os: linux
@@ -40,9 +41,18 @@ jobs:
   # Fast finish allows to set the build as "finished" even if the "allow_failures" matrix elements are not finished yet.
   fast_finish: true
   include:
+    - php: 7.3
+
     - php: 7.4
       env: COVERAGE=true
+
+    # Run tests against dev (currently 5.1.x-dev)
     - php: 7.3
+      env: STABILITY=dev ACTION=update
+
+    # Run tests against dev-master (currently 5.2.x-dev)
+    - php: 7.3
+      env: STABILITY=dev SYMFONY=5.* ACTION=update
 
 before_install:
   - export PATH="$HOME/.symfony/bin:$PATH"
@@ -64,7 +74,7 @@ before_install:
 
 install:
   - php -r "echo ini_get('memory_limit').PHP_EOL;"
-  - composer -n install --prefer-dist
+  - COMPOSER_MEMORY_LIMIT=-1 composer $ACTION
   - ./bin/phpunit install
 
 script:
