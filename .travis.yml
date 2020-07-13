@@ -84,7 +84,7 @@ install:
 
 script:
   - php bin/console cache:warmup --env=slave
-  - ./bin/phpunit
+  - ./vendor/bin/simple-phpunit
   - composer phpstan
   # This checks that the YAML config files contain no syntax errors.
   - ./bin/console lint:yaml config --parse-tags
@@ -103,7 +103,7 @@ script:
 after_script:
   - |
     if [[ $COVERAGE == true && $TRAVIS_BRANCH == "master" ]]; then
-      ./bin/phpunit --coverage-clover coverage.xml
+      ./vendor/bin/simple-phpunit --coverage-clover coverage.xml
       wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.1.0/php-coveralls.phar
       php php-coveralls.phar --verbose
     fi
