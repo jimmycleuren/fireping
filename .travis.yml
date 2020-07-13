@@ -40,7 +40,6 @@ jobs:
   # Fast finish allows to set the build as "finished" even if the "allow_failures" matrix elements are not finished yet.
   fast_finish: true
   include:
-    - php: master
     - php: 7.4
       env: COVERAGE=true
     - php: 7.3
@@ -70,7 +69,7 @@ install:
 
 script:
   - php bin/console cache:warmup --env=slave
-    ./bin/phpunit
+  - ./bin/phpunit
   - composer phpstan
   # This checks that the YAML config files contain no syntax errors.
   - ./bin/console lint:yaml config --parse-tags
