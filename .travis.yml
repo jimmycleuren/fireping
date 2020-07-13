@@ -2,6 +2,12 @@ env:
   global:
     - DATABASE_URL=mysql://root@127.0.0.1:3306/fireping_test
     - RRDCACHED_TEST=127.0.0.1:42217
+    # Symfony's PHPUnit bridge provides a modified version of PHPUnit. The modified PHPUnit is
+    # written to a directory that can be configured by the SYMFONY_PHPUNIT_DIR env var, or in
+    # the same directory as the simple-phpunit if it is not provided. It's also possible to set
+    # this env var in the phpunit.xml.dist file.
+    - SYMFONY_PHPUNIT_DIR=./bin/.phpunit
+    - SYMFONY_DEPRECATIONS_HELPER=max[direct]=0
 
 language: php
 os: linux
@@ -15,7 +21,12 @@ services:
 # Cache composer packages so "composer install" is faster
 cache:
   directories:
+    # Cache composer packages so "composer install" is faster.
     - $HOME/.composer/cache/files
+    # Cache the directory where Symfony stores its slightly modified version of PHPUnit.
+    - ./bin/.phpunit
+    # Cache the Symfony binary's directory so that it does not have to be reinstalled.
+    - $HOME/.symfony
 
 addons:
   apt:
@@ -37,6 +48,10 @@ jobs:
     - php: master
 
 before_install:
+  - export PATH="$HOME/.symfony/bin:$PATH"
+  - if [[ $COVERAGE == "" ]]; then phpenv config-rm xdebug.ini; fi
+  - if symfony self:version; then symfony self:update --yes ; else wget https://get.symfony.com/cli/installer -O - | bash ; fi
+  # Install RRDTool
   - sudo apt-get -qq update
   - sudo apt-get install -y librrd-dev rrdtool
   - composer self-update
@@ -53,15 +68,23 @@ before_install:
 install:
   - composer -n install --prefer-dist
 
-before_script:
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  - chmod +x ./cc-test-reporter
-  - ./cc-test-reporter before-build
-
 script:
   - php bin/console cache:warmup --env=slave
-  - vendor/bin/phpunit --coverage-text --coverage-clover build/logs/clover.xml
+  - vendor/bin/phpunit
   - composer phpstan
+  # This checks that the YAML config files contain no syntax errors.
+  - ./bin/console lint:yaml config --parse-tags
+  # This checks that the Twig template files contain no syntax errors.
+  - ./bin/console lint:twig templates --env=prod
+  # This checks that the XLIFF translations contain no syntax errors.
+  - ./bin/console lint:xliff translations
+  # This checks that arguments injected into services match type declarations.
+  - ./bin/console lint:container
+  # This checks that the application doesn't use dependencies with known security vulnerabilities.
+  - symfony check:security
+  # This checks that Doctrine's mapping configurations are valid.
+  - ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction
+  - composer validate --strict
 
 after_script:
   - |
