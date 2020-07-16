@@ -4,10 +4,10 @@ namespace App\Controller\Admin;
 
 use App\Admin\Field\JsonParametersField;
 use App\Entity\Probe;
-use App\Form\Type\HttpArgumentsType;
-use App\Form\Type\PingArgumentsType;
-use App\Form\Type\ProbeArgumentsType;
-use App\Form\Type\TracerouteArgumentsType;
+use App\Form\Type\HttpParametersType;
+use App\Form\Type\PingParametersType;
+use App\Form\Type\JsonParametersType;
+use App\Form\Type\TracerouteParametersType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
@@ -74,16 +74,16 @@ class ProbeCrudController extends AbstractCrudController
         $arguments = $entityDto->getFields()->get('arguments');
         switch ($type) {
             case 'ping':
-                $arguments->setFormType(PingArgumentsType::class);
+                $arguments->setFormType(PingParametersType::class);
                 break;
             case 'traceroute':
-                $arguments->setFormType(TracerouteArgumentsType::class);
+                $arguments->setFormType(TracerouteParametersType::class);
                 break;
             case 'http':
-                $arguments->setFormType(HttpArgumentsType::class);
+                $arguments->setFormType(HttpParametersType::class);
                 break;
             default:
-                $arguments->setFormType(ProbeArgumentsType::class);
+                $arguments->setFormType(JsonParametersType::class);
         }
 
         return parent::createEditForm($entityDto, $formOptions, $context);

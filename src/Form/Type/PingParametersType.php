@@ -7,7 +7,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 
-class PingArgumentsType extends AbstractType
+class PingParametersType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -25,6 +25,6 @@ class PingArgumentsType extends AbstractType
 
     public function getParent()
     {
-        return ProbeArgumentsType::class;
+        return JsonParametersType::class;
     }
 }

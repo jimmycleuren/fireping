@@ -8,7 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 
-class HttpArgumentsType extends AbstractType
+class HttpParametersType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -30,6 +30,6 @@ class HttpArgumentsType extends AbstractType
 
     public function getParent()
     {
-        return ProbeArgumentsType::class;
+        return JsonParametersType::class;
     }
 }

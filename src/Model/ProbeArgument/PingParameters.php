@@ -33,4 +33,9 @@ class PingParameters extends JsonParameters
             'packetSize' => $this->packetSize
         ];
     }
+
+    public static function fromArray(array $in): JsonParametersInterface
+    {
+        return new self($in['retries'] ?? null, $in['packetSize'] ?? null);
+    }
 }

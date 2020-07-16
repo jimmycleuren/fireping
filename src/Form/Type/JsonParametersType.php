@@ -5,10 +5,10 @@ namespace App\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 
-class ProbeArgumentsType extends AbstractType
+class JsonParametersType extends AbstractType
 {
     public function getBlockPrefix()
     {
-        return 'probe_arguments';
+        return 'json_parameters';
     }
 }

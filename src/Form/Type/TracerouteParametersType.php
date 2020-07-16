@@ -6,7 +6,7 @@ namespace App\Form\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 
-class TracerouteArgumentsType extends AbstractType
+class TracerouteParametersType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -15,6 +15,6 @@ class TracerouteArgumentsType extends AbstractType
 
     public function getParent()
     {
-        return ProbeArgumentsType::class;
+        return JsonParametersType::class;
     }
 }

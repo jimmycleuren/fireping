@@ -6,5 +6,6 @@ namespace App\Model\ProbeArgument;
 interface JsonParametersInterface
 {
     public static function fromJsonString(string $json): self;
+    public static function fromArray(array $in): self;
     public function asArray(): array;
 }

@@ -64,11 +64,11 @@ class Probe
     private $samples;
 
     /**
-     * @var string
+     * @var array
      *
-     * @ORM\Column(name="arguments", type="text")
+     * @ORM\Column(name="arguments", type="json")
      */
-    private $arguments = '{}';
+    private $arguments = [];
 
     /**
      * @var ArrayCollection
@@ -77,12 +77,9 @@ class Probe
      */
     private $archives;
 
-    /**
-     * Constructor.
-     */
     public function __construct()
     {
-        $this->archives = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->archives = new ArrayCollection();
     }
 
     /**
@@ -212,7 +209,7 @@ class Probe
      */
     public function setArguments(JsonParametersInterface $arguments): Probe
     {
-        $this->arguments = json_encode($arguments->asArray(), JSON_THROW_ON_ERROR, 512);
+        $this->arguments = $arguments->asArray();
 
         return $this;
     }
@@ -222,17 +219,17 @@ class Probe
      */
     public function getArguments(): JsonParametersInterface
     {
-        $arguments = $this->arguments ?? '{}';
+        $arguments = $this->arguments ?? [];
 
         switch ($this->type) {
             case 'ping':
-                return PingParameters::fromJsonString($arguments);
+                return PingParameters::fromArray($arguments);
             case 'traceroute':
-                return TracerouteParameters::fromJsonString($arguments);
+                return TracerouteParameters::fromArray($arguments);
             case 'http':
-                return HttpParameters::fromJsonString($arguments);
+                return HttpParameters::fromArray($arguments);
             default:
-                return NullParameters::fromJsonString($arguments);
+                return NullParameters::fromArray($arguments);
         }
     }
 

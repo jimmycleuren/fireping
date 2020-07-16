@@ -39,4 +39,9 @@ class HttpParameters extends JsonParameters
             'protocol' => $this->protocol
         ];
     }
+
+    public static function fromArray(array $in): JsonParametersInterface
+    {
+        return new self($in['host'] ?? null, $in['path'] ?? null, $in['protocol'] ?? null);
+    }
 }

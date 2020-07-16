@@ -5,9 +5,6 @@ namespace App\Model\ProbeArgument;
 
 abstract class JsonParameters implements JsonParametersInterface, \ArrayAccess
 {
-    abstract public static function fromJsonString(string $json): JsonParametersInterface;
-    abstract public function asArray(): array;
-
     /**
      * @inheritDoc
      */

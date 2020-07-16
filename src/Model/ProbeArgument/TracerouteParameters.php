@@ -18,4 +18,9 @@ class TracerouteParameters extends JsonParameters
     {
         return [];
     }
+
+    public static function fromArray(array $in): JsonParametersInterface
+    {
+        return new self();
+    }
 }
