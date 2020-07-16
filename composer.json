@@ -40,7 +40,7 @@
         "symfony/form": "^5.0",
         "symfony/lock": "^5.0",
         "symfony/monolog-bundle": "^3.2",
-        "symfony/orm-pack": "^1.0",
+        "symfony/orm-pack": "^2.0",
         "symfony/polyfill-apcu": "^1.0",
         "symfony/process": "^5.0",
         "symfony/security-bundle": "^5.0",
