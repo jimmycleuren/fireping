@@ -19,6 +19,7 @@
                     <th># of targets</th>
                     <th>IP</th>
                     <th>Last contact</th>
+                    <th>Version</th>
                     <th>Details</th>
                 </tr>
                 </thead>
@@ -30,6 +31,7 @@
                         <td>{{ targets[slave.id] }}</td>
                         <td>{{ slave.ip }}</td>
                         <td>{{ slave.lastContact|date("d-m-Y H:i:s") }}</td>
+                        <td>{{ slave.version.asString }}</td>
                         <td><a href="{{ path("slave_detail", {id: slave.id}) }}">Show details</a></td>
                     </tr>
                 {% endfor %}
