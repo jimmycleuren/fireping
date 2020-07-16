@@ -33,6 +33,10 @@ side-nav:
         url:    /docs/installation/slave/logrotate/
       - title:  Docker
         url:    /docs/installation/slave/docker/
+  - title:      Installation - Storage
+    children:
+      - title:  Getting Started
+        url:    /docs/installation/storage/getting-started/
   - title:      Guides
     children:
       - title:  Admin Guide
