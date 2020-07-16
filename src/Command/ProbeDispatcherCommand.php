@@ -9,8 +9,10 @@ use App\DependencyInjection\SlaveConfiguration;
 use App\DependencyInjection\StatsManager;
 use App\DependencyInjection\WorkerManager;
 use App\Instruction\Instruction;
+use App\Process\SymfonyProcessFactory;
 use App\Slave\Task\FetchConfiguration;
 use App\Slave\Task\PublishStatistics;
+use App\Version\GitVersionReader;
 use Exception;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
@@ -149,6 +151,8 @@ class ProbeDispatcherCommand extends Command
                 $this->logger
             );
         }
+
+        $this->statsManager->setVersion((new GitVersionReader($this->logger, new SymfonyProcessFactory()))->version());
     }
 
     /**
