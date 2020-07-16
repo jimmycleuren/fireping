@@ -176,7 +176,7 @@ Configure this if you are using a reverse proxy in front of nginx.
 Example:
 
 ```bash
-TRUSTED_PROXIES==127.0.0.1,<proxy_ip>
+TRUSTED_PROXIES=127.0.0.1,<proxy_ip>
 ```
 
 # Initial Setup
