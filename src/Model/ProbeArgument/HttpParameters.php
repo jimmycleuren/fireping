@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Model\ProbeArgument;
 
-class HttpArguments extends ProbeArguments
+class HttpParameters extends JsonParameters
 {
     /**
      * @var string|null
@@ -25,7 +25,7 @@ class HttpArguments extends ProbeArguments
         $this->protocol = $protocol;
     }
 
-    public static function fromJsonString(string $json): ProbeArgumentsInterface
+    public static function fromJsonString(string $json): JsonParametersInterface
     {
         $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
         return new self($data['host'] ?? null, $data['path'] ?? null, $data['protocol'] ?? null);

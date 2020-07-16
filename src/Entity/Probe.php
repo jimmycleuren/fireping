@@ -3,11 +3,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
-use App\Model\ProbeArgument\HttpArguments;
-use App\Model\ProbeArgument\NullArguments;
-use App\Model\ProbeArgument\PingArguments;
-use App\Model\ProbeArgument\ProbeArgumentsInterface;
-use App\Model\ProbeArgument\TracerouteArguments;
+use App\Model\ProbeArgument\HttpParameters;
+use App\Model\ProbeArgument\NullParameters;
+use App\Model\ProbeArgument\PingParameters;
+use App\Model\ProbeArgument\JsonParametersInterface;
+use App\Model\ProbeArgument\TracerouteParameters;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -206,11 +206,11 @@ class Probe
     }
 
     /**
-     * @param ProbeArgumentsInterface $arguments
+     * @param JsonParametersInterface $arguments
      *
      * @return Probe
      */
-    public function setArguments(ProbeArgumentsInterface $arguments): Probe
+    public function setArguments(JsonParametersInterface $arguments): Probe
     {
         $this->arguments = json_encode($arguments->asArray(), JSON_THROW_ON_ERROR, 512);
 
@@ -218,21 +218,21 @@ class Probe
     }
 
     /**
-     * @return ProbeArgumentsInterface
+     * @return JsonParametersInterface
      */
-    public function getArguments(): ProbeArgumentsInterface
+    public function getArguments(): JsonParametersInterface
     {
         $arguments = $this->arguments ?? '{}';
 
         switch ($this->type) {
             case 'ping':
-                return PingArguments::fromJsonString($arguments);
+                return PingParameters::fromJsonString($arguments);
             case 'traceroute':
-                return TracerouteArguments::fromJsonString($arguments);
+                return TracerouteParameters::fromJsonString($arguments);
             case 'http':
-                return HttpArguments::fromJsonString($arguments);
+                return HttpParameters::fromJsonString($arguments);
             default:
-                return NullArguments::fromJsonString($arguments);
+                return NullParameters::fromJsonString($arguments);
         }
     }
 

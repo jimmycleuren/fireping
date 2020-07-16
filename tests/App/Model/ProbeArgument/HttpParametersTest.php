@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App\Tests\App\Model\ProbeArgument;
 
-use App\Model\ProbeArgument\HttpArguments;
+use App\Model\ProbeArgument\HttpParameters;
 use PHPUnit\Framework\TestCase;
 
-class HttpArgumentsTest extends TestCase
+class HttpParametersTest extends TestCase
 {
     /**
      * @dataProvider dataProvider
      */
     public function testDefault(string $json, array $expected)
     {
-        $arguments = HttpArguments::fromJsonString($json);
+        $arguments = HttpParameters::fromJsonString($json);
         self::assertSame($expected, $arguments->asArray());
     }
 

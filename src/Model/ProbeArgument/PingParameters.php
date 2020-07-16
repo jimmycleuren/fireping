@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Model\ProbeArgument;
 
-class PingArguments extends ProbeArguments
+class PingParameters extends JsonParameters
 {
     /**
      * @var int|null
@@ -20,7 +20,7 @@ class PingArguments extends ProbeArguments
         $this->packetSize = $packetSize;
     }
 
-    public static function fromJsonString(string $json): ProbeArgumentsInterface
+    public static function fromJsonString(string $json): JsonParametersInterface
     {
         $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
         return new self($data['retries'] ?? null, $data['packetSize'] ?? null);

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\App\Model\ProbeArgument;
 
-use App\Model\ProbeArgument\NullArguments;
+use App\Model\ProbeArgument\NullParameters;
 use PHPUnit\Framework\TestCase;
 
-class TracerouteArgumentsTest extends TestCase
+class TracerouteParametersTest extends TestCase
 {
     public function testDefault()
     {
-        $arguments = NullArguments::fromJsonString('{}');
+        $arguments = NullParameters::fromJsonString('{}');
         self::assertSame([], $arguments->asArray());
     }
 }

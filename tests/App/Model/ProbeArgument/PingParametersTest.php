@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App\Tests\App\Model\ProbeArgument;
 
-use App\Model\ProbeArgument\PingArguments;
+use App\Model\ProbeArgument\PingParameters;
 use PHPUnit\Framework\TestCase;
 
-class PingArgumentsTest extends TestCase
+class PingParametersTest extends TestCase
 {
     /**
      * @dataProvider dataProvider
      */
     public function testDefault(string $json, array $expected)
     {
-        $arguments = PingArguments::fromJsonString($json);
+        $arguments = PingParameters::fromJsonString($json);
         self::assertEquals($expected, $arguments->asArray());
     }
 

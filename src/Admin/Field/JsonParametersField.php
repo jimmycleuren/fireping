@@ -8,7 +8,7 @@ use App\Form\Type\PingArgumentsType;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FieldTrait;
 
-class ProbeArgumentsField implements FieldInterface
+class JsonParametersField implements FieldInterface
 {
     use FieldTrait;
 
@@ -17,7 +17,7 @@ class ProbeArgumentsField implements FieldInterface
         return (new self())
             ->setProperty($propertyName)
             ->setLabel($label)
-            ->setTemplatePath('admin/field/probe_arguments.html.twig')
+            ->setTemplatePath('admin/field/json_parameters.html.twig')
             ->setRequired(false)
         ;
     }

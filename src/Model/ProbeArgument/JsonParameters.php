@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace App\Model\ProbeArgument;
 
-abstract class ProbeArguments implements ProbeArgumentsInterface, \ArrayAccess
+abstract class JsonParameters implements JsonParametersInterface, \ArrayAccess
 {
-    abstract public static function fromJsonString(string $json): ProbeArgumentsInterface;
+    abstract public static function fromJsonString(string $json): JsonParametersInterface;
     abstract public function asArray(): array;
 
     /**

@@ -2,7 +2,7 @@
 
 namespace App\Controller\Admin;
 
-use App\Admin\Field\ProbeArgumentsField;
+use App\Admin\Field\JsonParametersField;
 use App\Entity\Probe;
 use App\Form\Type\HttpArgumentsType;
 use App\Form\Type\PingArgumentsType;
@@ -46,7 +46,7 @@ class ProbeCrudController extends AbstractCrudController
         $samples = IntegerField::new('samples');
         $archives = AssociationField::new('archives');
         $id = IntegerField::new('id', 'ID');
-        $arguments = ProbeArgumentsField::new('arguments');
+        $arguments = JsonParametersField::new('arguments');
 
         if (Crud::PAGE_INDEX === $pageName) {
             return [$id, $name, $type, $step, $samples, $archives];
