@@ -36,6 +36,7 @@ $ ./composer.phar install --verbose --prefer-dist --no-dev --optimize-autoloader
 
 ```bash
 $ APP_ENV=slave php bin/console cache:clear
+$ APP_ENV=slave php bin/console cache:warmup
 ```
 
 - Restart the slave process

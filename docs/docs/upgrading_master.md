@@ -48,4 +48,5 @@ $ php bin/console doctrine:migrations:migrate
 
 ```bash
 $ APP_ENV=prod php bin/console cache:clear
+$ APP_ENV=prod php bin/console cache:warmup
 ```
