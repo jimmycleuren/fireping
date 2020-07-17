@@ -43,6 +43,7 @@ class AlertDestinationCrudController extends AbstractCrudController
     public function configureActions(Actions $actions): Actions
     {
         return $actions
+            ->add(Crud::PAGE_INDEX, Action::DETAIL)
             ->add(Crud::PAGE_NEW, Action::SAVE_AND_CONTINUE)
             ->remove(Crud::PAGE_NEW, Action::SAVE_AND_RETURN)
             ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
