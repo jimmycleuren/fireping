@@ -3,8 +3,12 @@
 namespace App\DataFixtures\ORM;
 
 use App\Entity\AlertDestination;
+use App\Model\Parameter\AlertDestination\MailParameters;
+use App\Model\Parameter\AlertDestination\MonologParameters;
+use App\Model\Parameter\AlertDestination\SlackParameters;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use GuzzleHttp\Psr7\Uri;
 
 class AlertDestinationFixtures extends Fixture
 {
@@ -12,22 +16,22 @@ class AlertDestinationFixtures extends Fixture
     {
         $alertDestination = new AlertDestination();
         $alertDestination->setName('syslog');
-        $alertDestination->setType('syslog');
-        $alertDestination->setParameters([]);
+        $alertDestination->setType('monolog');
+        $alertDestination->setParameters(new MonologParameters());
         $manager->persist($alertDestination);
         $this->addReference('alertdestination-1', $alertDestination);
 
         $alertDestination = new AlertDestination();
         $alertDestination->setName('mail');
         $alertDestination->setType('mail');
-        $alertDestination->setParameters(['recipient' => 'test@test.com']);
+        $alertDestination->setParameters(new MailParameters('test@test.com'));
         $manager->persist($alertDestination);
         $this->addReference('alertdestination-mail', $alertDestination);
 
         $alertDestination = new AlertDestination();
         $alertDestination->setName('slack');
         $alertDestination->setType('slack');
-        $alertDestination->setParameters(['token' => 'token', 'channel' => 'general']);
+        $alertDestination->setParameters(new SlackParameters('general', new Uri('https://example.example')));
         $manager->persist($alertDestination);
         $this->addReference('alertdestination-slack', $alertDestination);
 

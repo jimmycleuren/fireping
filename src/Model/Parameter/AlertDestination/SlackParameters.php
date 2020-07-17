@@ -19,7 +19,7 @@ class SlackParameters extends DynamicParameters
      */
     private $url;
 
-    private function __construct(?string $channel, UriInterface $url)
+    public function __construct(?string $channel, UriInterface $url)
     {
         $this->channel = $channel;
         $this->url = $url;

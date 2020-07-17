@@ -5,6 +5,7 @@ namespace App\Model\Parameter\AlertDestination;
 
 use App\Model\Parameter\DynamicParameters;
 use App\Model\Parameter\DynamicParametersInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class MailParameters extends DynamicParameters
 {
@@ -13,7 +14,7 @@ class MailParameters extends DynamicParameters
      */
     private $recipient;
 
-    private function __construct(?string $recipient)
+    public function __construct(?string $recipient)
     {
         $this->recipient = $recipient;
     }
