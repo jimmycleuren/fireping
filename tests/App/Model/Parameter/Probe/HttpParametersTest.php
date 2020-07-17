@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\App\Model\ProbeArgument;
+namespace App\Tests\App\Model\Parameter\Probe;
 
 use App\Model\Parameter\Probe\HttpParameters;
 use PHPUnit\Framework\TestCase;

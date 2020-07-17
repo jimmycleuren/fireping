@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\App\Model\ProbeArgument;
+namespace App\Tests\App\Model\Parameter;
 
 use App\Model\Parameter\NullParameters;
 use PHPUnit\Framework\TestCase;
 
-class TracerouteParametersTest extends TestCase
+class NullParametersTest extends TestCase
 {
     public function testDefault()
     {
