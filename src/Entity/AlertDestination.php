@@ -3,7 +3,12 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Model\Parameters\AlertDestination\HttpParameters;
+use App\Model\Parameters\AlertDestination\MailParameters;
+use App\Model\Parameters\AlertDestination\MonologParameters;
+use App\Model\Parameters\AlertDestination\SlackParameters;
 use App\Model\Parameters\JsonParametersInterface;
+use App\Model\Parameters\NullParameters;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -83,20 +88,22 @@ class AlertDestination
         $this->type = $type;
     }
 
-    /**
-     * @return JsonParametersInterface
-     */
     public function getParameters(): JsonParametersInterface
     {
-        return $this->parameters;
+        $parameters = $this->parameters ?? [];
+
+        switch ($this->type) {
+            case 'http': return HttpParameters::fromArray($parameters);
+            case 'monolog': return MonologParameters::fromArray($parameters);
+            case 'slack': return SlackParameters::fromArray($parameters);
+            case 'mail': return MailParameters::fromArray($parameters);
+            default: return NullParameters::fromArray([]);
+        }
     }
 
-    /**
-     * @param array $parameters
-     */
-    public function setParameters($parameters): void
+    public function setParameters(JsonParametersInterface $parameters): void
     {
-        $this->parameters = $parameters;
+        $this->parameters = $parameters->asArray();
     }
 
     public function __toString(): ?string
