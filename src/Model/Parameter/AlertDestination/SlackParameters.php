@@ -13,11 +13,11 @@ class SlackParameters extends DynamicParameters
     /**
      * @var string|null
      */
-    private $channel;
+    protected $channel;
     /**
      * @var UriInterface
      */
-    private $url;
+    protected $url;
 
     public function __construct(?string $channel, UriInterface $url)
     {

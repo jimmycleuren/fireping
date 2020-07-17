@@ -12,7 +12,7 @@ class MailParameters extends DynamicParameters
     /**
      * @var string|null
      */
-    private $recipient;
+    protected $recipient;
 
     public function __construct(?string $recipient)
     {

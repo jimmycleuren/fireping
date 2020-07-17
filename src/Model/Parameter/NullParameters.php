@@ -6,10 +6,6 @@ namespace App\Model\Parameter;
 
 class NullParameters extends DynamicParameters
 {
-    private function __construct()
-    {
-    }
-
     public static function fromJsonString(string $json): DynamicParametersInterface
     {
         return new self();
