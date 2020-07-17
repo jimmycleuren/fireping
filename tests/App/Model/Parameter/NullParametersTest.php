@@ -9,9 +9,9 @@ use PHPUnit\Framework\TestCase;
 
 class NullParametersTest extends TestCase
 {
-    public function testDefault()
+    public function testDefault(): void
     {
-        $arguments = NullParameters::fromJsonString('{}');
+        $arguments = NullParameters::fromArray([]);
         self::assertSame([], $arguments->asArray());
     }
 }

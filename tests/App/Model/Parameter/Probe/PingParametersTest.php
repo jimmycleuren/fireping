@@ -12,20 +12,37 @@ class PingParametersTest extends TestCase
     /**
      * @dataProvider dataProvider
      */
-    public function testDefault(string $json, array $expected)
+    public function testDefault(array $in, array $expected): void
     {
-        $arguments = PingParameters::fromJsonString($json);
+        $arguments = PingParameters::fromArray($in);
+
+        self::assertInstanceOf(PingParameters::class, $arguments);
         self::assertEquals($expected, $arguments->asArray());
     }
 
-    public function dataProvider()
+    public function dataProvider(): array
     {
         return [
-            ['{}', ['retries' => null, 'packetSize' => null]],
-            ['{"retries": 5, "packetSize": null}', ['retries' => 5, 'packetSize' => null]],
-            ['{"retries": 5}', ['retries' => 5, 'packetSize' => null]],
-            ['{"packetSize": 5}', ['retries' => null, 'packetSize' => 5]],
-            ['{"retries": 5, "packetSize": 10000}', ['retries' => 5, 'packetSize' => 10000]],
+            [
+                [],
+                ['retries' => null, 'packetSize' => null]
+            ],
+            [
+                ['retries' => 5, 'packetSize' => null],
+                ['retries' => 5, 'packetSize' => null]
+            ],
+            [
+                ['retries' => 5],
+                ['retries' => 5, 'packetSize' => null]
+            ],
+            [
+                ['packetSize' => 5],
+                ['retries' => null, 'packetSize' => 5]
+            ],
+            [
+                ['retries' => 5, 'packetSize' => 10000],
+                ['retries' => 5, 'packetSize' => 10000]
+            ],
         ];
     }
 }
