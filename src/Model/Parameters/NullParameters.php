@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Model\Parameters;
 
-class NullParameters extends JsonParameters
+class NullParameters extends DynamicParameters
 {
     private function __construct()
     {
     }
 
-    public static function fromJsonString(string $json): JsonParametersInterface
+    public static function fromJsonString(string $json): DynamicParametersInterface
     {
         return new self();
     }
@@ -20,7 +20,7 @@ class NullParameters extends JsonParameters
         return [];
     }
 
-    public static function fromArray(array $in): JsonParametersInterface
+    public static function fromArray(array $in): DynamicParametersInterface
     {
         return new self();
     }

@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace App\Model\Parameters\AlertDestination;
 
-use App\Model\Parameters\JsonParameters;
-use App\Model\Parameters\JsonParametersInterface;
+use App\Model\Parameters\DynamicParameters;
+use App\Model\Parameters\DynamicParametersInterface;
 
-class MailParameters extends JsonParameters
+class MailParameters extends DynamicParameters
 {
     /**
      * @var string|null
@@ -18,7 +18,7 @@ class MailParameters extends JsonParameters
         $this->recipient = $recipient;
     }
 
-    public static function fromJsonString(string $json): JsonParametersInterface
+    public static function fromJsonString(string $json): DynamicParametersInterface
     {
         $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
         return self::fromArray($data);
@@ -31,7 +31,7 @@ class MailParameters extends JsonParameters
         ];
     }
 
-    public static function fromArray(array $in): JsonParametersInterface
+    public static function fromArray(array $in): DynamicParametersInterface
     {
         return new self($in['recipient']);
     }

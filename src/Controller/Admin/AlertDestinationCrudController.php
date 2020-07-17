@@ -2,13 +2,13 @@
 
 namespace App\Controller\Admin;
 
-use App\Admin\Field\JsonParametersField;
+use App\Admin\Field\DynamicParametersField;
 use App\Entity\AlertDestination;
 use App\Form\Type\AlertDestination\HttpParametersType;
 use App\Form\Type\AlertDestination\MailParametersType;
 use App\Form\Type\AlertDestination\MonologParametersType;
 use App\Form\Type\AlertDestination\SlackParametersType;
-use App\Form\Type\JsonParametersType;
+use App\Form\Type\DynamicParametersType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
@@ -34,7 +34,7 @@ class AlertDestinationCrudController extends AbstractCrudController
             ->setEntityLabelInPlural('AlertDestination')
             ->setSearchFields(['id', 'name', 'type', 'parameters'])
             ->setPaginatorPageSize(30)
-            ->setFormThemes(['admin/crud/json_parameters/_fields.html.twig', '@EasyAdmin/crud/form_theme.html.twig'])
+            ->setFormThemes(['admin/crud/_dynamic_parameters_field.html.twig', '@EasyAdmin/crud/form_theme.html.twig'])
             ->setDefaultSort(['name' => 'ASC']);
     }
 
@@ -48,7 +48,7 @@ class AlertDestinationCrudController extends AbstractCrudController
             'E-mail'  => 'mail'
         ]);
         $id = IntegerField::new('id', 'ID');
-        $parameters = JsonParametersField::new('parameters');
+        $parameters = DynamicParametersField::new('parameters');
 
         switch ($pageName) {
             case Crud::PAGE_INDEX:
@@ -85,7 +85,7 @@ class AlertDestinationCrudController extends AbstractCrudController
                 $arguments->setFormType(MonologParametersType::class);
                 break;
             default:
-                $arguments->setFormType(JsonParametersType::class);
+                $arguments->setFormType(DynamicParametersType::class);
         }
 
         return parent::createEditForm($entityDto, $formOptions, $context);

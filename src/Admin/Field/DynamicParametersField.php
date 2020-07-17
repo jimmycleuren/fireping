@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Admin\Field;
 
-use App\Form\Type\PingParametersType;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FieldTrait;
 
-class JsonParametersField implements FieldInterface
+class DynamicParametersField implements FieldInterface
 {
     use FieldTrait;
 
@@ -17,7 +16,7 @@ class JsonParametersField implements FieldInterface
         return (new self())
             ->setProperty($propertyName)
             ->setLabel($label)
-            ->setTemplatePath('admin/field/json_parameters.html.twig')
+            ->setTemplatePath('admin/field/dynamic_parameters.html.twig')
             ->setRequired(false)
         ;
     }

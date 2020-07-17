@@ -3,11 +3,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
-use App\Model\Parameters\HttpParameters;
-use App\Model\Parameters\JsonParametersInterface;
+use App\Model\Parameters\DynamicParametersInterface;
 use App\Model\Parameters\NullParameters;
-use App\Model\Parameters\PingParameters;
-use App\Model\Parameters\TracerouteParameters;
+use App\Model\Parameters\Probe\HttpParameters;
+use App\Model\Parameters\Probe\PingParameters;
+use App\Model\Parameters\Probe\TracerouteParameters;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -203,11 +203,11 @@ class Probe
     }
 
     /**
-     * @param JsonParametersInterface $arguments
+     * @param DynamicParametersInterface $arguments
      *
      * @return Probe
      */
-    public function setArguments(JsonParametersInterface $arguments): Probe
+    public function setArguments(DynamicParametersInterface $arguments): Probe
     {
         $this->arguments = $arguments->asArray();
 
@@ -215,9 +215,9 @@ class Probe
     }
 
     /**
-     * @return JsonParametersInterface
+     * @return DynamicParametersInterface
      */
-    public function getArguments(): JsonParametersInterface
+    public function getArguments(): DynamicParametersInterface
     {
         $arguments = $this->arguments ?? [];
 

@@ -1,13 +1,17 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Model\Parameters\AlertDestination;
+namespace App\Model\Parameters\Probe;
 
 use App\Model\Parameters\DynamicParameters;
 use App\Model\Parameters\DynamicParametersInterface;
 
-class MonologParameters extends DynamicParameters
+class TracerouteParameters extends DynamicParameters
 {
+    private function __construct()
+    {
+    }
+
     public static function fromJsonString(string $json): DynamicParametersInterface
     {
         return new self();

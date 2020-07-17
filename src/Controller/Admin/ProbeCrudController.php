@@ -2,12 +2,12 @@
 
 namespace App\Controller\Admin;
 
-use App\Admin\Field\JsonParametersField;
+use App\Admin\Field\DynamicParametersField;
 use App\Entity\Probe;
-use App\Form\Type\HttpParametersType;
-use App\Form\Type\PingParametersType;
-use App\Form\Type\JsonParametersType;
-use App\Form\Type\TracerouteParametersType;
+use App\Form\Type\DynamicParametersType;
+use App\Form\Type\Probe\HttpParametersType;
+use App\Form\Type\Probe\PingParametersType;
+use App\Form\Type\Probe\TracerouteParametersType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
@@ -34,7 +34,7 @@ class ProbeCrudController extends AbstractCrudController
             ->setEntityLabelInPlural('Probe')
             ->setSearchFields(['id', 'name', 'type', 'step', 'samples'])
             ->setPaginatorPageSize(30)
-            ->setFormThemes(['admin/crud/json_parameters/_fields.html.twig', '@EasyAdmin/crud/form_theme.html.twig'])
+            ->setFormThemes(['admin/crud/_dynamic_parameters_field.html.twig', '@EasyAdmin/crud/form_theme.html.twig'])
             ->setDefaultSort(['name' => 'ASC']);
     }
 
@@ -46,7 +46,7 @@ class ProbeCrudController extends AbstractCrudController
         $samples = IntegerField::new('samples');
         $archives = AssociationField::new('archives');
         $id = IntegerField::new('id', 'ID');
-        $arguments = JsonParametersField::new('arguments');
+        $arguments = DynamicParametersField::new('arguments');
 
         if (Crud::PAGE_INDEX === $pageName) {
             return [$id, $name, $type, $step, $samples, $archives];
@@ -83,7 +83,7 @@ class ProbeCrudController extends AbstractCrudController
                 $arguments->setFormType(HttpParametersType::class);
                 break;
             default:
-                $arguments->setFormType(JsonParametersType::class);
+                $arguments->setFormType(DynamicParametersType::class);
         }
 
         return parent::createEditForm($entityDto, $formOptions, $context);

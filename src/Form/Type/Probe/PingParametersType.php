@@ -1,8 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Form\Type;
+namespace App\Form\Type\Probe;
 
+use App\Form\Type\DynamicParametersType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -25,6 +26,6 @@ class PingParametersType extends AbstractType
 
     public function getParent()
     {
-        return JsonParametersType::class;
+        return DynamicParametersType::class;
     }
 }

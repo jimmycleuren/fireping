@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\App\Model\ProbeArgument;
 
-use App\Model\Parameters\PingParameters;
+use App\Model\Parameters\Probe\PingParameters;
 use PHPUnit\Framework\TestCase;
 
 class PingParametersTest extends TestCase

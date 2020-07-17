@@ -7,7 +7,7 @@ use App\Model\Parameters\AlertDestination\HttpParameters;
 use App\Model\Parameters\AlertDestination\MailParameters;
 use App\Model\Parameters\AlertDestination\MonologParameters;
 use App\Model\Parameters\AlertDestination\SlackParameters;
-use App\Model\Parameters\JsonParametersInterface;
+use App\Model\Parameters\DynamicParametersInterface;
 use App\Model\Parameters\NullParameters;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -88,7 +88,7 @@ class AlertDestination
         $this->type = $type;
     }
 
-    public function getParameters(): JsonParametersInterface
+    public function getParameters(): DynamicParametersInterface
     {
         $parameters = $this->parameters ?? [];
 
@@ -101,7 +101,7 @@ class AlertDestination
         }
     }
 
-    public function setParameters(JsonParametersInterface $parameters): void
+    public function setParameters(DynamicParametersInterface $parameters): void
     {
         $this->parameters = $parameters->asArray();
     }

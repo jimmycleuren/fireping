@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Form\Type\AlertDestination;
 
-use App\Form\Type\JsonParametersType;
+use App\Form\Type\DynamicParametersType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -24,6 +24,6 @@ class HttpParametersType extends AbstractType
 
     public function getParent()
     {
-        return JsonParametersType::class;
+        return DynamicParametersType::class;
     }
 }

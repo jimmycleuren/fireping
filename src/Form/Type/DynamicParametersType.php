@@ -5,10 +5,10 @@ namespace App\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 
-class JsonParametersType extends AbstractType
+class DynamicParametersType extends AbstractType
 {
     public function getBlockPrefix()
     {
-        return 'json_parameters';
+        return 'dynamic_parameters';
     }
 }

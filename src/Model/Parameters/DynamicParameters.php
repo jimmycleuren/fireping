@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Model\Parameters;
 
-abstract class JsonParameters implements JsonParametersInterface, \ArrayAccess
+abstract class DynamicParameters implements DynamicParametersInterface, \ArrayAccess
 {
     /**
      * @inheritDoc

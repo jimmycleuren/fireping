@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\App\Model\ProbeArgument;
 
-use App\Model\Parameters\HttpParameters;
+use App\Model\Parameters\Probe\HttpParameters;
 use PHPUnit\Framework\TestCase;
 
 class HttpParametersTest extends TestCase
