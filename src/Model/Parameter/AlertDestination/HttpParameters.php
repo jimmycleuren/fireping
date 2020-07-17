@@ -14,7 +14,7 @@ class HttpParameters extends DynamicParameters
      */
     protected $url;
 
-    private function __construct(?string $url)
+    public function __construct(?string $url)
     {
         $this->url = $url;
     }
@@ -35,5 +35,13 @@ class HttpParameters extends DynamicParameters
     public static function fromArray(array $in): DynamicParametersInterface
     {
         return new self($in['url'] ?? null);
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getUrl(): ?string
+    {
+        return $this->url;
     }
 }

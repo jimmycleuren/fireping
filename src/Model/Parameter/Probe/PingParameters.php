@@ -17,7 +17,7 @@ class PingParameters extends DynamicParameters
      */
     protected $packetSize;
 
-    private function __construct(?int $retries, ?int $packetSize)
+    public function __construct(?int $retries, ?int $packetSize)
     {
         $this->retries = $retries;
         $this->packetSize = $packetSize;

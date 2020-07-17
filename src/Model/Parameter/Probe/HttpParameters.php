@@ -21,7 +21,7 @@ class HttpParameters extends DynamicParameters
      */
     protected $protocol;
 
-    private function __construct(?string $host, ?string $path, ?string $protocol)
+    public function __construct(?string $host, ?string $path, ?string $protocol)
     {
         $this->host = $host;
         $this->path = $path;
