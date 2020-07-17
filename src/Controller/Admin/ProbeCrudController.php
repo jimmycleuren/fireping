@@ -34,7 +34,7 @@ class ProbeCrudController extends AbstractCrudController
             ->setEntityLabelInPlural('Probe')
             ->setSearchFields(['id', 'name', 'type', 'step', 'samples'])
             ->setPaginatorPageSize(30)
-            ->setFormThemes(['admin/crud/probe/_fields.html.twig', '@EasyAdmin/crud/form_theme.html.twig'])
+            ->setFormThemes(['admin/crud/json_parameters/_fields.html.twig', '@EasyAdmin/crud/form_theme.html.twig'])
             ->setDefaultSort(['name' => 'ASC']);
     }
 

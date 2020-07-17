@@ -2,12 +2,23 @@
 
 namespace App\Controller\Admin;
 
+use App\Admin\Field\JsonParametersField;
 use App\Entity\AlertDestination;
+use App\Form\Type\AlertDestination\HttpParametersType;
+use App\Form\Type\AlertDestination\MailParametersType;
+use App\Form\Type\AlertDestination\MonologParametersType;
+use App\Form\Type\AlertDestination\SlackParametersType;
+use App\Form\Type\JsonParametersType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
+use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Symfony\Component\Form\FormInterface;
 
 class AlertDestinationCrudController extends AbstractCrudController
 {
@@ -23,26 +34,60 @@ class AlertDestinationCrudController extends AbstractCrudController
             ->setEntityLabelInPlural('AlertDestination')
             ->setSearchFields(['id', 'name', 'type', 'parameters'])
             ->setPaginatorPageSize(30)
+            ->setFormThemes(['admin/crud/json_parameters/_fields.html.twig', '@EasyAdmin/crud/form_theme.html.twig'])
             ->setDefaultSort(['name' => 'ASC']);
     }
 
     public function configureFields(string $pageName): iterable
     {
         $name = TextField::new('name');
-        $type = TextField::new('type');
+        $type = ChoiceField::new('type')->setChoices([
+            'Slack'   => 'slack',
+            'Logs'    => 'monolog',
+            'Webhook' => 'http',
+            'E-mail'  => 'mail'
+        ]);
         $id = IntegerField::new('id', 'ID');
-        $parameters = TextareaField::new('parameters');
+        $parameters = JsonParametersField::new('parameters');
 
-        if (Crud::PAGE_INDEX === $pageName) {
-            return [$id, $name, $type];
-        } elseif (Crud::PAGE_DETAIL === $pageName) {
-            return [$id, $name, $type, $parameters];
-        } elseif (Crud::PAGE_NEW === $pageName) {
-            return [$name, $type, $parameters];
-        } elseif (Crud::PAGE_EDIT === $pageName) {
-            return [$name, $type, $parameters];
+        switch ($pageName) {
+            case Crud::PAGE_INDEX:
+                return [$id, $name, $type];
+            case Crud::PAGE_DETAIL:
+                return [$id, $name, $type, $parameters];
+            case Crud::PAGE_NEW:
+                return [$name, $type];
+            case Crud::PAGE_EDIT:
+                $typeRo = clone $type;
+                $typeRo->setFormTypeOption('disabled', true);
+                return [$name, $typeRo, FormField::addPanel('Parameters'), $parameters];
+            default:
+                return [];
+        }
+    }
+
+    public function createEditForm(EntityDto $entityDto, KeyValueStore $formOptions, AdminContext $context): FormInterface
+    {
+        $type = $entityDto->getInstance()->getType();
+
+        $arguments = $entityDto->getFields()->get('parameters');
+        switch ($type) {
+            case 'slack':
+                $arguments->setFormType(SlackParametersType::class);
+                break;
+            case 'mail':
+                $arguments->setFormType(MailParametersType::class);
+                break;
+            case 'http':
+                $arguments->setFormType(HttpParametersType::class);
+                break;
+            case 'monolog':
+                $arguments->setFormType(MonologParametersType::class);
+                break;
+            default:
+                $arguments->setFormType(JsonParametersType::class);
         }
 
-        return [];
+        return parent::createEditForm($entityDto, $formOptions, $context);
     }
 }
