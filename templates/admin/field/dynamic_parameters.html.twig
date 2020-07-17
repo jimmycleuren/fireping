@@ -3,7 +3,8 @@
 {# @var entity \EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto #}
 <dl>
     {% for key, value in field.value.asArray %}
-        <dt>{{ key }}</dt>
+        <dt>{{ key|title }}</dt>
         <dd>{{ value is null ? 'disabled' : value }}</dd>
+        {% if loop.last %}{% else %}<br/>{% endif %}
     {% endfor %}
 </dl>
