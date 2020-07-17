@@ -52,7 +52,7 @@ class AlertDestination
      *
      * @ORM\Column(name="parameters", type="json", nullable=true)
      */
-    private $parameters;
+    private $parameters = [];
 
     /**
      * @return int
