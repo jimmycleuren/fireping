@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Model\Parameters\AlertDestination;
+namespace App\Model\Parameter\AlertDestination;
 
-use App\Model\Parameters\DynamicParameters;
-use App\Model\Parameters\DynamicParametersInterface;
+use App\Model\Parameter\DynamicParameters;
+use App\Model\Parameter\DynamicParametersInterface;
 
 class MailParameters extends DynamicParameters
 {

@@ -3,12 +3,12 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
-use App\Model\Parameters\AlertDestination\HttpParameters;
-use App\Model\Parameters\AlertDestination\MailParameters;
-use App\Model\Parameters\AlertDestination\MonologParameters;
-use App\Model\Parameters\AlertDestination\SlackParameters;
-use App\Model\Parameters\DynamicParametersInterface;
-use App\Model\Parameters\NullParameters;
+use App\Model\Parameter\AlertDestination\HttpParameters;
+use App\Model\Parameter\AlertDestination\MailParameters;
+use App\Model\Parameter\AlertDestination\MonologParameters;
+use App\Model\Parameter\AlertDestination\SlackParameters;
+use App\Model\Parameter\DynamicParametersInterface;
+use App\Model\Parameter\NullParameters;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 

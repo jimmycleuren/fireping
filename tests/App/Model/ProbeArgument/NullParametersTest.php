@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\App\Model\ProbeArgument;
 
-use App\Model\Parameters\NullParameters;
+use App\Model\Parameter\NullParameters;
 use PHPUnit\Framework\TestCase;
 
 class NullParametersTest extends TestCase

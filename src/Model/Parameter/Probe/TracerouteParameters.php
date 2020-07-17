@@ -1,10 +1,12 @@
 <?php
-
 declare(strict_types=1);
 
-namespace App\Model\Parameters;
+namespace App\Model\Parameter\Probe;
 
-class NullParameters extends DynamicParameters
+use App\Model\Parameter\DynamicParameters;
+use App\Model\Parameter\DynamicParametersInterface;
+
+class TracerouteParameters extends DynamicParameters
 {
     private function __construct()
     {
