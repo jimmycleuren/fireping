@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Model\Parameters\JsonParametersInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -83,9 +84,9 @@ class AlertDestination
     }
 
     /**
-     * @return array
+     * @return JsonParametersInterface
      */
-    public function getParameters()
+    public function getParameters(): JsonParametersInterface
     {
         return $this->parameters;
     }

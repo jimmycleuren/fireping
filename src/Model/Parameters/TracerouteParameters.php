@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Model\ProbeArgument;
+namespace App\Model\Parameters;
 
 class TracerouteParameters extends JsonParameters
 {

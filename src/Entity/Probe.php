@@ -3,11 +3,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
-use App\Model\ProbeArgument\HttpParameters;
-use App\Model\ProbeArgument\NullParameters;
-use App\Model\ProbeArgument\PingParameters;
-use App\Model\ProbeArgument\JsonParametersInterface;
-use App\Model\ProbeArgument\TracerouteParameters;
+use App\Model\Parameters\HttpParameters;
+use App\Model\Parameters\JsonParametersInterface;
+use App\Model\Parameters\NullParameters;
+use App\Model\Parameters\PingParameters;
+use App\Model\Parameters\TracerouteParameters;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
