@@ -9,6 +9,8 @@ use App\Form\Type\AlertDestination\MailParametersType;
 use App\Form\Type\AlertDestination\MonologParametersType;
 use App\Form\Type\AlertDestination\SlackParametersType;
 use App\Form\Type\DynamicParametersType;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
@@ -36,6 +38,15 @@ class AlertDestinationCrudController extends AbstractCrudController
             ->setPaginatorPageSize(30)
             ->setFormThemes(['admin/crud/_dynamic_parameters_field.html.twig', '@EasyAdmin/crud/form_theme.html.twig'])
             ->setDefaultSort(['name' => 'ASC']);
+    }
+
+    public function configureActions(Actions $actions): Actions
+    {
+        return $actions
+            ->add(Crud::PAGE_NEW, Action::SAVE_AND_CONTINUE)
+            ->remove(Crud::PAGE_NEW, Action::SAVE_AND_RETURN)
+            ->remove(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER)
+        ;
     }
 
     public function configureFields(string $pageName): iterable
