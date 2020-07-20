@@ -23,12 +23,6 @@ class PingParameters extends DynamicParameters
         $this->packetSize = $packetSize;
     }
 
-    public static function fromJsonString(string $json): DynamicParametersInterface
-    {
-        $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-        return new self($data['retries'] ?? null, $data['packetSize'] ?? null);
-    }
-
     public function asArray(): array
     {
         return [

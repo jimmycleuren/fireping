@@ -8,10 +8,6 @@ use App\Model\Parameter\DynamicParametersInterface;
 
 class TracerouteParameters extends DynamicParameters
 {
-    public static function fromJsonString(string $json): DynamicParametersInterface
-    {
-        return new self();
-    }
 
     public function asArray(): array
     {

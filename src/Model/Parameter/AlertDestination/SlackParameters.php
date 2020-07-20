@@ -25,12 +25,6 @@ class SlackParameters extends DynamicParameters
         $this->url = $url;
     }
 
-    public static function fromJsonString(string $json): DynamicParametersInterface
-    {
-        $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-        return self::fromArray($data);
-    }
-
     public function asArray(): array
     {
         return [
