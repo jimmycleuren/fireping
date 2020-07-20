@@ -3,12 +3,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
-use App\Model\Parameter\AlertDestination\HttpParameters;
-use App\Model\Parameter\AlertDestination\MailParameters;
-use App\Model\Parameter\AlertDestination\MonologParameters;
-use App\Model\Parameter\AlertDestination\SlackParameters;
+use App\Dto\AlertDestinationOutput;
+use App\Dto\CreateAlertDestination;
+use App\Dto\PatchAlertDestination;
+use App\Factory\AlertDestinationParameterFactory;
 use App\Model\Parameter\DynamicParametersInterface;
-use App\Model\Parameter\NullParameters;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -17,7 +16,33 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Table(name="alert_destination")
  * @ORM\Entity(repositoryClass="App\Repository\AlertDestinationRepository")
- * @ApiResource
+ * @ApiResource(
+ *     collectionOperations={
+ *         "index"={
+ *             "method"="GET",
+ *             "output"=AlertDestinationOutput::class
+ *         },
+ *         "create"={
+ *             "method"="POST",
+ *             "input"=CreateAlertDestination::class,
+ *             "output"=AlertDestinationOutput::class
+ *         }
+ *     },
+ *     itemOperations={
+ *         "get"={
+ *             "method"="GET",
+ *             "output"=AlertDestinationOutput::class
+ *         },
+ *         "update"={
+ *             "method"="PATCH",
+ *             "input"=PatchAlertDestination::class,
+ *             "output"=AlertDestinationOutput::class
+ *         },
+ *         "delete"={
+ *             "method"="DELETE"
+ *         }
+ *     }
+ * )
  * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  */
 class AlertDestination
@@ -90,15 +115,7 @@ class AlertDestination
 
     public function getParameters(): DynamicParametersInterface
     {
-        $parameters = $this->parameters ?? [];
-
-        switch ($this->type) {
-            case 'http': return HttpParameters::fromArray($parameters);
-            case 'monolog': return MonologParameters::fromArray($parameters);
-            case 'slack': return SlackParameters::fromArray($parameters);
-            case 'mail': return MailParameters::fromArray($parameters);
-            default: return NullParameters::fromArray([]);
-        }
+        return (new AlertDestinationParameterFactory())->make($this->type, $this->parameters ?? []);
     }
 
     public function setParameters(DynamicParametersInterface $parameters): void

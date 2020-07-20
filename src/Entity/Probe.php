@@ -3,11 +3,8 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Factory\ProbeParameterFactory;
 use App\Model\Parameter\DynamicParametersInterface;
-use App\Model\Parameter\NullParameters;
-use App\Model\Parameter\Probe\HttpParameters;
-use App\Model\Parameter\Probe\PingParameters;
-use App\Model\Parameter\Probe\TracerouteParameters;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -219,18 +216,7 @@ class Probe
      */
     public function getArguments(): DynamicParametersInterface
     {
-        $arguments = $this->arguments ?? [];
-
-        switch ($this->type) {
-            case 'ping':
-                return PingParameters::fromArray($arguments);
-            case 'traceroute':
-                return TracerouteParameters::fromArray($arguments);
-            case 'http':
-                return HttpParameters::fromArray($arguments);
-            default:
-                return NullParameters::fromArray($arguments);
-        }
+        return (new ProbeParameterFactory())->make($this->type, $this->arguments ?? []);
     }
 
     /**
