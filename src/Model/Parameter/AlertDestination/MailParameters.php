@@ -11,6 +11,8 @@ class MailParameters extends DynamicParameters
 {
     /**
      * @var string|null
+     * @Assert\Email()
+     * @Assert\NotBlank()
      */
     protected $recipient;
 
@@ -28,6 +30,6 @@ class MailParameters extends DynamicParameters
 
     public static function fromArray(array $in): DynamicParametersInterface
     {
-        return new self($in['recipient']);
+        return new self($in['recipient'] ?? null);
     }
 }

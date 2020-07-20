@@ -11,7 +11,7 @@ use Psr\Http\Message\UriInterface;
 class SlackParameters extends DynamicParameters
 {
     /**
-     * @var string|null
+     * @var string
      */
     protected $channel;
     /**
@@ -19,7 +19,7 @@ class SlackParameters extends DynamicParameters
      */
     protected $url;
 
-    public function __construct(?string $channel, UriInterface $url)
+    public function __construct(string $channel, UriInterface $url)
     {
         $this->channel = $channel;
         $this->url = $url;
@@ -35,6 +35,6 @@ class SlackParameters extends DynamicParameters
 
     public static function fromArray(array $in): DynamicParametersInterface
     {
-        return new self($in['channel'] ?? null, new Uri($in['url'] ?? ''));
+        return new self($in['channel'], new Uri($in['url'] ?? ''));
     }
 }
