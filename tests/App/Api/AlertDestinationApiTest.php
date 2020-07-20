@@ -30,7 +30,7 @@ class AlertDestinationApiTest extends AbstractApiTest
             ],
             json_encode([
                 'name' => 'syslogtest',
-                'type' => 'syslog',
+                'type' => 'monolog',
                 'parameters' => [],
             ])
         );
