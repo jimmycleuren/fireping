@@ -21,7 +21,7 @@ You can definitely do with less. Try with what you have, see what works, and rep
 
 ## Software Requirements
 
-Storage nodes have been tested on Debian 9 and Debian 10. Whatever you use, it must support running [rrdcached](https://oss.oetiker.ch/rrdtool/doc/rrdcached.en.html).
+Storage nodes have been tested on Debian 9 and Debian 10. Whatever you use, it must support running [rrdcached](https://oss.oetiker.ch/rrdtool/doc/rrdcached.en.html) version 1.7.1 or higher.
 
 ## Installation
 
