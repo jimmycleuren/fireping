@@ -24,7 +24,7 @@ final class CreateAlertDestination
     public $type;
 
     /**
-     * @var array|DynamicParametersInterface
+     * @var array
      * @Assert\Valid()
      */
     public $parameters = [];
