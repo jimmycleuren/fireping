@@ -15,7 +15,7 @@ final class PatchAlertDestination
     public $name;
     /**
      * @var array|null
-     * @Assert\Type(type={"array", "null"})
+     * @Assert\Type(type={"array", "object", "null"})
      */
     public $parameters;
 }
