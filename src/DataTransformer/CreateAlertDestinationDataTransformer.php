@@ -7,7 +7,6 @@ use ApiPlatform\Core\DataTransformer\DataTransformerInterface;
 use ApiPlatform\Core\Serializer\AbstractItemNormalizer;
 use ApiPlatform\Core\Validator\ValidatorInterface;
 use App\Dto\CreateAlertDestination;
-use App\Dto\SlackParametersInput;
 use App\Entity\AlertDestination;
 use App\Factory\AlertDestinationParameterFactory;
 use App\Model\Parameter\DynamicParametersInterface;
@@ -31,15 +30,10 @@ class CreateAlertDestinationDataTransformer implements DataTransformerInterface
     public function transform($object, string $to, array $context = [])
     {
         $parameters = new NullParameters();
-        $parametersInput = new NullParameters();
         if (\is_array($object->parameters)) {
-            $parametersInput = new SlackParametersInput();
-            $parametersInput->channel = $object->parameters['channel'] ?? null;
-            $parametersInput->url = $object->parameters['url'] ?? null;
-
             $parameters = $this->createParameters($object->type, $object->parameters);
         }
-        $object->parameters = $parametersInput;
+        $object->parameters = $parameters;
 
         $this->validator->validate($object);
 

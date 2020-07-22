@@ -6,11 +6,14 @@ namespace App\Model\Parameter\AlertDestination;
 
 use App\Model\Parameter\DynamicParameters;
 use App\Model\Parameter\DynamicParametersInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class HttpParameters extends DynamicParameters
 {
     /**
      * @var string|null
+     * @Assert\NotBlank()
+     * @Assert\Url()
      */
     protected $url;
 

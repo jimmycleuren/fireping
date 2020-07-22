@@ -7,15 +7,19 @@ use App\Model\Parameter\DynamicParameters;
 use App\Model\Parameter\DynamicParametersInterface;
 use GuzzleHttp\Psr7\Uri;
 use Psr\Http\Message\UriInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class SlackParameters extends DynamicParameters
 {
     /**
      * @var string
+     * @Assert\NotBlank()
      */
     protected $channel;
     /**
      * @var UriInterface
+     * @Assert\NotBlank()
+     * @Assert\Url()
      */
     protected $url;
 
