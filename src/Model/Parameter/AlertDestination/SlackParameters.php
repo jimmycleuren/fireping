@@ -29,12 +29,12 @@ class SlackParameters extends DynamicParameters
     {
         return [
             'channel' => $this->channel,
-            'url' => (string) $this->url,
+            'url'     => (string) $this->url,
         ];
     }
 
     public static function fromArray(array $in): DynamicParametersInterface
     {
-        return new self($in['channel'], new Uri($in['url'] ?? ''));
+        return new self((string) ($in['channel'] ?? ''), new Uri($in['url'] ?? ''));
     }
 }
