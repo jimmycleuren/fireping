@@ -62,43 +62,29 @@ class AlertDestinationCrudController extends AbstractCrudController
         $id = IntegerField::new('id', 'ID');
         $parameters = DynamicParametersField::new('parameters');
 
-        switch ($pageName) {
-            case Crud::PAGE_INDEX:
-                return [$id, $name, $type];
-            case Crud::PAGE_DETAIL:
-                return [$id, $name, $type, $parameters];
-            case Crud::PAGE_NEW:
-                return [$name, $type];
-            case Crud::PAGE_EDIT:
-                $typeRo = clone $type;
-                $typeRo->setFormTypeOption('disabled', true);
-                return [$name, $typeRo, FormField::addPanel('Parameters'), $parameters];
-            default:
-                return [];
-        }
+        $typeRo = clone $type;
+        $typeRo->setFormTypeOption('disabled', true);
+
+        $map = [
+            Crud::PAGE_INDEX => [$id, $name, $type],
+            Crud::PAGE_DETAIL => [$id, $name, $type, $parameters],
+            Crud::PAGE_NEW => [$name, $type],
+            Crud::PAGE_EDIT => [$name, $typeRo, FormField::addPanel('Parameters'), $parameters]
+        ];
+
+        return $map[$pageName];
     }
 
     public function createEditForm(EntityDto $entityDto, KeyValueStore $formOptions, AdminContext $context): FormInterface
     {
-        $type = $entityDto->getInstance()->getType();
+        $map = [
+            AlertDestination::TYPE_SLACK => SlackParametersType::class,
+            AlertDestination::TYPE_MAIL => MailParametersType::class,
+            AlertDestination::TYPE_HTTP => HttpParametersType::class,
+            AlertDestination::TYPE_LOG => MonologParametersType::class
+        ];
 
-        $arguments = $entityDto->getFields()->get('parameters');
-        switch ($type) {
-            case AlertDestination::TYPE_SLACK:
-                $arguments->setFormType(SlackParametersType::class);
-                break;
-            case AlertDestination::TYPE_MAIL:
-                $arguments->setFormType(MailParametersType::class);
-                break;
-            case AlertDestination::TYPE_HTTP:
-                $arguments->setFormType(HttpParametersType::class);
-                break;
-            case AlertDestination::TYPE_LOG:
-                $arguments->setFormType(MonologParametersType::class);
-                break;
-            default:
-                $arguments->setFormType(DynamicParametersType::class);
-        }
+        $entityDto->getFields()->get('parameters')->setFormType($map[$entityDto->getInstance()->getType()]);
 
         return parent::createEditForm($entityDto, $formOptions, $context);
     }
