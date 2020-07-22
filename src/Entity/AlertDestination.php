@@ -47,6 +47,18 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class AlertDestination
 {
+    public const TYPE_SLACK = 'slack';
+    public const TYPE_MAIL  = 'mail';
+    public const TYPE_LOG   = 'monolog';
+    public const TYPE_HTTP  = 'http';
+
+    public const ALLOWED_TYPES = [
+        self::TYPE_SLACK,
+        self::TYPE_MAIL,
+        self::TYPE_LOG,
+        self::TYPE_HTTP
+    ];
+
     /**
      * @var int
      *

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Dto;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
+use App\Entity\AlertDestination;
 use App\Model\Parameter\DynamicParametersInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -30,11 +31,6 @@ final class CreateAlertDestination
 
     public static function getTypes(): array
     {
-        return [
-            'monolog',
-            'slack',
-            'mail',
-            'http'
-        ];
+        return AlertDestination::ALLOWED_TYPES;
     }
 }

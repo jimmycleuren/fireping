@@ -16,21 +16,21 @@ class AlertDestinationFixtures extends Fixture
     {
         $alertDestination = new AlertDestination();
         $alertDestination->setName('syslog');
-        $alertDestination->setType('monolog');
+        $alertDestination->setType(AlertDestination::TYPE_LOG);
         $alertDestination->setParameters(new MonologParameters());
         $manager->persist($alertDestination);
         $this->addReference('alertdestination-1', $alertDestination);
 
         $alertDestination = new AlertDestination();
         $alertDestination->setName('mail');
-        $alertDestination->setType('mail');
+        $alertDestination->setType(AlertDestination::TYPE_MAIL);
         $alertDestination->setParameters(new MailParameters('test@test.com'));
         $manager->persist($alertDestination);
         $this->addReference('alertdestination-mail', $alertDestination);
 
         $alertDestination = new AlertDestination();
         $alertDestination->setName('slack');
-        $alertDestination->setType('slack');
+        $alertDestination->setType(AlertDestination::TYPE_SLACK);
         $alertDestination->setParameters(new SlackParameters('general', new Uri('https://example.example')));
         $manager->persist($alertDestination);
         $this->addReference('alertdestination-slack', $alertDestination);

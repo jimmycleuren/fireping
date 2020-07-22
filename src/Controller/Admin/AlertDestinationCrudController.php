@@ -54,10 +54,10 @@ class AlertDestinationCrudController extends AbstractCrudController
     {
         $name = TextField::new('name');
         $type = ChoiceField::new('type')->setChoices([
-            'Slack'   => 'slack',
-            'Logs'    => 'monolog',
-            'Webhook' => 'http',
-            'E-mail'  => 'mail'
+            'Slack'   => AlertDestination::TYPE_SLACK,
+            'Logs'    => AlertDestination::TYPE_LOG,
+            'Webhook' => AlertDestination::TYPE_HTTP,
+            'E-mail'  => AlertDestination::TYPE_MAIL,
         ]);
         $id = IntegerField::new('id', 'ID');
         $parameters = DynamicParametersField::new('parameters');
@@ -84,16 +84,16 @@ class AlertDestinationCrudController extends AbstractCrudController
 
         $arguments = $entityDto->getFields()->get('parameters');
         switch ($type) {
-            case 'slack':
+            case AlertDestination::TYPE_SLACK:
                 $arguments->setFormType(SlackParametersType::class);
                 break;
-            case 'mail':
+            case AlertDestination::TYPE_MAIL:
                 $arguments->setFormType(MailParametersType::class);
                 break;
-            case 'http':
+            case AlertDestination::TYPE_HTTP:
                 $arguments->setFormType(HttpParametersType::class);
                 break;
-            case 'monolog':
+            case AlertDestination::TYPE_LOG:
                 $arguments->setFormType(MonologParametersType::class);
                 break;
             default:
