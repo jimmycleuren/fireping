@@ -17,7 +17,7 @@ class DynamicParametersField implements FieldInterface
             ->setProperty($propertyName)
             ->setLabel($label)
             ->setTemplatePath('admin/field/dynamic_parameters.html.twig')
-            ->setRequired(false)
+            ->setRequired(true)
         ;
     }
 }
