@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Entity\AlertDestination;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity()
  * @ORM\Table(name="alert_destination_slack")
+ * @UniqueEntity("name", entityClass="App\Entity\AlertDestination\AlertDestination")
  */
 class Slack extends AlertDestination
 {
