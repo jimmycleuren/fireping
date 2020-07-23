@@ -1,42 +1,67 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jimmyc
- * Date: 8/03/2018
- * Time: 21:11.
- */
 
 namespace Tests\App\AlertDestination;
 
 use App\AlertDestination\AlertDestinationFactory;
-use App\Entity\AlertDestination\AlertDestination;
+use App\AlertDestination\Http;
+use App\AlertDestination\Monolog;
+use App\Entity\AlertDestination\Email;
+use App\Entity\AlertDestination\Logging;
+use App\Entity\AlertDestination\Slack;
+use App\Entity\AlertDestination\Webhook;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class AlertDestinationFactoryTest extends WebTestCase
 {
-    public function testCreateHttp()
+    public function testCreateHttp(): void
     {
         $client = static::createClient();
 
         $factory = new AlertDestinationFactory($client->getContainer());
 
-        $alertDestination = new AlertDestination();
-        $alertDestination->setType('http');
+        $alertDestination = new Webhook();
+        $alertDestination->setUrl('https://example.tld');
         $http = $factory->create($alertDestination);
 
-        $this->assertEquals('App\AlertDestination\Http', get_class($http));
+        self::assertEquals(Http::class, get_class($http));
     }
 
-    public function testCreateMonolog()
+    public function testCreateMonolog(): void
     {
         $client = static::createClient();
 
         $factory = new AlertDestinationFactory($client->getContainer());
 
-        $alertDestination = new AlertDestination();
-        $alertDestination->setType('monolog');
+        $alertDestination = new Logging();
         $monolog = $factory->create($alertDestination);
 
-        $this->assertEquals('App\AlertDestination\Monolog', get_class($monolog));
+        self::assertEquals(Monolog::class, get_class($monolog));
+    }
+
+    public function testCreateEmail(): void
+    {
+        $client = static::createClient();
+
+        $factory = new AlertDestinationFactory($client->getContainer());
+
+        $alertDestination = new Email();
+        $alertDestination->setRecipient('user@fireping.example');
+        $monolog = $factory->create($alertDestination);
+
+        self::assertEquals(Email::class, get_class($monolog));
+    }
+
+    public function testCreateSlack(): void
+    {
+        $client = static::createClient();
+
+        $factory = new AlertDestinationFactory($client->getContainer());
+
+        $alertDestination = new Slack();
+        $alertDestination->setUrl('https://slack.example');
+        $alertDestination->setChannel('channel');
+        $monolog = $factory->create($alertDestination);
+
+        self::assertEquals(\App\AlertDestination\Slack::class, get_class($monolog));
     }
 }
