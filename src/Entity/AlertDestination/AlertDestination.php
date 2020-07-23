@@ -25,7 +25,6 @@ abstract class AlertDestination
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-
     /**
      * @var string
      *
@@ -34,32 +33,11 @@ abstract class AlertDestination
      */
     private $name;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="type", type="string", length=255)
-     * @Assert\NotBlank
-     */
-    private $type;
-
-    /**
-     * @var array
-     *
-     * @ORM\Column(name="parameters", type="json", nullable=true)
-     */
-    private $parameters;
-
-    /**
-     * @return int
-     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): ?string
     {
         return $this->name;
@@ -70,37 +48,8 @@ abstract class AlertDestination
         $this->name = $name;
     }
 
-    /**
-     * @return string
-     */
-    public function getType(): ?string
+    public function __toString(): string
     {
-        return $this->type;
-    }
-
-    public function setType(string $type): void
-    {
-        $this->type = $type;
-    }
-
-    /**
-     * @return array
-     */
-    public function getParameters()
-    {
-        return $this->parameters;
-    }
-
-    /**
-     * @param array $parameters
-     */
-    public function setParameters($parameters): void
-    {
-        $this->parameters = $parameters;
-    }
-
-    public function __toString(): ?string
-    {
-        return $this->name;
+        return $this->name ?? '';
     }
 }
