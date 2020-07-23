@@ -3,7 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Alert;
-use App\Entity\AlertDestination;
+use App\Entity\AlertDestination\AlertDestination;
 use App\Entity\AlertRule;
 use App\Entity\Device;
 use App\Entity\Domain;

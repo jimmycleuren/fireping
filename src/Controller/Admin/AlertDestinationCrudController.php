@@ -2,7 +2,7 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\AlertDestination;
+use App\Entity\AlertDestination\AlertDestination;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;

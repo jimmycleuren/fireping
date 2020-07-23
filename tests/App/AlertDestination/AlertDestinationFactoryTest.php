@@ -9,7 +9,7 @@
 namespace Tests\App\AlertDestination;
 
 use App\AlertDestination\AlertDestinationFactory;
-use App\Entity\AlertDestination;
+use App\Entity\AlertDestination\AlertDestination;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class AlertDestinationFactoryTest extends WebTestCase

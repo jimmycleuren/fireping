@@ -2,7 +2,7 @@
 
 namespace App\AlertDestination;
 
-use App\Entity\AlertDestination;
+use App\Entity\AlertDestination\AlertDestination;
 use Psr\Container\ContainerInterface;
 
 class AlertDestinationFactory

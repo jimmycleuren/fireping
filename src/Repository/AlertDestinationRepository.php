@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\AlertDestination;
+use App\Entity\AlertDestination\AlertDestination;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
