@@ -7,14 +7,15 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * AlertDestination.
- *
  * @ORM\Table(name="alert_destination")
  * @ORM\Entity(repositoryClass="App\Repository\AlertDestinationRepository")
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="type_discriminator", type="string")
+ * @ORM\DiscriminatorMap({"slack" = "Slack", "webhook" = "Webhook", "email" = "Email", "monolog" = "Logging"})
  * @ApiResource
  * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  */
-class AlertDestination
+abstract class AlertDestination
 {
     /**
      * @var int
