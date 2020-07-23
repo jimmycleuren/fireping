@@ -1617,22 +1617,22 @@
         },
         {
             "name": "easycorp/easyadmin-bundle",
-            "version": "v3.1.2",
+            "version": "v3.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/EasyCorp/EasyAdminBundle.git",
-                "reference": "251624cbcc084722dcdcf5a8a9a2ae3e56570898"
+                "reference": "07c94b9781398fceee0ce13b7de8894001121be0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/EasyCorp/EasyAdminBundle/zipball/251624cbcc084722dcdcf5a8a9a2ae3e56570898",
-                "reference": "251624cbcc084722dcdcf5a8a9a2ae3e56570898",
+                "url": "https://api.github.com/repos/EasyCorp/EasyAdminBundle/zipball/07c94b9781398fceee0ce13b7de8894001121be0",
+                "reference": "07c94b9781398fceee0ce13b7de8894001121be0",
                 "shasum": ""
             },
             "require": {
                 "doctrine/common": "^2.8",
                 "doctrine/dbal": "^2.10",
-                "doctrine/doctrine-bundle": "^1.8|^2.0",
+                "doctrine/doctrine-bundle": "^1.12|^2.0",
                 "doctrine/orm": "^2.6,>=2.6.3",
                 "doctrine/persistence": "^1.0",
                 "ext-json": "*",
@@ -1701,7 +1701,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-07-18T14:45:08+00:00"
+            "time": "2020-07-22T18:05:08+00:00"
         },
         {
             "name": "egulias/email-validator",
