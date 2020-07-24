@@ -30,7 +30,7 @@ final class Version20200723122530 extends AbstractMigration
             }
 
             if ($destination['type'] === 'monolog') {
-                $insertMonolog = $this->connection->prepare('INSERT INTO alert_destination_log (`id`) VALUES (:id);');
+                $insertMonolog = $this->connection->prepare('INSERT INTO alert_destination_log (`id`) VALUES (:id) ON DUPLICATE KEY UPDATE id = :id;');
                 $insertMonolog->bindParam('id', $destination['id']);
                 $insertMonolog->execute();
             }
@@ -38,7 +38,7 @@ final class Version20200723122530 extends AbstractMigration
             $parameters = json_decode($destination['parameters'], true) ?? [];
 
             if ($destination['type'] === 'http') {
-                $insertHttp = $this->connection->prepare('INSERT INTO alert_destination_webhook (`id`, `url`) VALUES (:id, :url);');
+                $insertHttp = $this->connection->prepare('INSERT INTO alert_destination_webhook (`id`, `url`) VALUES (:id, :url) ON DUPLICATE KEY UPDATE id = :id, url = :url;');
                 $insertHttp->bindParam('id', $destination['id']);
                 $url = $parameters['url'] ?? '';
                 $insertHttp->bindParam('url', $url);
@@ -46,7 +46,7 @@ final class Version20200723122530 extends AbstractMigration
             }
 
             if ($destination['type'] === 'slack') {
-                $insertHttp = $this->connection->prepare('INSERT INTO alert_destination_slack (`id`, `url`, `channel`) VALUES (:id, :url, :channel);');
+                $insertHttp = $this->connection->prepare('INSERT INTO alert_destination_slack (`id`, `url`, `channel`) VALUES (:id, :url, :channel) ON DUPLICATE KEY UPDATE id = :id, url = :url, channel = :channel;');
                 $insertHttp->bindParam('id', $destination['id']);
                 $url = $parameters['url'] ?? '';
                 $insertHttp->bindParam('url', $url);
@@ -56,7 +56,7 @@ final class Version20200723122530 extends AbstractMigration
             }
 
             if ($destination['type'] === 'mail') {
-                $insertHttp = $this->connection->prepare('INSERT INTO alert_destination_email (`id`, `recipient`) VALUES (:id, :recipient);');
+                $insertHttp = $this->connection->prepare('INSERT INTO alert_destination_email (`id`, `recipient`) VALUES (:id, :recipient) ON DUPLICATE KEY UPDATE id = :id, recipient = :recipient;');
                 $insertHttp->bindParam('id', $destination['id']);
                 $recipient = $parameters['recipient'] ?? '';
                 $insertHttp->bindParam('recipient', $recipient);
@@ -89,5 +89,58 @@ final class Version20200723122530 extends AbstractMigration
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE alert_destination ADD type VARCHAR(255) CHARACTER SET utf8 NOT NULL COLLATE `utf8_unicode_ci`, ADD parameters LONGTEXT CHARACTER SET utf8 DEFAULT NULL COLLATE `utf8_unicode_ci` COMMENT \'(DC2Type:json)\'');
+    }
+
+    public function postDown(Schema $schema): void
+    {
+        parent::postDown($schema);
+
+        $slackDestinations = $this->connection->prepare('SELECT * FROM alert_destination_slack;');
+        $slackDestinations->execute();
+
+        foreach ($slackDestinations as $slackDestination) {
+            $parameters = json_encode(['url' => $slackDestination['url'], 'channel' => $slackDestination['channel']]);
+            $updateSlackDestination = $this->connection->prepare('UPDATE alert_destination SET parameters = :parameters, `type` = :type, `type_discriminator` = "" WHERE id = :id');
+            $updateSlackDestination->bindParam('parameters', $parameters);
+            $updateSlackDestination->bindValue('type', 'slack');
+            $updateSlackDestination->bindParam('id', $slackDestination['id']);
+            $updateSlackDestination->execute();
+        }
+
+        $logDestinations = $this->connection->prepare('SELECT * FROM alert_destination_log;');
+        $logDestinations->execute();
+
+        foreach ($logDestinations as $logDestination) {
+            $parameters = json_encode(new \stdClass());
+            $updateLogDestination = $this->connection->prepare('UPDATE alert_destination SET parameters = :parameters, `type` = :type, `type_discriminator` = "" WHERE id = :id');
+            $updateLogDestination->bindParam('parameters', $parameters);
+            $updateLogDestination->bindValue('type', 'monolog');
+            $updateLogDestination->bindParam('id', $logDestination['id']);
+            $updateLogDestination->execute();
+        }
+
+        $webhookDestinations = $this->connection->prepare('SELECT * FROM alert_destination_webhook;');
+        $webhookDestinations->execute();
+
+        foreach ($webhookDestinations as $webhookDestination) {
+            $parameters = json_encode(['url' => $webhookDestination['url']]);
+            $updateWebhookDestination = $this->connection->prepare('UPDATE alert_destination SET parameters = :parameters, `type` = :type, `type_discriminator` = "" WHERE id = :id');
+            $updateWebhookDestination->bindParam('parameters', $parameters);
+            $updateWebhookDestination->bindValue('type', 'http');
+            $updateWebhookDestination->bindParam('id', $webhookDestination['id']);
+            $updateWebhookDestination->execute();
+        }
+
+        $emailDestinations = $this->connection->prepare('SELECT * FROM alert_destination_email;');
+        $emailDestinations->execute();
+
+        foreach ($emailDestinations as $emailDestination) {
+            $parameters = json_encode(['recipient' => $emailDestination['recipient']]);
+            $updateEmailDestination = $this->connection->prepare('UPDATE alert_destination SET parameters = :parameters, `type` = :type, `type_discriminator` = "" WHERE id = :id');
+            $updateEmailDestination->bindParam('parameters', $parameters);
+            $updateEmailDestination->bindValue('type', 'mail');
+            $updateEmailDestination->bindParam('id', $emailDestination['id']);
+            $updateEmailDestination->execute();
+        }
     }
 }
