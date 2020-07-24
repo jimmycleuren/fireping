@@ -10,7 +10,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ApiResource(shortName="SlackAlertDestination")
+ * @ApiResource()
  * @ORM\Entity()
  * @ORM\Table(name="alert_destination_slack")
  * @UniqueEntity("name", entityClass="App\Entity\AlertDestination\AlertDestination")
