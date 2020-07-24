@@ -7,6 +7,9 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 abstract class AbstractApiTest extends WebTestCase
 {
+    /**
+     * @var KernelBrowser
+     */
     protected $client;
 
     public function setUp(): void
@@ -21,7 +24,7 @@ abstract class AbstractApiTest extends WebTestCase
     {
         return static::createClient([], [
             'PHP_AUTH_USER' => 'test',
-            'PHP_AUTH_PW' => 'test123',
+            'PHP_AUTH_PW'   => 'test123',
         ]);
     }
 }
