@@ -50,4 +50,12 @@ class SlackDestination extends AlertDestination
     {
         $this->channel = $channel;
     }
+
+    public function asArray(): array
+    {
+        return [
+            'url' => $this->getUrl(),
+            'channel' => $this->getChannel()
+        ];
+    }
 }

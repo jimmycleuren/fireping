@@ -35,4 +35,11 @@ class WebhookDestination extends AlertDestination
     {
         $this->url = $url;
     }
+
+    public function asArray(): array
+    {
+        return [
+            'url' => $this->getUrl()
+        ];
+    }
 }

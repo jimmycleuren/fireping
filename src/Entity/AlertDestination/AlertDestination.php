@@ -57,4 +57,9 @@ abstract class AlertDestination
     {
         return $this->name ?? '';
     }
+
+    public function asArray(): array
+    {
+        return [];
+    }
 }

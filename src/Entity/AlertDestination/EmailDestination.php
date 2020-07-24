@@ -34,4 +34,11 @@ class EmailDestination extends AlertDestination
     {
         $this->recipient = $recipient;
     }
+
+    public function asArray(): array
+    {
+        return [
+            'recipient' => $this->getRecipient()
+        ];
+    }
 }
