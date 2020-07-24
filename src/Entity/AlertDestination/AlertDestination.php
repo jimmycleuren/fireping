@@ -24,14 +24,14 @@ abstract class AlertDestination
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    protected $id;
     /**
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, unique=true)
      * @Assert\NotBlank
      */
-    private $name;
+    protected $name;
 
     public function getId(): ?int
     {
