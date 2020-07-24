@@ -3,10 +3,10 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Alert;
-use App\Entity\AlertDestination\Email;
-use App\Entity\AlertDestination\Logging;
-use App\Entity\AlertDestination\Slack;
-use App\Entity\AlertDestination\Webhook;
+use App\Entity\AlertDestination\EmailDestination;
+use App\Entity\AlertDestination\LogDestination;
+use App\Entity\AlertDestination\SlackDestination;
+use App\Entity\AlertDestination\WebhookDestination;
 use App\Entity\AlertRule;
 use App\Entity\Device;
 use App\Entity\Domain;
@@ -48,9 +48,9 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('User', 'fas fa-folder-open', User::class);
 
         yield MenuItem::section('Alert Destinations');
-        yield MenuItem::linkToCrud('Slack', 'fas fa-folder-open', Slack::class);
-        yield MenuItem::linkToCrud('Email', 'fas fa-folder-open', Email::class);
-        yield MenuItem::linkToCrud('Webhook', 'fas fa-folder-open', Webhook::class);
-        yield MenuItem::linkToCrud('Logging', 'fas fa-folder-open', Logging::class);
+        yield MenuItem::linkToCrud('Slack', 'fas fa-folder-open', SlackDestination::class);
+        yield MenuItem::linkToCrud('Email', 'fas fa-folder-open', EmailDestination::class);
+        yield MenuItem::linkToCrud('Webhook', 'fas fa-folder-open', WebhookDestination::class);
+        yield MenuItem::linkToCrud('Logging', 'fas fa-folder-open', LogDestination::class);
     }
 }

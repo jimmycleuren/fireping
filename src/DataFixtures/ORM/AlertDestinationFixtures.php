@@ -3,9 +3,9 @@
 namespace App\DataFixtures\ORM;
 
 use App\Entity\AlertDestination\AlertDestination;
-use App\Entity\AlertDestination\Email;
-use App\Entity\AlertDestination\Logging;
-use App\Entity\AlertDestination\Slack;
+use App\Entity\AlertDestination\EmailDestination;
+use App\Entity\AlertDestination\LogDestination;
+use App\Entity\AlertDestination\SlackDestination;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -13,18 +13,18 @@ class AlertDestinationFixtures extends Fixture
 {
     public function load(ObjectManager $manager)
     {
-        $alertDestination = new Logging();
+        $alertDestination = new LogDestination();
         $alertDestination->setName('syslog');
         $manager->persist($alertDestination);
         $this->addReference('alertdestination-1', $alertDestination);
 
-        $alertDestination = new Email();
+        $alertDestination = new EmailDestination();
         $alertDestination->setName('mail');
         $alertDestination->setRecipient('test@test.com');
         $manager->persist($alertDestination);
         $this->addReference('alertdestination-mail', $alertDestination);
 
-        $alertDestination = new Slack();
+        $alertDestination = new SlackDestination();
         $alertDestination->setName('slack');
         $alertDestination->setChannel('general');
         $alertDestination->setUrl('https://slack.example');

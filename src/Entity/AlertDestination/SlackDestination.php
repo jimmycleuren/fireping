@@ -10,13 +10,12 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity()
  * @ApiResource()
- * @ORM\Table(name="alert_destination_webhook")
+ * @ORM\Entity()
+ * @ORM\Table(name="alert_destination_slack")
  * @UniqueEntity("name", entityClass="App\Entity\AlertDestination\AlertDestination")
  */
-
-class Webhook extends AlertDestination
+class SlackDestination extends AlertDestination
 {
     /**
      * @var string
@@ -25,6 +24,12 @@ class Webhook extends AlertDestination
      * @Assert\Url()
      */
     private $url;
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank()
+     */
+    private $channel;
 
     public function getUrl(): ?string
     {
@@ -34,5 +39,15 @@ class Webhook extends AlertDestination
     public function setUrl(string $url): void
     {
         $this->url = $url;
+    }
+
+    public function getChannel(): ?string
+    {
+        return $this->channel;
+    }
+
+    public function setChannel(string $channel): void
+    {
+        $this->channel = $channel;
     }
 }

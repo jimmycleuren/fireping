@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="alert_destination_email")
  * @UniqueEntity("name", entityClass="App\Entity\AlertDestination\AlertDestination")
  */
-class Email extends AlertDestination
+class EmailDestination extends AlertDestination
 {
     /**
      * @var string

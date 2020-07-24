@@ -5,10 +5,10 @@ namespace Tests\App\AlertDestination;
 use App\AlertDestination\AlertDestinationFactory;
 use App\AlertDestination\Http;
 use App\AlertDestination\Monolog;
-use App\Entity\AlertDestination\Email;
-use App\Entity\AlertDestination\Logging;
-use App\Entity\AlertDestination\Slack;
-use App\Entity\AlertDestination\Webhook;
+use App\Entity\AlertDestination\EmailDestination;
+use App\Entity\AlertDestination\LogDestination;
+use App\Entity\AlertDestination\SlackDestination;
+use App\Entity\AlertDestination\WebhookDestination;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class AlertDestinationFactoryTest extends WebTestCase
@@ -19,7 +19,7 @@ class AlertDestinationFactoryTest extends WebTestCase
 
         $factory = new AlertDestinationFactory($client->getContainer());
 
-        $alertDestination = new Webhook();
+        $alertDestination = new WebhookDestination();
         $alertDestination->setUrl('https://example.tld');
         $http = $factory->create($alertDestination);
 
@@ -32,7 +32,7 @@ class AlertDestinationFactoryTest extends WebTestCase
 
         $factory = new AlertDestinationFactory($client->getContainer());
 
-        $alertDestination = new Logging();
+        $alertDestination = new LogDestination();
         $monolog = $factory->create($alertDestination);
 
         self::assertEquals(Monolog::class, get_class($monolog));
@@ -44,11 +44,11 @@ class AlertDestinationFactoryTest extends WebTestCase
 
         $factory = new AlertDestinationFactory($client->getContainer());
 
-        $alertDestination = new Email();
+        $alertDestination = new EmailDestination();
         $alertDestination->setRecipient('user@fireping.example');
         $monolog = $factory->create($alertDestination);
 
-        self::assertEquals(Email::class, get_class($monolog));
+        self::assertEquals(EmailDestination::class, get_class($monolog));
     }
 
     public function testCreateSlack(): void
@@ -57,7 +57,7 @@ class AlertDestinationFactoryTest extends WebTestCase
 
         $factory = new AlertDestinationFactory($client->getContainer());
 
-        $alertDestination = new Slack();
+        $alertDestination = new SlackDestination();
         $alertDestination->setUrl('https://slack.example');
         $alertDestination->setChannel('channel');
         $monolog = $factory->create($alertDestination);

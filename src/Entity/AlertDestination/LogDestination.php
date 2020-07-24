@@ -14,7 +14,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Table(name="alert_destination_log")
  * @UniqueEntity("name", entityClass="App\Entity\AlertDestination\AlertDestination")
  */
-class Logging extends AlertDestination
+class LogDestination extends AlertDestination
 {
 
 }

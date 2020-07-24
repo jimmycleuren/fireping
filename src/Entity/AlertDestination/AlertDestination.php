@@ -11,7 +11,12 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="App\Repository\AlertDestinationRepository")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="type_discriminator", type="string")
- * @ORM\DiscriminatorMap({"slack" = "Slack", "webhook" = "Webhook", "email" = "Email", "monolog" = "Logging"})
+ * @ORM\DiscriminatorMap({
+ *     "slack" = "SlackDestination",
+ *     "webhook" = "WebhookDestination",
+ *     "email" = "EmailDestination",
+ *     "monolog" = "LogDestination"
+ * })
  * @ApiResource
  * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  */
