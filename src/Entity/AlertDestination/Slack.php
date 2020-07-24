@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Entity\AlertDestination;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
+ * @ApiResource(shortName="SlackAlertDestination")
  * @ORM\Entity()
  * @ORM\Table(name="alert_destination_slack")
  * @UniqueEntity("name", entityClass="App\Entity\AlertDestination\AlertDestination")
