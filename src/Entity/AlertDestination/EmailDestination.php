@@ -23,7 +23,7 @@ class EmailDestination extends AlertDestination
      * @Assert\NotBlank()
      * @Assert\Email()
      */
-    protected $recipient;
+    private $recipient;
 
     public function getRecipient(): ?string
     {
