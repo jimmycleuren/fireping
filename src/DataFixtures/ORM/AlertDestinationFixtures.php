@@ -31,6 +31,13 @@ class AlertDestinationFixtures extends Fixture
         $manager->persist($alertDestination);
         $this->addReference('alertdestination-slack', $alertDestination);
 
+        // @TODO: Remove after fixing ON CASCADE constraints for Domains and Devices. This is only required for the DELETE endpoint test.
+        $alertDestination = new SlackDestination();
+        $alertDestination->setName('unused-slack');
+        $alertDestination->setChannel('general');
+        $alertDestination->setUrl('https://slack.example');
+        $manager->persist($alertDestination);
+
         $manager->flush();
     }
 }
