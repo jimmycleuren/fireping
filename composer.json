@@ -51,6 +51,7 @@
         "twig/twig": "^3.0.3"
     },
     "require-dev": {
+        "dama/doctrine-test-bundle": "^6.3",
         "doctrine/doctrine-fixtures-bundle": "^3.0",
         "mi-schi/phpmd-extension": "^4.2",
         "phpmd/phpmd": "^2.6",
