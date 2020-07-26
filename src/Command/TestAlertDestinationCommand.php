@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\AlertDestination\AlertDestinationFactory;
 use App\Entity\Alert;
+use App\Entity\AlertDestination\AlertDestination;
 use App\Entity\AlertRule;
 use App\Entity\Device;
 use App\Entity\SlaveGroup;
@@ -16,9 +17,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class TestAlertDestinationCommand extends Command
 {
-    private $em = null;
-    private $alertDestinationFactory = null;
-    private $logger = null;
+    private $em;
+    private $alertDestinationFactory;
+    private $logger;
 
     public function __construct(EntityManagerInterface $em, AlertDestinationFactory $alertDestinationFactory, LoggerInterface $logger)
     {
@@ -41,7 +42,7 @@ class TestAlertDestinationCommand extends Command
     {
         $id = (int) $input->getArgument('destination-id');
 
-        $destination = $this->em->getRepository('App:AlertDestination')->findOneById($id);
+        $destination = $this->em->getRepository(AlertDestination::class)->find($id);
         if (!$destination) {
             $this->logger->warning("Alertdestination #$id not found");
 

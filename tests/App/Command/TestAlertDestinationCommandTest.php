@@ -2,9 +2,12 @@
 
 namespace App\Tests\App\Command;
 
+use App\AlertDestination\AlertDestinationFactory;
+use App\AlertDestination\Monolog;
 use App\Command\TestAlertDestinationCommand;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -18,10 +21,10 @@ class TestAlertDestinationCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $destination = $this->prophesize("App\AlertDestination\Monolog");
-        $factory = $this->prophesize("App\AlertDestination\AlertDestinationFactory");
+        $destination = $this->prophesize(Monolog::class);
+        $factory = $this->prophesize(AlertDestinationFactory::class);
         $factory->create(Argument::any())->willReturn($destination->reveal());
-        $logger = $this->prophesize("Psr\Log\LoggerInterface");
+        $logger = $this->prophesize(LoggerInterface::class);
         $logger->warning(Argument::type('string'))->shouldBeCalledTimes(1);
 
         $application->add(new TestAlertDestinationCommand($kernel->getContainer()->get('doctrine')->getManager(), $factory->reveal(), $logger->reveal()));
@@ -41,10 +44,10 @@ class TestAlertDestinationCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $destination = $this->prophesize("App\AlertDestination\Monolog");
-        $factory = $this->prophesize("App\AlertDestination\AlertDestinationFactory");
+        $destination = $this->prophesize(Monolog::class);
+        $factory = $this->prophesize(AlertDestinationFactory::class);
         $factory->create(Argument::any())->willReturn($destination->reveal());
-        $logger = $this->prophesize("Psr\Log\LoggerInterface");
+        $logger = $this->prophesize(LoggerInterface::class);
 
         $application->add(new TestAlertDestinationCommand($kernel->getContainer()->get('doctrine')->getManager(), $factory->reveal(), $logger->reveal()));
 
