@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\App\Api;
 
+
 use App\Repository\AlertDestinationRepository;
 
-class SlackDestinationTest extends AbstractApiTest
+class WebhookDestinationTest extends AbstractApiTest
 {
     public function testCollection(): void
     {
-        $this->client->request('GET', '/api/slack_destinations.json');
+        $this->client->request('GET', '/api/webhook_destinations.json');
 
         self::assertResponseStatusCodeSame(200);
         self::assertJson($this->client->getResponse()->getContent());
@@ -19,9 +20,9 @@ class SlackDestinationTest extends AbstractApiTest
     public function testGetResource(): void
     {
         $repository = new AlertDestinationRepository($this->client->getContainer()->get('doctrine'));
-        $destination = $repository->findOneBy(['name' => 'slack']);
+        $destination = $repository->findOneBy(['name' => 'webhook']);
 
-        $this->client->request('GET', "/api/slack_destinations/{$destination->getId()}.json");
+        $this->client->request('GET', "/api/webhook_destinations/{$destination->getId()}.json");
 
         self::assertResponseStatusCodeSame(200);
         self::assertJson($this->client->getResponse()->getContent());
@@ -29,10 +30,9 @@ class SlackDestinationTest extends AbstractApiTest
 
     public function testSuccessfulCreate(): void
     {
-        $this->client->request('POST', '/api/slack_destinations.json', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
-            'name' => 'slack_create_test',
+        $this->client->request('POST', '/api/webhook_destinations.json', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
+            'name' => 'webhook_create_test',
             'url' => 'https://slack.example',
-            'channel' => 'channel'
         ], JSON_THROW_ON_ERROR));
 
         self::assertResponseStatusCodeSame(201);
@@ -42,46 +42,51 @@ class SlackDestinationTest extends AbstractApiTest
     public function testSuccessfulPatch(): void
     {
         $repository = new AlertDestinationRepository($this->client->getContainer()->get('doctrine'));
-        $destination = $repository->findOneBy(['name' => 'slack']);
+        $destination = $repository->findOneBy(['name' => 'webhook']);
 
-        self::assertSame('general', $destination->getChannel());
+        self::assertSame('https://example.tld', $destination->getUrl());
 
-        $this->client->request('PATCH', "/api/slack_destinations/{$destination->getId()}.json", [], [], ['CONTENT_TYPE' => 'application/merge-patch+json'], json_encode([
-            'channel' => 'BetterChannel'
+        $newUrl = 'https://another.tld';
+        $this->client->request('PATCH', "/api/webhook_destinations/{$destination->getId()}.json", [], [], ['CONTENT_TYPE' => 'application/merge-patch+json'], json_encode([
+            'url' => $newUrl
         ]));
 
         self::assertResponseStatusCodeSame(200);
         self::assertJson($this->client->getResponse()->getContent());
+        $data = json_decode($this->client->getResponse()->getContent(), true);
+        self::assertSame($newUrl, $data['url']);
     }
 
     public function testSuccessfulPut(): void
     {
         $repository = new AlertDestinationRepository($this->client->getContainer()->get('doctrine'));
-        $destination = $repository->findOneBy(['name' => 'slack']);
+        $destination = $repository->findOneBy(['name' => 'webhook']);
 
-        self::assertSame('general', $destination->getChannel());
+        self::assertSame('https://example.tld', $destination->getUrl());
 
-        $this->client->request('PUT', "/api/slack_destinations/{$destination->getId()}.json", [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
-            'channel' => 'BetterChannel',
-            'url' => 'https://slack.example'
+        $newUrl = 'https://another.tld';
+        $this->client->request('PUT', "/api/webhook_destinations/{$destination->getId()}.json", [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
+            'url' => $newUrl
         ]));
 
         self::assertResponseStatusCodeSame(200);
         self::assertJson($this->client->getResponse()->getContent());
+        $data = json_decode($this->client->getResponse()->getContent(), true);
+        self::assertSame($newUrl, $data['url']);
     }
 
     public function testSuccessfulRemove(): void
     {
         $repository = new AlertDestinationRepository($this->client->getContainer()->get('doctrine'));
-        $id = $repository->findOneBy(['name' => 'unused-slack'])->getId();
-        $this->client->request('DELETE', "/api/slack_destinations/$id.json");
+        $id = $repository->findOneBy(['name' => 'unused-webhook'])->getId();
+        $this->client->request('DELETE', "/api/webhook_destinations/$id.json");
 
         self::assertResponseStatusCodeSame(204);
     }
 
     public function testRequiredParametersCannotBeBlank(): void
     {
-        $this->client->request('POST', '/api/slack_destinations.json', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([]));
+        $this->client->request('POST', '/api/webhook_destinations.json', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([]));
 
         self::assertResponseStatusCodeSame(400);
         self::assertJson($this->client->getResponse()->getContent());
@@ -93,10 +98,6 @@ class SlackDestinationTest extends AbstractApiTest
                 'message' => 'This value should not be blank.'
             ],
             [
-                'propertyPath' => 'channel',
-                'message' => 'This value should not be blank.'
-            ],
-            [
                 'propertyPath' => 'name',
                 'message' => 'This value should not be blank.'
             ]
@@ -105,10 +106,9 @@ class SlackDestinationTest extends AbstractApiTest
 
     public function testMustHaveValidUrl(): void
     {
-        $this->client->request('POST', '/api/slack_destinations.json', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
-            'name' => 'new-slack',
+        $this->client->request('POST', '/api/webhook_destinations.json', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
+            'name' => 'new-webhook',
             'url' => 'invalid url',
-            'channel' => 'channel',
         ]));
 
         self::assertResponseStatusCodeSame(400);
