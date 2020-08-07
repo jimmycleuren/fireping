@@ -34,4 +34,13 @@ class SearchControllerTest extends WebTestCase
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertStringContainsString('Device 1', $crawler->filter('h3')->text());
     }
+
+    public function testSearchIsNotInjectable()
+    {
+        $client = static::createClient();
+
+        $crawler = $client->request('GET', '/search?q=device\'');
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+    }
 }
