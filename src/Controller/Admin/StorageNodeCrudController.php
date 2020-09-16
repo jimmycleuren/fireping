@@ -23,7 +23,8 @@ class StorageNodeCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('StorageNode')
             ->setEntityLabelInPlural('StorageNode')
             ->setSearchFields(['id', 'name', 'ip', 'status'])
-            ->setPaginatorPageSize(30);
+            ->setPaginatorPageSize(30)
+            ->setDefaultSort(['name' => 'ASC']);
     }
 
     public function configureFields(string $pageName): iterable

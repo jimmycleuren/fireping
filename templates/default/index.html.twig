@@ -7,6 +7,24 @@
 
 {% block page_content %}
 
+    {% if firstLaunch %}
+        <div class="alert alert-info">
+            It seems you are running fireping for the first time. Would you like to add some default objects to the configuration ?<br/><br/>
+            These options include:
+            <ul>
+                <li>An "admin" user (with initial password "admin")</li>
+                <li>A "slave" user (with initial password "password")</li>
+                <li>A domain "Google"</li>
+                <li>A device "www.google.be"</li>
+                <li>A ping probe with default archive for 24 hours of data</li>
+                <li>A traceroute probe with default archive for 24 hours of data</li>
+                <li>A http probe with default archive for 24 hours of data</li>
+            </ul>
+            <br/>
+            <a href="{{ path('database-init') }}">Yes, add default configuration</a>
+        </div>
+    {% endif %}
+
     <div class="row">
         <div class="col-md-3">
             {% embed '@AdminLTE/Widgets/infobox-widget.html.twig'  with {

@@ -23,15 +23,21 @@ class SearchController extends AbstractController
         $searchDevices = $em->createQuery("
             SELECT d
             FROM App:Device d
-            WHERE d.name LIKE '%".$q."%'
-            OR d.ip LIKE '%".$q."%'
-        ")->getResult();
+            WHERE d.name LIKE :q
+            OR d.ip LIKE :q
+            ORDER BY d.name ASC
+        ")
+            ->setParameter('q', '%'.$q.'%')
+            ->getResult();
 
         $searchDomains = $em->createQuery("
             SELECT d
             FROM App:Domain d
-            WHERE d.name LIKE '%".$q."%'
-        ")->getResult();
+            WHERE d.name LIKE :q
+            ORDER BY d.name ASC
+        ")
+            ->setParameter('q', '%'.$q.'%')
+            ->getResult();
 
         $domains = $em->getRepository('App:Domain')->findBy(['parent' => null], ['name' => 'ASC']);
 

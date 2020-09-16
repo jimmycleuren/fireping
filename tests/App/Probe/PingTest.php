@@ -3,7 +3,7 @@
 namespace App\Tests\App\Probe;
 
 use App\OutputFormatter\PingOutputFormatter;
-use App\Probe\Ping;
+use App\Slave\Task\Ping;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Log\LoggerInterface;

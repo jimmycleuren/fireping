@@ -2,9 +2,10 @@
 
 namespace App\DependencyInjection;
 
-use App\ShellCommand\GetConfigHttpWorkerCommand;
-use App\ShellCommand\PostResultsHttpWorkerCommand;
-use App\ShellCommand\PostStatsHttpWorkerCommand;
+use App\Slave\Task\FetchConfiguration;
+use App\Slave\Task\PublishResults;
+use App\Slave\Task\PublishStatistics;
+use App\Version\Version;
 use Psr\Log\LoggerInterface;
 
 class StatsManager
@@ -15,6 +16,11 @@ class StatsManager
     private $workers;
     private $queues;
     private $logger;
+    /**
+     * The running version of the dispatcher. This will either be the tag (v1.0) or the commit id.
+     * @var Version
+     */
+    private $version;
 
     public function __construct(LoggerInterface $logger)
     {
@@ -24,15 +30,16 @@ class StatsManager
     public function getStats()
     {
         $res = [
-            'load' => sys_getloadavg(),
-            'memory' => $this->getMemoryUsage(),
-            'posts' => [
-                'success' => $this->successfulPosts,
-                'failed' => $this->failedPosts,
+            'load'    => sys_getloadavg(),
+            'memory'  => $this->getMemoryUsage(),
+            'posts'   => [
+                'success'   => $this->successfulPosts,
+                'failed'    => $this->failedPosts,
                 'discarded' => $this->discardedPosts,
             ],
             'workers' => $this->workers,
-            'queues' => $this->queues,
+            'queues'  => $this->queues,
+            'version' => $this->getVersion()->asString()
         ];
 
         $this->queues = [];
@@ -70,19 +77,19 @@ class StatsManager
     public function addWorkerStats($total, $available, $types)
     {
         $temp = [
-            'total' => $total,
+            'total'     => $total,
             'available' => $available,
         ];
 
         foreach ($types as $type => $count) {
             switch ($type) {
-                case PostStatsHttpWorkerCommand::class:
+                case PublishStatistics::class:
                     $name = 'stats';
                     break;
-                case GetConfigHttpWorkerCommand::class:
+                case FetchConfiguration::class:
                     $name = 'config';
                     break;
-                case PostResultsHttpWorkerCommand::class:
+                case PublishResults::class:
                     $name = 'results';
                     break;
                 case 'ping':
@@ -118,5 +125,15 @@ class StatsManager
         $mem = array_merge($mem); // puts arrays back to [0],[1],[2] after filter removes nulls
 
         return $mem;
+    }
+
+    public function setVersion(Version $version): void
+    {
+        $this->version = $version;
+    }
+
+    private function getVersion(): Version
+    {
+        return $this->version ?? new Version('');
     }
 }

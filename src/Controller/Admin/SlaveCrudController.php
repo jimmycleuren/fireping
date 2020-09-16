@@ -23,7 +23,8 @@ class SlaveCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('Slave')
             ->setEntityLabelInPlural('Slave')
             ->setSearchFields(['id', 'ip'])
-            ->setPaginatorPageSize(30);
+            ->setPaginatorPageSize(30)
+            ->setDefaultSort(['id' => 'ASC']);
     }
 
     public function configureActions(Actions $actions): Actions
@@ -38,11 +39,13 @@ class SlaveCrudController extends AbstractCrudController
         $id = TextField::new('id', 'ID');
         $lastContact = DateTimeField::new('lastContact');
         $ip = TextField::new('ip');
+        $version = TextField::new('version')
+            ->setFormTypeOption('disabled', true);
 
         if (Crud::PAGE_INDEX === $pageName) {
-            return [$id, $lastContact, $ip, $slavegroup];
+            return [$id, $lastContact, $ip, $slavegroup, $version];
         } elseif (Crud::PAGE_DETAIL === $pageName) {
-            return [$id, $lastContact, $ip, $slavegroup];
+            return [$id, $lastContact, $ip, $slavegroup, $version];
         } elseif (Crud::PAGE_NEW === $pageName) {
             return [$slavegroup];
         } elseif (Crud::PAGE_EDIT === $pageName) {

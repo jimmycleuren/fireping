@@ -69,42 +69,46 @@ class Device
      * @ORM\ManyToMany(targetEntity="SlaveGroup", inversedBy="devices", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="device_slavegroups",
      *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id", onDelete="CASCADE")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="slavegroup_id", referencedColumnName="id")}
+     *      inverseJoinColumns={@ORM\JoinColumn(name="slavegroup_id", referencedColumnName="id", onDelete="CASCADE")}
      *      )
      * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
      * @Groups({"device"})
+     * @ORM\OrderBy({"name" = "ASC"})
      */
     private $slavegroups;
 
     /**
      * @ORM\ManyToMany(targetEntity="Probe", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="device_probes",
-     *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="probe_id", referencedColumnName="id")}
+     *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id", onDelete="CASCADE")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="probe_id", referencedColumnName="id", onDelete="CASCADE")}
      *      )
      * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
      * @Groups({"device"})
+     * @ORM\OrderBy({"name" = "ASC"})
      */
     private $probes;
 
     /**
      * @ORM\ManyToMany(targetEntity="AlertRule", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="device_alert_rules",
-     *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="alert_rule_id", referencedColumnName="id")}
+     *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id", onDelete="CASCADE")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="alert_rule_id", referencedColumnName="id", onDelete="CASCADE")}
      *      )
      * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
      * @Groups({"device"})
+     * @ORM\OrderBy({"name" = "ASC"})
      */
     private $alertRules;
 
     /**
      * @ORM\ManyToMany(targetEntity="AlertDestination", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="device_alert_destinations",
-     *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="alert_destination_id", referencedColumnName="id")}
+     *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id", onDelete="CASCADE")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="alert_destination_id", referencedColumnName="id", onDelete="CASCADE")}
      *      )
      * @Groups({"device"})
+     * @ORM\OrderBy({"name" = "ASC"})
      */
     private $alertDestinations;
 

@@ -22,7 +22,8 @@ class DeviceCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('Device')
             ->setEntityLabelInPlural('Device')
             ->setSearchFields(['id', 'name', 'ip'])
-            ->setPaginatorPageSize(30);
+            ->setPaginatorPageSize(30)
+            ->setDefaultSort(['name' => 'ASC']);
     }
 
     public function configureFields(string $pageName): iterable

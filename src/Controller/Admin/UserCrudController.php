@@ -49,7 +49,8 @@ class UserCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('User')
             ->setEntityLabelInPlural('User')
             ->setSearchFields(['id', 'username', 'roles', 'email'])
-            ->setPaginatorPageSize(30);
+            ->setPaginatorPageSize(30)
+            ->setDefaultSort(['username' => 'ASC']);
     }
 
     public function configureFields(string $pageName): iterable

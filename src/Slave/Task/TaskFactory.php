@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\ShellCommand;
+namespace App\Slave\Task;
 
 use Psr\Log\LoggerInterface;
 
-final class CommandFactory
+final class TaskFactory
 {
     private $logger;
 
     /**
-     * @var CommandInterface[]
+     * @var TaskInterface[]
      */
     private $types = [];
 
@@ -20,17 +20,17 @@ final class CommandFactory
         $this->logger = $logger;
     }
 
-    public function addCommandType(CommandInterface $command)
+    public function addTaskType(TaskInterface $task)
     {
-        $this->types[$command->getType()] = $command;
+        $this->types[$task->getType()] = $task;
     }
 
-    public function make(string $command, array $args): ?CommandInterface
+    public function make(string $task, array $args): TaskInterface
     {
-        $class = $this->types[$command] ?? null;
+        $class = $this->types[$task] ?? null;
 
         if (null === $class) {
-            throw new \RuntimeException("Cannot create a command of type $command");
+            throw new \RuntimeException("Cannot create a task of type $task");
         }
 
         $class->setArgs($args);

@@ -63,40 +63,44 @@ class Domain
     /**
      * @ORM\ManyToMany(targetEntity="SlaveGroup", inversedBy="domains", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="domain_slavegroups",
-     *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="slavegroup_id", referencedColumnName="id")}
+     *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id", onDelete="CASCADE")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="slavegroup_id", referencedColumnName="id", onDelete="CASCADE")}
      *      )
      * @Groups({"domain", "write"})
+     * @ORM\OrderBy({"name" = "ASC"})
      */
     private $slavegroups;
 
     /**
      * @ORM\ManyToMany(targetEntity="Probe", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="domain_probes",
-     *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="probe_id", referencedColumnName="id")}
+     *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id", onDelete="CASCADE")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="probe_id", referencedColumnName="id", onDelete="CASCADE")}
      *      )
      * @Groups({"domain", "write"})
+     * @ORM\OrderBy({"name" = "ASC"})
      */
     private $probes;
 
     /**
      * @ORM\ManyToMany(targetEntity="AlertRule", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="domain_alert_rules",
-     *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="alert_rule_id", referencedColumnName="id")}
+     *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id", onDelete="CASCADE")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="alert_rule_id", referencedColumnName="id", onDelete="CASCADE")}
      *      )
      * @Groups({"domain", "write"})
+     * @ORM\OrderBy({"name" = "ASC"})
      */
     private $alertRules;
 
     /**
      * @ORM\ManyToMany(targetEntity="AlertDestination", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="domain_alert_destinations",
-     *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="alert_destination_id", referencedColumnName="id")}
+     *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id", onDelete="CASCADE")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="alert_destination_id", referencedColumnName="id", onDelete="CASCADE")}
      *      )
      * @Groups({"domain", "write"})
+     * @ORM\OrderBy({"name" = "ASC"})
      */
     private $alertDestinations;
 
@@ -105,6 +109,7 @@ class Domain
      * @ORM\OneToMany(targetEntity="Device", mappedBy="domain", fetch="EXTRA_LAZY")
      * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
      * @Groups({"domain", "write"})
+     * @ORM\OrderBy({"name" = "ASC"})
      */
     private $devices;
 

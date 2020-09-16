@@ -2,8 +2,8 @@
 
 namespace App;
 
-use App\DependencyInjection\Compiler\CommandPass;
-use App\ShellCommand\CommandInterface;
+use App\DependencyInjection\Compiler\AddTasksPass;
+use App\Slave\Task\TaskInterface;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -59,7 +59,7 @@ class Kernel extends BaseKernel
 
     protected function build(ContainerBuilder $container)
     {
-        $container->addCompilerPass(new CommandPass());
-        $container->registerForAutoconfiguration(CommandInterface::class)->addTag(CommandPass::TAG);
+        $container->addCompilerPass(new AddTasksPass());
+        $container->registerForAutoconfiguration(TaskInterface::class)->addTag(AddTasksPass::TAG);
     }
 }

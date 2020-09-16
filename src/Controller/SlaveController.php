@@ -11,6 +11,7 @@ use App\Processor\ProcessorFactory;
 use App\Repository\DeviceRepository;
 use App\Repository\SlaveRepository;
 use App\Storage\SlaveStatsRrdStorage;
+use App\Version\Version;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -40,7 +41,7 @@ class SlaveController extends AbstractController
      */
     public function indexAction(EntityManagerInterface $entityManager, DeviceRepository $deviceRepository, SlaveRepository $slaveRepository)
     {
-        $slaves = $slaveRepository->findAll();
+        $slaves = $slaveRepository->findBy([], ['id' => 'ASC']);
 
         $targets = [];
         foreach ($slaves as $slave) {
@@ -302,7 +303,7 @@ class SlaveController extends AbstractController
         $data = json_decode($request->getContent());
 
         $slave->setLastContact(new \DateTime());
-        $entityManager->persist($slave);
+        $slave->setVersion(new Version((string) ($data->version ?? '')));
         $entityManager->flush();
 
         if (isset($data->workers)) {
