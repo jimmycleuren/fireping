@@ -102,7 +102,7 @@ class SlaveController extends AbstractController
      */
     public function configAction($id, Request $request, EntityManagerInterface $entityManager, SlaveRepository $slaveRepository, DeviceRepository $deviceRepository)
     {
-        $slave = $slaveRepository->findOneById($id);
+        $slave = $slaveRepository->findOneBy(['id' => $id]);
         if (!$slave) {
             $slave = new Slave();
             $slave->setId($id);
@@ -134,7 +134,7 @@ class SlaveController extends AbstractController
             foreach ($slave->getSlaveGroup()->getDomains() as $domain) {
                 $domains = array_merge($domains, $this->getDomains($domain));
             }
-            $devices = $deviceRepository->findByDomain($domains);
+            $devices = $deviceRepository->findBy(['domain' => $domains]);
             $devices = array_merge($devices, $slave->getSlaveGroup()->getDevices()->toArray());
 
             //remove devices that were selected, but the current slavegroup is not active for the device
@@ -220,8 +220,8 @@ class SlaveController extends AbstractController
         $this->em->persist($slave);
         $this->em->flush();
 
-        $probeRepository = $this->em->getRepository('App:Probe');
-        $deviceRepository = $this->em->getRepository('App:Device');
+        $probeRepository = $this->em->getRepository(Probe::class);
+        $deviceRepository = $this->em->getRepository(Device::class);
 
         $probes = json_decode($request->getContent());
 
@@ -241,7 +241,7 @@ class SlaveController extends AbstractController
 
                     return new JsonResponse(['code' => 400, 'message' => 'No targets found in probe data'], 400);
                 }
-                $probe = $probeRepository->findOneById($probeId);
+                $probe = $probeRepository->findOneBy(['id' => $probeId]);
                 $timestamp = $probeData->timestamp;
                 $targets = $probeData->targets;
 
@@ -250,7 +250,7 @@ class SlaveController extends AbstractController
                 }
 
                 foreach ($targets as $targetId => $targetData) {
-                    $device = $deviceRepository->findOneById($targetId);
+                    $device = $deviceRepository->findOneBy(['id' => $targetId]);
                     if (!$device) {
                         $this->logger->error("Slave sends data for device '$targetId' but it does not exist");
                         continue;

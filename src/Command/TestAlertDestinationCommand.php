@@ -17,9 +17,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class TestAlertDestinationCommand extends Command
 {
-    private $em;
-    private $alertDestinationFactory;
-    private $logger;
+    private $em = null;
+    private $alertDestinationFactory = null;
+    private $logger = null;
 
     public function __construct(EntityManagerInterface $em, AlertDestinationFactory $alertDestinationFactory, LoggerInterface $logger)
     {
@@ -42,7 +42,7 @@ class TestAlertDestinationCommand extends Command
     {
         $id = (int) $input->getArgument('destination-id');
 
-        $destination = $this->em->getRepository(AlertDestination::class)->find($id);
+        $destination = $this->em->getRepository(AlertDestination::class)->findOneBy(['id' => $id]);
         if (!$destination) {
             $this->logger->warning("Alertdestination #$id not found");
 
