@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\Device;
 use App\Storage\RrdStorage;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -31,7 +32,7 @@ class ValidateRrdCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $devices = $this->em->getRepository('App:Device')->findAll();
+        $devices = $this->em->getRepository(Device::class)->findAll();
 
         $progress = new ProgressBar($output);
         $progress->start(count($devices));
