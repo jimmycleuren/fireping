@@ -111,7 +111,7 @@ class MenuBuilderSubscriber implements EventSubscriberInterface
 
     private function addRecursiveDomains(MenuItemModel $parentMenuItem, Domain $parent = null)
     {
-        $domains = $this->domainRepository->findByParent($parent);
+        $domains = $this->domainRepository->findBy(['parent' => $parent]);
 
         foreach ($domains as $domain) {
             $menuItem = new MenuItemModel('domain-'.$domain->getId(), $domain->getName(), 'app_domain_get', ['id' => $domain->getId()]);
