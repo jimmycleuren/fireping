@@ -372,7 +372,7 @@ class RrdCachedStorage extends RrdStorage
             }
         }
 
-        if (!isset($data[$datasource]) || !$data[$datasource]) {
+        if (!isset($data[$datasource])) {
             return null;
         }
 
