@@ -4,7 +4,7 @@ namespace App\Command;
 
 use App\AlertDestination\AlertDestinationFactory;
 use App\Entity\Alert;
-use App\Entity\AlertDestination;
+use App\Entity\AlertDestination\AlertDestination;
 use App\Entity\AlertRule;
 use App\Entity\Device;
 use App\Entity\SlaveGroup;

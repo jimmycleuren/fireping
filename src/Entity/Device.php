@@ -102,7 +102,7 @@ class Device
     private $alertRules;
 
     /**
-     * @ORM\ManyToMany(targetEntity="AlertDestination", fetch="EXTRA_LAZY")
+     * @ORM\ManyToMany(targetEntity="App\Entity\AlertDestination\AlertDestination", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="device_alert_destinations",
      *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id", onDelete="CASCADE")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="alert_destination_id", referencedColumnName="id", onDelete="CASCADE")}
@@ -398,7 +398,7 @@ class Device
      *
      * @return Device
      */
-    public function addAlertDestination(\App\Entity\AlertDestination $alertDestination)
+    public function addAlertDestination(AlertDestination\AlertDestination $alertDestination)
     {
         $this->alertDestinations[] = $alertDestination;
 
@@ -408,7 +408,7 @@ class Device
     /**
      * Remove alert destination.
      */
-    public function removeAlertDestination(\App\Entity\AlertDestination $alertDestination)
+    public function removeAlertDestination(AlertDestination\AlertDestination $alertDestination)
     {
         $this->alertDestinations->removeElement($alertDestination);
     }
