@@ -59,7 +59,7 @@ class GraphController extends AbstractController
      * @ParamConverter("probe", class="App:Probe", options={"id" = "probe_id"})
      * @ParamConverter("slavegroup", class="App:SlaveGroup", options={"id" = "slavegroup_id"})
      */
-    public function detailAction(Device $device = null, Probe $probe = null, SlaveGroup $slavegroup = null, Request $request, GraphFactory $graphFactory, SessionInterface $session)
+    public function detailAction(Device $device, Probe $probe, SlaveGroup $slavegroup, Request $request, GraphFactory $graphFactory, SessionInterface $session)
     {
         $start = $request->get('start') ?: -3600;
         $end = $request->get('end') ?: date("U");
