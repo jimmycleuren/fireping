@@ -31,4 +31,4 @@ $ sudo apt-get install -y rrdtool
 
 # RRDCached
 
-See [the storage installation](/docs/storage/getting-started) on how to install rrdcached. This can be done on your application server (STORAGE=rrdcached).
+See [the storage installation](/docs/installation/storage/getting-started/) on how to install rrdcached. This can be done on your application server (STORAGE=rrdcached).
