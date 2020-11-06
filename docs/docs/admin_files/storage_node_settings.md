@@ -1,5 +1,5 @@
 ---
-title: "Storage Node Settings"
+title: "StorageNode Settings"
 permalink: /docs/how-to/admin/storage-node
 key: docs-how-to-admin-storage-node
 ---
