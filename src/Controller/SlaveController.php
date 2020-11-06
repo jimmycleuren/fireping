@@ -252,7 +252,7 @@ class SlaveController extends AbstractController
                 foreach ($targets as $targetId => $targetData) {
                     $device = $deviceRepository->findOneBy(['id' => $targetId]);
                     if (!$device) {
-                        $this->logger->error("Slave sends data for device '$targetId' but it does not exist");
+                        $this->logger->info("Slave sends data for device '$targetId' but it does not exist");
                         continue;
                     }
                     $this->logger->debug('Updating data for probe '.$probe->getType().' on '.$device->getName());
