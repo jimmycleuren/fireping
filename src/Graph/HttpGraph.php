@@ -2,6 +2,7 @@
 
 namespace App\Graph;
 
+use App\DependencyInjection\Helper;
 use App\Entity\Device;
 use App\Entity\Probe;
 use App\Entity\SlaveGroup;
@@ -10,7 +11,7 @@ class HttpGraph extends SmokeRrdGraph
 {
     protected $datasource = "latency";
 
-    public function getDetailGraph(Device $device, Probe $probe, SlaveGroup $slavegroup, $start = -3600, $end = null, $type = "default", $debug = false)
+    public function getDetailGraph(Device $device, Probe $probe, SlaveGroup $slavegroup, Helper $helper, $start = -3600, $end = null, $type = "default", $debug = false)
     {
         if (!$end) $end = date("U");
 

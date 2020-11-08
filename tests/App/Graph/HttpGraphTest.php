@@ -61,8 +61,10 @@ class HttpGraphTest extends TestCase
         $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
         $storageFactory->create()->willReturn($storage)->shouldBeCalledTimes(1);
 
+        $helper = $this->prophesize('App\\DependencyInjection\\Helper');
+
         $graph = new HttpGraph($storageFactory->reveal());
-        $image = $graph->getDetailGraph($device, $probe, $slavegroup, -3600, null, "response");
+        $image = $graph->getDetailGraph($device, $probe, $slavegroup, $helper->reveal(), -3600, null, "response");
         $this->assertNotNull($image);
     }
 

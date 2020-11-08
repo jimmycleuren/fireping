@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\DependencyInjection\Helper;
 use App\Entity\Device;
 use App\Entity\Probe;
 use App\Entity\Slave;
@@ -59,14 +60,14 @@ class GraphController extends AbstractController
      * @ParamConverter("probe", class="App:Probe", options={"id" = "probe_id"})
      * @ParamConverter("slavegroup", class="App:SlaveGroup", options={"id" = "slavegroup_id"})
      */
-    public function detailAction(Device $device = null, Probe $probe = null, SlaveGroup $slavegroup = null, Request $request, GraphFactory $graphFactory, SessionInterface $session)
+    public function detailAction(Device $device = null, Probe $probe = null, SlaveGroup $slavegroup = null, Request $request, GraphFactory $graphFactory, SessionInterface $session, Helper $helper)
     {
         $start = $request->get('start') ?: -3600;
         $end = $request->get('end') ?: date("U");
         $type = $request->get('type') ?: "default";
         $debug = $session->get('debug');
 
-        $graph = $graphFactory->create($probe->getType())->getDetailGraph($device, $probe, $slavegroup, $start, $end, $type, $debug);
+        $graph = $graphFactory->create($probe->getType())->getDetailGraph($device, $probe, $slavegroup, $helper, $start, $end, $type, $debug);
         $response = new Response($graph, 200);
         $response->headers->set('Content-Type', 'image/png');
 

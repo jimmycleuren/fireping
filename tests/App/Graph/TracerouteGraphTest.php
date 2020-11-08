@@ -1,0 +1,138 @@
+<?php
+
+namespace App\Tests\App\Graph;
+
+use App\Entity\Device;
+use App\Entity\Probe;
+use App\Entity\ProbeArchive;
+use App\Entity\SlaveGroup;
+use App\Exception\RrdException;
+use App\Graph\PingGraph;
+use App\Storage\RrdStorage;
+use PHPUnit\Framework\TestCase;
+use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
+
+class TracerouteGraphTest extends TestCase
+{
+    use ProphecyTrait;
+
+    public function testDetailGraphWithoutRrd()
+    {
+        $storage = $this->prophesize('App\\Storage\\RrdStorage');
+        $storage->fileExists(Argument::type(Device::class), '/tmp/unknown.rrd')->shouldBeCalledTimes(1);
+        $storage->getFilePath(Argument::any(), Argument::any(), Argument::any())->willReturn('/tmp/unknown.rrd')->shouldBeCalledTimes(1);
+
+        $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
+        $storageFactory->create()->willReturn($storage->reveal())->shouldBeCalledTimes(1);
+
+        $helper = $this->prophesize('App\\DependencyInjection\\Helper');
+
+        $probe = new Probe();
+        $probe->setId(1);
+        $probe->setName('traceroute');
+        $probe->setType('traceroute');
+        $probe->setSamples(15);
+        $probe->setStep(60);
+
+        $slavegroup = new SlaveGroup();
+        $slavegroup->setId(1);
+
+        $device = new Device();
+        $device->setId(7);
+        $device->setName('device7');
+        $device->setIp('8.8.8.8');
+        $device->addSlaveGroup($slavegroup);
+
+        $graph = new PingGraph($storageFactory->reveal());
+        $image = $graph->getDetailGraph($device, $probe, $slavegroup, $helper->reveal(), -3600, null, true);
+        $this->assertNotNull($image);
+    }
+
+    public function testDetailGraph()
+    {
+        @unlink('/tmp/7/1/1.rrd');
+
+        $archive = new ProbeArchive();
+        $archive->setFunction('AVERAGE');
+        $archive->setSteps(1);
+        $archive->setRows(1008);
+
+        $probe = new Probe();
+        $probe->setId(1);
+        $probe->setName('traceroute');
+        $probe->setType('traceroute');
+        $probe->setSamples(15);
+        $probe->setStep(60);
+        $probe->addArchive($archive);
+
+        $slavegroup = new SlaveGroup();
+        $slavegroup->setId(1);
+
+        $device = new Device();
+        $device->setId(8);
+        $device->setName('device8');
+        $device->setIp('8.8.8.8');
+        $device->addSlaveGroup($slavegroup);
+
+        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
+        $storage = new RrdStorage('/tmp/', $logger->reveal());
+
+        $data['1_1_1_1_1m'] = 1;
+        $data['1_1_1_1_1l'] = 0;
+        $data['2_8_8_8_8m'] = 1;
+        $data['2_8_8_8_8l'] = 0;
+
+        $storage->store($device, $probe, $slavegroup, date('U'), $data);
+
+        $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
+        $storageFactory->create()->willReturn($storage)->shouldBeCalledTimes(1);
+
+        $helper = $this->prophesize('App\\DependencyInjection\\Helper');
+
+        $graph = new PingGraph($storageFactory->reveal());
+        $image = $graph->getDetailGraph($device, $probe, $slavegroup, $helper->reveal(), -3600, null, true);
+        $this->assertNotNull($image);
+    }
+
+    public function testDetailGraphException()
+    {
+        @unlink('/tmp/9/1/1.rrd');
+
+        $probe = new Probe();
+        $probe->setId(1);
+        $probe->setName('traceroute');
+        $probe->setType('traceroute');
+        $probe->setSamples(15);
+        $probe->setStep(60);
+
+        $slavegroup = new SlaveGroup();
+        $slavegroup->setId(1);
+
+        $device = new Device();
+        $device->setId(9);
+        $device->setName('device9');
+        $device->setIp('8.8.8.8');
+        $device->addSlaveGroup($slavegroup);
+
+        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
+        $storage = new RrdStorage('/tmp/', $logger->reveal());
+
+        $data['1_1_1_1_1m'] = 1;
+        $data['1_1_1_1_1l'] = 0;
+        $data['2_8_8_8_8m'] = 1;
+        $data['2_8_8_8_8l'] = 0;
+
+        $storage->store($device, $probe, $slavegroup, date('U'), $data);
+
+        $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
+        $storageFactory->create()->willReturn($storage)->shouldBeCalledTimes(1);
+
+        $helper = $this->prophesize('App\\DependencyInjection\\Helper');
+
+        $this->expectException(RrdException::class);
+        $graph = new PingGraph($storageFactory->reveal());
+        $image = $graph->getDetailGraph($device, $probe, $slavegroup, $helper->reveal(), -3600, null, true);
+        $this->assertNotNull($image);
+    }
+}
