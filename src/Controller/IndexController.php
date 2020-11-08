@@ -13,6 +13,7 @@ use App\Repository\DeviceRepository;
 use App\Repository\SlaveRepository;
 use App\Repository\StorageNodeRepository;
 use App\Repository\UserRepository;
+use App\Version\Version;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -124,6 +125,7 @@ class IndexController extends AbstractController
 
         $slave = new Slave();
         $slave->setId('slave');
+        $slave->setVersion(new Version("0.1"));
         $slave->setSlaveGroup($slavegroup);
         $slave->setLastContact(new \DateTime());
         $entityManager->persist($slave);
