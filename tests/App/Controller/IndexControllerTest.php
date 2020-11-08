@@ -30,4 +30,13 @@ class IndexControllerTest extends WebTestCase
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertStringContainsString('Fireping', $crawler->filter('.logo-lg')->text());
     }
+
+    public function testDatabaseInit()
+    {
+        $client = static::createClient();
+
+        $crawler = $client->request('GET', '/database-init');
+
+        $this->assertEquals(302, $client->getResponse()->getStatusCode());
+    }
 }
