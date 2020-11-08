@@ -14,6 +14,10 @@ class Helper
 
     public function getColor($id, $total)
     {
+        if ($total < 1 || $id >= $total) {
+            return "000000";
+        }
+
         $width = 127;
         $center = 128;
         $frequency = pi() * 2 / $total;
