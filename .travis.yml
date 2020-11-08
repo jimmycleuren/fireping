@@ -86,11 +86,11 @@ script:
   - ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction
   - composer validate --strict
 
-after_script:
+after_success:
   - |
     if [[ $COVERAGE == true && $TRAVIS_BRANCH == "master" ]]; then
       ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml
-      wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.4.0/php-coveralls.phar
+      wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.4.2/php-coveralls.phar
       php php-coveralls.phar --verbose
     fi
 
