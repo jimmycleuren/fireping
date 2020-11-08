@@ -2,7 +2,11 @@
 
 namespace App\Tests\App\Controller;
 
+use App\DependencyInjection\StatsManager;
+use App\Storage\SlaveStatsRrdStorage;
 use App\Tests\App\Api\AbstractApiTest;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 class GraphControllerTest extends AbstractApiTest
 {
@@ -44,8 +48,24 @@ class GraphControllerTest extends AbstractApiTest
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
     }
 
+    private function addSlaveStats(): void
+    {
+        $logger = new NullLogger();
+        $statsManager = new StatsManager($logger);
+
+        $statsManager->addDiscardedPost();
+        $statsManager->addFailedPost();
+        $statsManager->addQueueItems(0, 10);
+        $statsManager->addSuccessfulPost();
+        $statsManager->addWorkerStats(10, 5, ['bla' => 5]);
+
+        $this->client->request('POST', '/api/slaves/slave1/stats', [], [], [], json_encode($statsManager->getStats()));
+    }
+
     public function testSlaveLoad()
     {
+        $this->addSlaveStats();
+
         $this->client->request('GET', '/api/graphs/slaves/slave1/load');
 
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
@@ -54,6 +74,8 @@ class GraphControllerTest extends AbstractApiTest
 
     public function testSlaveMemory()
     {
+        $this->addSlaveStats();
+
         $this->client->request('GET', '/api/graphs/slaves/slave1/memory');
 
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
@@ -62,6 +84,8 @@ class GraphControllerTest extends AbstractApiTest
 
     public function testSlavePosts()
     {
+        $this->addSlaveStats();
+
         $this->client->request('GET', '/api/graphs/slaves/slave1/posts');
 
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
@@ -70,6 +94,8 @@ class GraphControllerTest extends AbstractApiTest
 
     public function testSlaveQueues()
     {
+        $this->addSlaveStats();
+
         $this->client->request('GET', '/api/graphs/slaves/slave1/queues');
 
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
@@ -78,6 +104,8 @@ class GraphControllerTest extends AbstractApiTest
 
     public function testSlaveWorkers()
     {
+        $this->addSlaveStats();
+
         $this->client->request('GET', '/api/graphs/slaves/slave1/workers');
 
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
