@@ -8,6 +8,7 @@ use App\Entity\ProbeArchive;
 use App\Entity\SlaveGroup;
 use App\Exception\RrdException;
 use App\Graph\PingGraph;
+use App\Graph\TracerouteGraph;
 use App\Storage\RrdStorage;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
@@ -44,14 +45,14 @@ class TracerouteGraphTest extends TestCase
         $device->setIp('8.8.8.8');
         $device->addSlaveGroup($slavegroup);
 
-        $graph = new PingGraph($storageFactory->reveal());
+        $graph = new TracerouteGraph($storageFactory->reveal());
         $image = $graph->getDetailGraph($device, $probe, $slavegroup, $helper->reveal(), -3600, null, true);
         $this->assertNotNull($image);
     }
 
     public function testDetailGraph()
     {
-        @unlink('/tmp/7/1/1.rrd');
+        @unlink('/tmp/8/1/1.rrd');
 
         $archive = new ProbeArchive();
         $archive->setFunction('AVERAGE');
@@ -90,7 +91,7 @@ class TracerouteGraphTest extends TestCase
 
         $helper = $this->prophesize('App\\DependencyInjection\\Helper');
 
-        $graph = new PingGraph($storageFactory->reveal());
+        $graph = new TracerouteGraph($storageFactory->reveal());
         $image = $graph->getDetailGraph($device, $probe, $slavegroup, $helper->reveal(), -3600, null, true);
         $this->assertNotNull($image);
     }
@@ -131,7 +132,7 @@ class TracerouteGraphTest extends TestCase
         $helper = $this->prophesize('App\\DependencyInjection\\Helper');
 
         $this->expectException(RrdException::class);
-        $graph = new PingGraph($storageFactory->reveal());
+        $graph = new TracerouteGraph($storageFactory->reveal());
         $image = $graph->getDetailGraph($device, $probe, $slavegroup, $helper->reveal(), -3600, null, true);
         $this->assertNotNull($image);
     }
