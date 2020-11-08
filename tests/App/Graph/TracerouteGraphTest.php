@@ -54,10 +54,15 @@ class TracerouteGraphTest extends TestCase
     {
         @unlink('/tmp/8/1/1.rrd');
 
-        $archive = new ProbeArchive();
-        $archive->setFunction('AVERAGE');
-        $archive->setSteps(1);
-        $archive->setRows(1008);
+        $archive1 = new ProbeArchive();
+        $archive1->setFunction('AVERAGE');
+        $archive1->setSteps(1);
+        $archive1->setRows(1008);
+
+        $archive2 = new ProbeArchive();
+        $archive2->setFunction('MAX');
+        $archive2->setSteps(1);
+        $archive2->setRows(1008);
 
         $probe = new Probe();
         $probe->setId(1);
@@ -65,7 +70,8 @@ class TracerouteGraphTest extends TestCase
         $probe->setType('traceroute');
         $probe->setSamples(15);
         $probe->setStep(60);
-        $probe->addArchive($archive);
+        $probe->addArchive($archive1);
+        $probe->addArchive($archive2);
 
         $slavegroup = new SlaveGroup();
         $slavegroup->setId(1);
@@ -84,7 +90,8 @@ class TracerouteGraphTest extends TestCase
         $data['2_8_8_8_8m'] = 1;
         $data['2_8_8_8_8l'] = 0;
 
-        $storage->store($device, $probe, $slavegroup, date('U'), $data);
+        $storage->store($device, $probe, $slavegroup, date('U') - 60, $data, true);
+        $storage->store($device, $probe, $slavegroup, date('U'), $data, true);
 
         $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
         $storageFactory->create()->willReturn($storage)->shouldBeCalledTimes(1);
@@ -124,7 +131,7 @@ class TracerouteGraphTest extends TestCase
         $data['2_8_8_8_8m'] = 1;
         $data['2_8_8_8_8l'] = 0;
 
-        $storage->store($device, $probe, $slavegroup, date('U'), $data);
+        $storage->store($device, $probe, $slavegroup, date('U'), $data, true);
 
         $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
         $storageFactory->create()->willReturn($storage)->shouldBeCalledTimes(1);
