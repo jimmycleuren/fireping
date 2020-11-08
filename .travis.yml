@@ -89,8 +89,8 @@ script:
 after_script:
   - |
     if [[ $COVERAGE == true && $TRAVIS_BRANCH == "master" ]]; then
-      ./bin/phpunit --coverage-clover coverage.xml
-      wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.1.0/php-coveralls.phar
+      ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+      wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.4.0/php-coveralls.phar
       php php-coveralls.phar --verbose
     fi
 
