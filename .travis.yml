@@ -70,7 +70,7 @@ install:
 
 script:
   - php bin/console cache:warmup --env=slave
-  - vendor/bin/phpunit
+  - vendor/bin/phpunit --coverage-clover build/logs/clover.xml
   - composer phpstan
   # This checks that the YAML config files contain no syntax errors.
   - ./bin/console lint:yaml config --parse-tags
@@ -89,7 +89,6 @@ script:
 after_success:
   - |
     if [[ $COVERAGE == true && $TRAVIS_BRANCH == "master" ]]; then
-      ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml
       wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.4.2/php-coveralls.phar
       php php-coveralls.phar --verbose
     fi
