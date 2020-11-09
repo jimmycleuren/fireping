@@ -1,5 +1,5 @@
 ---
-title: "slave Group Settings"
+title: "SlaveGroup Settings"
 permalink: /docs/how-to/admin/slave-group
 key: docs-how-to-admin-slave-group
 ---
