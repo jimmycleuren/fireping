@@ -57,6 +57,7 @@ before_install:
   - composer self-update
   - mkdir build
   - pecl install rrd
+  - docker-php-ext-enable rrd
   - mysql -e 'CREATE DATABASE fireping_test;'
   # Setup the rrdcached container.
   # We are forcing the PUID and PGID of the rrdcached daemon to the same UID/GID of the host so that we can pretend it's
