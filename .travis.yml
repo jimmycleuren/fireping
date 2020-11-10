@@ -53,7 +53,6 @@ before_install:
   - export PATH="$HOME/.symfony/bin:$PATH"
   - if [[ $COVERAGE == "" ]]; then phpenv config-rm xdebug.ini; fi
   - if symfony self:version; then symfony self:update --yes ; else wget https://get.symfony.com/cli/installer -O - | bash ; fi
-  - composer self-update
   - mkdir build
   - pecl install rrd
   - mysql -e 'CREATE DATABASE fireping_test;'
@@ -69,7 +68,7 @@ install:
 
 script:
   - php bin/console cache:warmup --env=slave
-  - bin/phpunit --coverage-clover build/logs/clover.xml
+  - ./bin/phpunit --coverage-clover build/logs/clover.xml
   - composer phpstan
   # This checks that the YAML config files contain no syntax errors.
   - ./bin/console lint:yaml config --parse-tags
