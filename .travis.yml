@@ -6,8 +6,9 @@ env:
     # written to a directory that can be configured by the SYMFONY_PHPUNIT_DIR env var, or in
     # the same directory as the simple-phpunit if it is not provided. It's also possible to set
     # this env var in the phpunit.xml.dist file.
-    - SYMFONY_PHPUNIT_DIR=./bin/.phpunit
     - SYMFONY_DEPRECATIONS_HELPER=max[direct]=0
+    - PHPUNIT_FLAGS="-v"
+    - SYMFONY_PHPUNIT_DIR="$HOME/symfony-bridge/.phpunit"
 
 language: php
 os: linux
@@ -21,11 +22,8 @@ services:
 # Cache composer packages so "composer install" is faster
 cache:
   directories:
-    # Cache composer packages so "composer install" is faster.
     - $HOME/.composer/cache/files
-    # Cache the directory where Symfony stores its slightly modified version of PHPUnit.
-    - ./bin/.phpunit
-    # Cache the Symfony binary's directory so that it does not have to be reinstalled.
+    - $HOME/symfony-bridge/.phpunit
     - $HOME/.symfony
 
 addons:
@@ -65,10 +63,11 @@ before_install:
 
 install:
   - composer -n install --prefer-dist
+  - ./vendor/bin/simple-phpunit install
 
 script:
   - php bin/console cache:warmup --env=slave
-  - ./bin/phpunit --coverage-clover build/logs/clover.xml
+  - ./vendor/bin/simple-phpunit $PHPUNIT_FLAGS --coverage-clover build/logs/clover.xml
   - composer phpstan
   # This checks that the YAML config files contain no syntax errors.
   - ./bin/console lint:yaml config --parse-tags
