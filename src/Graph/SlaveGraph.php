@@ -38,7 +38,7 @@ class SlaveGraph
             '--start', $start,
             '--end', $end,
             "--title=$title",
-            '--vertical-label=ms',
+            '--vertical-label='.$this->getAxisLabel($type),
             '--lower-limit=0',
             //"--upper-limit=".$this->getMax($slave, $start, $end, $this->storage->getFilePath($slave, $type)),
             '--rigid',
@@ -71,6 +71,19 @@ class SlaveGraph
         $options[] = 'COMMENT:ending on '.date("D M j H\\\:i\\\:s Y", $end).'';
 
         return $this->storage->graph($options);
+    }
+
+    private function getAxisLabel($type) {
+        switch ($type) {
+            case 'queues':
+                return "messages";
+            case 'load':
+                return "processes";
+            case 'memory':
+                return "bytes";
+            default:
+                return $type;
+        }
     }
 
     public function createPostGraph($slave, $options)
