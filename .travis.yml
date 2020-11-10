@@ -35,15 +35,17 @@ addons:
     packages:
     - mysql-server
     - mysql-client
+    - librrd-dev
+    - rrdtool
 
 jobs:
   # Fast finish allows to set the build as "finished" even if the "allow_failures" matrix elements are not finished yet.
   fast_finish: true
   include:
-    - php: master
     - php: 7.4
       env: COVERAGE=true
     - php: 7.3
+    - php: master
   allow_failures:
     - php: master
 
@@ -51,9 +53,6 @@ before_install:
   - export PATH="$HOME/.symfony/bin:$PATH"
   - if [[ $COVERAGE == "" ]]; then phpenv config-rm xdebug.ini; fi
   - if symfony self:version; then symfony self:update --yes ; else wget https://get.symfony.com/cli/installer -O - | bash ; fi
-  # Install RRDTool
-  - sudo apt-get -qq update
-  - sudo apt-get install -y librrd-dev rrdtool
   - composer self-update
   - mkdir build
   - pecl install rrd
@@ -70,7 +69,7 @@ install:
 
 script:
   - php bin/console cache:warmup --env=slave
-  - vendor/bin/phpunit
+  - bin/phpunit --coverage-clover build/logs/clover.xml
   - composer phpstan
   # This checks that the YAML config files contain no syntax errors.
   - ./bin/console lint:yaml config --parse-tags
@@ -89,7 +88,6 @@ script:
 after_success:
   - |
     if [[ $COVERAGE == true && $TRAVIS_BRANCH == "master" ]]; then
-      ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml
       wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.4.2/php-coveralls.phar
       php php-coveralls.phar --verbose
     fi
