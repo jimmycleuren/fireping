@@ -40,9 +40,9 @@ class DeviceApiTest extends AbstractApiTest
 
     public function testStatusWithoutSlavegroup()
     {
-        $this->client->request('GET', '/api/devices/8/status.json', array(), array(), array(
-            "HTTP_Accept" => "application/json"
-        ));
+        $crawler = $this->client->request('GET', '/api/devices/3/status.json', [], [], [
+            'HTTP_Accept' => 'application/json',
+        ]);
 
         $response = $this->client->getResponse();
         $this->assertEquals(500, $response->getStatusCode());
