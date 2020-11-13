@@ -1,7 +1,6 @@
 /build/
 /.idea
 /.vagrant
-/Homestead.yaml
 /public/coverage
 
 ###> symfony/framework-bundle ###
@@ -13,12 +12,6 @@
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
-
-###> phpunit/phpunit ###
-/phpunit.xml
-.phpunit.result.cache
-###< phpunit/phpunit ###
-
 ###> symfony/phpunit-bridge ###
 .phpunit
 .phpunit.result.cache

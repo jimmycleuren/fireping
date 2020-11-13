@@ -7,13 +7,10 @@ use App\Slave\Task\FetchConfiguration;
 use App\Slave\Task\PublishResults;
 use App\Slave\Task\PublishStatistics;
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Log\LoggerInterface;
 
 class StatsManagerTest extends TestCase
 {
-    use ProphecyTrait;
-
     public function testAddFailedPost()
     {
         $logger = $this->prophesize(LoggerInterface::class);
