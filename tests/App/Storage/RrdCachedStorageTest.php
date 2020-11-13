@@ -7,13 +7,10 @@ use App\Entity\Probe;
 use App\Entity\SlaveGroup;
 use App\Storage\RrdCachedStorage;
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Log\LoggerInterface;
 
 class RrdCachedStorageTest extends TestCase
 {
-    use ProphecyTrait;
-
     private $slaveGroupId = 0;
 
     public function setUp(): void

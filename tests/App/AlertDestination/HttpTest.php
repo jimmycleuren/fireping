@@ -9,12 +9,9 @@ use App\Entity\Device;
 use App\Entity\SlaveGroup;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
-use Prophecy\PhpUnit\ProphecyTrait;
 
 class HttpTest extends TestCase
 {
-    use ProphecyTrait;
-
     public function testNoArguments()
     {
         $guzzle = $this->prophesize('GuzzleHttp\\Client');

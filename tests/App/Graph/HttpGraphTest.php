@@ -12,12 +12,9 @@ use App\Storage\RrdStorage;
 use PHPUnit\Framework\TestCase;
 use App\Graph\PingGraph;
 use Prophecy\Argument;
-use Prophecy\PhpUnit\ProphecyTrait;
 
 class HttpGraphTest extends TestCase
 {
-    use ProphecyTrait;
-
     public function testResponseGraph()
     {
         @unlink('/tmp/2/1/1.rrd');

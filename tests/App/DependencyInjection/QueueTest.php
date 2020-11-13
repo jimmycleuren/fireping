@@ -8,12 +8,9 @@ use App\DependencyInjection\Worker;
 use App\DependencyInjection\WorkerManager;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
-use Prophecy\PhpUnit\ProphecyTrait;
 
 class QueueTest extends TestCase
 {
-    use ProphecyTrait;
-
     public function testQueueSameTimestamp()
     {
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');

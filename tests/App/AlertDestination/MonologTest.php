@@ -9,12 +9,9 @@ use App\Entity\Device;
 use App\Entity\SlaveGroup;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
-use Prophecy\PhpUnit\ProphecyTrait;
 
 class MonologTest extends TestCase
 {
-    use ProphecyTrait;
-
     public function testTrigger()
     {
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
