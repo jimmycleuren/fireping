@@ -3,16 +3,18 @@
 namespace App\Tests\App\Controller;
 
 use App\Entity\User;
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class EasyAdminControllerTest extends WebTestCase
 {
     public function testUserList()
     {
-        $client = static::createClient(array(), array(
-            'PHP_AUTH_USER' => 'test',
-            'PHP_AUTH_PW'   => 'test123',
-        ));
+        $client = static::createClient();
+
+        $userRepository = static::$container->get(UserRepository::class);
+        $testUser = $userRepository->findOneByUsername('test');
+        $client->loginUser($testUser);
 
         $client->request('GET', '/admin/?entity=User&action=list');
 
