@@ -38,20 +38,6 @@ class DeviceApiTest extends AbstractApiTest
         $this->assertEquals('unknown', json_decode($response->getContent())->status);
     }
 
-    public function testStatusWithoutSlavegroup()
-    {
-        $crawler = $this->client->request('GET', '/api/devices/3/status.json', [], [], [
-            'HTTP_Accept' => 'application/json',
-        ]);
-
-        $response = $this->client->getResponse();
-        $this->assertEquals(500, $response->getStatusCode());
-        $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
-        $this->assertJson($response->getContent());
-
-        $this->assertEquals('No slavegroup assigned', json_decode($response->getContent())->message);
-    }
-
     public function testStatusNoProbe()
     {
         $crawler = $this->client->request('GET', '/api/devices/3/status.json', [], [], [

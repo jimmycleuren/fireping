@@ -13,9 +13,9 @@ class SecurityControllerTest extends WebTestCase
         $crawler = $client->request('GET', '/login');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertStringContainsString('Log in', $crawler->filter('h1')->text());
+        $this->assertStringContainsString('Log in', $crawler->filter('title')->text());
 
-        $form = $crawler->selectButton('Sign in')->form();
+        $form = $crawler->selectButton('Login')->form();
 
         $form['username'] = 'test';
         $form['password'] = 'test123';
