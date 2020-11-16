@@ -20,7 +20,7 @@ class SlaveFixtures extends Fixture implements DependentFixtureInterface
 
         $slave = new Slave();
         $slave->setId('slave-unused');
-        $slave->setLastContact(new \DateTime());
+        $slave->setLastContact(new \DateTime("1 year ago"));
         $slave->setSlaveGroup($this->getReference('slavegroup-unused'));
         $manager->persist($slave);
         $this->addReference('slave-unused', $slave);

@@ -20,7 +20,7 @@ class HttpTest extends TestCase
             ],
             'args' => [
                 'samples' => 2,
-                'wait_time' => 10000,
+                'wait_time' => 2000,
                 'host' => 'www.google.be',
             ]
         ]);
@@ -64,7 +64,7 @@ class HttpTest extends TestCase
             ],
             'args' => [
                 'samples' => 2,
-                'wait_time' => 10000,
+                'wait_time' => 2000,
                 'protocol' => 'https',
             ]
         ]);

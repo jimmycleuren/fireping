@@ -31,12 +31,29 @@ class IndexControllerTest extends WebTestCase
         $this->assertStringContainsString('Fireping', $crawler->filter('.logo-lg')->text());
     }
 
+    /**
+     * Drop en recreate to have an empty database
+     */
     public function testDatabaseInit()
     {
         $client = static::createClient();
 
+        passthru(sprintf(
+            'php "%s/../../../bin/console" doctrine:schema:drop --env=test --force',
+            __DIR__
+        ));
+        passthru(sprintf(
+            'php "%s/../../../bin/console" doctrine:schema:create --env=test',
+            __DIR__
+        ));
+
         $crawler = $client->request('GET', '/database-init');
 
         $this->assertEquals(302, $client->getResponse()->getStatusCode());
+
+        passthru(sprintf(
+            'php "%s/../../../bin/console" doctrine:fixtures:load -n --env=test',
+            __DIR__
+        ));
     }
 }
