@@ -31,10 +31,19 @@ class IndexControllerTest extends WebTestCase
         $this->assertStringContainsString('Fireping', $crawler->filter('.logo-lg')->text());
     }
 
+    public function testFilledDatabaseInit()
+    {
+        $client = static::createClient();
+
+        $crawler = $client->request('GET', '/database-init');
+
+        $this->assertEquals(302, $client->getResponse()->getStatusCode());
+    }
+
     /**
      * Drop en recreate to have an empty database
      */
-    public function testDatabaseInit()
+    public function testEmptyDatabaseInit()
     {
         $client = static::createClient();
 
