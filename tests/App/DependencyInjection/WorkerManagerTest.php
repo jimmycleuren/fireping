@@ -37,10 +37,10 @@ class WorkerManagerTest extends TestCase
         $this->assertEquals(0, $manager->getAvailableWorkers());
         $this->assertEquals(['bla' => 4], $manager->getInUseWorkerTypes());
 
-        $manager->release($worker1);
-        $manager->release($worker2);
-        $manager->release($worker3);
-        $manager->release($worker4);
+        $worker1->release();
+        $worker2->release();
+        $worker3->release();
+        $worker4->release();
 
         $this->assertEquals(4, $manager->getTotalWorkers());
         $this->assertEquals(4, $manager->getAvailableWorkers());
