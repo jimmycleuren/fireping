@@ -61,7 +61,7 @@ class HttpGraphTest extends TestCase
         $storageFactory->create()->willReturn($storage)->shouldBeCalledTimes(1);
 
         $graph = new HttpGraph($storageFactory->reveal());
-        $image = $graph->getDetailGraph($device, $probe, $slavegroup, $time - 3600, $time, "response");
+        $image = $graph->getDetailGraph($device, $probe, $slavegroup, $time - 3600, $time - 1, "response");
         $this->assertNotNull($image);
     }
 
