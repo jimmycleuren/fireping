@@ -1526,16 +1526,16 @@
         },
         {
             "name": "easycorp/easyadmin-bundle",
-            "version": "v3.1.7",
+            "version": "v3.1.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/EasyCorp/EasyAdminBundle.git",
-                "reference": "43ef9306b62de6bbb5cec5c3e0d752cc7bbefce8"
+                "reference": "ce9a162fad46baafba9eaa331ee485b2949c21b3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/EasyCorp/EasyAdminBundle/zipball/43ef9306b62de6bbb5cec5c3e0d752cc7bbefce8",
-                "reference": "43ef9306b62de6bbb5cec5c3e0d752cc7bbefce8",
+                "url": "https://api.github.com/repos/EasyCorp/EasyAdminBundle/zipball/ce9a162fad46baafba9eaa331ee485b2949c21b3",
+                "reference": "ce9a162fad46baafba9eaa331ee485b2949c21b3",
                 "shasum": ""
             },
             "require": {
@@ -1611,7 +1611,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-11-14T11:39:35+00:00"
+            "time": "2020-11-18T07:15:20+00:00"
         },
         {
             "name": "egulias/email-validator",
@@ -9315,16 +9315,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "0.12.56",
+            "version": "0.12.57",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "007fd5d700c41e1bb27795fae15a2383f8fa4ba1"
+                "reference": "f9909d1d0c44b4cbaf72babcf80e8f14d6fdd55b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/007fd5d700c41e1bb27795fae15a2383f8fa4ba1",
-                "reference": "007fd5d700c41e1bb27795fae15a2383f8fa4ba1",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/f9909d1d0c44b4cbaf72babcf80e8f14d6fdd55b",
+                "reference": "f9909d1d0c44b4cbaf72babcf80e8f14d6fdd55b",
                 "shasum": ""
             },
             "require": {
@@ -9367,7 +9367,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-11-16T22:59:18+00:00"
+            "time": "2020-11-21T12:53:28+00:00"
         },
         {
             "name": "sensiolabs/security-checker",
