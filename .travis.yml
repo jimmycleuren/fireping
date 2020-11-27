@@ -35,6 +35,7 @@ addons:
     - mysql-client
     - librrd-dev
     - rrdtool
+    - fping
 
 jobs:
   # Fast finish allows to set the build as "finished" even if the "allow_failures" matrix elements are not finished yet.

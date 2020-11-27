@@ -52,14 +52,16 @@ class HttpGraphTest extends TestCase
             $data["code$i"] = 200;
         }
 
-        $storage->store($device, $probe, $slavegroup, date("U") - 60, $data);
-        $storage->store($device, $probe, $slavegroup, date("U"), $data);
+        $time = date("U");
+
+        $storage->store($device, $probe, $slavegroup, $time - 60, $data);
+        $storage->store($device, $probe, $slavegroup, $time, $data);
 
         $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
         $storageFactory->create()->willReturn($storage)->shouldBeCalledTimes(1);
 
         $graph = new HttpGraph($storageFactory->reveal());
-        $image = $graph->getDetailGraph($device, $probe, $slavegroup, -3600, null, "response");
+        $image = $graph->getDetailGraph($device, $probe, $slavegroup, $time - 3600, $time - 1, "response");
         $this->assertNotNull($image);
     }
 

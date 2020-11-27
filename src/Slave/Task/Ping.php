@@ -6,6 +6,7 @@ namespace App\Slave\Task;
 
 use App\OutputFormatter\PingOutputFormatter;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Process\ExecutableFinder;
 
 class Ping implements TaskInterface
 {
@@ -34,6 +35,9 @@ class Ping implements TaskInterface
 
     public function setArgs(array $args): void
     {
+        if (count($args['targets']) == 0) {
+            throw new \RuntimeException("No targets set for ping probe");
+        }
         $args['args']['interval'] = $args['args']['wait_time'] / count($args['targets']);
         $args['args']['retries'] = 0;
 
@@ -83,6 +87,11 @@ class Ping implements TaskInterface
 
         if ($tooManyArguments) {
             $errors['TooManyArguments'] = 'Should have at most '.self::MAX_TARGETS.' targets.';
+        }
+
+        $finder = new ExecutableFinder();
+        if (!$finder->find('fping')) {
+            $errors['FpingNotInstalled'] = 'Fping is not installed.';
         }
 
         return $errors;

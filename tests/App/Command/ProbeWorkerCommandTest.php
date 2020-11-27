@@ -26,7 +26,7 @@ class ProbeWorkerCommandTest extends KernelTestCase
         $commandTester->execute([
             'command' => $command->getName(),
             '--env' => 'slave',
-            '--max-runtime' => 20,
+            '--max-runtime' => 5,
         ]);
 
         $output = $commandTester->getDisplay();
