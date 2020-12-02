@@ -1526,16 +1526,16 @@
         },
         {
             "name": "easycorp/easyadmin-bundle",
-            "version": "v3.1.8",
+            "version": "v3.1.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/EasyCorp/EasyAdminBundle.git",
-                "reference": "ce9a162fad46baafba9eaa331ee485b2949c21b3"
+                "reference": "9904c14d589c65dae5fff0a2925856a09ba64a8e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/EasyCorp/EasyAdminBundle/zipball/ce9a162fad46baafba9eaa331ee485b2949c21b3",
-                "reference": "ce9a162fad46baafba9eaa331ee485b2949c21b3",
+                "url": "https://api.github.com/repos/EasyCorp/EasyAdminBundle/zipball/9904c14d589c65dae5fff0a2925856a09ba64a8e",
+                "reference": "9904c14d589c65dae5fff0a2925856a09ba64a8e",
                 "shasum": ""
             },
             "require": {
@@ -1546,7 +1546,7 @@
                 "doctrine/persistence": "^1.3.3 || ^2.0",
                 "ext-json": "*",
                 "nikic/php-parser": "^4.3|^4.4",
-                "php": "^7.2.5",
+                "php": ">=7.2.5",
                 "symfony/asset": "^4.4|^5.0",
                 "symfony/cache": "^4.4|^5.0",
                 "symfony/config": "^4.4|^5.0",
@@ -1570,7 +1570,8 @@
                 "doctrine/dbal": "<2.10"
             },
             "require-dev": {
-                "dg/bypass-finals": "^1.2",
+                "dama/doctrine-test-bundle": "^6.4",
+                "doctrine/doctrine-fixtures-bundle": "^3.4",
                 "psr/log": "~1.0",
                 "symfony/browser-kit": "^4.4|^5.0",
                 "symfony/css-selector": "^4.4|^5.0",
@@ -1611,7 +1612,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-11-18T07:15:20+00:00"
+            "time": "2020-11-25T19:19:50+00:00"
         },
         {
             "name": "egulias/email-validator",
