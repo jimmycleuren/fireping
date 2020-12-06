@@ -41,27 +41,42 @@ class HttpGraphTest extends TestCase
         $device->setIp('www.google.be');
         $device->addSlaveGroup($slavegroup);
 
-        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
-        $storage = new RrdStorage('/tmp/', $logger->reveal());
+        $storage = $this->prophesize(RrdStorage::class);
 
-        $data = array();
-        $data['loss'] = 0;
-        $data['median'] = 10;
-        for($i = 1; $i < 16; $i++) {
-            $data["latency$i"] = 10;
-            $data["code$i"] = 200;
-        }
+        $storage->getFilePath(
+            Argument::type(Device::class),
+            Argument::type(Probe::class),
+            Argument::type(SlaveGroup::class)
+        )->willReturn("/tmp/file.rrd")->shouldBeCalledTimes(6);
 
-        $time = date("U");
+        $storage->fileExists(Argument::type(Device::class), Argument::any())->willReturn(true);
 
-        $storage->store($device, $probe, $slavegroup, $time - 60, $data);
-        $storage->store($device, $probe, $slavegroup, $time, $data);
+        $storage->getDatasources(
+            Argument::type(Device::class),
+            Argument::type(Probe::class),
+            Argument::type(SlaveGroup::class)
+        )->willReturn(["code1", "code2", "code3", "code4", "code5"])->shouldBeCalledTimes(1);
+
+        $storage->fetchAll(
+            Argument::type(Device::class),
+            Argument::type(Probe::class),
+            Argument::type(SlaveGroup::class),
+            Argument::any(),
+            Argument::any(),
+            Argument::any(),
+            Argument::any(),
+        )->willReturn([date('U') => 200])->shouldBeCalledTimes(15);
+
+        $storage->graph(
+            Argument::type(Device::class),
+            Argument::type('array')
+        )->willReturn(true)->shouldBeCalledTimes(1);
 
         $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
-        $storageFactory->create()->willReturn($storage)->shouldBeCalledTimes(1);
+        $storageFactory->create()->willReturn($storage->reveal())->shouldBeCalledTimes(1);
 
         $graph = new HttpGraph($storageFactory->reveal());
-        $image = $graph->getDetailGraph($device, $probe, $slavegroup, $time - 3600, $time - 1, "response");
+        $image = $graph->getDetailGraph($device, $probe, $slavegroup, -3600, null, "response");
         $this->assertNotNull($image);
     }
 
