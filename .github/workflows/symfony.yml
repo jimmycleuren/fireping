@@ -38,6 +38,11 @@ jobs:
           coverage: pcov
           tools: pecl
 
+      - name: Start Redis
+        uses: supercharge/redis-github-action@1.1.0
+        with:
+          redis-version: 6
+
       - uses: actions/checkout@v2
 
       - name: Cache Composer packages
