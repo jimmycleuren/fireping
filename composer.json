@@ -20,7 +20,6 @@
         "api-platform/api-pack": "^1.0",
         "doctrine/doctrine-bundle": "^2.0",
         "doctrine/doctrine-migrations-bundle": "^3.0",
-        "doctrine/inflector": "<1.4",
         "doctrine/orm": "^2.5",
         "easycorp/easyadmin-bundle": "^3.0",
         "eightpoints/guzzle-bundle": "^8.1",
@@ -54,9 +53,7 @@
         "doctrine/doctrine-fixtures-bundle": "^3.0",
         "mi-schi/phpmd-extension": "^4.2",
         "phpmd/phpmd": "^2.6",
-        "phpspec/prophecy-phpunit": "^2.0",
         "phpstan/phpstan": "^0.12",
-        "phpunit/phpunit": "^9.1",
         "sensiolabs/security-checker": "^6.0",
         "squizlabs/php_codesniffer": "^3.3",
         "symfony/browser-kit": "^5.0",
@@ -74,7 +71,7 @@
         ],
         "phpstan": "vendor/bin/phpstan --level=5 --configuration=phpstan.neon analyse src",
         "test": {
-            "tests": "vendor/bin/phpunit --coverage-html public/coverage"
+            "tests": "bin/phpunit --coverage-html public/coverage --debug"
         },
         "auto-scripts": {
             "cache:clear": "symfony-cmd",

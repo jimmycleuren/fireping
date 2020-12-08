@@ -3,15 +3,12 @@
 namespace App\Tests\App\Command;
 
 use App\Command\ValidateRrdCommand;
-use Prophecy\PhpUnit\ProphecyTrait;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class ValidateRrdCommandTest extends KernelTestCase
 {
-    use ProphecyTrait;
-
     public function testExecute()
     {
         $kernel = self::bootKernel();

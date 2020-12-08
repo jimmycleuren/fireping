@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\AlertDestination\AlertDestinationFactory;
 use App\Entity\Alert;
+use App\Entity\AlertDestination;
 use App\Entity\AlertRule;
 use App\Entity\Device;
 use App\Entity\SlaveGroup;
@@ -41,7 +42,7 @@ class TestAlertDestinationCommand extends Command
     {
         $id = (int) $input->getArgument('destination-id');
 
-        $destination = $this->em->getRepository('App:AlertDestination')->findOneById($id);
+        $destination = $this->em->getRepository(AlertDestination::class)->findOneBy(['id' => $id]);
         if (!$destination) {
             $this->logger->warning("Alertdestination #$id not found");
 

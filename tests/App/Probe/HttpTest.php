@@ -4,13 +4,10 @@ namespace App\Tests\App\Probe;
 
 use App\Slave\Task\Http;
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Log\LoggerInterface;
 
 class HttpTest extends TestCase
 {
-    use ProphecyTrait;
-
     public function testHttp()
     {
         $logger = $this->prophesize(LoggerInterface::class)->reveal();
@@ -23,7 +20,7 @@ class HttpTest extends TestCase
             ],
             'args' => [
                 'samples' => 2,
-                'wait_time' => 10000,
+                'wait_time' => 2000,
                 'host' => 'www.google.be',
             ]
         ]);
@@ -67,7 +64,7 @@ class HttpTest extends TestCase
             ],
             'args' => [
                 'samples' => 2,
-                'wait_time' => 10000,
+                'wait_time' => 2000,
                 'protocol' => 'https',
             ]
         ]);

@@ -6,8 +6,10 @@ env:
     # written to a directory that can be configured by the SYMFONY_PHPUNIT_DIR env var, or in
     # the same directory as the simple-phpunit if it is not provided. It's also possible to set
     # this env var in the phpunit.xml.dist file.
-    - SYMFONY_PHPUNIT_DIR=./bin/.phpunit
     - SYMFONY_DEPRECATIONS_HELPER=max[direct]=0
+    - PHPUNIT_FLAGS="-v"
+    - SYMFONY_PHPUNIT_DIR="$HOME/symfony-bridge/.phpunit"
+    - XDEBUG_MODE=coverage
 
 language: php
 os: linux
@@ -21,11 +23,8 @@ services:
 # Cache composer packages so "composer install" is faster
 cache:
   directories:
-    # Cache composer packages so "composer install" is faster.
     - $HOME/.composer/cache/files
-    # Cache the directory where Symfony stores its slightly modified version of PHPUnit.
-    - ./bin/.phpunit
-    # Cache the Symfony binary's directory so that it does not have to be reinstalled.
+    - $HOME/symfony-bridge/.phpunit
     - $HOME/.symfony
 
 addons:
@@ -35,15 +34,18 @@ addons:
     packages:
     - mysql-server
     - mysql-client
+    - librrd-dev
+    - rrdtool
+    - fping
 
 jobs:
   # Fast finish allows to set the build as "finished" even if the "allow_failures" matrix elements are not finished yet.
   fast_finish: true
   include:
-    - php: master
     - php: 7.4
       env: COVERAGE=true
     - php: 7.3
+    - php: master
   allow_failures:
     - php: master
 
@@ -51,10 +53,6 @@ before_install:
   - export PATH="$HOME/.symfony/bin:$PATH"
   - if [[ $COVERAGE == "" ]]; then phpenv config-rm xdebug.ini; fi
   - if symfony self:version; then symfony self:update --yes ; else wget https://get.symfony.com/cli/installer -O - | bash ; fi
-  # Install RRDTool
-  - sudo apt-get -qq update
-  - sudo apt-get install -y librrd-dev rrdtool
-  - composer self-update
   - mkdir build
   - pecl install rrd
   - mysql -e 'CREATE DATABASE fireping_test;'
@@ -67,10 +65,11 @@ before_install:
 
 install:
   - composer -n install --prefer-dist
+  - ./vendor/bin/simple-phpunit install
 
 script:
   - php bin/console cache:warmup --env=slave
-  - vendor/bin/phpunit
+  - ./vendor/bin/simple-phpunit $PHPUNIT_FLAGS --coverage-clover build/logs/clover.xml
   - composer phpstan
   # This checks that the YAML config files contain no syntax errors.
   - ./bin/console lint:yaml config --parse-tags
@@ -86,11 +85,10 @@ script:
   - ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction
   - composer validate --strict
 
-after_script:
+after_success:
   - |
     if [[ $COVERAGE == true && $TRAVIS_BRANCH == "master" ]]; then
-      ./bin/phpunit --coverage-clover coverage.xml
-      wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.1.0/php-coveralls.phar
+      wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.4.2/php-coveralls.phar
       php php-coveralls.phar --verbose
     fi
 
