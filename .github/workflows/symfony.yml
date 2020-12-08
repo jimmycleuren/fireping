@@ -16,17 +16,24 @@ jobs:
       matrix:
         php-versions: ['7.3', '7.4'] #, '8.0'
 
+    services:
+      # https://docs.docker.com/samples/library/mysql/
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
     steps:
       - name: Install packages
-        run: sudo apt-get install mysql-server mysql-client librrd-dev rrdtool fping
+        run: sudo apt-get install mysql-client librrd-dev rrdtool fping
 
       - name: Install extensions
-        run: pecl install rrd
+        run: sudo pecl install rrd
 
       - uses: actions/checkout@v2
-
-      - name: Validate composer.json and composer.lock
-        run: composer validate
 
       - name: Cache Composer packages
         id: composer-cache
@@ -41,8 +48,20 @@ jobs:
         if: steps.composer-cache.outputs.cache-hit != 'true'
         run: composer install --prefer-dist --no-progress --no-suggest
 
-      - name: phpstan
+      - name: Run phpstan
         run: composer phpstan
 
       - name: Lint yaml
         run: ./bin/console lint:yaml config --parse-tags
+
+      - name: Lint container
+        run: ./bin/console lint:container
+
+      - name: Check security
+        run: symfony check:security
+
+      - name: Check doctrine mapping
+        run: ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate
