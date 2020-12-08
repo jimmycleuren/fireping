@@ -1,5 +1,11 @@
 #!/bin/bash
 
+ls -p /usr/local/share/ca-certificates/
+
+if [ $(ls -p /usr/local/share/ca-certificates/ | grep ".crt$") ]; then
+  update-ca-certificates --verbose
+fi
+
 if [ "$MODE" = "master" ]
 then
   php /app/bin/console cache:warmup
