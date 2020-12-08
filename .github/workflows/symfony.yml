@@ -31,12 +31,12 @@ jobs:
         run: sudo apt-get install mysql-client librrd-dev rrdtool fping
 
       - name: Setup PHP
-          uses: shivammathur/setup-php@v2
-          with:
-            php-version: ${{ matrix.php-versions }}
-            extensions: mbstring, intl, rrd
-            coverage: pcov
-            tools: pecl
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: mbstring, intl, rrd
+          coverage: pcov
+          tools: pecl
 
       - uses: actions/checkout@v2
 
