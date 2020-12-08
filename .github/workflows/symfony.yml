@@ -26,6 +26,17 @@ jobs:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
+      rrdcached:
+        image: crazymax/rrdcached
+        env:
+          TZ: Europe/Brussels
+          PUID: $(id -u $(whoami))
+          PGID: $(id -g $(whoami))
+        ports:
+          - 42217:42217
+        volumes:
+          - /tmp/fireping/rrd:/data/db
+
     steps:
       - name: Install packages
         run: sudo apt-get install mysql-client librrd-dev rrdtool fping
@@ -61,6 +72,15 @@ jobs:
         if: steps.composer-cache.outputs.cache-hit != 'true'
         run: composer install --prefer-dist --no-progress --no-suggest
 
+      - name: Install phpunit
+        run: ./vendor/bin/simple-phpunit install
+
+      - name: Create database
+        run: mysql -e 'CREATE DATABASE fireping_test;'
+
+      - name: Create folders
+        run: mkdir build
+
       - name: Run phpstan
         run: composer phpstan
 
@@ -71,10 +91,16 @@ jobs:
         run: ./bin/console lint:container
 
       - name: Check security
-        run: symfony check:security
+        run: export PATH="$HOME/.symfony/bin:$PATH" ; symfony check:security
 
       - name: Check doctrine mapping
         run: ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction
 
       - name: Validate composer.json and composer.lock
         run: composer validate
+
+      - name: Run phpunit
+        run: ./vendor/bin/simple-phpunit --coverage-clover build/logs/clover.xml
+
+      - name: Send coverage report
+        run: wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.4.2/php-coveralls.phar ; php php-coveralls.phar --verbose
