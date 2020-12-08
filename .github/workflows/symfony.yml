@@ -21,7 +21,7 @@ jobs:
       mysql:
         image: mysql:5.7
         env:
-          MYSQL_ROOT_PASSWORD: root
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
@@ -76,7 +76,7 @@ jobs:
         run: ./vendor/bin/simple-phpunit install
 
       - name: Create database
-        run: mysql -h 127.0.0.1 -u root -p root -e 'CREATE DATABASE fireping_test;'
+        run: mysql -h 127.0.0.1 -u root -e 'CREATE DATABASE fireping_test;'
 
       - name: Create folders
         run: mkdir build
