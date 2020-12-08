@@ -17,6 +17,12 @@ jobs:
         php-versions: ['7.3', '7.4'] #, '8.0'
 
     steps:
+      - name: Install packages
+        run: sudo apt-get install mysql-server mysql-client librrd-dev rrdtool fping
+
+      - name: Install extensions
+        run: pecl install rrd
+
       - uses: actions/checkout@v2
 
       - name: Validate composer.json and composer.lock
