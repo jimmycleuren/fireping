@@ -76,7 +76,7 @@ jobs:
         run: ./vendor/bin/simple-phpunit install
 
       - name: Create database
-        run: mysql -h localhost -u root -e 'CREATE DATABASE fireping_test;'
+        run: mysql -h 127.0.0.1 -u root -e 'CREATE DATABASE fireping_test;'
 
       - name: Create folders
         run: mkdir build
