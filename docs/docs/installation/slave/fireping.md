@@ -50,6 +50,15 @@ $ php bin/console cache:clear --env=slave
 $ php bin/console cache:warmup --env=slave
 ```
 
+# Certificates
+
+Remember to load the necessary CAs into your certificate store if your master's isn't trusted by default.
+
+```bash
+$ mv certificate.crt /usr/local/share/certificate.crt
+$ sudo update-ca-certificate
+``` 
+
 # Configuration
 
 Fireping's configuration file is called `.env.local` and is stored in the installation directory.
