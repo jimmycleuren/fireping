@@ -43,6 +43,9 @@ jobs:
         with:
           redis-version: 6
 
+      - name: Install symfony
+        run: export PATH="$HOME/.symfony/bin:$PATH" ; if symfony self:version; then symfony self:update --yes ; else wget https://get.symfony.com/cli/installer -O - | bash ; fi
+
       - uses: actions/checkout@v2
 
       - name: Cache Composer packages
