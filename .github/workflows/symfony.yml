@@ -26,17 +26,6 @@ jobs:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
-      rrdcached:
-        image: crazymax/rrdcached
-        env:
-          TZ: Europe/Brussels
-          PUID: $(id -u $(whoami))
-          PGID: $(id -g $(whoami))
-        ports:
-          - 42217:42217
-        volumes:
-          - /tmp/fireping/rrd:/data/db
-
     steps:
       - name: Install packages
         run: sudo apt-get install mysql-client librrd-dev rrdtool fping
@@ -53,6 +42,9 @@ jobs:
         uses: supercharge/redis-github-action@1.1.0
         with:
           redis-version: 6
+
+      - name: Start rrdcached
+        run: docker run -d -p 127.0.0.1:42217:42217 --name rrdcached -v /tmp/fireping/rrd:/data/db -e TZ="Europe/Paris" -e PUID=$(id -u $(whoami)) -e PGID=$(id -g $(whoami)) crazymax/rrdcached
 
       - name: Install symfony
         run: export PATH="$HOME/.symfony/bin:$PATH" ; if symfony self:version; then symfony self:update --yes ; else wget https://get.symfony.com/cli/installer -O - | bash ; fi
