@@ -26,16 +26,16 @@ jobs:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
-#      rrdcached:
-#        image: crazymax/rrdcached
-#        env:
-#          TZ: Europe/Brussels
-#          PUID: $(id -u $(whoami))
-#          PGID: $(id -g $(whoami))
-#        ports:
-#          - 42217:42217
-#        volumes:
-#          - /tmp/fireping/rrd:/data/db
+      rrdcached:
+        image: crazymax/rrdcached
+        env:
+          TZ: Europe/Brussels
+          PUID: $(id -u $(whoami))
+          PGID: $(id -g $(whoami))
+        ports:
+          - 42217:42217
+        volumes:
+          - /tmp/fireping/rrd:/data/db
 
     steps:
       - name: Install packages
