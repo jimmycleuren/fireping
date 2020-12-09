@@ -9,6 +9,8 @@ on:
 env:
   DATABASE_URL: mysql://root@127.0.0.1:3306/fireping_test
   RRDCACHED_TEST: 127.0.0.1:42217
+  XDEBUG_MODE: coverage
+  SYMFONY_DEPRECATIONS_HELPER: max[direct]=0
 
 jobs:
   symfony:
