@@ -98,5 +98,7 @@ jobs:
       - name: Run phpunit
         run: ./vendor/bin/simple-phpunit --coverage-clover build/logs/clover.xml
 
-      - name: Send coverage report
-        run: wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.4.2/php-coveralls.phar ; php php-coveralls.phar --verbose
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
