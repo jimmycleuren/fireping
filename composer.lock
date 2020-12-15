@@ -1515,16 +1515,16 @@
         },
         {
             "name": "easycorp/easyadmin-bundle",
-            "version": "v3.1.9",
+            "version": "v3.1.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/EasyCorp/EasyAdminBundle.git",
-                "reference": "9904c14d589c65dae5fff0a2925856a09ba64a8e"
+                "reference": "77728bc54306b71b55872967368829176ac9ec5e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/EasyCorp/EasyAdminBundle/zipball/9904c14d589c65dae5fff0a2925856a09ba64a8e",
-                "reference": "9904c14d589c65dae5fff0a2925856a09ba64a8e",
+                "url": "https://api.github.com/repos/EasyCorp/EasyAdminBundle/zipball/77728bc54306b71b55872967368829176ac9ec5e",
+                "reference": "77728bc54306b71b55872967368829176ac9ec5e",
                 "shasum": ""
             },
             "require": {
@@ -1601,7 +1601,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-11-25T19:19:50+00:00"
+            "time": "2020-12-14T19:18:39+00:00"
         },
         {
             "name": "egulias/email-validator",
@@ -8162,16 +8162,16 @@
         },
         {
             "name": "symfony/uid",
-            "version": "v5.1.8",
+            "version": "v5.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/uid.git",
-                "reference": "d6e033ed0eca26277084f76287c3322dc1d825c2"
+                "reference": "a74e0dd6b21721e7f98703e1386273d65a1fc8e3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/uid/zipball/d6e033ed0eca26277084f76287c3322dc1d825c2",
-                "reference": "d6e033ed0eca26277084f76287c3322dc1d825c2",
+                "url": "https://api.github.com/repos/symfony/uid/zipball/a74e0dd6b21721e7f98703e1386273d65a1fc8e3",
+                "reference": "a74e0dd6b21721e7f98703e1386273d65a1fc8e3",
                 "shasum": ""
             },
             "require": {
@@ -8225,7 +8225,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-10-24T12:01:57+00:00"
+            "time": "2020-10-24T12:08:07+00:00"
         },
         {
             "name": "symfony/validator",
