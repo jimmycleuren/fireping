@@ -172,7 +172,13 @@ class ProbeWorkerCommand extends Command
                     $this->sendResponse('exception', 0, $errorMessage);
             }
         } catch (Exception $e) {
-            $errorMessage = sprintf('worker %d fatal: ' . $e->getMessage());
+            $errorMessage = sprintf(
+                'worker %d fatal: %s (%s:%d)',
+                getmypid(),
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine()
+            );
             $this->logger->error($errorMessage);
             $this->sendResponse('exception', 0, $errorMessage);
 
