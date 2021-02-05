@@ -36,17 +36,17 @@ class PublishResults implements TaskInterface
         try {
             $response = $this->client->request($this->method, $this->endpoint, ['json' => $this->body]);
 
-            $this->logger->info(sprintf('worker: published stats (took %.2f seconds)', microtime(true) - $startedAt));
+            $this->logger->info(sprintf('worker: published results (took %.2f seconds)', microtime(true) - $startedAt));
             return ['code' => $response->getStatusCode(), 'contents' => (string) $response->getBody()];
         } catch (RequestException $exception) {
-            $this->logger->error(sprintf('worker: failed to publish stats: %s (took %.2f seconds)', $exception->getMessage(), microtime(true) - $startedAt));
+            $this->logger->error(sprintf('worker: failed to publish results: %s (took %.2f seconds)', $exception->getMessage(), microtime(true) - $startedAt));
 
             $body = $exception->getResponse() === null ? 'empty body' : (string) $exception->getResponse()->getBody();
-            $this->logger->debug(sprintf('worker: stats response body: %s (took %.2f seconds)', $body, microtime(true) - $startedAt));
+            $this->logger->debug(sprintf('worker: results response body: %s (took %.2f seconds)', $body, microtime(true) - $startedAt));
 
             return ['code' => $exception->getCode(), 'contents' => $exception->getMessage()];
         } catch (GuzzleException $exception) {
-            $this->logger->error(sprintf('worker: failed to publish stats: %s (took %.2f seconds)', $exception->getMessage(), microtime(true) - $startedAt));
+            $this->logger->error(sprintf('worker: failed to publish results: %s (took %.2f seconds)', $exception->getMessage(), microtime(true) - $startedAt));
 
             return ['code' => $exception->getCode(), 'contents' => $exception->getMessage()];
         }
