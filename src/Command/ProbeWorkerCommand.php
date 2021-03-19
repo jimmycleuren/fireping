@@ -179,6 +179,7 @@ class ProbeWorkerCommand extends Command
                 $e->getFile(),
                 $e->getLine()
             );
+
             $this->logger->error($errorMessage);
             $this->sendResponse('exception', 0, $errorMessage);
 
