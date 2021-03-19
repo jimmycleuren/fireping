@@ -54,7 +54,6 @@
         "mi-schi/phpmd-extension": "^4.2",
         "phpmd/phpmd": "^2.6",
         "phpstan/phpstan": "^0.12",
-        "sensiolabs/security-checker": "^6.0",
         "squizlabs/php_codesniffer": "^3.3",
         "symfony/browser-kit": "^5.0",
         "symfony/css-selector": "^5.0",
@@ -76,7 +75,6 @@
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install --symlink --relative %PUBLIC_DIR%": "symfony-cmd",
-            "security-checker security:check": "script",
             "assets:install %PUBLIC_DIR%": "symfony-cmd"
         }
     },
