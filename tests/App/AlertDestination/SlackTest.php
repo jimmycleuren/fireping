@@ -9,12 +9,9 @@ use App\Entity\Device;
 use App\Entity\SlaveGroup;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
-use Prophecy\PhpUnit\ProphecyTrait;
 
 class SlackTest extends TestCase
 {
-    use ProphecyTrait;
-
     public function testNoArguments()
     {
         $client = $this->prophesize('GuzzleHttp\\Client');

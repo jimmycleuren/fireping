@@ -4,7 +4,7 @@ permalink: /docs/troubleshooting/
 key: docs-troubleshooting-index
 ---
 
-# Troubleshooting
+# Master
 
 ## Website doesn't load anymore
 
@@ -26,3 +26,26 @@ If your reverse proxy also does http to https redirection, make sure the X-Forwa
 Example for apache:
 
 - `RequestHeader set X-Forwarded-Proto "https"`
+
+# Slave
+
+## Connectivity but no ping results
+
+Make sure that the fping binary has the setuid bit set or that the user with which you are running the slave is root.
+
+```bash
+$ whoami
+fireping
+$ fping 8.8.8.8
+Can't create raw socket (need to run as root?).
+```
+
+You can fix this as root by setting the setuid bit on the fping binary.
+
+```bash
+$ which fping
+/usr/bin/fping
+$ sudo chmod u+s /usr/bin/fping
+$ fping 8.8.8.8
+8.8.8.8 is alive 
+```

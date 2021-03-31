@@ -11,12 +11,9 @@ use App\Graph\PingGraph;
 use App\Storage\RrdStorage;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
-use Prophecy\PhpUnit\ProphecyTrait;
 
 class PingGraphTest extends TestCase
 {
-    use ProphecyTrait;
-
     public function testSummaryGraphWithoutRrd()
     {
         $storage = $this->prophesize('App\\Storage\\RrdStorage');

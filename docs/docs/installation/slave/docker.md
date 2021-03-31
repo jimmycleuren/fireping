@@ -27,4 +27,22 @@ sudo docker run -d \
     jimmycleuren/fireping
 ```
 
-Ensure that you have [registered your slave](/docs/installation/master/fireping/#slave-registration) in your master instance, or it will not be able to fetch any configuration.
+## Custom Certificates
+
+You might have to load additional certificates into your slave container if your master runs on a certificate for which the CAs are not available by default.
+
+```bash
+sudo docker run -d \
+    -e SLAVE_NAME="slave" \
+    -e SLAVE_PASSWORD="password" \
+    -e SLAVE_URL="http://fireping.example" \
+    -v /tmp/logs:/app/var/log \
+    -v /path/to/certificates/:/usr/local/share/ca-certificates/ \
+    --restart=unless-stopped \
+    --name fireping-slave \
+    jimmycleuren/fireping
+```
+
+## Registration
+
+Lastly, ensure that you have [registered your slave](/docs/installation/master/fireping/#slave-registration) in your master instance, or it will not be able to fetch any configuration.

@@ -1,0 +1,109 @@
+name: Fireping CI/CD
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  DATABASE_URL: mysql://root@127.0.0.1:3306/fireping_test
+  RRDCACHED_TEST: 127.0.0.1:42217
+  XDEBUG_MODE: coverage
+  SYMFONY_DEPRECATIONS_HELPER: max[direct]=0
+
+jobs:
+  symfony:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: true
+      matrix:
+        php-versions: ['7.3', '7.4'] #, '8.0'
+
+    services:
+      # https://docs.docker.com/samples/library/mysql/
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Install packages
+        run: sudo apt-get install mysql-client librrd-dev rrdtool fping
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: mbstring, intl, rrd
+          coverage: pcov
+          tools: pecl
+
+      - name: Start Redis
+        uses: supercharge/redis-github-action@1.1.0
+        with:
+          redis-version: 6
+
+      - name: Start rrdcached
+        run: docker run -d -p 127.0.0.1:42217:42217 --name rrdcached -v /tmp/fireping/rrd:/data/db -e TZ="Europe/Paris" -e PUID=$(id -u $(whoami)) -e PGID=$(id -g $(whoami)) crazymax/rrdcached
+
+      - name: Install symfony
+        run: export PATH="$HOME/.symfony/bin:$PATH" ; if symfony self:version; then symfony self:update --yes ; else wget https://get.symfony.com/cli/installer -O - | bash ; fi
+
+      - uses: actions/checkout@v2
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v2
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      - name: Install dependencies
+        if: steps.composer-cache.outputs.cache-hit != 'true'
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Install phpunit
+        run: ./vendor/bin/simple-phpunit install
+
+      - name: Create database
+        run: mysql -h 127.0.0.1 -u root -e 'CREATE DATABASE fireping_test;'
+
+      - name: Create folders
+        run: mkdir build
+
+      - name: Run phpstan
+        run: composer phpstan
+
+      - name: Lint yaml
+        run: ./bin/console lint:yaml config --parse-tags
+
+      - name: Lint container
+        run: ./bin/console lint:container
+
+      - name: Check security
+        run: export PATH="$HOME/.symfony/bin:$PATH" ; symfony check:security
+
+      - name: Check doctrine mapping
+        run: ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+
+      - name: Run phpunit
+        run: ./vendor/bin/simple-phpunit --coverage-clover build/logs/clover.xml
+
+      - name: Upload coverage results to Coveralls
+        if: ${{ matrix.php-versions == '7.4' }}
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          composer global require php-coveralls/php-coveralls
+          php-coveralls --coverage_clover=build/logs/clover.xml -v
