@@ -2,18 +2,19 @@
 
 namespace App\Graph;
 
+use App\DependencyInjection\Helper;
 use App\Entity\Device;
 use App\Entity\Probe;
 use App\Entity\SlaveGroup;
 
 class TracerouteGraph extends RrdGraph
 {
-    public function getSummaryGraph(Device $device, Probe $probe, $start = -43200, $end = null, $width = 600)
+    public function getSummaryGraph(Device $device, Probe $probe, Helper $helper, $start = -43200, $end = null, $width = 600)
     {
         return file_get_contents(dirname(__FILE__).'/../../public/notfound.png');
     }
 
-    public function getDetailGraph(Device $device, Probe $probe, SlaveGroup $slavegroup, $start = -3600, $end = null, $type = "default", $debug = false)
+    public function getDetailGraph(Device $device, Probe $probe, SlaveGroup $slavegroup, Helper $helper, $start = -3600, $end = null, $type = "default", $debug = false)
     {
         if (!$end) {
             $end = date('U');
@@ -87,9 +88,9 @@ class TracerouteGraph extends RrdGraph
                 $options[] = sprintf('CDEF:%s=%s,%s,%s,%s,%s', $name.'losspercent', $name.'loss', $probe->getSamples(), '/', '100', '*');
 
                 if (true === $first) {
-                    $options[] = "AREA:$name".'median#'.$this->getColor($originalKeys[$hop], count($hops)).':'.sprintf('%2s', $id).sprintf('%16s', $ip);
+                    $options[] = "AREA:$name".'median#'.$helper->getColor($originalKeys[$hop], count($hops)).':'.sprintf('%2s', $id).sprintf('%16s', $ip);
                 } else {
-                    $options[] = "STACK:$name".'median#'.$this->getColor($originalKeys[$hop], count($hops)).':'.sprintf('%2s', $id).sprintf('%16s', $ip);
+                    $options[] = "STACK:$name".'median#'.$helper->getColor($originalKeys[$hop], count($hops)).':'.sprintf('%2s', $id).sprintf('%16s', $ip);
                 }
                 $first = false;
 
@@ -114,19 +115,6 @@ class TracerouteGraph extends RrdGraph
         $options[] = 'COMMENT:ending on '.date("D M j H\\\:i\\\:s Y", $end).'';
 
         return $this->storage->graph($device, $options);
-    }
-
-    private function getColor($id, $total)
-    {
-        $width = 127;
-        $center = 128;
-        $frequency = pi() * 2 / $total;
-
-        $red = sin($frequency * $id + 0) * $width + $center;
-        $green = sin($frequency * $id + 2) * $width + $center;
-        $blue = sin($frequency * $id + 4) * $width + $center;
-
-        return sprintf('%02x', $red).sprintf('%02x', $green).sprintf('%02x', $blue);
     }
 
     private function getMedian(Device $device, $start, $end, $file, $ds)

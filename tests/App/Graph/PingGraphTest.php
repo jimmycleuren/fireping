@@ -23,6 +23,8 @@ class PingGraphTest extends TestCase
         $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
         $storageFactory->create()->willReturn($storage->reveal())->shouldBeCalledTimes(1);
 
+        $helper = $this->prophesize('App\\DependencyInjection\\Helper');
+
         $probe = new Probe();
         $probe->setId(1);
         $probe->setName('ping');
@@ -40,7 +42,7 @@ class PingGraphTest extends TestCase
         $device->addSlaveGroup($slavegroup);
 
         $graph = new PingGraph($storageFactory->reveal());
-        $image = $graph->getSummaryGraph($device, $probe);
+        $image = $graph->getSummaryGraph($device, $probe, $helper->reveal());
         $this->assertNotNull($image);
     }
 
@@ -85,8 +87,10 @@ class PingGraphTest extends TestCase
         $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
         $storageFactory->create()->willReturn($storage)->shouldBeCalledTimes(1);
 
+        $helper = $this->prophesize('App\\DependencyInjection\\Helper');
+
         $graph = new PingGraph($storageFactory->reveal());
-        $image = $graph->getSummaryGraph($device, $probe);
+        $image = $graph->getSummaryGraph($device, $probe, $helper->reveal());
         $this->assertNotNull($image);
     }
 
@@ -125,9 +129,11 @@ class PingGraphTest extends TestCase
         $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
         $storageFactory->create()->willReturn($storage)->shouldBeCalledTimes(1);
 
+        $helper = $this->prophesize('App\\DependencyInjection\\Helper');
+
         $this->expectException(RrdException::class);
         $graph = new PingGraph($storageFactory->reveal());
-        $graph->getSummaryGraph($device, $probe);
+        $graph->getSummaryGraph($device, $probe, $helper->reveal());
     }
 
     public function testDetailGraphWithoutRrd()
@@ -138,6 +144,8 @@ class PingGraphTest extends TestCase
 
         $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
         $storageFactory->create()->willReturn($storage->reveal())->shouldBeCalledTimes(1);
+
+        $helper = $this->prophesize('App\\DependencyInjection\\Helper');
 
         $probe = new Probe();
         $probe->setId(1);
@@ -156,7 +164,7 @@ class PingGraphTest extends TestCase
         $device->addSlaveGroup($slavegroup);
 
         $graph = new PingGraph($storageFactory->reveal());
-        $image = $graph->getDetailGraph($device, $probe, $slavegroup, -3600, null, true);
+        $image = $graph->getDetailGraph($device, $probe, $slavegroup, $helper->reveal(), -3600, null, true);
         $this->assertNotNull($image);
     }
 
@@ -201,8 +209,10 @@ class PingGraphTest extends TestCase
         $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
         $storageFactory->create()->willReturn($storage)->shouldBeCalledTimes(1);
 
+        $helper = $this->prophesize('App\\DependencyInjection\\Helper');
+
         $graph = new PingGraph($storageFactory->reveal());
-        $image = $graph->getDetailGraph($device, $probe, $slavegroup, -3600, null, true);
+        $image = $graph->getDetailGraph($device, $probe, $slavegroup, $helper->reveal(), -3600, null, true);
         $this->assertNotNull($image);
     }
 
@@ -241,9 +251,11 @@ class PingGraphTest extends TestCase
         $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
         $storageFactory->create()->willReturn($storage)->shouldBeCalledTimes(1);
 
+        $helper = $this->prophesize('App\\DependencyInjection\\Helper');
+
         $this->expectException(RrdException::class);
         $graph = new PingGraph($storageFactory->reveal());
-        $image = $graph->getDetailGraph($device, $probe, $slavegroup, -3600, null, true);
+        $image = $graph->getDetailGraph($device, $probe, $slavegroup, $helper->reveal(), -3600, null, true);
         $this->assertNotNull($image);
     }
 }

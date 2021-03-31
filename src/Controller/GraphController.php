@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\DependencyInjection\Helper;
 use App\Entity\Device;
 use App\Entity\Probe;
 use App\Entity\Slave;
@@ -23,7 +24,7 @@ class GraphController extends AbstractController
      * @Route("/api/graphs/summary/{id}", methods={"GET"})
      * @ParamConverter("device", class="App:Device")
      */
-    public function summaryAction(Device $device, Request $request, GraphFactory $graphFactory)
+    public function summaryAction(Device $device, Request $request, GraphFactory $graphFactory, Helper $helper)
     {
         $start = $request->get('start') ?? -43200;
         $end = $request->get('end');
@@ -35,7 +36,7 @@ class GraphController extends AbstractController
         foreach ($priority as $type) {
             foreach ($probes as $probe) {
                 if ($probe->getType() == $type) {
-                    $graph = $graphFactory->create($type)->getSummaryGraph($device, $probe, $start, $end, $width);
+                    $graph = $graphFactory->create($type)->getSummaryGraph($device, $probe, $helper, $start, $end, $width);
                     $response = new Response($graph, 200);
                     $response->headers->set('Content-Type', 'image/png');
 
@@ -66,7 +67,7 @@ class GraphController extends AbstractController
         $type = $request->get('type') ?: "default";
         $debug = $session->get('debug');
 
-        $graph = $graphFactory->create($probe->getType())->getDetailGraph($device, $probe, $slavegroup, $start, $end, $type, $debug);
+        $graph = $graphFactory->create($probe->getType())->getDetailGraph($device, $probe, $slavegroup, $helper, $start, $end, $type, $debug);
         $response = new Response($graph, 200);
         $response->headers->set('Content-Type', 'image/png');
 

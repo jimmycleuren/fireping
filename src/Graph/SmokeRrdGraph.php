@@ -2,6 +2,7 @@
 
 namespace App\Graph;
 
+use App\DependencyInjection\Helper;
 use App\Entity\Device;
 use App\Entity\Probe;
 use App\Entity\SlaveGroup;
@@ -10,7 +11,7 @@ class SmokeRrdGraph extends RrdGraph
 {
     protected $datasource = 'unknown';
 
-    public function getSummaryGraph(Device $device, Probe $probe, $start = -43200, $end = null, $width = 600)
+    public function getSummaryGraph(Device $device, Probe $probe, Helper $helper, $start = -43200, $end = null, $width = 600)
     {
         $slavegroups = $device->getActiveSlaveGroups();
 
@@ -39,6 +40,9 @@ class SmokeRrdGraph extends RrdGraph
                 continue;
             }
 
+            $mainColor = "#".$helper->getColor($counter, count($slavegroups));
+            $stddevColor = "#".$helper->getColor($counter, count($slavegroups))."44";
+
             $options[] = sprintf('DEF:%s=%s:%s:%s', $slavegroup->getId().'median', $this->storage->getFilePath($device, $probe, $slavegroup), 'median', 'AVERAGE');
             $options[] = sprintf('DEF:%s=%s:%s:%s', $slavegroup->getId().'loss', $this->storage->getFilePath($device, $probe, $slavegroup), 'loss', 'AVERAGE');
             $options[] = 'CDEF:'.$slavegroup->getId().'dm0='.$slavegroup->getId().'median,0,100000,LIMIT';
@@ -47,9 +51,9 @@ class SmokeRrdGraph extends RrdGraph
 
             $options[] = 'CDEF:'.$slavegroup->getId().'dmlow0='.$slavegroup->getId().'dm0,'.$slavegroup->getId().'sdev0,2,/,-';
             $options[] = 'CDEF:'.$slavegroup->getId().'s2d0='.$slavegroup->getId().'sdev0';
-            $options[] = sprintf('LINE:%s%s:%s', $slavegroup->getId().'median', $this->colors[$counter % 3]['main'], sprintf('%-15s', $slavegroup->getName()));
+            $options[] = sprintf('LINE:%s%s:%s', $slavegroup->getId().'median', $mainColor, sprintf('%-15s', $slavegroup->getName()));
             $options[] = sprintf('AREA:%s', $slavegroup->getId().'dmlow0');
-            $options[] = 'AREA:'.$slavegroup->getId().'s2d0'.$this->colors[$counter % 3]['stddev'].'::STACK';
+            $options[] = 'AREA:'.$slavegroup->getId().'s2d0'.$stddevColor.'::STACK';
 
             $options[] = 'VDEF:'.$slavegroup->getId().'avsd0='.$slavegroup->getId().'sdev0,AVERAGE';
             $options[] = sprintf('GPRINT:%s:%s:%s', $slavegroup->getId().'median', 'AVERAGE', '%7.2lf ms av md');
@@ -69,7 +73,7 @@ class SmokeRrdGraph extends RrdGraph
         return $this->storage->graph($device, $options);
     }
 
-    public function getDetailGraph(Device $device, Probe $probe, SlaveGroup $slavegroup, $start = -3600, $end = null, $type = "default", $debug = false)
+    public function getDetailGraph(Device $device, Probe $probe, SlaveGroup $slavegroup, Helper $helper, $start = -3600, $end = null, $type = "default", $debug = false)
     {
         if (!$end) {
             $end = date('U');
