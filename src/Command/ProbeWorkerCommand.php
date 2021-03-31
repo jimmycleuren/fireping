@@ -65,7 +65,7 @@ class ProbeWorkerCommand extends Command
                 'runtime',
                 InputOption::VALUE_REQUIRED,
                 'The amount of seconds the command can run before terminating itself',
-                0
+                "0"
             );
     }
 
