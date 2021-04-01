@@ -103,21 +103,21 @@ class ProbeDispatcherCommand extends Command
                 'w',
                 InputOption::VALUE_REQUIRED,
                 'Specifies the amount of workers to start out with.',
-                5
+                "5"
             )
             ->addOption(
                 'maximum-workers',
                 'max',
                 InputOption::VALUE_REQUIRED,
                 'Specifies the maximum amount of workers that can ever be created.',
-                200
+                "200"
             )
             ->addOption(
                 'max-runtime',
                 'runtime',
                 InputOption::VALUE_REQUIRED,
                 'The amount of seconds the dispatcher can run for',
-                0
+                "0"
             );
     }
 
