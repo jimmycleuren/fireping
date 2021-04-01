@@ -100,6 +100,12 @@ jobs:
       - name: Run phpunit
         run: ./vendor/bin/simple-phpunit --coverage-clover build/logs/clover.xml
 
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: artifact
+          path: ./var/log/test.log
+
       - name: Upload coverage results to Coveralls
         if: ${{ matrix.php-versions == '7.4' }}
         env:
