@@ -15,6 +15,8 @@ class IndexControllerTest extends WebTestCase
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertStringContainsString('Fireping', $crawler->filter('.logo-lg')->text());
+        $this->assertStringContainsString('Alerts', $crawler->filter('#alerts a div div span')->text());
+        $this->assertStringContainsString('Guest', $crawler->filter('.hidden-xs')->text());
     }
 
     public function testIndexAsAdmin()
