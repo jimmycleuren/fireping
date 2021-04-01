@@ -6,7 +6,7 @@ ENV DEV false
 ADD . /app
 
 RUN apt-get update
-RUN apt-get install -y fping zip git rrdtool librrd-dev procps
+RUN apt-get install -y fping zip git rrdtool librrd-dev procps dos2unix
 
 WORKDIR /app
 
@@ -22,6 +22,7 @@ RUN if [ "$DEV" = "true" ] ; then \
     composer install --verbose --prefer-dist --optimize-autoloader --no-scripts --no-suggest ; else \
     composer install --verbose --prefer-dist --no-dev --optimize-autoloader --no-scripts --no-suggest ; fi
 
-RUN chmod +x docker/entrypoint.sh
+ADD docker/entrypoint.sh /usr/local/bin/
+RUN dos2unix /usr/local/bin/entrypoint.sh && chmod +x /usr/local/bin/entrypoint.sh
 
-ENTRYPOINT ["docker/entrypoint.sh"]
+ENTRYPOINT ["entrypoint.sh"]
