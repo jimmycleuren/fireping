@@ -46,6 +46,9 @@
     "doctrine/dbal": {
         "version": "v2.7.1"
     },
+    "doctrine/deprecations": {
+        "version": "v0.5.3"
+    },
     "doctrine/doctrine-bundle": {
         "version": "2.0",
         "recipe": {
@@ -143,6 +146,9 @@
     "flexihash/flexihash": {
         "version": "v2.0.2"
     },
+    "friendsofphp/proxy-manager-lts": {
+        "version": "v1.0.3"
+    },
     "guzzlehttp/guzzle": {
         "version": "6.3.3"
     },
@@ -163,6 +169,15 @@
         "files": [
             "config/packages/admin_lte.yaml"
         ]
+    },
+    "laminas/laminas-code": {
+        "version": "3.4.1"
+    },
+    "laminas/laminas-eventmanager": {
+        "version": "3.3.1"
+    },
+    "laminas/laminas-zendframework-bridge": {
+        "version": "1.2.0"
     },
     "mi-schi/phpmd-extension": {
         "version": "4.2.1"
@@ -525,6 +540,9 @@
     },
     "symfony/property-info": {
         "version": "v4.0.9"
+    },
+    "symfony/proxy-manager-bridge": {
+        "version": "v5.2.4"
     },
     "symfony/routing": {
         "version": "5.1",
