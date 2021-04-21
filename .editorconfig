@@ -1,0 +1,21 @@
+# https://editorconfig.org/
+
+root = true
+
+; Unix-style newlines
+[*]
+trim_trailing_whitespace = true
+insert_final_newline = true
+end_of_line = lf
+charset = utf-8
+
+[*.{yaml,yml}]
+indent_size = 2
+indent_style = space
+
+[*.{php,html,twig}]
+indent_size = 4
+indent_style = space
+
+[*.md]
+max_line_length = 80
