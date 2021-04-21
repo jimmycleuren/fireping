@@ -110,17 +110,13 @@
         "version": "1.1.0"
     },
     "easycorp/easyadmin-bundle": {
-        "version": "2.0",
+        "version": "3.0",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "master",
-            "version": "2.0",
-            "ref": "0a51040a43c6f2172a3a0135cd15daf2043905d7"
-        },
-        "files": [
-            "config/packages/easy_admin.yaml",
-            "config/routes/easy_admin.yaml"
-        ]
+            "version": "3.0",
+            "ref": "b131e6cbfe1b898a508987851963fff485986285"
+        }
     },
     "egulias/email-validator": {
         "version": "2.1.4"
@@ -191,7 +187,7 @@
             "repo": "github.com/symfony/recipes",
             "branch": "master",
             "version": "1.5",
-            "ref": "6388de23860284db9acce0a7a5d9d13153bcb571"
+            "ref": "6bea22e6c564fba3a1391615cada1437d0bde39c"
         },
         "files": [
             "config/packages/nelmio_cors.yaml"
