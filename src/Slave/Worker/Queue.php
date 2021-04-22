@@ -1,7 +1,9 @@
 <?php
 
-namespace App\DependencyInjection;
+namespace App\Slave\Worker;
 
+use App\DependencyInjection\StatsManager;
+use App\DependencyInjection\WorkerManager;
 use App\Slave\Task\PublishResults;
 use Psr\Log\LoggerInterface;
 

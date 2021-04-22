@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Tests\App\DependencyInjection;
+namespace App\Tests\Slave\Worker;
 
-use App\DependencyInjection\Queue;
 use App\DependencyInjection\StatsManager;
 use App\DependencyInjection\Worker;
 use App\DependencyInjection\WorkerManager;
+use App\Slave\Worker\Queue;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 

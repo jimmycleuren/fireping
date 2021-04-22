@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Slave\Command;
 
-use App\DependencyInjection\Queue;
 use App\DependencyInjection\StatsManager;
 use App\DependencyInjection\WorkerManager;
-use App\Slave\Process\SymfonyProcessFactory;
 use App\Slave\Configuration;
 use App\Slave\Instruction;
+use App\Slave\Process\SymfonyProcessFactory;
 use App\Slave\Task\FetchConfiguration;
 use App\Slave\Task\PublishStatistics;
+use App\Slave\Worker\Queue;
 use App\Version\GitVersionReader;
 use Exception;
 use Psr\Log\LoggerInterface;
