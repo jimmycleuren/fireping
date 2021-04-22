@@ -2,8 +2,8 @@
 
 namespace App\Tests\Slave;
 
-use App\Probe\DeviceDefinition;
-use App\Probe\ProbeDefinition;
+use App\Probe\Probe;
+use App\Slave\Device;
 use App\Slave\Instruction;
 use PHPUnit\Framework\TestCase;
 
@@ -11,9 +11,9 @@ class InstructionTest extends TestCase
 {
     public function testChunks()
     {
-        $probeDefinition = new ProbeDefinition(1, 'ping', 60, 15);
-        $probeDefinition->addDevice(new DeviceDefinition('foo', '1.1.1.1'));
-        $probeDefinition->addDevice(new DeviceDefinition('bar', '2.2.2.2'));
+        $probeDefinition = new Probe(1, 'ping', 60, 15);
+        $probeDefinition->addDevice(new Device('foo', '1.1.1.1'));
+        $probeDefinition->addDevice(new Device('bar', '2.2.2.2'));
 
         $instruction = new Instruction($probeDefinition, 1);
 

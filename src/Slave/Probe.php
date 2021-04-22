@@ -2,7 +2,9 @@
 
 namespace App\Probe;
 
-class ProbeDefinition
+use App\Slave\Device;
+
+class Probe
 {
     protected $id;
     protected $type;
@@ -102,7 +104,7 @@ class ProbeDefinition
         return null;
     }
 
-    public function addDevice(DeviceDefinition $device)
+    public function addDevice(Device $device)
     {
         if (!isset($this->devices[$device->getId()])) {
             $this->devices[$device->getId()] = $device;

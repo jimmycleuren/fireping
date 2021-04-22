@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Probe;
+namespace App\Slave;
 
-class DeviceDefinition
+class Device
 {
     protected $id;
     protected $ip;

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\DependencyInjection;
 
-use App\Probe\DeviceDefinition;
-use App\Probe\ProbeDefinition;
+use App\Probe\Probe;
+use App\Slave\Device;
 
 class SlaveConfiguration
 {
@@ -25,20 +25,20 @@ class SlaveConfiguration
         $this->etag = $etag;
     }
 
-    private function addProbe(ProbeDefinition $probe): void
+    private function addProbe(Probe $probe): void
     {
         $this->probes[$probe->getId()] = $probe;
     }
 
     /**
-     * @return ProbeDefinition[]
+     * @return Probe[]
      */
     public function getProbes(): array
     {
         return $this->probes;
     }
 
-    public function getProbeById($id): ?ProbeDefinition
+    public function getProbeById($id): ?Probe
     {
         return $this->probes[$id] ?? null;
     }
@@ -51,7 +51,7 @@ class SlaveConfiguration
             return $probe;
         }
 
-        $probe = new ProbeDefinition($id, $type, $step, $samples, $args);
+        $probe = new Probe($id, $type, $step, $samples, $args);
         $this->addProbe($probe);
 
         return $probe;
@@ -101,7 +101,7 @@ class SlaveConfiguration
 
             $probe = $this->getProbe($id, $type, $step, $samples, $args);
             foreach ($probeConfig['targets'] as $hostname => $ip) {
-                $device = new DeviceDefinition($hostname, $ip);
+                $device = new Device($hostname, $ip);
                 $probe->addDevice($device);
             }
         }

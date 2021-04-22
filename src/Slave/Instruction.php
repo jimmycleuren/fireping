@@ -4,19 +4,18 @@ declare(strict_types=1);
 
 namespace App\Slave;
 
-use App\Probe\DeviceDefinition;
-use App\Probe\ProbeDefinition;
+use App\Probe\Probe;
 
 class Instruction
 {
     /**
-     * @var ProbeDefinition
+     * @var Probe
      */
     protected $probe;
 
     protected $chunkSize;
 
-    public function __construct(ProbeDefinition $probe, int $chunkSize)
+    public function __construct(Probe $probe, int $chunkSize)
     {
         $this->probe = $probe;
         $this->chunkSize = $chunkSize;
@@ -32,7 +31,7 @@ class Instruction
 
     public function prepareInstruction(array $devices): array
     {
-        $serializedDevices = array_map(function (DeviceDefinition $device) {
+        $serializedDevices = array_map(function (Device $device) {
             return $device->asArray();
         }, $devices);
 
