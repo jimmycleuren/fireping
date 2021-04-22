@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\App\Probe;
+namespace App\Tests\Slave\Task;
 
 use App\OutputFormatter\PingOutputFormatter;
 use App\Slave\Task\Ping;

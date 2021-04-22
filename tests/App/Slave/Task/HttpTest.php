@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\App\Probe;
+namespace App\Tests\Slave\Task;
 
 use App\Slave\Task\Http;
 use PHPUnit\Framework\TestCase;
