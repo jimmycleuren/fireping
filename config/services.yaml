@@ -17,7 +17,7 @@ services:
     # this creates a service per class whose id is the fully-qualified class name
     App\:
         resource: '../src/*'
-        exclude: '../src/{Client,Entity,Migrations,Tests,Kernel.php}'
+        exclude: '../src/{Client,Entity,Migrations,Tests,Slave,Kernel.php}'
 
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class
@@ -54,8 +54,6 @@ services:
     App\Storage\RrdDistributedStorage:
         arguments:  ['%storage.path%']
 
-    App\Slave\Client\FirepingClient: '@eight_points_guzzle.client.api_fireping'
-
     Psr\Container\ContainerInterface: '@service_container'
 
     App\Version\GitVersionReader:
@@ -64,3 +62,9 @@ services:
     App\Version\CacheVersionReader:
         public: true
         arguments: ['@App\Version\GitVersionReader', '@cache.app']
+
+    # Slave specific container stuff.
+    App\Slave\Client\FirepingClient: '@eight_points_guzzle.client.api_fireping'
+
+    App\Slave\DependencyInjection\:
+        resource: '../src/Slave/DependencyInjection/*'
