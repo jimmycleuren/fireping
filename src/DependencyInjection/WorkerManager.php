@@ -2,7 +2,7 @@
 
 namespace App\DependencyInjection;
 
-use App\Exception\WorkerTimedOutException;
+use App\Slave\Exception\WorkerTimedOutException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
@@ -56,7 +56,7 @@ class WorkerManager
         $this->numberOfQueues = $numberOfQueues;
 
         if ($startWorkers < $this->getWorkerBaseline()) {
-            $this->logger->warning('Increasing initial workers to '.$this->getWorkerBaseline());
+            $this->logger->warning('Increasing initial workers to ' . $this->getWorkerBaseline());
             $startWorkers = $this->getWorkerBaseline();
         }
 
@@ -68,14 +68,39 @@ class WorkerManager
         }
     }
 
-    public function setNumberOfProbeProcesses(int $numberOfProbeProcesses)
-    {
-        $this->numberOfProbeProcesses = $numberOfProbeProcesses;
-    }
-
     private function getWorkerBaseline()
     {
         return $this->numberOfQueues + ($this->numberOfProbeProcesses * 2) + 1;
+    }
+
+    /**
+     * @throws \Symfony\Component\Process\Exception\InvalidArgumentException
+     * @throws \Symfony\Component\Process\Exception\LogicException
+     * @throws \Symfony\Component\Process\Exception\RuntimeException
+     */
+    private function startWorker(): Worker
+    {
+        $worker = new Worker($this, $this->kernel, $this->logger, 1500, 300);
+        $worker->start();
+
+        $this->availableWorkers[] = $worker;
+        $this->workers[] = $worker;
+
+        $this->logger->info(
+            "Worker $worker started.",
+            [
+                'available' => count($this->availableWorkers),
+                'inuse' => count($this->inUseWorkers),
+                'worker' => count($this->workers),
+            ]
+        );
+
+        return $worker;
+    }
+
+    public function setNumberOfProbeProcesses(int $numberOfProbeProcesses)
+    {
+        $this->numberOfProbeProcesses = $numberOfProbeProcesses;
     }
 
     public function getInUseWorkerTypes()
@@ -118,31 +143,6 @@ class WorkerManager
         throw new \RuntimeException('A worker was requested but none were available.');
     }
 
-    /**
-     * @throws \Symfony\Component\Process\Exception\InvalidArgumentException
-     * @throws \Symfony\Component\Process\Exception\LogicException
-     * @throws \Symfony\Component\Process\Exception\RuntimeException
-     */
-    private function startWorker(): Worker
-    {
-        $worker = new Worker($this, $this->kernel, $this->logger, 1500, 300);
-        $worker->start();
-
-        $this->availableWorkers[] = $worker;
-        $this->workers[] = $worker;
-
-        $this->logger->info(
-            "Worker $worker started.",
-            [
-                'available' => count($this->availableWorkers),
-                'inuse' => count($this->inUseWorkers),
-                'worker' => count($this->workers),
-            ]
-        );
-
-        return $worker;
-    }
-
     public function release(Worker $worker): void
     {
         foreach ($this->inUseWorkers as $index => $inUseWorker) {
@@ -168,6 +168,39 @@ class WorkerManager
         }
     }
 
+    public function loop()
+    {
+        foreach ($this->workers as $worker) {
+            try {
+                $worker->loop();
+            } catch (ProcessTimedOutException $exception) {
+                $this->logger->info("Process $worker timed out", [
+                    'available' => count($this->availableWorkers),
+                    'inuse' => count($this->inUseWorkers),
+                    'worker' => count($this->workers),
+                ]);
+                $this->cleanup($worker);
+            } catch (WorkerTimedOutException $exception) {
+                $this->logger->warning("Worker $worker timed out after " . $exception->getTimeout() . ' seconds when running ' . $worker->getType(), [
+                    'available' => count($this->availableWorkers),
+                    'inuse' => count($this->inUseWorkers),
+                    'worker' => count($this->workers),
+                ]);
+                $this->cleanup($worker);
+            }
+        }
+
+        //check if we have enough workers available and start 1 if needed
+        if (count($this->workers) < $this->getWorkerBaseline()) {
+            if (count($this->workers) < $this->maximumWorkers) {
+                $this->logger->info('Not enough workers available, starting 1');
+                $this->startWorker();
+            } else {
+                $this->logger->error('Maximum amount of workers (' . $this->maximumWorkers . ') reached');
+            }
+        }
+    }
+
     /**
      * Clean up tracking, inputs, processes and receive buffers.
      */
@@ -189,39 +222,6 @@ class WorkerManager
 
         if ($worker->getType()) {
             --$this->inUseWorkerTypes[$worker->getType()];
-        }
-    }
-
-    public function loop()
-    {
-        foreach ($this->workers as $worker) {
-            try {
-                $worker->loop();
-            } catch (ProcessTimedOutException $exception) {
-                $this->logger->info("Process $worker timed out", [
-                    'available' => count($this->availableWorkers),
-                    'inuse' => count($this->inUseWorkers),
-                    'worker' => count($this->workers),
-                ]);
-                $this->cleanup($worker);
-            } catch (WorkerTimedOutException $exception) {
-                $this->logger->warning("Worker $worker timed out after ".$exception->getTimeout().' seconds when running '.$worker->getType(), [
-                    'available' => count($this->availableWorkers),
-                    'inuse' => count($this->inUseWorkers),
-                    'worker' => count($this->workers),
-                ]);
-                $this->cleanup($worker);
-            }
-        }
-
-        //check if we have enough workers available and start 1 if needed
-        if (count($this->workers) < $this->getWorkerBaseline()) {
-            if (count($this->workers) < $this->maximumWorkers) {
-                $this->logger->info('Not enough workers available, starting 1');
-                $this->startWorker();
-            } else {
-                $this->logger->error('Maximum amount of workers ('.$this->maximumWorkers.') reached');
-            }
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\DependencyInjection;
 
-use App\Exception\WorkerTimedOutException;
+use App\Slave\Exception\WorkerTimedOutException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Process\InputStream;
