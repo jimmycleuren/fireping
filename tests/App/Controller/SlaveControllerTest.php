@@ -2,7 +2,7 @@
 
 namespace App\Tests\App\Controller;
 
-use App\DependencyInjection\StatsManager;
+use App\Slave\Worker\StatsManager;
 use App\Tests\App\Api\AbstractApiTest;
 use Psr\Log\LoggerInterface;
 

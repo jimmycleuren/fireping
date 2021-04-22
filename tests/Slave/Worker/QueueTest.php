@@ -2,10 +2,10 @@
 
 namespace App\Tests\Slave\Worker;
 
-use App\DependencyInjection\StatsManager;
 use App\DependencyInjection\Worker;
 use App\DependencyInjection\WorkerManager;
 use App\Slave\Worker\Queue;
+use App\Slave\Worker\StatsManager;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 

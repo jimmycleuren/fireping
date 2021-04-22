@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Tests\App\DependencyInjection;
+namespace App\Tests\Slave\Worker;
 
-use App\DependencyInjection\StatsManager;
 use App\Slave\Task\FetchConfiguration;
 use App\Slave\Task\PublishResults;
 use App\Slave\Task\PublishStatistics;
+use App\Slave\Worker\StatsManager;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
