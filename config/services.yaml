@@ -54,7 +54,7 @@ services:
     App\Storage\RrdDistributedStorage:
         arguments:  ['%storage.path%']
 
-    App\Client\FirepingClient: '@eight_points_guzzle.client.api_fireping'
+    App\Slave\Client\FirepingClient: '@eight_points_guzzle.client.api_fireping'
 
     Psr\Container\ContainerInterface: '@service_container'
 
