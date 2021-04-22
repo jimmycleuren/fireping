@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\DependencyInjection\Compiler;
+namespace App\Slave\DependencyInjection\Compiler;
 
 use App\Slave\Task\TaskFactory;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
