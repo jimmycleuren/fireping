@@ -1,0 +1,5 @@
+services:
+    App\DataFixtures\ORM\:
+        autowire: true
+        tags: ['doctrine.fixture.orm']
+        resource: '../fixtures/ORM'

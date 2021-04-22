@@ -74,5 +74,11 @@ services:
       MYSQL_USER: fireping
       MYSQL_PASSWORD: fireping
 
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
 volumes:
   rrd:
