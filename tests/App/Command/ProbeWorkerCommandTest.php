@@ -2,7 +2,7 @@
 
 namespace Tests\App\Command;
 
-use App\Command\ProbeWorkerCommand;
+use App\Slave\Command\ProbeWorkerCommand;
 use App\Slave\Task\TaskFactory;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;

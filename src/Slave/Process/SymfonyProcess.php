@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Process;
+namespace App\Slave\Process;
 
 use Symfony\Component\Process\Process;
 

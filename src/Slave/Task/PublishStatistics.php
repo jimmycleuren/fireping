@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Slave\Task;
 
-use App\Client\FirepingClient;
+use App\Slave\Client\FirepingClient;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;

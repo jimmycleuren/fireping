@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Version;
 
-use App\Process\ProcessFactoryInterface;
+use App\Slave\Process\ProcessFactoryInterface;
 use Psr\Log\LoggerInterface;
 
 class GitVersionReader implements VersionReaderInterface

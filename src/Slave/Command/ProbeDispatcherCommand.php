@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Command;
+namespace App\Slave\Command;
 
 use App\DependencyInjection\Queue;
 use App\DependencyInjection\StatsManager;
 use App\DependencyInjection\WorkerManager;
-use App\Process\SymfonyProcessFactory;
-use App\Slave\Instruction;
+use App\Slave\Process\SymfonyProcessFactory;
 use App\Slave\Configuration;
+use App\Slave\Instruction;
 use App\Slave\Task\FetchConfiguration;
 use App\Slave\Task\PublishStatistics;
 use App\Version\GitVersionReader;

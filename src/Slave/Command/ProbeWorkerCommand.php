@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Command;
+namespace App\Slave\Command;
 
-use App\Slave\Task\TaskFactory;
 use App\Slave\Task\FetchConfiguration;
 use App\Slave\Task\PublishResults;
 use App\Slave\Task\PublishStatistics;
+use App\Slave\Task\TaskFactory;
 use Exception;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;

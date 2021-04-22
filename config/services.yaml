@@ -57,7 +57,7 @@ services:
     Psr\Container\ContainerInterface: '@service_container'
 
     App\Version\GitVersionReader:
-        arguments: ['@monolog.logger', '@App\Process\SymfonyProcessFactory']
+        arguments: ['@monolog.logger', '@App\Slave\Process\SymfonyProcessFactory']
 
     App\Version\CacheVersionReader:
         public: true
@@ -66,5 +66,6 @@ services:
     # Slave specific container stuff.
     App\Slave\Client\FirepingClient: '@eight_points_guzzle.client.api_fireping'
 
-    App\Slave\DependencyInjection\:
-        resource: '../src/Slave/DependencyInjection/*'
+    App\Slave\:
+        resource: '../src/Slave/*'
+        exclude: '../src/{Client,Configuration.php,Device.php,Instruction.php,Probe.php}'

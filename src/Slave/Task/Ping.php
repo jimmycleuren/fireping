@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Slave\Task;
 
-use App\OutputFormatter\PingOutputFormatter;
+use App\Slave\OutputFormatter\PingOutputFormatter;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Process\ExecutableFinder;
 

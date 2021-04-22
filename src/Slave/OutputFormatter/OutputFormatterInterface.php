@@ -1,6 +1,6 @@
 <?php
 
-namespace App\OutputFormatter;
+namespace App\Slave\OutputFormatter;
 
 interface OutputFormatterInterface
 {
