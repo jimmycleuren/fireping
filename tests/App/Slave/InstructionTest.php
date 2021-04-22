@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\App\Slave;
+namespace App\Tests\Slave;
 
 use App\Probe\DeviceDefinition;
 use App\Probe\ProbeDefinition;

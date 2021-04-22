@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\App\Process;
+namespace App\Tests\Slave\Process;
 
 use App\Process\DummyProcess;
 use App\Process\ProcessFixture;

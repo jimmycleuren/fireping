@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\App\Process;
+namespace App\Tests\Slave\Process;
 
 use App\Process\SymfonyProcess;
 use App\Process\SymfonyProcessFactory;
