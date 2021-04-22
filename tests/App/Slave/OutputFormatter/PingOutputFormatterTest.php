@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\App\OutputFormatter;
+namespace App\Tests\Slave\OutputFormatter;
 
 use App\OutputFormatter\PingOutputFormatter;
 use PHPUnit\Framework\TestCase;
