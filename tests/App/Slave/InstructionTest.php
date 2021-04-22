@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Tests\App\Instruction;
+namespace App\Tests\App\Slave;
 
-use App\Instruction\Instruction;
 use App\Probe\DeviceDefinition;
 use App\Probe\ProbeDefinition;
+use App\Slave\Instruction;
 use PHPUnit\Framework\TestCase;
 
 class InstructionTest extends TestCase

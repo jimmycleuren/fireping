@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Instruction;
+namespace App\Slave;
 
 use App\Probe\DeviceDefinition;
 use App\Probe\ProbeDefinition;
 
-class Instruction implements InstructionInterface
+class Instruction
 {
     /**
      * @var ProbeDefinition
@@ -36,8 +36,6 @@ class Instruction implements InstructionInterface
             return $device->asArray();
         }, $devices);
 
-        $instruction = $this->probe->getConfiguration($serializedDevices);
-
-        return $instruction;
+        return $this->probe->getConfiguration($serializedDevices);
     }
 }
