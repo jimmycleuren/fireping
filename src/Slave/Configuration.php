@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\DependencyInjection;
+namespace App\Slave;
 
 use App\Probe\Probe;
-use App\Slave\Device;
 
-class SlaveConfiguration
+class Configuration
 {
     private $probes = [];
     /**

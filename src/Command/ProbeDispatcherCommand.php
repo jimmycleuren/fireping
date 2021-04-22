@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\DependencyInjection\Queue;
-use App\DependencyInjection\SlaveConfiguration;
 use App\DependencyInjection\StatsManager;
 use App\DependencyInjection\WorkerManager;
 use App\Process\SymfonyProcessFactory;
 use App\Slave\Instruction;
+use App\Slave\Configuration;
 use App\Slave\Task\FetchConfiguration;
 use App\Slave\Task\PublishStatistics;
 use App\Version\GitVersionReader;
@@ -52,7 +52,7 @@ class ProbeDispatcherCommand extends Command
     /**
      * Holds the configuration of our Fireping Slave.
      *
-     * @var SlaveConfiguration
+     * @var Configuration
      */
     protected $configuration;
 
@@ -84,7 +84,7 @@ class ProbeDispatcherCommand extends Command
         $this->logger = $logger;
         $this->workerManager = $workerManager;
         $this->statsManager = $statsManager;
-        $this->configuration = new SlaveConfiguration();
+        $this->configuration = new Configuration();
         parent::__construct();
     }
 
