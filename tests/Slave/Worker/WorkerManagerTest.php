@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Tests\App\DependencyInjection;
+namespace App\Tests\Slave\Worker;
 
-use App\DependencyInjection\WorkerManager;
 use App\Kernel;
+use App\Slave\Worker\WorkerManager;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 

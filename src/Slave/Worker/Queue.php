@@ -2,7 +2,6 @@
 
 namespace App\Slave\Worker;
 
-use App\DependencyInjection\WorkerManager;
 use App\Slave\Task\PublishResults;
 use Psr\Log\LoggerInterface;
 

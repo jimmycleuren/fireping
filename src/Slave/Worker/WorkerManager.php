@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DependencyInjection;
+namespace App\Slave\Worker;
 
 use App\Slave\Exception\WorkerTimedOutException;
 use Psr\Log\LoggerInterface;
