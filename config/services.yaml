@@ -64,8 +64,8 @@ services:
         arguments: ['@App\Version\GitVersionReader', '@cache.app']
 
     # Slave specific container stuff.
-    App\Slave\Client\FirepingClient: '@eight_points_guzzle.client.api_fireping'
-
     App\Slave\:
         resource: '../src/Slave/*'
         exclude: '../src/{Client,Configuration.php,Device.php,Instruction.php,Probe.php}'
+
+    App\Slave\Client\FirepingClient: '@eight_points_guzzle.client.api_fireping'
