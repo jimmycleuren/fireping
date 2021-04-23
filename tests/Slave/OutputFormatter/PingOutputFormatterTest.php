@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Slave\OutputFormatter;
 
-use App\OutputFormatter\PingOutputFormatter;
+use App\Slave\OutputFormatter\PingOutputFormatter;
 use PHPUnit\Framework\TestCase;
 
 class PingOutputFormatterTest extends TestCase

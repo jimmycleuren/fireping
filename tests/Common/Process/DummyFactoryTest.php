@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Slave\Process;
+namespace App\Tests\Common\Process;
 
-use App\Process\DummyProcess;
-use App\Process\DummyProcessFactory;
-use App\Process\ProcessFixture;
+use App\Common\Process\DummyProcess;
+use App\Common\Process\DummyProcessFactory;
+use App\Common\Process\ProcessFixture;
 use PHPUnit\Framework\TestCase;
 
 class DummyFactoryTest extends TestCase

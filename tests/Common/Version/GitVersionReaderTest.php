@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\App\Version;
+namespace App\Tests\Common\Version;
 
+use App\Common\Process\DummyProcessFactory;
+use App\Common\Process\ProcessFixture;
 use App\Common\Version\GitVersionReader;
-use App\Process\DummyProcessFactory;
-use App\Process\ProcessFixture;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 

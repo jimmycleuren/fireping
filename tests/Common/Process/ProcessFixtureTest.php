@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Slave\Process;
+namespace App\Tests\Common\Process;
 
-use App\Process\ProcessFixture;
+use App\Common\Process\ProcessFixture;
 use PHPUnit\Framework\TestCase;
 
 class ProcessFixtureTest extends TestCase

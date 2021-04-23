@@ -2,7 +2,7 @@
 
 namespace App\Tests\Slave\Task;
 
-use App\OutputFormatter\PingOutputFormatter;
+use App\Slave\OutputFormatter\PingOutputFormatter;
 use App\Slave\Task\Ping;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Slave\Process;
+namespace App\Tests\Common\Process;
 
-use App\Process\SymfonyProcess;
-use App\Process\SymfonyProcessFactory;
+use App\Common\Process\SymfonyProcess;
+use App\Common\Process\SymfonyProcessFactory;
 use PHPUnit\Framework\TestCase;
 
 class SymfonyProcessFactoryTest extends TestCase
