@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Common\Version\Version;
 use App\Entity\Device;
 use App\Entity\Domain;
 use App\Entity\Probe;
@@ -13,8 +14,6 @@ use App\Repository\DeviceRepository;
 use App\Repository\SlaveRepository;
 use App\Repository\StorageNodeRepository;
 use App\Repository\UserRepository;
-use App\Version\Version;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

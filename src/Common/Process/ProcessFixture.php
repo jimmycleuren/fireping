@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Slave\Process;
+namespace App\Common\Process;
 
-class DummyProcess implements ProcessInterface
+class ProcessFixture
 {
     /**
      * @var string
@@ -26,27 +26,27 @@ class DummyProcess implements ProcessInterface
         $this->isSuccessful = $isSuccessful;
     }
 
-    public static function fromFixture(ProcessFixture $fixture)
-    {
-        return new self($fixture->getOutput(), $fixture->getErrorOutput(), $fixture->isSuccessful());
-    }
-
+    /**
+     * @return string
+     */
     public function getOutput(): string
     {
         return $this->output;
     }
 
+    /**
+     * @return string
+     */
     public function getErrorOutput(): string
     {
         return $this->errorOutput;
     }
 
+    /**
+     * @return bool
+     */
     public function isSuccessful(): bool
     {
         return $this->isSuccessful;
-    }
-
-    public function run(): void
-    {
     }
 }

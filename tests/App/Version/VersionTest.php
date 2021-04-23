@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\App\Version;
 
-use App\Version\Version;
+use App\Common\Version\Version;
 use PHPUnit\Framework\TestCase;
 
 class VersionTest extends TestCase

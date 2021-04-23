@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\App\Version;
 
+use App\Common\Version\GitVersionReader;
 use App\Process\DummyProcessFactory;
 use App\Process\ProcessFixture;
-use App\Version\GitVersionReader;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 

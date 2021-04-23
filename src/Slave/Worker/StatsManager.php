@@ -2,10 +2,10 @@
 
 namespace App\Slave\Worker;
 
+use App\Common\Version\Version;
 use App\Slave\Task\FetchConfiguration;
 use App\Slave\Task\PublishResults;
 use App\Slave\Task\PublishStatistics;
-use App\Version\Version;
 use Psr\Log\LoggerInterface;
 
 class StatsManager

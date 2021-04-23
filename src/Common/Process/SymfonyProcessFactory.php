@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Slave\Process;
+namespace App\Common\Process;
 
 class SymfonyProcessFactory implements ProcessFactoryInterface
 {

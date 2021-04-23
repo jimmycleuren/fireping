@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Version;
+namespace App\Common\Version;
 
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 

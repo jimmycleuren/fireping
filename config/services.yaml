@@ -5,7 +5,6 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     storage.path: '%kernel.project_dir%/var/rrd/'
-    env(SLAVE_URL): "http://localhost"
 
 services:
     # default configuration for services in *this* file
@@ -56,16 +55,9 @@ services:
 
     Psr\Container\ContainerInterface: '@service_container'
 
-    App\Version\GitVersionReader:
-        arguments: ['@monolog.logger', '@App\Slave\Process\SymfonyProcessFactory']
+    App\Common\Version\GitVersionReader:
+        arguments: ['@monolog.logger', '@App\Common\Process\SymfonyProcessFactory']
 
-    App\Version\CacheVersionReader:
+    App\Common\Version\CacheVersionReader:
         public: true
-        arguments: ['@App\Version\GitVersionReader', '@cache.app']
-
-    # Slave specific container stuff.
-    App\Slave\:
-        resource: '../src/Slave/*'
-        exclude: '../src/{Client,Configuration.php,Device.php,Instruction.php,Probe.php}'
-
-    App\Slave\Client\FirepingClient: '@eight_points_guzzle.client.api_fireping'
+        arguments: ['@App\Common\Version\GitVersionReader', '@cache.app']
