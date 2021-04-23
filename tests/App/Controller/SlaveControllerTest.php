@@ -449,4 +449,12 @@ class SlaveControllerTest extends AbstractApiTest
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
     }
+
+    public function testHealth(): void
+    {
+        $client = self::asSlave();
+
+        $client->request('GET', '/api/slaves/health');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+    }
 }
