@@ -14,6 +14,18 @@ abstract class AbstractApiTest extends WebTestCase
         $this->client = $this->createAuthorizedClient();
     }
 
+    protected function asSlave(): KernelBrowser
+    {
+        $client = clone $this->client;
+
+        $client->setServerParameters([
+            'PHP_AUTH_USER' => 'slave01',
+            'PHP_AUTH_PW' => 'test123',
+        ]);
+
+        return $client;
+    }
+
     /**
      * Create an HTTP authorized client.
      */
