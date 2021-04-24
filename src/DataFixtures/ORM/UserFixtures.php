@@ -34,5 +34,14 @@ class UserFixtures extends Fixture
         $user->setPassword($hashedPassword);
         $manager->persist($user);
         $manager->flush();
+
+        $slave = new User();
+        $slave->setUsername('slave01');
+        $slave->setEmail('slave01@fireping.be');
+        $slave->setPassword($encoder->encodePassword('test123', $slave->getSalt()));
+        $slave->setEnabled(true);
+        $slave->setRoles(['ROLE_API']);
+        $manager->persist($slave);
+        $manager->flush();
     }
 }
