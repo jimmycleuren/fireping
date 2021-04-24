@@ -15,12 +15,14 @@ use App\Version\Version;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class SlaveController extends AbstractController
 {
@@ -344,6 +346,15 @@ class SlaveController extends AbstractController
         ]);
 
         return new JsonResponse(['code' => 200]);
+    }
+
+    /**
+     * @Route("/api/slaves/health", name="slave_test")
+     * @IsGranted("ROLE_API")
+     */
+    public function testAction(): JsonResponse
+    {
+        return new JsonResponse();
     }
 
     private function getDomains($domain)
