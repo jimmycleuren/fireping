@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Command;
+namespace App\Slave\Command;
 
 use App\Slave\Client\FirepingClient;
 use GuzzleHttp\Exception\GuzzleException;
