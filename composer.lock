@@ -10290,16 +10290,16 @@
         },
         {
             "name": "symfony/phpunit-bridge",
-            "version": "v5.2.0",
+            "version": "v5.2.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/phpunit-bridge.git",
-                "reference": "92a76ca5e64effd41ce111b8f476144dfa29f1f0"
+                "reference": "f2f94fd78379cdcdef09dd5025af791301913968"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/92a76ca5e64effd41ce111b8f476144dfa29f1f0",
-                "reference": "92a76ca5e64effd41ce111b8f476144dfa29f1f0",
+                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/f2f94fd78379cdcdef09dd5025af791301913968",
+                "reference": "f2f94fd78379cdcdef09dd5025af791301913968",
                 "shasum": ""
             },
             "require": {
@@ -10350,8 +10350,11 @@
                     "homepage": "https://symfony.com/contributors"
                 }
             ],
-            "description": "Symfony PHPUnit Bridge",
+            "description": "Provides utilities for PHPUnit, especially user deprecation notices management",
             "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/phpunit-bridge/tree/v5.2.6"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -10366,7 +10369,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-11-27T00:39:34+00:00"
+            "time": "2021-03-23T20:42:04+00:00"
         },
         {
             "name": "symfony/profiler-pack",
