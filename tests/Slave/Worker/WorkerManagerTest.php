@@ -17,7 +17,9 @@ class WorkerManagerTest extends TestCase
 
         $manager = new WorkerManager($kernel->reveal(), $logger->reveal());
 
-        $manager->setNumberOfProbeProcesses(1);
+        $manager->setNumberOfProbeProcesses(new Configuration('C0FFEE', [
+            1 => ['type' => 'ping', 'samples' => 15, 'step' => 60, 'args' => [], 'targets' => [1 => '192.168.1.1']]
+        ]));
         $manager->initialize(1, 5, 1);
 
         $this->assertEquals(4, $manager->getTotalWorkers());
@@ -55,7 +57,7 @@ class WorkerManagerTest extends TestCase
 
         $manager = new WorkerManager($kernel->reveal(), $logger->reveal());
 
-        $manager->setNumberOfProbeProcesses(0);
+        $manager->setNumberOfProbeProcesses(new Configuration());
         $manager->initialize(1, 5, 0);
 
         $this->expectException(\RuntimeException::class);
@@ -71,7 +73,7 @@ class WorkerManagerTest extends TestCase
 
         $manager = new WorkerManager($kernel->reveal(), $logger->reveal());
 
-        $manager->setNumberOfProbeProcesses(0);
+        $manager->setNumberOfProbeProcesses(new Configuration());
         $manager->initialize(1, 2, 0);
 
         $this->assertEquals(1, $manager->getTotalWorkers());
@@ -82,7 +84,9 @@ class WorkerManagerTest extends TestCase
         $this->assertEquals(1, $manager->getTotalWorkers());
         $this->assertEquals(1, $manager->getAvailableWorkers());
 
-        $manager->setNumberOfProbeProcesses(1);
+        $manager->setNumberOfProbeProcesses(new Configuration('C0FFEE', [
+            1 => ['type' => 'ping', 'samples' => 15, 'step' => 60, 'args' => [], 'targets' => [1 => '192.168.1.1']]
+        ]));
 
         $this->assertEquals(1, $manager->getTotalWorkers());
         $this->assertEquals(1, $manager->getAvailableWorkers());
@@ -105,7 +109,9 @@ class WorkerManagerTest extends TestCase
 
         $manager = new WorkerManager($kernel->reveal(), $logger->reveal());
 
-        $manager->setNumberOfProbeProcesses(1);
+        $manager->setNumberOfProbeProcesses(new Configuration('C0FFEE', [
+            1 => ['type' => 'ping', 'samples' => 15, 'step' => 60, 'args' => [], 'targets' => [1 => '192.168.1.1']]
+        ]));
         $manager->initialize(1, 2, 0);
 
         $worker = $manager->getWorker('bla');
@@ -116,7 +122,7 @@ class WorkerManagerTest extends TestCase
         $this->assertEquals(2, $manager->getAvailableWorkers());
         $this->assertEquals(['bla' => 1], $manager->getInUseWorkerTypes());
 
-        $manager->setNumberOfProbeProcesses(0); //lower the baseline so no new worker is created
+        $manager->setNumberOfProbeProcesses(new Configuration()); //lower the baseline so no new worker is created
         $manager->loop(); //triggers a worker timeout
 
         $this->assertEquals(2, $manager->getTotalWorkers());
