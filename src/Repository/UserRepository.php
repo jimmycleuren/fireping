@@ -32,6 +32,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
      * @param string $newEncodedPassword
      * @throws ORMException
      * @throws OptimisticLockException
+     *
+     * @codeCoverageIgnore
      */
     public function upgradePassword(UserInterface $user, string $newEncodedPassword): void
     {
