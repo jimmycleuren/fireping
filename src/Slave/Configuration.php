@@ -51,12 +51,7 @@ class Configuration
     public function getTotalTargetCount(): int
     {
         return \array_reduce($this->probes, static function ($carry, Probe $probe) {
-            return $carry + count($probe->getDevices());
-        });
-    }
-
-    public function getProbeCount(): int
-    {
-        return count($this->probes);
+            return $carry + $probe->getDeviceCount();
+        }, 0);
     }
 }
