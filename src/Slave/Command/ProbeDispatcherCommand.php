@@ -76,8 +76,6 @@ class ProbeDispatcherCommand extends Command
 
     private $statsManager;
 
-    private $devicesPerWorker = 250;
-
     private $randomFactor = 0;
 
     public function __construct(LoggerInterface $logger, WorkerManager $workerManager, StatsManager $statsManager)
@@ -203,7 +201,7 @@ class ProbeDispatcherCommand extends Command
                 $ready = 0 === $now % $probe->getStep();
 
                 if ($ready) {
-                    $instructions = new Instruction($probe, $this->devicesPerWorker);
+                    $instructions = new Instruction($probe, WorkerManager::DEVICES_PER_WORKER);
 
                     // Keep track of how many processes are starting.
                     $counter = 0;
@@ -331,8 +329,7 @@ class ProbeDispatcherCommand extends Command
                     $this->configuration = new Configuration($response['headers']['etag'], $contents);
                     $this->logger->info('Configuration loaded.');
 
-                    $n = (int) ceil($this->configuration->getTotalTargetCount() / $this->devicesPerWorker);
-                    $this->workerManager->setNumberOfProbeProcesses($n);
+                    $this->workerManager->setNumberOfProbeProcesses($this->configuration);
                 } else {
                     $this->logger->warning("dispatcher: configuration response ($status) from worker $pid received");
                 }
