@@ -91,6 +91,11 @@ class Probe
         return $this->devices;
     }
 
+    public function getDeviceCount(): int
+    {
+        return \count($this->devices);
+    }
+
     public function addDevice(Device $device)
     {
         if (!isset($this->devices[$device->getId()])) {

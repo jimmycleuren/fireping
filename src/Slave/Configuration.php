@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace App\Slave;
 
-use App\Probe\Probe;
 use InvalidArgumentException;
 
 class Configuration
@@ -54,5 +53,10 @@ class Configuration
         return \array_reduce($this->probes, static function ($carry, Probe $probe) {
             return $carry + count($probe->getDevices());
         });
+    }
+
+    public function getProbeCount(): int
+    {
+        return count($this->probes);
     }
 }
