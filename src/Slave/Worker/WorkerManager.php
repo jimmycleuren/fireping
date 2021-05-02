@@ -2,6 +2,7 @@
 
 namespace App\Slave\Worker;
 
+use App\Slave\Configuration;
 use App\Slave\Exception\WorkerTimedOutException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -98,9 +99,9 @@ class WorkerManager
         return $worker;
     }
 
-    public function setNumberOfProbeProcesses(int $numberOfProbeProcesses)
+    public function setNumberOfProbeProcesses(Configuration $configuration)
     {
-        $this->numberOfProbeProcesses = $numberOfProbeProcesses;
+        $this->numberOfProbeProcesses = max($configuration->getProbeCount(), $configuration->getTotalTargetCount());
     }
 
     public function getInUseWorkerTypes()
