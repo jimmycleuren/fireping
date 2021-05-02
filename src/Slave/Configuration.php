@@ -10,13 +10,13 @@ class Configuration
     /**
      * @var string
      */
-    private $hash = '*';
+    private $hash = 'C0FFEE';
     /**
      * @var Probe[]
      */
     private $probes = [];
 
-    public function __construct(string $hash= '*', array $probes = [])
+    public function __construct(string $hash= 'C0FFEE', array $probes = [])
     {
         if ($hash === '') {
             throw new InvalidArgumentException('Hash must not be an empty string.');
