@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Common\Version\Version;
 use App\Entity\Device;
 use App\Entity\Probe;
 use App\Entity\Slave;
@@ -11,7 +12,6 @@ use App\Processor\ProcessorFactory;
 use App\Repository\DeviceRepository;
 use App\Repository\SlaveRepository;
 use App\Storage\SlaveStatsRrdStorage;
-use App\Version\Version;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;

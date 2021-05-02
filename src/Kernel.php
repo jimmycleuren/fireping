@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\DependencyInjection\Compiler\AddTasksPass;
+use App\Slave\DependencyInjection\Compiler\AddTasksPass;
 use App\Slave\Task\TaskInterface;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

@@ -2,10 +2,15 @@
 # A full list of configuration options can be found here:
 # https://github.com/8p/EightPointsGuzzleBundle/blob/master/src/Resources/doc/configuration-reference.md
 eight_points_guzzle:
-    logging: true
     clients:
-        alert:
+        api_fireping:
+            class: App\Slave\Client\FirepingClient
+            base_url: '%env(SLAVE_URL)%'
             options:
+                auth:
+                    - '%env(SLAVE_NAME)%'
+                    - '%env(SLAVE_PASSWORD)%'
                 headers:
                     Accept: "application/json"
-                timeout: 20
+                timeout: 30
+                cookies: true

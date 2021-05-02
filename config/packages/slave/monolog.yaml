@@ -1,5 +1,4 @@
 monolog:
-    channels: ["alert"]
     handlers:
         main:
             type: fingers_crossed
