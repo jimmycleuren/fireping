@@ -37,7 +37,7 @@ class User implements UserInterface
     /**
      * Plain password. Used for model validation. Must not be persisted.
      *
-     * @var string
+     * @var string|null
      */
     private $plainPassword;
 
