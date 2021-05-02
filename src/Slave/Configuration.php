@@ -3,8 +3,7 @@ declare(strict_types=1);
 
 namespace App\Slave;
 
-use App\Probe\DeviceDefinition;
-use App\Probe\ProbeDefinition;
+use App\Probe\Probe;
 use InvalidArgumentException;
 
 class Configuration
@@ -14,7 +13,7 @@ class Configuration
      */
     private $hash = '*';
     /**
-     * @var ProbeDefinition[]
+     * @var Probe[]
      */
     private $probes = [];
 
@@ -27,9 +26,9 @@ class Configuration
         $this->hash = $hash;
 
         foreach ($probes as $id => $configuration) {
-            $probe = new ProbeDefinition($id, $configuration['type'], $configuration['step'], $configuration['samples'], $configuration['args'] ?? []);
+            $probe = new Probe($id, $configuration['type'], $configuration['step'], $configuration['samples'], $configuration['args'] ?? []);
             foreach ($configuration['targets'] as $deviceId => $ip) {
-                $device = new DeviceDefinition($deviceId, $ip);
+                $device = new Device($deviceId, $ip);
                 $probe->addDevice($device);
             }
 
@@ -43,7 +42,7 @@ class Configuration
     }
 
     /**
-     * @return ProbeDefinition[]
+     * @return Probe[]
      */
     public function getProbes(): array
     {
@@ -52,7 +51,7 @@ class Configuration
 
     public function getTotalTargetCount(): int
     {
-        return \array_reduce($this->probes, static function ($carry, ProbeDefinition $probe) {
+        return \array_reduce($this->probes, static function ($carry, Probe $probe) {
             return $carry + count($probe->getDevices());
         });
     }
