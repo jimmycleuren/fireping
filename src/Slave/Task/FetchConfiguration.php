@@ -49,10 +49,6 @@ class FetchConfiguration implements TaskInterface
                 return ['code' => 500, 'contents' => 'Malformed JSON', 'etag' => $eTag];
             }
 
-            if (empty($configuration)) {
-                return ['code' => 201, 'contents' => 'Configuration empty', 'etag' => $eTag];
-            }
-
             return ['code' => 200, 'contents' => $configuration, 'etag' => $eTag];
         } catch (GuzzleException $exception) {
             return ['code' => 500, 'contents' => $exception->getMessage(), 'etag' => null];
