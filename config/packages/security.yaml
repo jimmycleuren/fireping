@@ -1,11 +1,15 @@
 security:
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     encoders:
-        # use your user class name here
+        legacy:
+          algorithm: bcrypt
+          cost: 12
+
         App\Entity\User:
-            # bcrypt or sodium are recommended sodium is more secure, but requires PHP 7.2 or the Sodium extension
-            algorithm: bcrypt
-            cost: 12
+          migrate_from:
+            - legacy
+          algorithm: auto
+
     role_hierarchy:
         ROLE_ADMIN: [ROLE_API]
         ROLE_API:
