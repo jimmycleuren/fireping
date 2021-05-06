@@ -2,7 +2,7 @@
 
 namespace App\Tests\Controller\API;
 
-class GraphControllerTestCase extends BaseControllerTestCase
+class GraphControllerTest extends BaseControllerTestCase
 {
     public function testDevice1Summary()
     {
