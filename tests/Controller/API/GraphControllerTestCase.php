@@ -1,8 +1,6 @@
 <?php
 
-namespace App\Tests\App\Controller;
-
-use App\Tests\Controller\API\BaseControllerTestCase;
+namespace App\Tests\Controller\API;
 
 class GraphControllerTestCase extends BaseControllerTestCase
 {

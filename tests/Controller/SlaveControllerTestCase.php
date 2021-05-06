@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\App\Controller;
+namespace App\Tests\Controller;
 
 use App\Slave\Worker\StatsManager;
 use App\Tests\Controller\API\BaseControllerTestCase;

@@ -1,12 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jimmyc
- * Date: 5/01/2018
- * Time: 21:48.
- */
 
-namespace Tests\App\Controller;
+namespace App\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
