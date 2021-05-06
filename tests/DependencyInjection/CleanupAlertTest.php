@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\App\DependencyInjection;
+namespace App\Tests\DependencyInjection;
 
 use App\DependencyInjection\CleanupAlert;
 use App\Entity\Alert;
