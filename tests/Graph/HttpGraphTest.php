@@ -1,16 +1,14 @@
 <?php
 
-namespace App\Tests\App\Graph;
+namespace App\Tests\Graph;
 
 use App\Entity\Device;
 use App\Entity\Probe;
 use App\Entity\ProbeArchive;
 use App\Entity\SlaveGroup;
-use App\Exception\RrdException;
 use App\Graph\HttpGraph;
 use App\Storage\RrdStorage;
 use PHPUnit\Framework\TestCase;
-use App\Graph\PingGraph;
 use Prophecy\Argument;
 
 class HttpGraphTest extends TestCase

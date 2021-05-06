@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\App\Graph;
+namespace App\Tests\Graph;
 
 use App\Entity\Device;
 use App\Entity\Probe;
