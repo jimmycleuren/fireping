@@ -1,14 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jimmyc
- * Date: 12/01/2018
- * Time: 22:48.
- */
 
-namespace Tests\App\Api;
-
-use App\Tests\App\Api\AbstractApiTest;
+namespace App\Tests\Controller\API;
 
 class DeviceApiTest extends AbstractApiTest
 {

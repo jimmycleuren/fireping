@@ -1,8 +1,6 @@
 <?php
 
-namespace Tests\App\Api;
-
-use App\Tests\App\Api\AbstractApiTest;
+namespace App\Tests\Controller\API;
 
 class AlertDestinationApiTest extends AbstractApiTest
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\App\Api;
+namespace App\Tests\Controller\API;
 
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;

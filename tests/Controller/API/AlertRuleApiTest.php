@@ -1,14 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jimmyc
- * Date: 8/03/2018
- * Time: 21:45.
- */
 
-namespace Tests\App\Api;
-
-use App\Tests\App\Api\AbstractApiTest;
+namespace App\Tests\Controller\API;
 
 class AlertRuleApiTest extends AbstractApiTest
 {

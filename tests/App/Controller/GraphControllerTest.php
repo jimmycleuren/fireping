@@ -2,7 +2,7 @@
 
 namespace App\Tests\App\Controller;
 
-use App\Tests\App\Api\AbstractApiTest;
+use App\Tests\Controller\API\AbstractApiTest;
 
 class GraphControllerTest extends AbstractApiTest
 {

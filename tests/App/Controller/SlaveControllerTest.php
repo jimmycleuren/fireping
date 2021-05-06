@@ -3,7 +3,7 @@
 namespace App\Tests\App\Controller;
 
 use App\Slave\Worker\StatsManager;
-use App\Tests\App\Api\AbstractApiTest;
+use App\Tests\Controller\API\AbstractApiTest;
 use Psr\Log\LoggerInterface;
 
 class SlaveControllerTest extends AbstractApiTest
