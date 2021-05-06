@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\App\Command;
+namespace App\Tests\Command;
 
 use App\Command\TestAlertDestinationCommand;
 use Prophecy\Argument;

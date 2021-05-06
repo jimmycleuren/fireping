@@ -1,19 +1,14 @@
 <?php
 
-namespace App\Tests\App\Command;
+namespace App\Tests\Command;
 
-use App\Command\CleanupCommand;
 use App\Command\CreateUserCommand;
 use App\Entity\User;
-use App\Services\CleanupService;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Security\Core\Encoder\EncoderFactory;
-use Symfony\Component\Security\Core\Encoder\PlaintextPasswordEncoder;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoder;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
  * Class CreateUserCommandTest

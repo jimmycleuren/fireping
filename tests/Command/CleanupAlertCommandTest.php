@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\App\Command;
+namespace App\Tests\Command;
 
 use App\Command\CleanupAlertCommand;
 use App\DependencyInjection\CleanupAlert;
