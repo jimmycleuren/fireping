@@ -1,15 +1,13 @@
 <?php
 
-namespace App\Tests\App\Storage;
+namespace App\Tests\Storage;
 
 use App\Entity\Device;
 use App\Entity\Probe;
 use App\Entity\ProbeArchive;
 use App\Entity\SlaveGroup;
-use App\Storage\RrdCachedStorage;
 use App\Storage\RrdStorage;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 class RrdStorageTest extends TestCase

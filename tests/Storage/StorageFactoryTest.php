@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\App\Storage;
+namespace App\Tests\Storage;
 
 use App\Entity\StorageNode;
 use App\Repository\StorageNodeRepository;
