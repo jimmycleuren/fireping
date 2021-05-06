@@ -2,7 +2,7 @@
 
 namespace App\Tests\Controller\API;
 
-class DomainApiTestCase extends BaseControllerTestCase
+class DomainControllerTest extends BaseControllerTestCase
 {
     public function testCollection()
     {

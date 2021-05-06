@@ -2,7 +2,7 @@
 
 namespace App\Tests\Controller\API;
 
-class AlertDestinationApiTestCase extends BaseControllerTestCase
+class AlertDestinationControllerTest extends BaseControllerTestCase
 {
     public function testCollection()
     {
