@@ -20,7 +20,7 @@ class GraphController extends AbstractController
     /**
      * @return Response
      *
-     * @Route("/api/graphs/summary/{id}", methods={"GET"})
+     * @Route("/api/graphs/summary/{id}", methods={"GET"}, name="app_graph_summary")
      * @ParamConverter("device", class="App:Device")
      */
     public function summaryAction(Device $device, Request $request, GraphFactory $graphFactory)
