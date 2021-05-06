@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\App\AlertDestination;
+namespace App\Tests\AlertDestination;
 
 use App\AlertDestination\Mail;
 use App\Entity\Alert;

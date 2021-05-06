@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\App\AlertDestination;
+namespace App\Tests\AlertDestination;
 
 use App\AlertDestination\Monolog;
 use App\Entity\Alert;

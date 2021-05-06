@@ -1,12 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jimmyc
- * Date: 8/03/2018
- * Time: 21:11.
- */
 
-namespace Tests\App\AlertDestination;
+namespace App\Tests\AlertDestination;
 
 use App\AlertDestination\AlertDestinationFactory;
 use App\Entity\AlertDestination;

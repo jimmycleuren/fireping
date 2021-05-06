@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Tests\App\AlertDestination;
+namespace App\Tests\AlertDestination;
 
-use App\AlertDestination\Http;
+use App\AlertDestination\Slack;
 use App\Entity\Alert;
 use App\Entity\AlertRule;
 use App\Entity\Device;
@@ -10,15 +10,14 @@ use App\Entity\SlaveGroup;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 
-class HttpTest extends TestCase
+class SlackTest extends TestCase
 {
     public function testNoArguments()
     {
-        $guzzle = $this->prophesize('GuzzleHttp\\Client');
-        $guzzle->post('url', Argument::any())->shouldBeCalledTimes(0);
+        $client = $this->prophesize('GuzzleHttp\\Client');
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
 
-        $http = new Http($guzzle->reveal(), $logger->reveal());
+        $slack = new Slack($client->reveal(), $logger->reveal());
 
         $device = new Device();
         $device->setName('device');
@@ -31,19 +30,21 @@ class HttpTest extends TestCase
         $alert->setSlaveGroup($slaveGroup);
         $alert->setAlertRule($alertRule);
 
-        $http->trigger($alert);
-        $http->clear($alert);
+        $this->assertEquals(false, $slack->trigger($alert));
+        $this->assertEquals(false, $slack->clear($alert));
     }
 
     public function testException()
     {
-        $guzzle = $this->prophesize('GuzzleHttp\\Client');
-        $guzzle->post('url', Argument::any())->shouldBeCalledTimes(2)->willThrow(new \Exception('test'));
+        $url = 'http://slack.com';
+
+        $client = $this->prophesize('GuzzleHttp\\Client');
+        $client->post($url, Argument::any())->shouldBeCalledTimes(2)->willThrow(new \Exception('test'));
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
         $logger->error(Argument::type('string'))->shouldBeCalledTimes(2);
 
-        $http = new Http($guzzle->reveal(), $logger->reveal());
-        $http->setParameters(['url' => 'url']);
+        $slack = new Slack($client->reveal(), $logger->reveal());
+        $slack->setParameters(['url' => $url, 'channel' => 'general']);
 
         $device = new Device();
         $device->setName('device');
@@ -56,18 +57,20 @@ class HttpTest extends TestCase
         $alert->setSlaveGroup($slaveGroup);
         $alert->setAlertRule($alertRule);
 
-        $http->trigger($alert);
-        $http->clear($alert);
+        $slack->trigger($alert);
+        $slack->clear($alert);
     }
 
     public function testTrigger()
     {
-        $guzzle = $this->prophesize('GuzzleHttp\\Client');
-        $guzzle->post('url', Argument::any())->shouldBeCalledTimes(1);
+        $url = 'http://slack.com';
+
+        $client = $this->prophesize('GuzzleHttp\\Client');
+        $client->post($url, Argument::any())->shouldBeCalledTimes(1);
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
 
-        $http = new Http($guzzle->reveal(), $logger->reveal());
-        $http->setParameters(['url' => 'url']);
+        $slack = new Slack($client->reveal(), $logger->reveal());
+        $slack->setParameters(['url' => $url, 'channel' => 'general']);
 
         $device = new Device();
         $device->setName('device');
@@ -80,17 +83,19 @@ class HttpTest extends TestCase
         $alert->setSlaveGroup($slaveGroup);
         $alert->setAlertRule($alertRule);
 
-        $http->trigger($alert);
+        $slack->trigger($alert);
     }
 
     public function testClear()
     {
-        $guzzle = $this->prophesize('GuzzleHttp\\Client');
-        $guzzle->post('url', Argument::any())->shouldBeCalledTimes(1);
+        $url = 'http://slack.com';
+
+        $client = $this->prophesize('GuzzleHttp\\Client');
+        $client->post($url, Argument::any())->shouldBeCalledTimes(1);
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
 
-        $http = new Http($guzzle->reveal(), $logger->reveal());
-        $http->setParameters(['url' => 'url']);
+        $slack = new Slack($client->reveal(), $logger->reveal());
+        $slack->setParameters(['url' => $url, 'channel' => 'general']);
 
         $device = new Device();
         $device->setName('device');
@@ -103,6 +108,6 @@ class HttpTest extends TestCase
         $alert->setSlaveGroup($slaveGroup);
         $alert->setAlertRule($alertRule);
 
-        $http->clear($alert);
+        $slack->clear($alert);
     }
 }
