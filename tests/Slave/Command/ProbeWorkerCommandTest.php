@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\App\Command;
+namespace App\Tests\Slave\Command;
 
 use App\Slave\Command\ProbeWorkerCommand;
 use App\Slave\Task\TaskFactory;
