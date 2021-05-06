@@ -3,10 +3,10 @@
 namespace App\Tests\App\Controller;
 
 use App\Slave\Worker\StatsManager;
-use App\Tests\Controller\API\AbstractApiTest;
+use App\Tests\Controller\API\BaseControllerTestCase;
 use Psr\Log\LoggerInterface;
 
-class SlaveControllerTest extends AbstractApiTest
+class SlaveControllerTestCase extends BaseControllerTestCase
 {
     public function testIndex()
     {

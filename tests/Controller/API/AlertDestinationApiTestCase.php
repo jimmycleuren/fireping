@@ -2,11 +2,11 @@
 
 namespace App\Tests\Controller\API;
 
-class DomainApiTest extends AbstractApiTest
+class AlertDestinationApiTestCase extends BaseControllerTestCase
 {
     public function testCollection()
     {
-        $crawler = $this->client->request('GET', '/api/domains.json', [], [], [
+        $this->client->request('GET', '/api/alert_destinations.json', [], [], [
             'HTTP_Accept' => 'application/json',
         ]);
 
@@ -18,16 +18,18 @@ class DomainApiTest extends AbstractApiTest
 
     public function testAddRemove()
     {
-        $crawler = $this->client->request(
+        $this->client->request(
             'POST',
-            '/api/domains.json',
+            '/api/alert_destinations.json',
             [],
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
             ],
             json_encode([
-                'name' => 'New Domain',
+                'name' => 'syslogtest',
+                'type' => 'syslog',
+                'parameters' => [],
             ])
         );
 
@@ -40,24 +42,10 @@ class DomainApiTest extends AbstractApiTest
 
         $crawler = $this->client->request(
             'DELETE',
-            "/api/domains/$id.json"
+            "/api/alert_destinations/$id.json"
         );
 
         $response = $this->client->getResponse();
         $this->assertEquals(204, $response->getStatusCode());
-    }
-
-    public function testAlerts()
-    {
-        $crawler = $this->client->request('GET', '/api/domains/1/alerts.json', [], [], [
-            'HTTP_Accept' => 'application/json',
-        ]);
-
-        $response = $this->client->getResponse();
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
-        $this->assertJson($response->getContent());
-
-        $this->assertEquals('Alertrule 1 on Device 1 from Slavegroup 1', json_decode($response->getContent())[0]->message);
     }
 }

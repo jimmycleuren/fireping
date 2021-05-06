@@ -2,9 +2,9 @@
 
 namespace App\Tests\App\Controller;
 
-use App\Tests\Controller\API\AbstractApiTest;
+use App\Tests\Controller\API\BaseControllerTestCase;
 
-class GraphControllerTest extends AbstractApiTest
+class GraphControllerTestCase extends BaseControllerTestCase
 {
     public function testDevice1Summary()
     {

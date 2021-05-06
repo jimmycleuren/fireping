@@ -2,7 +2,7 @@
 
 namespace App\Tests\Controller\API;
 
-class DeviceApiTest extends AbstractApiTest
+class DeviceApiTestCase extends BaseControllerTestCase
 {
     public function testCollection()
     {

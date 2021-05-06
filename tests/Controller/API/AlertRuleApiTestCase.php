@@ -2,7 +2,7 @@
 
 namespace App\Tests\Controller\API;
 
-class AlertRuleApiTest extends AbstractApiTest
+class AlertRuleApiTestCase extends BaseControllerTestCase
 {
     public function testCollection()
     {
