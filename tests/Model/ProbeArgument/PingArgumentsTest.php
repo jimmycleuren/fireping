@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\App\Model\ProbeArgument;
+namespace App\Tests\Model\ProbeArgument;
 
 use App\Model\ProbeArgument\PingArguments;
 use PHPUnit\Framework\TestCase;
