@@ -1,29 +1,13 @@
 <?php
+declare(strict_types=1);
 
-namespace App\Tests\Controller;
+namespace App\Tests\Controller\API;
 
 use App\Slave\Worker\StatsManager;
-use App\Tests\Controller\API\BaseControllerTestCase;
 use Psr\Log\LoggerInterface;
 
-class SlaveControllerTestCase extends BaseControllerTestCase
+class SlaveControllerTest extends BaseControllerTestCase
 {
-    public function testIndex()
-    {
-        $crawler = $this->client->request('GET', '/slaves');
-
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
-        $this->assertStringContainsString('Slaves', $crawler->filter('h1')->text());
-    }
-
-    public function testDetail()
-    {
-        $crawler = $this->client->request('GET', '/slaves/slave1');
-
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
-        $this->assertStringContainsString('Slave slave1', $crawler->filter('h1')->text());
-    }
-
     public function testError()
     {
         $this->client->request('POST', '/api/slaves/slave1/error', ['message' => 'error']);
