@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\API;
 
 use App\Entity\Device;
 use App\Storage\Cache;
@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
-class DeviceApiController extends AbstractController
+class DeviceController extends AbstractController
 {
     /**
      * @Route("/api/devices/{id}/status.json", name="api_devices_status")

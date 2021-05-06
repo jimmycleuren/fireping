@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\API;
 
 use App\Entity\Domain;
 use Doctrine\ORM\EntityManagerInterface;
@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
-class DomainApiController extends AbstractController
+class DomainController extends AbstractController
 {
     /**
      * @Route("/api/domains/{id}/alerts.json", name="api_domains_alerts")
