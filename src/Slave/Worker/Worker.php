@@ -52,17 +52,19 @@ class Worker
     {
         $this->logger->info('Starting new worker.');
 
-        $this->process->start(
-            function ($type, $data) {
-                $this->receiveBuffer .= $data;
+        $this->process->start(function ($type, $data) {
+            if ($type === Process::ERR) {
+                ($this->callback)($type, $data);
+            }
 
+            if ($type === Process::OUT) {
+                $this->receiveBuffer .= $data;
                 if (json_decode($this->receiveBuffer, true)) {
                     ($this->callback)($type, $this->receiveBuffer);
-
                     $this->release();
                 }
             }
-        );
+        });
 
         $this->name = '#'.$this->process->getPid();
     }

@@ -22,6 +22,7 @@ use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Process\Process;
 
 /**
  * Class ProbeDispatcherCommand.
@@ -272,7 +273,13 @@ class ProbeDispatcherCommand extends Command
         $this->logger->debug(sprintf('dispatcher: worker %s instruction: %s', (string) $worker, $json));
 
         $worker->send($json, $expectedRuntime, function ($type, $response) {
-            $this->handleResponse($type, $response);
+            if (Process::OUT === $type) {
+                $this->handleResponse($type, $response);
+            }
+
+            if (Process::ERR === $type) {
+                fwrite(STDERR, $response);
+            }
         });
 
         $this->logger->info(sprintf('dispatcher: sent instruction to worker %s (took %s seconds)', (string) $worker, microtime(true) - $startAt));

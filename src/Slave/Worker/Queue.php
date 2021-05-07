@@ -4,6 +4,7 @@ namespace App\Slave\Worker;
 
 use App\Slave\Task\PublishResults;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Process\Process;
 
 class Queue
 {
@@ -59,7 +60,13 @@ class Queue
                     ];
 
                     $this->worker->send(json_encode($instruction), 60, function ($type, $response) {
-                        $this->handleResponse($type, $response);
+                        if (Process::OUT === $type) {
+                            $this->handleResponse($type, $response);
+                        }
+
+                        if (Process::ERR === $type) {
+                            fwrite(STDERR, $response);
+                        }
                     });
 
                     $this->logger->info('COMMUNICATION_FLOW: Queue '.$this->id.' sent '.$instruction['type']." instruction to worker $this->worker.");
