@@ -276,10 +276,6 @@ class ProbeDispatcherCommand extends Command
             if (Process::OUT === $type) {
                 $this->handleResponse($type, $response);
             }
-
-            if (Process::ERR === $type) {
-                fwrite(STDERR, $response);
-            }
         });
 
         $this->logger->info(sprintf('dispatcher: sent instruction to worker %s (took %s seconds)', (string) $worker, microtime(true) - $startAt));
