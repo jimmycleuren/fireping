@@ -63,6 +63,10 @@ class Queue
                         if (Process::OUT === $type) {
                             $this->handleResponse($type, $response);
                         }
+
+                        if (Process::ERR === $type) {
+                            fwrite(STDERR, $response);
+                        }
                     });
 
                     $this->logger->info('COMMUNICATION_FLOW: Queue '.$this->id.' sent '.$instruction['type']." instruction to worker $this->worker.");

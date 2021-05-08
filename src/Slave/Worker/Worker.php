@@ -53,16 +53,18 @@ class Worker
         $this->logger->info('Starting new worker.');
 
         $this->process->start(function ($type, $data) {
-            if ($type === Process::ERR) {
-                ($this->callback)($type, $data);
-            }
-
             if ($type === Process::OUT) {
                 $this->receiveBuffer .= $data;
                 if (json_decode($this->receiveBuffer, true)) {
-                    ($this->callback)($type, $this->receiveBuffer);
+                    $callback = $this->callback;
+                    $callback($type, $this->receiveBuffer);
                     $this->release();
                 }
+            }
+
+            if ($type === Process::ERR && is_callable($this->callback)) {
+                $callback = $this->callback;
+                $callback($type, $data);
             }
         });
 
@@ -87,7 +89,7 @@ class Worker
         $this->manager->release($this);
     }
 
-    public function send($data, $expectedRuntime, \Closure $callback)
+    public function send($data, $expectedRuntime, callable $callback)
     {
         $this->executing = true;
         $this->startTime = microtime(true);
@@ -111,6 +113,7 @@ class Worker
             $this->process->checkTimeout();
         }
         $this->process->getIncrementalOutput();
+        $this->process->getIncrementalErrorOutput();
     }
 
     public function __toString()
