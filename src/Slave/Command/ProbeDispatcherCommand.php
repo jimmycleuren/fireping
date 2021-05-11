@@ -57,14 +57,6 @@ class ProbeDispatcherCommand extends Command
      */
     protected $configuration;
 
-    /**
-     * How long the ProbeDispatcher can run for, in seconds. You can specify 0 to
-     * indicate an infinitely running process.
-     *
-     * @var int
-     */
-    protected $maxRuntime;
-
     private $workerManager;
 
     private $statsManager;
@@ -121,7 +113,6 @@ class ProbeDispatcherCommand extends Command
      */
     private function setUp(InputInterface $input)
     {
-        $this->maxRuntime = (int) $input->getOption('max-runtime');
         $this->executionOffset = random_int(0, 119);
 
         foreach (['SLAVE_NAME', 'SLAVE_URL'] as $item) {
@@ -227,19 +218,24 @@ class ProbeDispatcherCommand extends Command
             $this->workerManager->loop();
         });
 
-        if ($this->maxRuntime > 0) {
-            $this->logger->info('Running for '.$this->maxRuntime.' seconds');
-            $loop->addTimer($this->maxRuntime, function () use ($output, $loop) {
-                $output->writeln('Max runtime reached');
-                $loop->stop();
-            });
-        }
-
         $this->addWorkerStatsTimer($loop);
+        $this->addEarlyTimeoutTimer((int) $input->getOption('max-runtime'), $loop);
 
         $loop->run();
 
         return 0;
+    }
+
+    private function addEarlyTimeoutTimer(int $timeout, LoopInterface $loop)
+    {
+        if ($timeout === 0) {
+            return;
+        }
+
+        $loop->addTimer($timeout, function () use ($loop) {
+            $this->logger->info('Dispatcher timed out');
+            $loop->stop();
+        });
     }
 
     /**
