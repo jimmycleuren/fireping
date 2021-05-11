@@ -71,7 +71,7 @@ class ProbeDispatcherCommand extends Command
 
     private $devicesPerWorker = 250;
 
-    private $randomFactor = 0;
+    private $executionOffset = 0;
 
     public function __construct(LoggerInterface $logger, WorkerManager $workerManager, StatsManager $statsManager)
     {
@@ -122,7 +122,7 @@ class ProbeDispatcherCommand extends Command
     private function setUp(InputInterface $input)
     {
         $this->maxRuntime = (int) $input->getOption('max-runtime');
-        $this->randomFactor = random_int(0, 119);
+        $this->executionOffset = random_int(0, 119);
 
         foreach (['SLAVE_NAME', 'SLAVE_URL'] as $item) {
             if (!isset($_ENV[$item])) {
@@ -161,14 +161,14 @@ class ProbeDispatcherCommand extends Command
         $this->logger->info('Fireping Dispatcher Started.');
         $this->logger->info('Slave name is '.$_ENV['SLAVE_NAME']);
         $this->logger->info('Slave url is '.$_ENV['SLAVE_URL']);
-        $this->logger->info('Random factor is '.$this->randomFactor);
+        $this->logger->info('Random factor is '.$this->executionOffset);
 
         $loop = Factory::create();
 
         $loop->addPeriodicTimer(1, function () {
             $now = time();
 
-            if ($now % 120 === $this->randomFactor) {
+            if ($now % 120 === $this->executionOffset) {
                 $instruction = [
                     'type' => FetchConfiguration::class,
                     'delay_execution' => 0,
@@ -178,7 +178,7 @@ class ProbeDispatcherCommand extends Command
                 $this->sendInstruction($instruction);
             }
 
-            if ($now % 60 === (int) floor($this->randomFactor / 2)) {
+            if ($now % 60 === (int) floor($this->executionOffset / 2)) {
                 $instruction = [
                     'type' => PublishStatistics::class,
                     'delay_execution' => 0,
