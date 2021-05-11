@@ -170,16 +170,6 @@ class ProbeDispatcherCommand extends Command
         $loop->addPeriodicTimer(1, function () {
             $now = time();
 
-            if ($now % 120 === $this->executionOffset) {
-                $instruction = [
-                    'type' => FetchConfiguration::class,
-                    'delay_execution' => 0,
-                    'etag' => $this->configuration->getEtag(),
-                    'timestamp' => $now,
-                ];
-                $this->sendInstruction($instruction);
-            }
-
             if ($now % 60 === (int) floor($this->executionOffset / 2)) {
                 $instruction = [
                     'type' => PublishStatistics::class,
@@ -210,6 +200,7 @@ class ProbeDispatcherCommand extends Command
             }
         });
 
+        $this->addFetchConfigurationTimer($loop);
         $this->addQueueLoopTimer($loop);
         $this->addWorkerManagerLoopTimer($loop);
         $this->addWorkerStatsTimer($loop);
@@ -218,6 +209,18 @@ class ProbeDispatcherCommand extends Command
         $loop->run();
 
         return 0;
+    }
+
+    private function addFetchConfigurationTimer(LoopInterface $loop)
+    {
+        $loop->addPeriodicTimer(120, function () {
+            $this->sendInstruction([
+                'type' => FetchConfiguration::class,
+                'delay_execution' => 0,
+                'etag' => $this->configuration->getEtag(),
+                'timestamp' => time(),
+            ]);
+        });
     }
 
     private function addQueueLoopTimer(LoopInterface $loop)
