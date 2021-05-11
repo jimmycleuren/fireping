@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Slave;
 
-use App\Probe\Probe;
-
 class Instruction
 {
     /**

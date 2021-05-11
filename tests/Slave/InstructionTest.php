@@ -2,9 +2,9 @@
 
 namespace App\Tests\Slave;
 
-use App\Probe\Probe;
 use App\Slave\Device;
 use App\Slave\Instruction;
+use App\Slave\Probe;
 use PHPUnit\Framework\TestCase;
 
 class InstructionTest extends TestCase
