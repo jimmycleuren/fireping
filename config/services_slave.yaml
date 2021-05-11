@@ -16,4 +16,12 @@ services:
         resource: '../src/Slave/*'
         exclude: '../src/{Client,Configuration.php,Device.php,Instruction.php,Probe.php}'
 
+    App\Slave\Command\ProbeDispatcherCommand:
+      arguments:
+        $logger: '@monolog.logger.dispatcher'
+
+    App\Slave\Command\ProbeWorkerCommand:
+      arguments:
+        $logger: '@monolog.logger.worker'
+
     App\Slave\Client\FirepingClient: '@eight_points_guzzle.client.api_fireping'
