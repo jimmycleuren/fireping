@@ -190,10 +190,6 @@ class ProbeDispatcherCommand extends Command
                 $this->sendInstruction($instruction, 30);
             }
 
-            foreach ($this->queues as $queue) {
-                $queue->loop();
-            }
-
             foreach ($this->configuration->getProbes() as $probe) {
                 $ready = 0 === $now % $probe->getStep();
 
@@ -214,6 +210,7 @@ class ProbeDispatcherCommand extends Command
             }
         });
 
+        $this->addQueueLoopTimer($loop);
         $this->addWorkerManagerLoopTimer($loop);
         $this->addWorkerStatsTimer($loop);
         $this->addEarlyTimeoutTimer((int) $input->getOption('max-runtime'), $loop);
@@ -221,6 +218,15 @@ class ProbeDispatcherCommand extends Command
         $loop->run();
 
         return 0;
+    }
+
+    private function addQueueLoopTimer(LoopInterface $loop)
+    {
+        $loop->addPeriodicTimer(1, function () {
+            foreach ($this->queues as $queue) {
+                $queue->loop();
+            }
+        });
     }
 
     private function addWorkerManagerLoopTimer(LoopInterface $loop)
