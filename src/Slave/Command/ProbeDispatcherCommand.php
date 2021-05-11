@@ -326,7 +326,9 @@ class ProbeDispatcherCommand extends Command
 
             case FetchConfiguration::class:
                 if (200 === $status) {
+                    $configuration = $this->configuration;
                     $this->configuration = new Configuration($response['headers']['etag'], $contents);
+                    unset($configuration);
                     $this->logger->info('Configuration loaded.');
 
                     $this->workerManager->setNumberOfProbeProcesses($this->configuration);
