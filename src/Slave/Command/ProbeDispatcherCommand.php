@@ -65,13 +65,6 @@ class ProbeDispatcherCommand extends Command
      */
     protected $maxRuntime;
 
-    /**
-     * The LoopInterface that runs our process.
-     *
-     * @var LoopInterface
-     */
-    protected $loop;
-
     private $workerManager;
 
     private $statsManager;
@@ -170,9 +163,9 @@ class ProbeDispatcherCommand extends Command
         $this->logger->info('Slave url is '.$_ENV['SLAVE_URL']);
         $this->logger->info('Random factor is '.$this->randomFactor);
 
-        $this->loop = Factory::create();
+        $loop = Factory::create();
 
-        $this->loop->addPeriodicTimer(1, function () {
+        $loop->addPeriodicTimer(1, function () {
             $now = time();
 
             if ($now % 120 === $this->randomFactor) {
@@ -225,22 +218,19 @@ class ProbeDispatcherCommand extends Command
             );
         });
 
-        $this->loop->addPeriodicTimer(0.1, function () {
+        $loop->addPeriodicTimer(0.1, function () {
             $this->workerManager->loop();
         });
 
         if ($this->maxRuntime > 0) {
             $this->logger->info('Running for '.$this->maxRuntime.' seconds');
-            $this->loop->addTimer(
-                $this->maxRuntime,
-                function () use ($output) {
-                    $output->writeln('Max runtime reached');
-                    $this->loop->stop();
-                }
-            );
+            $loop->addTimer($this->maxRuntime, function () use ($output, $loop) {
+                $output->writeln('Max runtime reached');
+                $loop->stop();
+            });
         }
 
-        $this->loop->run();
+        $loop->run();
 
         return 0;
     }
