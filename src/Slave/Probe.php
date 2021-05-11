@@ -1,8 +1,6 @@
 <?php
 
-namespace App\Probe;
-
-use App\Slave\Device;
+namespace App\Slave;
 
 class Probe
 {
