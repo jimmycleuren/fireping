@@ -214,16 +214,20 @@ class ProbeDispatcherCommand extends Command
             }
         });
 
-        $loop->addPeriodicTimer(0.1, function () {
-            $this->workerManager->loop();
-        });
-
+        $this->addWorkerManagerLoopTimer($loop);
         $this->addWorkerStatsTimer($loop);
         $this->addEarlyTimeoutTimer((int) $input->getOption('max-runtime'), $loop);
 
         $loop->run();
 
         return 0;
+    }
+
+    private function addWorkerManagerLoopTimer(LoopInterface $loop)
+    {
+        $loop->addPeriodicTimer(0.1, function () {
+            $this->workerManager->loop();
+        });
     }
 
     private function addEarlyTimeoutTimer(int $timeout, LoopInterface $loop)
