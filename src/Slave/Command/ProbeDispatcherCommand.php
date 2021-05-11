@@ -149,6 +149,17 @@ class ProbeDispatcherCommand extends Command
         $this->statsManager->setVersion((new GitVersionReader($this->logger, new SymfonyProcessFactory()))->version());
     }
 
+    private function addWorkerStatsTimer(LoopInterface $loop)
+    {
+        $loop->addPeriodicTimer(1, function () {
+            $this->statsManager->addWorkerStats(
+                $this->workerManager->getTotalWorkers(),
+                $this->workerManager->getAvailableWorkers(),
+                $this->workerManager->getInUseWorkerTypes()
+            );
+        });
+    }
+
     /**
      * @return int|void|null
      *
@@ -210,12 +221,6 @@ class ProbeDispatcherCommand extends Command
                     }
                 }
             }
-
-            $this->statsManager->addWorkerStats(
-                $this->workerManager->getTotalWorkers(),
-                $this->workerManager->getAvailableWorkers(),
-                $this->workerManager->getInUseWorkerTypes()
-            );
         });
 
         $loop->addPeriodicTimer(0.1, function () {
@@ -229,6 +234,8 @@ class ProbeDispatcherCommand extends Command
                 $loop->stop();
             });
         }
+
+        $this->addWorkerStatsTimer($loop);
 
         $loop->run();
 
