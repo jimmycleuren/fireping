@@ -167,6 +167,21 @@ class ProbeDispatcherCommand extends Command
 
         $loop = Factory::create();
 
+        $this->addProbeHandleTimer($loop);
+        $this->addFetchConfigurationTimer($loop);
+        $this->addPublishStatsTimer($loop);
+        $this->addQueueLoopTimer($loop);
+        $this->addWorkerManagerLoopTimer($loop);
+        $this->addWorkerStatsTimer($loop);
+        $this->addEarlyTimeoutTimer((int) $input->getOption('max-runtime'), $loop);
+
+        $loop->run();
+
+        return 0;
+    }
+
+    private function addProbeHandleTimer(LoopInterface $loop)
+    {
         $loop->addPeriodicTimer(1, function () {
             $now = time();
 
@@ -189,17 +204,6 @@ class ProbeDispatcherCommand extends Command
                 }
             }
         });
-
-        $this->addFetchConfigurationTimer($loop);
-        $this->addPublishStatsTimer($loop);
-        $this->addQueueLoopTimer($loop);
-        $this->addWorkerManagerLoopTimer($loop);
-        $this->addWorkerStatsTimer($loop);
-        $this->addEarlyTimeoutTimer((int) $input->getOption('max-runtime'), $loop);
-
-        $loop->run();
-
-        return 0;
     }
 
     private function addFetchConfigurationTimer(LoopInterface $loop)
