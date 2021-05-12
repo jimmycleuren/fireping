@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Slave\Task;
 
 use App\Slave\Client\FirepingClient;
+use GuzzleHttp\Cookie\FileCookieJar;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\RequestOptions;
 use Psr\Log\LoggerInterface;
 use stdClass;
 
@@ -35,7 +37,10 @@ class PublishStatistics implements TaskInterface
         $startedAt = microtime(true);
         $this->logger->info(sprintf('worker: publishing stats to master (%d bytes)', strlen(serialize($this->body))));
         try {
-            $response = $this->client->request($this->method, $this->endpoint, ['json' => $this->body]);
+            $response = $this->client->request($this->method, $this->endpoint, [
+                RequestOptions::JSON => $this->body,
+                RequestOptions::COOKIES => new FileCookieJar(sys_get_temp_dir().'/.slave.cookiejar.json', true)
+            ]);
 
             $this->logger->info(sprintf('worker: published stats (took %.2f seconds)', microtime(true) - $startedAt));
             return ['code' => $response->getStatusCode(), 'contents' => (string) $response->getBody()];
