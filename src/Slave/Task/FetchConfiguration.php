@@ -65,6 +65,11 @@ class FetchConfiguration implements TaskInterface
         $this->etag = $args['etag'] ?? null;
     }
 
+    public function getEtag(): ?string
+    {
+        return $this->etag;
+    }
+
     public function getType(): string
     {
         return self::class;
