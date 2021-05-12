@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Slave\Task;
 
 use App\Slave\Client\FirepingClient;
+use GuzzleHttp\Cookie\FileCookieJar;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\RequestOptions;
 use Psr\Log\LoggerInterface;
 
 class FetchConfiguration implements TaskInterface
@@ -36,8 +38,11 @@ class FetchConfiguration implements TaskInterface
 
         $headers = null !== $this->etag ? ['If-None-Match' => $this->etag] : [];
         $request = new Request('GET', $endpoint, $headers);
+
         try {
-            $response = $this->client->send($request);
+            $response = $this->client->send($request, [
+                RequestOptions::COOKIES => new FileCookieJar(sys_get_temp_dir().'/.slave.cookiejar.json', true)
+            ]);
             $eTag = $response->getHeader('ETag')[0] ?? null;
 
             if (304 === $response->getStatusCode()) {
