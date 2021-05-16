@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Tests\AlertDestination;
 
@@ -7,44 +8,24 @@ use App\Entity\Alert;
 use App\Entity\AlertRule;
 use App\Entity\Device;
 use App\Entity\SlaveGroup;
+use App\Exception\ClearException;
+use App\Exception\TriggerException;
+use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
 
 class HttpTest extends TestCase
 {
-    public function testNoArguments()
+    public function testUrlMissingOnTrigger(): void
     {
-        $guzzle = $this->prophesize('GuzzleHttp\\Client');
-        $guzzle->post('url', Argument::any())->shouldBeCalledTimes(0);
-        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
-
-        $http = new Http($guzzle->reveal(), $logger->reveal());
-
-        $device = new Device();
-        $device->setName('device');
-        $slaveGroup = new SlaveGroup();
-        $slaveGroup->setName('group');
-        $alertRule = new AlertRule();
-        $alertRule->setName('rule');
-        $alert = new Alert();
-        $alert->setDevice($device);
-        $alert->setSlaveGroup($slaveGroup);
-        $alert->setAlertRule($alertRule);
-
-        $http->trigger($alert);
-        $http->clear($alert);
+        $this->expectException(TriggerException::class);
+        (new Http(new Client([])))->trigger($this->createAlert());
     }
 
-    public function testException()
+    public function createAlert(): Alert
     {
-        $guzzle = $this->prophesize('GuzzleHttp\\Client');
-        $guzzle->post('url', Argument::any())->shouldBeCalledTimes(2)->willThrow(new \Exception('test'));
-        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
-        $logger->error(Argument::type('string'))->shouldBeCalledTimes(2);
-
-        $http = new Http($guzzle->reveal(), $logger->reveal());
-        $http->setParameters(['url' => 'url']);
-
         $device = new Device();
         $device->setName('device');
         $slaveGroup = new SlaveGroup();
@@ -56,52 +37,77 @@ class HttpTest extends TestCase
         $alert->setSlaveGroup($slaveGroup);
         $alert->setAlertRule($alertRule);
 
-        $http->trigger($alert);
-        $http->clear($alert);
+        return $alert;
+    }
+
+    public function testUrlMissingOnClear(): void
+    {
+        $this->expectException(ClearException::class);
+        (new Http(new Client([])))->clear($this->createAlert());
+    }
+
+    public function testExceptionOnTriggerRepacksIt(): void
+    {
+        $client = $this->createClient(new MockHandler([
+            new Response(400),
+        ]));
+
+        $http = new Http($client);
+        $http->setParameters(['url' => 'url']);
+
+        $this->expectException(TriggerException::class);
+        $http->trigger($this->createAlert());
+    }
+
+    private function createClient(MockHandler $handler): Client
+    {
+        return new Client([
+            'http_errors' => true,
+            'handler' => HandlerStack::create($handler)
+        ]);
+    }
+
+    public function testExceptionOnClearRepacksIt(): void
+    {
+        $client = $this->createClient(new MockHandler([
+            new Response(400),
+        ]));
+
+        $http = new Http($client);
+        $http->setParameters(['url' => 'url']);
+
+        $this->expectException(ClearException::class);
+        $http->clear($this->createAlert());
     }
 
     public function testTrigger()
     {
-        $guzzle = $this->prophesize('GuzzleHttp\\Client');
-        $guzzle->post('url', Argument::any())->shouldBeCalledTimes(1);
-        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
+        self::expectNotToPerformAssertions();
 
-        $http = new Http($guzzle->reveal(), $logger->reveal());
+        $client = $this->createClient(new MockHandler([
+            new Response(200),
+        ]));
+
+        $http = new Http($client);
         $http->setParameters(['url' => 'url']);
 
-        $device = new Device();
-        $device->setName('device');
-        $slaveGroup = new SlaveGroup();
-        $slaveGroup->setName('group');
-        $alertRule = new AlertRule();
-        $alertRule->setName('rule');
-        $alert = new Alert();
-        $alert->setDevice($device);
-        $alert->setSlaveGroup($slaveGroup);
-        $alert->setAlertRule($alertRule);
+        $alert = $this->createAlert();
 
         $http->trigger($alert);
     }
 
     public function testClear()
     {
-        $guzzle = $this->prophesize('GuzzleHttp\\Client');
-        $guzzle->post('url', Argument::any())->shouldBeCalledTimes(1);
-        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
+        self::expectNotToPerformAssertions();
 
-        $http = new Http($guzzle->reveal(), $logger->reveal());
+        $client = $this->createClient(new MockHandler([
+            new Response(200),
+        ]));
+
+        $http = new Http($client);
         $http->setParameters(['url' => 'url']);
 
-        $device = new Device();
-        $device->setName('device');
-        $slaveGroup = new SlaveGroup();
-        $slaveGroup->setName('group');
-        $alertRule = new AlertRule();
-        $alertRule->setName('rule');
-        $alert = new Alert();
-        $alert->setDevice($device);
-        $alert->setSlaveGroup($slaveGroup);
-        $alert->setAlertRule($alertRule);
+        $alert = $this->createAlert();
 
         $http->clear($alert);
     }

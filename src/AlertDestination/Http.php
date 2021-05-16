@@ -1,22 +1,24 @@
 <?php
+declare(strict_types=1);
 
 namespace App\AlertDestination;
 
 use App\Entity\Alert;
+use App\Exception\ClearException;
+use App\Exception\TriggerException;
 use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
-use Psr\Log\LoggerInterface;
 
 class Http extends AlertDestinationInterface
 {
-    protected $client;
-    protected $url;
-    protected $logger;
+    private ClientInterface $client;
+    private string $url;
 
-    public function __construct(Client $client, LoggerInterface $logger)
+    public function __construct(Client $client)
     {
         $this->client = $client;
-        $this->logger = $logger;
     }
 
     public function setParameters(array $parameters)
@@ -28,25 +30,27 @@ class Http extends AlertDestinationInterface
 
     public function trigger(Alert $alert)
     {
-        if (!$this->url) {
-            return;
+        if (!isset($this->url)) {
+            throw new TriggerException('URL missing');
         }
+
         try {
             $this->client->post($this->url, [RequestOptions::JSON => $this->getData($alert, 'triggered')]);
-        } catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
+        } catch (GuzzleException $e) {
+            throw new TriggerException($e->getMessage(), 0, $e);
         }
     }
 
     public function clear(Alert $alert)
     {
-        if (!$this->url) {
-            return;
+        if (!isset($this->url)) {
+            throw new ClearException('URL missing');
         }
+
         try {
             $this->client->post($this->url, [RequestOptions::JSON => $this->getData($alert, 'cleared')]);
-        } catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
+        } catch (GuzzleException $e) {
+            throw new ClearException($e->getMessage(), 0, $e);
         }
     }
 

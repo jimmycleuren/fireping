@@ -33,7 +33,7 @@ services:
         public: true
 
     App\AlertDestination\Http:
-        arguments: ["@eight_points_guzzle.client.alert", "@monolog.logger"]
+        arguments: ["@eight_points_guzzle.client.alert"]
         public: true
 
     App\AlertDestination\Slack:
