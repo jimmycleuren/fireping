@@ -57,7 +57,11 @@ abstract class Processor
                             $alert->setFirstseen(new \DateTime());
                             $destinations = $device->getActiveAlertDestinations();
                             foreach ($destinations as $destination) {
-                                $this->alertDestinationFactory->create($destination)->trigger($alert);
+                                try {
+                                    $this->alertDestinationFactory->create($destination)->trigger($alert);
+                                } catch (TriggerException $exception) {
+                                    $this->logger->error("failed to trigger alert at destination $destination because: {$exception->getMessage()}");
+                                }
                             }
                         }
                         $alert->setLastseen(new \DateTime());
@@ -74,7 +78,11 @@ abstract class Processor
                             //$this->em->persist($alert); //flush will be done in slavecontroller
                             $destinations = $device->getActiveAlertDestinations();
                             foreach ($destinations as $destination) {
-                                $this->alertDestinationFactory->create($destination)->clear($alert);
+                                try {
+                                    $this->alertDestinationFactory->create($destination)->clear($alert);
+                                } catch (ClearException $exception) {
+                                    $this->logger->error("failed to clear alert at destination $destination because: {$exception->getMessage()}");
+                                }
                             }
                             $this->em->remove($alert); //flush will be done in slavecontroller
                         }
