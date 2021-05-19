@@ -16,7 +16,7 @@ class Http extends AlertDestinationInterface
     private ClientInterface $client;
     private string $url;
 
-    public function __construct(Client $client)
+    public function __construct(ClientInterface $client)
     {
         $this->client = $client;
     }
@@ -35,7 +35,9 @@ class Http extends AlertDestinationInterface
         }
 
         try {
-            $this->client->post($this->url, [RequestOptions::JSON => $this->getData($alert, 'triggered')]);
+            $this->client->request('POST', $this->url, [
+                RequestOptions::JSON => $this->getData($alert, 'triggered')
+            ]);
         } catch (GuzzleException $e) {
             throw new TriggerException($e->getMessage(), 0, $e);
         }
@@ -48,7 +50,9 @@ class Http extends AlertDestinationInterface
         }
 
         try {
-            $this->client->post($this->url, [RequestOptions::JSON => $this->getData($alert, 'cleared')]);
+            $this->client->request('POST', $this->url, [
+                RequestOptions::JSON => $this->getData($alert, 'cleared')
+            ]);
         } catch (GuzzleException $e) {
             throw new ClearException($e->getMessage(), 0, $e);
         }
