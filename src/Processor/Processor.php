@@ -8,6 +8,8 @@ use App\Entity\AlertRule;
 use App\Entity\Device;
 use App\Entity\Probe;
 use App\Entity\SlaveGroup;
+use App\Exception\ClearException;
+use App\Exception\TriggerException;
 use App\Storage\Cache;
 use App\Storage\StorageFactory;
 use Doctrine\Common\Collections\Collection;
