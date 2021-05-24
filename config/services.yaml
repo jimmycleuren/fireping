@@ -33,7 +33,7 @@ services:
         public: true
 
     App\AlertDestination\Http:
-        arguments: ["@eight_points_guzzle.client.alert", "@monolog.logger"]
+        arguments: ["@eight_points_guzzle.client.alert"]
         public: true
 
     App\AlertDestination\Slack:
@@ -41,7 +41,7 @@ services:
         public: true
 
     App\AlertDestination\Mail:
-        arguments: ["@swiftmailer.mailer.default", "@monolog.logger", "@twig"]
+        arguments: ["@swiftmailer.mailer.default", "@monolog.logger", "@twig", "%env(MAILER_FROM)%"]
         public: true
 
     App\Storage\RrdStorage:

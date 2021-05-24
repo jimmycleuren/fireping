@@ -7,38 +7,66 @@ use App\Entity\Alert;
 use App\Entity\AlertRule;
 use App\Entity\Device;
 use App\Entity\SlaveGroup;
+use App\Exception\ClearException;
+use App\Exception\TriggerException;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
+use Psr\Log\Test\TestLogger;
+use Swift_Mime_SimpleMessage;
 use Twig\Environment;
+use Twig\Loader\ArrayLoader;
 
 class MailTest extends TestCase
 {
-    public function testTriggerNoSender()
+    public function testTriggerWithoutSenderThrowsTriggerException(): void
     {
-        $mailer = $this->prophesize('Swift_Mailer');
-        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
-        $logger->error('MAILER_FROM env variable is not set')->shouldBeCalledTimes(1);
-        $templating = $this->prophesize(Environment::class);
+        $this->expectException(TriggerException::class);
 
-        $mail = new Mail($mailer->reveal(), $logger->reveal(), $templating->reveal());
-
-        $original = $_ENV['MAILER_FROM'];
-        $_ENV['MAILER_FROM'] = null;
-        $mail->trigger(new Alert());
-        $_ENV['MAILER_FROM'] = $original;
+        $mailer = new Mail($this->createMockSwiftMailer([]), new TestLogger(), new Environment(new ArrayLoader([])), '');
+        $mailer->trigger(new Alert());
     }
 
-    public function testTrigger()
+    private function createMockSwiftMailer(array $counts): \Swift_Mailer
     {
-        $mailer = $this->prophesize('Swift_Mailer');
-        $mailer->send(Argument::any())->shouldBeCalledTimes(1);
-        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
-        $templating = $this->prophesize(Environment::class);
-        $templating->render(Argument::type('string'), Argument::type('array'))->shouldBeCalledTimes(1);
+        return new class($counts) extends \Swift_Mailer {
+            private array $counts;
 
-        $mail = new Mail($mailer->reveal(), $logger->reveal(), $templating->reveal());
-        $mail->setParameters(['recipient' => 'test@test.com']);
+            public function __construct(array $counts = [])
+            {
+                parent::__construct(new \Swift_NullTransport());
+                $this->counts = $counts;
+            }
 
+            public function send(Swift_Mime_SimpleMessage $message, &$failedRecipients = null)
+            {
+                return array_shift($this->counts);
+            }
+        };
+    }
+
+    public function testClearWithoutSenderThrowsClearException(): void
+    {
+        $this->expectException(ClearException::class);
+
+        $mailer = new Mail($this->createMockSwiftMailer([]), new TestLogger(), new Environment(new ArrayLoader([])), '');
+        $mailer->clear(new Alert());
+    }
+
+    public function testFailedToSendTriggerEvent(): void
+    {
+        $this->expectException(TriggerException::class);
+        $this->expectExceptionMessage('Failed to mail trigger event to receiver@fireping.local');
+
+        $mailer = new Mail($this->createMockSwiftMailer([0]), new TestLogger(), new Environment(new ArrayLoader([
+            'emails/alert.html.twig' => 'template'
+        ])), 'sender@fireping.local');
+        $mailer->setParameters([
+            'recipient' => 'receiver@fireping.local'
+        ]);
+        $mailer->trigger($this->createAlert());
+    }
+
+    private function createAlert(): Alert
+    {
         $device = new Device();
         $device->setName('device');
         $slaveGroup = new SlaveGroup();
@@ -50,71 +78,42 @@ class MailTest extends TestCase
         $alert->setSlaveGroup($slaveGroup);
         $alert->setAlertRule($alertRule);
 
-        $mail->trigger($alert);
+        return $alert;
     }
 
-    public function testFailedTrigger()
+    public function testFailedToSendClearEvent(): void
     {
-        $mailer = $this->prophesize('Swift_Mailer');
-        $mailer->send(Argument::any())->shouldNotBeCalled();
-        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
-        $logger->error(Argument::type('string'))->shouldBeCalledTimes(1);
-        $templating = $this->prophesize(Environment::class);
+        $this->expectException(ClearException::class);
+        $this->expectExceptionMessage('Failed to mail clear event to receiver@fireping.local');
 
-        $mail = new Mail($mailer->reveal(), $logger->reveal(), $templating->reveal());
-        $mail->setParameters(['recipient' => 'invalid']);
-
-        $device = new Device();
-        $device->setName('device');
-        $slaveGroup = new SlaveGroup();
-        $slaveGroup->setName('group');
-        $alertRule = new AlertRule();
-        $alertRule->setName('rule');
-        $alert = new Alert();
-        $alert->setDevice($device);
-        $alert->setSlaveGroup($slaveGroup);
-        $alert->setAlertRule($alertRule);
-
-        $mail->trigger($alert);
+        $mailer = new Mail($this->createMockSwiftMailer([0]), new TestLogger(), new Environment(new ArrayLoader([
+            'emails/alert.html.twig' => 'template'
+        ])), 'sender@fireping.local');
+        $mailer->setParameters([
+            'recipient' => 'receiver@fireping.local'
+        ]);
+        $mailer->clear($this->createAlert());
     }
 
-    public function testClearNoSender()
+    public function testTwigErrorsOnTriggerAreWrappedAsClearException(): void
     {
-        $mailer = $this->prophesize('Swift_Mailer');
-        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
-        $logger->error('MAILER_FROM env variable is not set')->shouldBeCalledTimes(1);
-        $templating = $this->prophesize(Environment::class);
+        $this->expectException(TriggerException::class);
 
-        $mail = new Mail($mailer->reveal(), $logger->reveal(), $templating->reveal());
-
-        $original = $_ENV['MAILER_FROM'];
-        $_ENV['MAILER_FROM'] = null;
-        $mail->trigger(new Alert());
-        $_ENV['MAILER_FROM'] = $original;
+        $mailer = new Mail($this->createMockSwiftMailer([]), new TestLogger(), new Environment(new ArrayLoader([])), 'sender@fireping.local');
+        $mailer->setParameters([
+            'recipient' => 'receiver@fireping.local'
+        ]);
+        $mailer->trigger($this->createAlert());
     }
 
-    public function testClear()
+    public function testTwigErrorsOnClearAreWrappedAsClearException(): void
     {
-        $mailer = $this->prophesize('Swift_Mailer');
-        $mailer->send(Argument::any())->shouldBeCalledTimes(1);
-        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
-        $templating = $this->prophesize(Environment::class);
-        $templating->render(Argument::type('string'), Argument::type('array'))->shouldBeCalledTimes(1);
+        $this->expectException(ClearException::class);
 
-        $mail = new Mail($mailer->reveal(), $logger->reveal(), $templating->reveal());
-        $mail->setParameters(['recipient' => 'test@test.com']);
-
-        $device = new Device();
-        $device->setName('device');
-        $slaveGroup = new SlaveGroup();
-        $slaveGroup->setName('group');
-        $alertRule = new AlertRule();
-        $alertRule->setName('rule');
-        $alert = new Alert();
-        $alert->setDevice($device);
-        $alert->setSlaveGroup($slaveGroup);
-        $alert->setAlertRule($alertRule);
-
-        $mail->clear($alert);
+        $mailer = new Mail($this->createMockSwiftMailer([]), new TestLogger(), new Environment(new ArrayLoader([])), 'sender@fireping.local');
+        $mailer->setParameters([
+            'recipient' => 'receiver@fireping.local'
+        ]);
+        $mailer->clear($this->createAlert());
     }
 }

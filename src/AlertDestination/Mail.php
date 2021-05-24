@@ -1,29 +1,34 @@
 <?php
+declare(strict_types=1);
 
 namespace App\AlertDestination;
 
 use App\Entity\Alert;
+use App\Exception\ClearException;
+use App\Exception\TriggerException;
 use Psr\Log\LoggerInterface;
+use Swift_Mailer;
+use Swift_Message;
 use Twig\Environment;
+use Twig\Error\Error;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
-/**
- * Class Mail.
- */
 class Mail extends AlertDestinationInterface
 {
-    protected $recipient;
-    protected $mailer;
-    protected $twig;
-    protected $logger;
+    private string $recipient;
+    private Swift_Mailer $mailer;
+    private Environment $twig;
+    private LoggerInterface $logger;
+    private string $sender;
 
-    /**
-     * Mail constructor.
-     */
-    public function __construct(\Swift_Mailer $mailer, LoggerInterface $logger, Environment $twig)
+    public function __construct(Swift_Mailer $mailer, LoggerInterface $logger, Environment $twig, string $sender)
     {
         $this->mailer = $mailer;
         $this->logger = $logger;
         $this->twig = $twig;
+        $this->sender = $sender;
     }
 
     public function setParameters(array $parameters)
@@ -35,48 +40,55 @@ class Mail extends AlertDestinationInterface
 
     public function trigger(Alert $alert)
     {
-        if (!isset($_ENV['MAILER_FROM'])) {
-            $this->logger->error('MAILER_FROM env variable is not set');
-
-            return;
+        if ($this->sender === '') {
+            throw new TriggerException('Sender is missing.');
         }
 
-        $this->sendMail($this->recipient, $this->getAlertMessage($alert), $alert, 'ALERT');
+        try {
+            if ($this->sendMail($this->recipient, $this->getAlertMessage($alert), $alert, 'ALERT') === 0) {
+                throw new TriggerException('Failed to mail trigger event to ' . $this->recipient);
+            }
+        } catch (Error $e) {
+            throw new TriggerException($e->getMessage(), 0, $e);
+        }
     }
 
     public function clear(Alert $alert)
     {
-        if (!isset($_ENV['MAILER_FROM'])) {
-            $this->logger->error('MAILER_FROM env variable is not set');
-
-            return;
+        if ($this->sender === '') {
+            throw new ClearException('Sender is missing.');
         }
 
-        $this->sendMail($this->recipient, $this->getAlertMessage($alert), $alert, 'CLEAR');
+        try {
+            if ($this->sendMail($this->recipient, $this->getAlertMessage($alert), $alert, 'CLEAR') === 0) {
+                throw new ClearException('Failed to mail clear event to ' . $this->recipient);
+            }
+        } catch (Error $e) {
+            throw new ClearException($e->getMessage(), 0, $e);
+        }
     }
 
-    private function sendMail(string $to, string $subject, Alert $alert, string $action)
+    /**
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    private function sendMail(string $to, string $subject, Alert $alert, string $action): int
     {
-        try {
-            $message = (new \Swift_Message($subject))
-                ->setFrom($_ENV['MAILER_FROM'])
-                ->setTo($to)
-                ->setBody(
-                    $this->twig->render(
-                        'emails/alert.html.twig',
-                        [
-                            'alert' => $alert,
-                            'action' => $action,
-                        ]
-                    ),
-                    'text/html'
-                );
+        $message = (new Swift_Message($subject))
+            ->setFrom($this->sender)
+            ->setTo($to)
+            ->setBody(
+                $this->twig->render(
+                    'emails/alert.html.twig',
+                    [
+                        'alert' => $alert,
+                        'action' => $action,
+                    ]
+                ),
+                'text/html'
+            );
 
-            if (!$this->mailer->send($message)) {
-                $this->logger->warning("Mail to $to could not be sent");
-            }
-        } catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
-        }
+        return $this->mailer->send($message);
     }
 }
