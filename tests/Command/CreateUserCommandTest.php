@@ -7,8 +7,8 @@ use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Component\Security\Core\Encoder\EncoderFactory;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoder;
+use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactory;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasher;
 
 /**
  * Class CreateUserCommandTest
@@ -32,7 +32,9 @@ class CreateUserCommandTest extends KernelTestCase
     {
         $cleanUpCommand = new CreateUserCommand(
             $this->em,
-            new UserPasswordEncoder(new EncoderFactory([User::class => ['algorithm' => 'bcrypt']]))
+            new UserPasswordHasher(new PasswordHasherFactory([
+                User::class => ['algorithm' => 'bcrypt']
+            ]))
         );
 
         $this->application->add($cleanUpCommand);
