@@ -9,7 +9,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
  * Class CleanupCommand.
@@ -17,23 +17,15 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 class CreateUserCommand extends Command
 {
     protected static $defaultName = 'fireping:create:user';
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-    /**
-     * @var UserPasswordEncoderInterface
-     */
-    private $passwordEncoder;
 
-    /**
-     * CleanupCommand constructor.
-     */
-    public function __construct(EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder)
+    private EntityManagerInterface $entityManager;
+    private UserPasswordHasherInterface $passwordEncoder;
+
+    public function __construct(EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher)
     {
         parent::__construct();
         $this->entityManager = $entityManager;
-        $this->passwordEncoder = $passwordEncoder;
+        $this->passwordEncoder = $passwordHasher;
     }
 
     protected function configure(): void
@@ -74,7 +66,7 @@ class CreateUserCommand extends Command
             $user->setProperty($field, $answer);
         }
 
-        $user->setPassword($this->passwordEncoder->encodePassword($user, $user->getPassword()));
+        $user->setPassword($this->passwordEncoder->hashPassword($user, $user->getPassword()));
         $user->setEnabled(true);
 
         $this->entityManager->persist($user);

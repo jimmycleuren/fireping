@@ -8,20 +8,14 @@ use EasyCorp\Bundle\EasyAdminBundle\Event\BeforeEntityPersistedEvent;
 use EasyCorp\Bundle\EasyAdminBundle\Event\BeforeEntityUpdatedEvent;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class EasyAdminPasswordUpdaterSubscriber implements EventSubscriberInterface
 {
-    /**
-     * @var UserPasswordEncoderInterface
-     */
-    private $passwordEncoder;
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private UserPasswordHasherInterface $passwordEncoder;
+    private LoggerInterface $logger;
 
-    public function __construct(UserPasswordEncoderInterface $passwordEncoder, LoggerInterface $logger)
+    public function __construct(UserPasswordHasherInterface $passwordEncoder, LoggerInterface $logger)
     {
         $this->passwordEncoder = $passwordEncoder;
         $this->logger = $logger;
@@ -39,7 +33,7 @@ class EasyAdminPasswordUpdaterSubscriber implements EventSubscriberInterface
         }
 
         if ($entity->getPlainPassword()) {
-            $entity->setPassword($this->passwordEncoder->encodePassword($entity, $entity->getPlainPassword()));
+            $entity->setPassword($this->passwordEncoder->hashPassword($entity, $entity->getPlainPassword()));
             $entity->eraseCredentials();
             $this->logger->error('Password updated.', ['user.id' => $entity->getId()]);
         }

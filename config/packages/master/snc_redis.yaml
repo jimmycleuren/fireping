@@ -10,14 +10,6 @@ snc_redis:
             alias: doctrine
             dsn: '%env(resolve:REDIS_URL)%'
             logging: false
-    # configure doctrine caching
-    doctrine:
-        result_cache:
-            client: doctrine
-            entity_manager: [default]
-        query_cache:
-            client: doctrine
-            entity_manager: default
     session:
         client: default
         locking: false
