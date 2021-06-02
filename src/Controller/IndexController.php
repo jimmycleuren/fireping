@@ -16,12 +16,18 @@ use App\Repository\StorageNodeRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class IndexController extends AbstractController
 {
+    private UserPasswordHasherInterface $passwordHasher;
+
+    public function __construct(UserPasswordHasherInterface $passwordHasher)
+    {
+        $this->passwordHasher = $passwordHasher;
+    }
+
     /**
      * @Route("/", name="home")
      */
@@ -49,9 +55,7 @@ class IndexController extends AbstractController
      * @Route("/database-init", name="database-init")
      */
     public function initDatabaseAction(
-        Request $request,
         EntityManagerInterface $entityManager,
-        UserPasswordEncoderInterface $passwordEncoder,
         SlaveRepository $slaveRepository,
         DeviceRepository $deviceRepository,
         UserRepository $userRepository
@@ -65,7 +69,7 @@ class IndexController extends AbstractController
         $admin->setRoles(['ROLE_ADMIN']);
         $admin->setEmail("admin@fireping.com");
         $admin->setEnabled(true);
-        $admin->setPassword($passwordEncoder->encodePassword($admin, "admin"));
+        $admin->setPassword($this->passwordHasher->hashPassword($admin, "admin"));
         $entityManager->persist($admin);
 
         $slave = new User();
@@ -73,7 +77,7 @@ class IndexController extends AbstractController
         $slave->setRoles(['ROLE_API']);
         $slave->setEmail("slave@fireping.com");
         $slave->setEnabled(true);
-        $slave->setPassword($passwordEncoder->encodePassword($slave, "password"));
+        $slave->setPassword($this->passwordHasher->hashPassword($slave, "password"));
         $entityManager->persist($slave);
 
         $ping = new Probe();
