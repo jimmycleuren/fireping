@@ -8,12 +8,13 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
@@ -25,17 +26,21 @@ class BasicAuthenticator extends AbstractFormLoginAuthenticator
 {
     use TargetPathTrait;
 
-    private $entityManager;
-    private $router;
-    private $csrfTokenManager;
-    private $passwordEncoder;
+    private EntityManagerInterface $entityManager;
+    private RouterInterface $router;
+    private CsrfTokenManagerInterface $csrfTokenManager;
+    private UserPasswordHasherInterface $passwordHasher;
 
-    public function __construct(EntityManagerInterface $entityManager, RouterInterface $router, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordEncoderInterface $passwordEncoder)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        RouterInterface $router,
+        CsrfTokenManagerInterface $csrfTokenManager,
+        UserPasswordHasherInterface $passwordHasher
+    ) {
         $this->entityManager = $entityManager;
         $this->router = $router;
         $this->csrfTokenManager = $csrfTokenManager;
-        $this->passwordEncoder = $passwordEncoder;
+        $this->passwordHasher = $passwordHasher;
     }
 
     public function supports(Request $request)
@@ -78,7 +83,8 @@ class BasicAuthenticator extends AbstractFormLoginAuthenticator
 
     public function checkCredentials($credentials, UserInterface $user)
     {
-        return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
+        return $user instanceof PasswordAuthenticatedUserInterface
+            && $this->passwordHasher->isPasswordValid($user, $credentials['password']);
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)

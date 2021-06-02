@@ -3,13 +3,14 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\HasLifecycleCallbacks()
  */
-class User implements UserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
      * @ORM\Id()
@@ -59,6 +60,11 @@ class User implements UserInterface
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->getUsername();
     }
 
     /**
@@ -187,5 +193,10 @@ class User implements UserInterface
     public function __toString(): string
     {
         return $this->username;
+    }
+
+    public function __call($name, $arguments)
+    {
+        // TODO: Implement @method string getUserIdentifier()
     }
 }
