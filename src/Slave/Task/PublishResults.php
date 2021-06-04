@@ -61,6 +61,21 @@ class PublishResults implements TaskInterface
         $this->body = $args['body'] ?? new \stdClass();
     }
 
+    public function getMethod(): string
+    {
+        return $this->method;
+    }
+
+    public function getEndpoint(): string
+    {
+        return $this->endpoint;
+    }
+
+    public function getBody()
+    {
+        return $this->body;
+    }
+
     public function getType(): string
     {
         return self::class;
