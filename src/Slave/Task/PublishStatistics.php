@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Slave\Task;
 
-use App\Slave\Client\FirepingClient;
 use GuzzleHttp\Cookie\FileCookieJar;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\RequestOptions;
+use Psr\Http\Client\ClientInterface;
 use Psr\Log\LoggerInterface;
 use stdClass;
 
@@ -18,15 +18,12 @@ class PublishStatistics implements TaskInterface
      * @var LoggerInterface
      */
     private $logger;
-    /**
-     * @var FirepingClient
-     */
-    private $client;
+    private ClientInterface $client;
     private $method;
     private $endpoint;
     private $body;
 
-    public function __construct(LoggerInterface $logger, FirepingClient $client)
+    public function __construct(LoggerInterface $logger, ClientInterface $client)
     {
         $this->logger = $logger;
         $this->client = $client;
@@ -43,11 +40,11 @@ class PublishStatistics implements TaskInterface
             ]);
 
             $this->logger->info(sprintf('worker: published stats (took %.2f seconds)', microtime(true) - $startedAt));
-            return ['code' => $response->getStatusCode(), 'contents' => (string) $response->getBody()];
+            return ['code' => $response->getStatusCode(), 'contents' => (string)$response->getBody()];
         } catch (RequestException $exception) {
             $this->logger->error(sprintf('worker: failed to publish stats: %s (took %.2f seconds)', $exception->getMessage(), microtime(true) - $startedAt));
 
-            $body = $exception->getResponse() === null ? 'empty body' : (string) $exception->getResponse()->getBody();
+            $body = $exception->getResponse() === null ? 'empty body' : (string)$exception->getResponse()->getBody();
             $this->logger->debug(sprintf('worker: stats response body: %s (took %.2f seconds)', $body, microtime(true) - $startedAt));
 
             return ['code' => $exception->getCode(), 'contents' => $exception->getMessage()];

@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Slave\Task;
 
-use App\Slave\Client\FirepingClient;
 use GuzzleHttp\Cookie\FileCookieJar;
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\RequestOptions;
+use Psr\Http\Client\ClientInterface;
 use Psr\Log\LoggerInterface;
 
 class FetchConfiguration implements TaskInterface
@@ -21,12 +20,9 @@ class FetchConfiguration implements TaskInterface
      * @var string|null
      */
     protected $etag;
-    /**
-     * @var FirepingClient
-     */
-    private $client;
+    private ClientInterface $client;
 
-    public function __construct(LoggerInterface $logger, FirepingClient $client)
+    public function __construct(LoggerInterface $logger, ClientInterface $client)
     {
         $this->logger = $logger;
         $this->client = $client;
@@ -36,20 +32,21 @@ class FetchConfiguration implements TaskInterface
     {
         $endpoint = sprintf('/api/slaves/%s/config', $_ENV['SLAVE_NAME']);
 
-        $headers = null !== $this->etag ? ['If-None-Match' => $this->etag] : [];
-        $request = new Request('GET', $endpoint, $headers);
-
         try {
-            $response = $this->client->send($request, [
+            $response = $this->client->request('GET', $endpoint, [
+                RequestOptions::HEADERS => \array_filter([
+                    'If-None-Match' => $this->etag
+                ]),
                 RequestOptions::COOKIES => new FileCookieJar(sys_get_temp_dir().'/.slave.cookiejar.json', true)
             ]);
+
             $eTag = $response->getHeader('ETag')[0] ?? null;
 
             if (304 === $response->getStatusCode()) {
                 return ['code' => 304, 'contents' => 'Configuration unchanged', 'etag' => $eTag];
             }
 
-            $configuration = json_decode((string) $response->getBody(), true);
+            $configuration = json_decode((string)$response->getBody(), true);
             if (null === $configuration) {
                 return ['code' => 500, 'contents' => 'Malformed JSON', 'etag' => $eTag];
             }
