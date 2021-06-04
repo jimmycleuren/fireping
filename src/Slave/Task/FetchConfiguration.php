@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Slave\Task;
 
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Cookie\FileCookieJar;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
-use Psr\Http\Client\ClientInterface;
 use Psr\Log\LoggerInterface;
 
 class FetchConfiguration implements TaskInterface
