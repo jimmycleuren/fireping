@@ -35,9 +35,6 @@ security:
         provider: 'users'
     main:
       pattern: ^/
-      guard:
-        authenticators:
-          - App\Security\BasicAuthenticator
       logout:
         path: /logout
         target: /
