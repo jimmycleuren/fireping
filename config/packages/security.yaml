@@ -43,7 +43,6 @@ security:
       logout:
         path: /logout
         target: /
-      anonymous: true
       remember_me:
         secret: '%kernel.secret%'
         lifetime: 604800 #1 week in seconden
