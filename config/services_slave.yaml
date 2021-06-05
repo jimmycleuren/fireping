@@ -4,24 +4,38 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
-    env(SLAVE_URL): "http://localhost"
+  env(SLAVE_URL): "http://localhost"
 
 services:
-    # default configuration for services in *this* file
-    _defaults:
-        autowire: true      # Automatically injects dependencies in your services.
-        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+  # default configuration for services in *this* file
+  _defaults:
+    autowire: true      # Automatically injects dependencies in your services.
+    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
-    App\Slave\:
-        resource: '../src/Slave/*'
-        exclude: '../src/{Client,Configuration.php,Device.php,Instruction.php,Probe.php}'
+  App\Slave\:
+    resource: '../src/Slave/*'
+    exclude: '../src/{Configuration.php,Device.php,Instruction.php,Probe.php}'
 
-    App\Slave\Command\ProbeDispatcherCommand:
-      arguments:
-        $logger: '@monolog.logger.dispatcher'
+  App\Slave\Command\ProbeDispatcherCommand:
+    arguments:
+      $logger: '@monolog.logger.dispatcher'
 
-    App\Slave\Command\ProbeWorkerCommand:
-      arguments:
-        $logger: '@monolog.logger.worker'
+  App\Slave\Command\ProbeWorkerCommand:
+    arguments:
+      $logger: '@monolog.logger.worker'
 
-    App\Slave\Client\FirepingClient: '@eight_points_guzzle.client.api_fireping'
+  App\Slave\Command\HealthCommand:
+    arguments:
+      $client: '@eight_points_guzzle.client.api_fireping'
+
+  App\Slave\Task\FetchConfiguration:
+    arguments:
+      $client: '@eight_points_guzzle.client.api_fireping'
+
+  App\Slave\Task\PublishResults:
+    arguments:
+      $client: '@eight_points_guzzle.client.api_fireping'
+
+  App\Slave\Task\PublishStatistics:
+    arguments:
+      $client: '@eight_points_guzzle.client.api_fireping'
