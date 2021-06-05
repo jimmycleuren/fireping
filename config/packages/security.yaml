@@ -1,4 +1,5 @@
 security:
+  enable_authenticator_manager: true
   # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
   password_hashers:
     legacy:
