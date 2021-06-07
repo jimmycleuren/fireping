@@ -453,7 +453,7 @@ class SlaveControllerTest extends WebTestCase
 
     public function testResultTracerouteUnreachable()
     {
-        $timestamp = date("U");
+        $timestamp = date("U")+1;
 
         $client = static::createClient();
         $userRepository = new UserRepository(static::$container->get('doctrine'));
@@ -476,7 +476,6 @@ class SlaveControllerTest extends WebTestCase
         )));
 
         $response = $client->getResponse();
-        dump($response->getContent());
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
