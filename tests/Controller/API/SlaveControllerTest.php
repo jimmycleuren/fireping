@@ -476,6 +476,7 @@ class SlaveControllerTest extends WebTestCase
         )));
 
         $response = $client->getResponse();
+        dump($response->getContent());
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
