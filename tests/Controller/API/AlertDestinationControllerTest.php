@@ -2,15 +2,22 @@
 
 namespace App\Tests\Controller\API;
 
-class AlertDestinationControllerTest extends BaseControllerTestCase
+use App\Repository\UserRepository;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+
+class AlertDestinationControllerTest extends WebTestCase
 {
     public function testCollection()
     {
-        $this->client->request('GET', '/api/alert_destinations.json', [], [], [
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
+
+        $client->request('GET', '/api/alert_destinations.json', [], [], [
             'HTTP_Accept' => 'application/json',
         ]);
 
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json; charset=utf-8'));
         $this->assertJson($response->getContent());
@@ -18,7 +25,11 @@ class AlertDestinationControllerTest extends BaseControllerTestCase
 
     public function testAddRemove()
     {
-        $this->client->request(
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
+
+        $client->request(
             'POST',
             '/api/alert_destinations.json',
             [],
@@ -33,19 +44,16 @@ class AlertDestinationControllerTest extends BaseControllerTestCase
             ])
         );
 
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
         $this->assertEquals(201, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json; charset=utf-8'));
         $this->assertJson($response->getContent());
 
         $id = json_decode($response->getContent())->id;
 
-        $crawler = $this->client->request(
-            'DELETE',
-            "/api/alert_destinations/$id.json"
-        );
+        $client->request('DELETE', "/api/alert_destinations/$id.json");
 
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
         $this->assertEquals(204, $response->getStatusCode());
     }
 }

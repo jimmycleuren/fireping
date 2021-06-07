@@ -3,16 +3,22 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller\API;
 
+use App\Repository\UserRepository;
 use App\Slave\Worker\StatsManager;
 use Psr\Log\LoggerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class SlaveControllerTest extends BaseControllerTestCase
+class SlaveControllerTest extends WebTestCase
 {
     public function testError()
     {
-        $this->client->request('POST', '/api/slaves/slave1/error', ['message' => 'error']);
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
 
-        $response = $this->client->getResponse();
+        $client->request('POST', '/api/slaves/slave1/error', ['message' => 'error']);
+
+        $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
@@ -20,19 +26,27 @@ class SlaveControllerTest extends BaseControllerTestCase
 
     public function testConfig()
     {
-        $this->client->request('GET', '/api/slaves/slave1/config');
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
 
-        $response = $this->client->getResponse();
+        $client->request('GET', '/api/slaves/slave1/config');
+
+        $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
     }
 
-    public function testConfigUnuedSlave()
+    public function testConfigUnusedSlave()
     {
-        $this->client->request('GET', '/api/slaves/slave-unused/config');
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
 
-        $response = $this->client->getResponse();
+        $client->request('GET', '/api/slaves/slave-unused/config');
+
+        $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
@@ -42,22 +56,30 @@ class SlaveControllerTest extends BaseControllerTestCase
     {
         $id = date('U');
 
-        $this->client->request('GET', '/api/slaves/'.$id.'/config');
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
 
-        $response = $this->client->getResponse();
+        $client->request('GET', '/api/slaves/'.$id.'/config');
+
+        $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
 
-        $em = $this->client->getContainer()->get('doctrine')->getManager();
+        $em = $client->getContainer()->get('doctrine')->getManager();
         $this->assertNotNull($em->getRepository('App:Slave')->findOneById($id));
     }
 
     public function testEmptyResult()
     {
-        $this->client->request('POST', '/api/slaves/slave1/result');
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
 
-        $response = $this->client->getResponse();
+        $client->request('POST', '/api/slaves/slave1/result');
+
+        $response = $client->getResponse();
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
@@ -65,11 +87,15 @@ class SlaveControllerTest extends BaseControllerTestCase
 
     public function testResultWithoutTimestamp()
     {
-        $this->client->request('POST', '/api/slaves/slave1/result', [], [], [], json_encode([
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
+
+        $client->request('POST', '/api/slaves/slave1/result', [], [], [], json_encode([
             '1' => [],
         ]));
 
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
@@ -77,13 +103,17 @@ class SlaveControllerTest extends BaseControllerTestCase
 
     public function testResultInvalidFormat()
     {
-        $this->client->request('POST', '/api/slaves/slave1/result', [], [], [], json_encode([
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
+
+        $client->request('POST', '/api/slaves/slave1/result', [], [], [], json_encode([
             '1' => [
                 'timestamp' => date('U'),
             ],
         ]));
 
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
@@ -91,7 +121,11 @@ class SlaveControllerTest extends BaseControllerTestCase
 
     public function testResultUnknownTarget()
     {
-        $this->client->request('POST', '/api/slaves/slave1/result', [], [], [], json_encode([
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
+
+        $client->request('POST', '/api/slaves/slave1/result', [], [], [], json_encode([
             '1' => [
                 'timestamp' => date('U'),
                 'targets' => [
@@ -100,7 +134,7 @@ class SlaveControllerTest extends BaseControllerTestCase
             ],
         ]));
 
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
@@ -110,7 +144,11 @@ class SlaveControllerTest extends BaseControllerTestCase
     {
         $timestamp = date('U');
 
-        $this->client->request('POST', '/api/slaves/slave1/result', [], [], [], json_encode([
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
+
+        $client->request('POST', '/api/slaves/slave1/result', [], [], [], json_encode([
             '1' => [
                 'timestamp' => $timestamp,
                 'targets' => [
@@ -121,7 +159,7 @@ class SlaveControllerTest extends BaseControllerTestCase
             ],
         ]));
 
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
         $this->assertEquals(409, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
@@ -131,7 +169,11 @@ class SlaveControllerTest extends BaseControllerTestCase
     {
         $timestamp = date('U');
 
-        $this->client->request('POST', '/api/slaves/slave1/result', [], [], [], json_encode([
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
+
+        $client->request('POST', '/api/slaves/slave1/result', [], [], [], json_encode([
             '1' => [
                 'timestamp' => $timestamp,
                 'targets' => [
@@ -156,19 +198,23 @@ class SlaveControllerTest extends BaseControllerTestCase
             ],
         ]));
 
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
 
-        unlink($this->client->getContainer()->get('kernel')->getProjectDir().'/var/rrd/1/1/1.rrd');
+        unlink($client->getContainer()->get('kernel')->getProjectDir().'/var/rrd/1/1/1.rrd');
     }
 
     public function testResultPing()
     {
         $timestamp = date('U');
 
-        $this->client->request('POST', '/api/slaves/slave1/result', [], [], [], json_encode([
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
+
+        $client->request('POST', '/api/slaves/slave1/result', [], [], [], json_encode([
             '1' => [
                 'timestamp' => $timestamp,
                 'targets' => [
@@ -193,13 +239,13 @@ class SlaveControllerTest extends BaseControllerTestCase
             ],
         ]));
 
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
 
         //try to update at the same timestamp again
-        $this->client->request('POST', '/api/slaves/slave1/result', [], [], [], json_encode([
+        $client->request('POST', '/api/slaves/slave1/result', [], [], [], json_encode([
             '1' => [
                 'timestamp' => $timestamp,
                 'targets' => [
@@ -224,19 +270,23 @@ class SlaveControllerTest extends BaseControllerTestCase
             ],
         ]));
 
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
         $this->assertEquals(409, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
 
-        unlink($this->client->getContainer()->get('kernel')->getProjectDir().'/var/rrd/1/1/1.rrd');
+        unlink($client->getContainer()->get('kernel')->getProjectDir().'/var/rrd/1/1/1.rrd');
     }
 
     public function testResultTracerouteWrongStep()
     {
         $timestamp = date('U');
 
-        $this->client->request('POST', '/api/slaves/slave1/result', [], [], [], json_encode([
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
+
+        $client->request('POST', '/api/slaves/slave1/result', [], [], [], json_encode([
             '2' => [
                 'timestamp' => $timestamp,
                 'targets' => [
@@ -252,7 +302,7 @@ class SlaveControllerTest extends BaseControllerTestCase
             ],
         ]));
 
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
         $this->assertEquals(409, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
@@ -262,7 +312,11 @@ class SlaveControllerTest extends BaseControllerTestCase
     {
         $timestamp = date('U');
 
-        $this->client->request('POST', '/api/slaves/slave1/result', [], [], [], json_encode([
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
+
+        $client->request('POST', '/api/slaves/slave1/result', [], [], [], json_encode([
             '2' => [
                 'timestamp' => $timestamp,
                 'targets' => [
@@ -278,7 +332,7 @@ class SlaveControllerTest extends BaseControllerTestCase
             ],
         ]));
 
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
@@ -288,7 +342,11 @@ class SlaveControllerTest extends BaseControllerTestCase
     {
         $timestamp = date("U");
 
-        $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
+
+        $client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
             '4' => array(
                 'timestamp' => $timestamp,
                 'targets' => array(
@@ -303,7 +361,7 @@ class SlaveControllerTest extends BaseControllerTestCase
             )
         )));
 
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
@@ -313,7 +371,11 @@ class SlaveControllerTest extends BaseControllerTestCase
     {
         $timestamp = date("U") + 1;
 
-        $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
+
+        $client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
             '4' => array(
                 'timestamp' => $timestamp,
                 'targets' => array(
@@ -325,7 +387,7 @@ class SlaveControllerTest extends BaseControllerTestCase
             )
         )));
 
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
         $this->assertEquals(409, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
@@ -335,7 +397,11 @@ class SlaveControllerTest extends BaseControllerTestCase
     {
         $timestamp = date("U") + 2;
 
-        $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
+
+        $client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
             '4' => array(
                 'timestamp' => $timestamp,
                 'targets' => array(
@@ -350,7 +416,7 @@ class SlaveControllerTest extends BaseControllerTestCase
             )
         )));
 
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
@@ -360,7 +426,11 @@ class SlaveControllerTest extends BaseControllerTestCase
     {
         $timestamp = date("U");
 
-        $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
+
+        $client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
             '2' => array(
                 'timestamp' => $timestamp,
                 'targets' => array(
@@ -375,7 +445,7 @@ class SlaveControllerTest extends BaseControllerTestCase
             )
         )));
 
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
         $this->assertEquals(409, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
@@ -385,7 +455,11 @@ class SlaveControllerTest extends BaseControllerTestCase
     {
         $timestamp = date("U");
 
-        $this->client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
+
+        $client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
             '2' => array(
                 'timestamp' => $timestamp,
                 'targets' => array(
@@ -401,7 +475,7 @@ class SlaveControllerTest extends BaseControllerTestCase
             )
         )));
 
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
@@ -409,16 +483,20 @@ class SlaveControllerTest extends BaseControllerTestCase
 
     public function testStats()
     {
-        exec('rm -rf '.$this->client->getContainer()->get('kernel')->getProjectDir().'/var/rrd/slaves');
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
+
+        exec('rm -rf '.$client->getContainer()->get('kernel')->getProjectDir().'/var/rrd/slaves');
 
         $logger = $this->prophesize(LoggerInterface::class);
         $statsManager = new StatsManager($logger->reveal());
         $statsManager->addQueueItems(0, 5);
         $statsManager->addWorkerStats(10, 5, ['ping' => 5]);
 
-        $this->client->request('POST', '/api/slaves/slave1/stats', [], [], [], json_encode($statsManager->getStats()));
+        $client->request('POST', '/api/slaves/slave1/stats', [], [], [], json_encode($statsManager->getStats()));
 
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
@@ -426,9 +504,9 @@ class SlaveControllerTest extends BaseControllerTestCase
         //second call for updates with additional datasource
         sleep(1);
         $statsManager->addWorkerStats(10, 5, ['ping' => 5, 'traceroute' => 1]);
-        $this->client->request('POST', '/api/slaves/slave1/stats', [], [], [], json_encode($statsManager->getStats()));
+        $client->request('POST', '/api/slaves/slave1/stats', [], [], [], json_encode($statsManager->getStats()));
 
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
@@ -436,7 +514,9 @@ class SlaveControllerTest extends BaseControllerTestCase
 
     public function testHealth(): void
     {
-        $client = self::asSlave();
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'slave01']), 'api');
 
         $client->request('GET', '/api/slaves/health');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
