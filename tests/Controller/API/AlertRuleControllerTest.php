@@ -2,15 +2,22 @@
 
 namespace App\Tests\Controller\API;
 
-class AlertRuleControllerTest extends BaseControllerTestCase
+use App\Repository\UserRepository;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+
+class AlertRuleControllerTest extends WebTestCase
 {
     public function testCollection()
     {
-        $crawler = $this->client->request('GET', '/api/alert_rules.json', [], [], [
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
+
+        $client->request('GET', '/api/alert_rules.json', [], [], [
             'HTTP_Accept' => 'application/json',
         ]);
 
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json; charset=utf-8'));
         $this->assertJson($response->getContent());
@@ -18,7 +25,11 @@ class AlertRuleControllerTest extends BaseControllerTestCase
 
     public function testAddRemove()
     {
-        $crawler = $this->client->request(
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
+
+        $client->request(
             'POST',
             '/api/alert_rules.json',
             [],
@@ -37,19 +48,15 @@ class AlertRuleControllerTest extends BaseControllerTestCase
             ])
         );
 
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
         $this->assertEquals(201, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json; charset=utf-8'));
         $this->assertJson($response->getContent());
 
         $id = json_decode($response->getContent())->id;
 
-        $crawler = $this->client->request(
-            'DELETE',
-            "/api/alert_rules/$id.json"
-        );
+        $client->request('DELETE', "/api/alert_rules/$id.json");
 
-        $response = $this->client->getResponse();
-        $this->assertEquals(204, $response->getStatusCode());
+        $this->assertEquals(204, $client->getResponse()->getStatusCode());
     }
 }
