@@ -2,15 +2,22 @@
 
 namespace App\Tests\Controller\API;
 
-class DomainControllerTest extends BaseControllerTestCase
+use App\Repository\UserRepository;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+
+class DomainControllerTest extends WebTestCase
 {
     public function testCollection()
     {
-        $crawler = $this->client->request('GET', '/api/domains.json', [], [], [
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
+
+        $client->request('GET', '/api/domains.json', [], [], [
             'HTTP_Accept' => 'application/json',
         ]);
 
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json; charset=utf-8'));
         $this->assertJson($response->getContent());
@@ -18,7 +25,11 @@ class DomainControllerTest extends BaseControllerTestCase
 
     public function testAddRemove()
     {
-        $crawler = $this->client->request(
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
+
+        $client->request(
             'POST',
             '/api/domains.json',
             [],
@@ -31,29 +42,30 @@ class DomainControllerTest extends BaseControllerTestCase
             ])
         );
 
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
         $this->assertEquals(201, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json; charset=utf-8'));
         $this->assertJson($response->getContent());
 
         $id = json_decode($response->getContent())->id;
 
-        $crawler = $this->client->request(
-            'DELETE',
-            "/api/domains/$id.json"
-        );
+        $client->request('DELETE', "/api/domains/$id.json");
 
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
         $this->assertEquals(204, $response->getStatusCode());
     }
 
     public function testAlerts()
     {
-        $crawler = $this->client->request('GET', '/api/domains/1/alerts.json', [], [], [
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
+
+        $client->request('GET', '/api/domains/1/alerts.json', [], [], [
             'HTTP_Accept' => 'application/json',
         ]);
 
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());

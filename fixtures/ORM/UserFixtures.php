@@ -5,15 +5,15 @@ namespace App\DataFixtures\ORM;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
+use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 
 class UserFixtures extends Fixture
 {
-    private $encoder;
+    private PasswordHasherFactoryInterface $passwordHasherFactory;
 
-    public function __construct(EncoderFactoryInterface $encoderFactory)
+    public function __construct(PasswordHasherFactoryInterface $passwordHasherFactory)
     {
-        $this->encoder = $encoderFactory;
+        $this->passwordHasherFactory = $passwordHasherFactory;
     }
 
     public function load(ObjectManager $manager)
@@ -29,8 +29,8 @@ class UserFixtures extends Fixture
         $user->setRoles(['ROLE_ADMIN']);
 
         // Update the user
-        $encoder = $this->encoder->getEncoder($user);
-        $hashedPassword = $encoder->encodePassword($user->getPlainPassword(), $user->getSalt());
+        $encoder = $this->passwordHasherFactory->getPasswordHasher($user);
+        $hashedPassword = $encoder->hash($user->getPlainPassword());
         $user->setPassword($hashedPassword);
         $manager->persist($user);
         $manager->flush();
@@ -38,7 +38,7 @@ class UserFixtures extends Fixture
         $slave = new User();
         $slave->setUsername('slave01');
         $slave->setEmail('slave01@fireping.be');
-        $slave->setPassword($encoder->encodePassword('test123', $slave->getSalt()));
+        $slave->setPassword($encoder->hash('test123'));
         $slave->setEnabled(true);
         $slave->setRoles(['ROLE_API']);
         $manager->persist($slave);
