@@ -4,7 +4,6 @@
 eight_points_guzzle:
   clients:
     api_fireping:
-      class: App\Slave\Client\FirepingClient
       base_url: '%env(SLAVE_URL)%'
       options:
         auth:
