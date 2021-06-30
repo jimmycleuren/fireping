@@ -17,7 +17,7 @@ class Queue
     private $id;
     private $workerManager;
     private $statsManager;
-    private $targetsPerPacket = 50;
+    private $targetsPerPacket = 100;
 
     public function __construct(WorkerManager $workerManager, StatsManager $statsManager, int $id, string $slaveName, LoggerInterface $logger)
     {
