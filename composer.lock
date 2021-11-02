@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bb9accb9d5ede121eaf4b518a0716ac6",
+    "content-hash": "4a3751e46d68a4a1b5f27fc86ec0842f",
     "packages": [
         {
             "name": "api-platform/api-pack",
@@ -10268,16 +10268,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "0.12.94",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "3d0ba4c198a24e3c3fc489f3ec6ac9612c4be5d6"
+                "reference": "0d13a99513182e521271d46bde8f28caa4f84d97"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/3d0ba4c198a24e3c3fc489f3ec6ac9612c4be5d6",
-                "reference": "3d0ba4c198a24e3c3fc489f3ec6ac9612c4be5d6",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/0d13a99513182e521271d46bde8f28caa4f84d97",
+                "reference": "0d13a99513182e521271d46bde8f28caa4f84d97",
                 "shasum": ""
             },
             "require": {
@@ -10293,7 +10293,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.12-dev"
+                    "dev-master": "1.0-dev"
                 }
             },
             "autoload": {
@@ -10308,7 +10308,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/0.12.94"
+                "source": "https://github.com/phpstan/phpstan/tree/1.0.0"
             },
             "funding": [
                 {
@@ -10328,7 +10328,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-07-30T09:05:27+00:00"
+            "time": "2021-11-01T06:38:20+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",
