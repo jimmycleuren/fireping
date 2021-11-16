@@ -45,7 +45,6 @@ final class ProbeDispatcherCommand extends Command
     private WorkerManager $workerManager;
     private StatsManager $statsManager;
     private int $devicesPerWorker = 250;
-    private int $randomFactor = 0;
 
     public function __construct(LoggerInterface $logger, WorkerManager $workerManager, StatsManager $statsManager)
     {
@@ -87,7 +86,6 @@ final class ProbeDispatcherCommand extends Command
     private function setUp(InputInterface $input)
     {
         $this->maxRuntime = (int) $input->getOption('max-runtime');
-        $this->randomFactor = random_int(0, 119);
 
         foreach (['SLAVE_NAME', 'SLAVE_URL'] as $item) {
             if (!isset($_ENV[$item])) {
@@ -126,7 +124,6 @@ final class ProbeDispatcherCommand extends Command
         $this->logger->info('Fireping Dispatcher Started.');
         $this->logger->info('Slave name is '.$_ENV['SLAVE_NAME']);
         $this->logger->info('Slave url is '.$_ENV['SLAVE_URL']);
-        $this->logger->info('Random factor is '.$this->randomFactor);
 
         Loop::addPeriodicTimer(120, function () {
             $this->sendInstruction([
