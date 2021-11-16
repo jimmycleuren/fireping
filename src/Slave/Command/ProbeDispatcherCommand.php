@@ -200,26 +200,26 @@ final class ProbeDispatcherCommand extends Command
     private function sendInstruction(array $instruction, int $expectedRuntime = 60): void
     {
         try {
-            $this->logger->info(sprintf('dispatcher: selecting worker for type %s', $instruction['type']));
+            $this->logger->info(sprintf('selecting worker for type %s', $instruction['type']));
             $worker = $this->workerManager->getWorker($instruction['type']);
-            $this->logger->info(sprintf('dispatcher: worker %s selected', (string) $worker));
+            $this->logger->info(sprintf('worker %s selected', (string) $worker));
         } catch (Exception $e) {
-            $this->logger->error('dispatcher: could not select worker: ' . $e->getMessage());
+            $this->logger->error('could not select worker: ' . $e->getMessage());
 
             return;
         }
 
         $json = json_encode($instruction);
         if (json_last_error() !== JSON_ERROR_NONE) {
-            $this->logger->error('dispatcher: failed to encode instruction: ' . json_last_error_msg());
+            $this->logger->error('failed to encode instruction: ' . json_last_error_msg());
 
             return;
         }
 
         $startAt = microtime(true);
 
-        $this->logger->info(sprintf('dispatcher: sending instruction to worker %s (%d bytes)', (string) $worker, strlen($json)));
-        $this->logger->debug(sprintf('dispatcher: worker %s instruction: %s', (string) $worker, $json));
+        $this->logger->info(sprintf('sending instruction to worker %s (%d bytes)', (string) $worker, strlen($json)));
+        $this->logger->debug(sprintf('worker %s instruction: %s', (string) $worker, $json));
 
         $worker->send($json, $expectedRuntime, function ($type, $response) {
             if (Process::OUT === $type) {
@@ -231,7 +231,7 @@ final class ProbeDispatcherCommand extends Command
             }
         });
 
-        $this->logger->info(sprintf('dispatcher: sent instruction to worker %s (took %s seconds)', (string) $worker, microtime(true) - $startAt));
+        $this->logger->info(sprintf('sent instruction to worker %s (took %s seconds)', (string) $worker, microtime(true) - $startAt));
     }
 
     private function handleResponse(string $data): void
@@ -241,13 +241,13 @@ final class ProbeDispatcherCommand extends Command
         $response = json_decode($data, true);
 
         if (!$response) {
-            $this->logger->error('dispatcher: malformed json received from worker');
+            $this->logger->error('malformed json received from worker');
 
             return;
         }
 
         if (!isset($response['pid'], $response['type'], $response['status'], $response['headers'], $response['contents'])) {
-            $this->logger->error('dispatcher: incomplete response received from worker');
+            $this->logger->error('incomplete response received from worker');
 
             return;
         }
@@ -258,11 +258,11 @@ final class ProbeDispatcherCommand extends Command
         /** @var array|string $contents */
         $contents = $response['contents'];
 
-        $this->logger->info("dispatcher: $type response ($bytes bytes) received from worker $pid");
+        $this->logger->info("$type response ($bytes bytes) received from worker $pid");
 
         switch ($type) {
             case 'probe':
-                $this->logger->info("dispatcher: enqueueing the response from worker $pid.");
+                $this->logger->info("enqueueing the response from worker $pid.");
 
                 $items = $this->expandProbeResult($contents);
                 foreach ($items as $key => $item) {
@@ -272,13 +272,13 @@ final class ProbeDispatcherCommand extends Command
                 break;
 
             case FetchConfiguration::class:
-                $this->logger->info('dispatcher: started handling new configuration response');
+                $this->logger->info('started handling new configuration response');
                 if (200 === $status) {
-                    $this->logger->info('dispatcher: applying new configuration');
+                    $this->logger->info('applying new configuration');
                     $etag = $response['headers']['etag'];
                     $this->configuration->updateConfig($contents, $etag);
-                    $this->logger->info(sprintf('dispatcher: new configuration applied (took %.2f seconds)', microtime(true) - $startAt));
-                    $this->logger->info(sprintf('dispatcher: new configuration has %d probes and %d devices', count($this->configuration->getProbes()), $this->configuration->getAllProbesDeviceCount()));
+                    $this->logger->info(sprintf('new configuration applied (took %.2f seconds)', microtime(true) - $startAt));
+                    $this->logger->info(sprintf('new configuration has %d probes and %d devices', count($this->configuration->getProbes()), $this->configuration->getAllProbesDeviceCount()));
 
                     $count = 0;
                     foreach ($this->configuration->getProbes() as $probe) {
@@ -286,16 +286,16 @@ final class ProbeDispatcherCommand extends Command
                     }
                     $this->workerManager->setNumberOfProbeProcesses(intval($count));
                 } else {
-                    $this->logger->warning("dispatcher: configuration response ($status) from worker $pid received");
+                    $this->logger->warning("configuration response ($status) from worker $pid received");
                 }
                 break;
 
             default:
-                $this->logger->warning("dispatcher: unexpected response of type $type");
+                $this->logger->warning("unexpected response of type $type");
         }
 
         $runtime = microtime(true) - $startAt;
-        $this->logger->info(sprintf('dispatcher: finished handling response from worker %d (took %.2f seconds)', $pid, $runtime));
+        $this->logger->info(sprintf('finished handling response from worker %d (took %.2f seconds)', $pid, $runtime));
     }
 
     private function expandProbeResult(array $result): array
