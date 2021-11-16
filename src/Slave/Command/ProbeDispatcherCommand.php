@@ -138,18 +138,17 @@ final class ProbeDispatcherCommand extends Command
             ]);
         });
 
+        Loop::addPeriodicTimer(60, function () {
+            $this->sendInstruction([
+                'type' => PublishStatistics::class,
+                'delay_execution' => 0,
+                'body' => $this->statsManager->getStats(),
+                'timestamp' => time(),
+            ]);
+        });
+
         $this->loop->addPeriodicTimer(1, function () {
             $now = time();
-
-            if ($now % 60 === (int) floor($this->randomFactor / 2)) {
-                $instruction = [
-                    'type' => PublishStatistics::class,
-                    'delay_execution' => 0,
-                    'body' => $this->statsManager->getStats(),
-                    'timestamp' => $now,
-                ];
-                $this->sendInstruction($instruction, 30);
-            }
 
             foreach ($this->queues as $queue) {
                 $queue->loop();
