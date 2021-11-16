@@ -22,6 +22,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
+use function time;
 use const INF;
 
 final class ProbeDispatcherCommand extends Command
@@ -166,7 +167,7 @@ final class ProbeDispatcherCommand extends Command
             }
         });
 
-        $this->loop->addPeriodicTimer(1, function () {
+        Loop::addPeriodicTimer(1, function () {
             $now = time();
 
             foreach ($this->configuration->getProbes() as $probe) {
