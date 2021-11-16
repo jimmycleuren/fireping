@@ -188,14 +188,10 @@ final class ProbeDispatcherCommand extends Command
         });
 
         if ($this->maxRuntime > 0) {
-            $this->logger->info('Running for '.$this->maxRuntime.' seconds');
-            $this->loop->addTimer(
-                $this->maxRuntime,
-                function () use ($output) {
-                    $output->writeln('Max runtime reached');
-                    $this->loop->stop();
-                }
-            );
+            Loop::addTimer($this->maxRuntime, function () use ($output) {
+                $output->writeln('Max runtime reached');
+                Loop::stop();
+            });
         }
 
         $this->loop->run();
