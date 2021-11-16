@@ -160,12 +160,14 @@ final class ProbeDispatcherCommand extends Command
             $this->workerManager->loop();
         });
 
-        $this->loop->addPeriodicTimer(1, function () {
-            $now = time();
-
+        Loop::addPeriodicTimer(1, function () {
             foreach ($this->queues as $queue) {
                 $queue->loop();
             }
+        });
+
+        $this->loop->addPeriodicTimer(1, function () {
+            $now = time();
 
             foreach ($this->configuration->getProbes() as $probe) {
                 $ready = 0 === $now % $probe->getStep();
