@@ -22,6 +22,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 use function time;
+use const JSON_THROW_ON_ERROR;
 
 final class ProbeDispatcherCommand extends Command
 {
@@ -209,13 +210,7 @@ final class ProbeDispatcherCommand extends Command
             return;
         }
 
-        $json = json_encode($instruction);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            $this->logger->error('failed to encode instruction: ' . json_last_error_msg());
-
-            return;
-        }
-
+        $json = json_encode($instruction, JSON_THROW_ON_ERROR);
         $startAt = microtime(true);
 
         $this->logger->info(sprintf('sending instruction to worker %s (%d bytes)', (string) $worker, strlen($json)));
