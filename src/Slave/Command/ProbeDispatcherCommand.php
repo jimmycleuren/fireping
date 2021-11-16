@@ -22,11 +22,10 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 use function time;
-use const INF;
 
 final class ProbeDispatcherCommand extends Command
 {
-    private int $numberOfQueues = 10;
+    public const DEFAULT_NUMBER_OF_QUEUES = 10;
 
     /**
      * @var Queue[]
@@ -95,10 +94,10 @@ final class ProbeDispatcherCommand extends Command
         $this->workerManager->initialize(
             (int) $input->getOption('workers'),
             (int) $input->getOption('maximum-workers'),
-            $this->numberOfQueues
+            self::DEFAULT_NUMBER_OF_QUEUES
         );
 
-        for ($i = 0; $i < $this->numberOfQueues; ++$i) {
+        for ($i = 0; $i < self::DEFAULT_NUMBER_OF_QUEUES; ++$i) {
             $this->queues[$i] = new Queue(
                 $this->workerManager,
                 $this->statsManager,
@@ -271,7 +270,7 @@ final class ProbeDispatcherCommand extends Command
 
                 $items = $this->expandProbeResult($contents);
                 foreach ($items as $key => $item) {
-                    $queue = $this->queues[$key % $this->numberOfQueues];
+                    $queue = $this->queues[$key % self::DEFAULT_NUMBER_OF_QUEUES];
                     $queue->enqueue($item);
                 }
                 break;
