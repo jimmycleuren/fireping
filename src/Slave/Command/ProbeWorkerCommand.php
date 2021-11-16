@@ -49,9 +49,7 @@ final class ProbeWorkerCommand extends Command
     {
         $this->output = $output;
 
-        $loop = Loop::get();
-
-        $read = new ReadableResourceStream(STDIN, $loop);
+        $read = new ReadableResourceStream(STDIN);
 
         $read->on('data', function ($data) {
             $this->receiveBuffer .= $data;
@@ -64,13 +62,13 @@ final class ProbeWorkerCommand extends Command
         $maxRuntime = (int)$input->getOption('max-runtime');
         if ($maxRuntime > 0) {
             $this->logger->info("Running for {$maxRuntime} seconds");
-            $loop->addTimer($maxRuntime, function () use ($loop) {
-                $this->output->writeln('Max runtime reached');
-                $loop->stop();
+            Loop::addTimer($maxRuntime, function () {
+                $this->logger->info('max runtime reached');
+                Loop::stop();
             });
         }
 
-        $loop->run();
+        Loop::run();
 
         return 0;
     }

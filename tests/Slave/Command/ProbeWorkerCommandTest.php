@@ -4,7 +4,7 @@ namespace App\Tests\Slave\Command;
 
 use App\Slave\Command\ProbeWorkerCommand;
 use App\Slave\Task\TaskFactory;
-use Psr\Log\LoggerInterface;
+use Psr\Log\Test\TestLogger;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -16,7 +16,7 @@ class ProbeWorkerCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $logger = self::$container->get(LoggerInterface::class);
+        $logger = new TestLogger();
         $factory = new TaskFactory($logger);
 
         $application->add(new ProbeWorkerCommand($logger, $factory));
@@ -29,7 +29,6 @@ class ProbeWorkerCommandTest extends KernelTestCase
             '--max-runtime' => 5,
         ]);
 
-        $output = $commandTester->getDisplay();
-        $this->assertStringContainsString('Max runtime reached', $output);
+        $this->assertTrue($logger->hasInfoThatContains('max runtime reached'));
     }
 }
