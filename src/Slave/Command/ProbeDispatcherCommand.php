@@ -25,8 +25,8 @@ use function time;
 
 final class ProbeDispatcherCommand extends Command
 {
-    public const DEFAULT_NUMBER_OF_QUEUES = 10;
-    public const DEVICES_PER_WORKER = 250;
+    private const DEFAULT_NUMBER_OF_QUEUES = 10;
+    private const DEVICES_PER_WORKER = 250;
 
     /**
      * @var Queue[]
