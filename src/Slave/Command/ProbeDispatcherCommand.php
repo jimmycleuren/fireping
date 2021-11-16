@@ -15,7 +15,7 @@ use App\Slave\Worker\StatsManager;
 use App\Slave\Worker\WorkerManager;
 use Exception;
 use Psr\Log\LoggerInterface;
-use React\EventLoop\Factory;
+use React\EventLoop\Loop;
 use React\EventLoop\LoopInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -127,7 +127,7 @@ final class ProbeDispatcherCommand extends Command
         $this->logger->info('Slave url is '.$_ENV['SLAVE_URL']);
         $this->logger->info('Random factor is '.$this->randomFactor);
 
-        $this->loop = Factory::create();
+        $this->loop = Loop::get();
 
         $this->loop->addPeriodicTimer(1, function () {
             $now = time();
