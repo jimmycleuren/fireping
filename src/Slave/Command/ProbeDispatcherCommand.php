@@ -57,7 +57,8 @@ final class ProbeDispatcherCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setName('app:probe:dispatcher')
+            ->setName('fireping:dispatcher')
+            ->setAliases(['app:probe:dispatcher'])
             ->setDescription('Start the probe dispatcher.')
             ->addOption(
                 'workers',

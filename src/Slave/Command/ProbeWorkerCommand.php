@@ -34,7 +34,8 @@ final class ProbeWorkerCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setName('app:probe:worker')
+            ->setName('fireping:worker')
+            ->setAliases(['app:probe:worker'])
             ->setDescription('Start the probe worker.')
             ->addOption(
                 'max-runtime',
