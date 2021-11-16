@@ -111,11 +111,6 @@ final class ProbeDispatcherCommand extends Command
         $this->statsManager->setVersion((new GitVersionReader($this->logger, new SymfonyProcessFactory()))->version());
     }
 
-    /**
-     * @return int|void|null
-     *
-     * @throws Exception
-     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->setUp($input);
@@ -192,7 +187,7 @@ final class ProbeDispatcherCommand extends Command
 
         Loop::run();
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     /**
