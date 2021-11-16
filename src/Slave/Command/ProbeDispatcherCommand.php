@@ -129,18 +129,17 @@ final class ProbeDispatcherCommand extends Command
 
         $this->loop = Loop::get();
 
+        Loop::addPeriodicTimer(120, function () {
+            $this->sendInstruction([
+                'type' => FetchConfiguration::class,
+                'delay_execution' => 0,
+                'etag' => $this->configuration->getEtag(),
+                'timestamp' => time(),
+            ]);
+        });
+
         $this->loop->addPeriodicTimer(1, function () {
             $now = time();
-
-            if ($now % 120 === $this->randomFactor) {
-                $instruction = [
-                    'type' => FetchConfiguration::class,
-                    'delay_execution' => 0,
-                    'etag' => $this->configuration->getEtag(),
-                    'timestamp' => $now,
-                ];
-                $this->sendInstruction($instruction);
-            }
 
             if ($now % 60 === (int) floor($this->randomFactor / 2)) {
                 $instruction = [
