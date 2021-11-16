@@ -1,30 +1,43 @@
 <?php
-
 declare(strict_types=1);
 
 namespace App\Slave;
 
+use InvalidArgumentException;
+
 class Configuration
 {
-    private $probes = [];
     /**
-     * @var string|null
+     * @var string
      */
-    private $etag;
+    private $hash = 'C0FFEE';
+    /**
+     * @var Probe[]
+     */
+    private $probes = [];
 
-    public function getEtag(): ?string
+    public function __construct(string $hash= 'C0FFEE', array $probes = [])
     {
-        return $this->etag;
+        if ($hash === '') {
+            throw new InvalidArgumentException('Hash must not be an empty string.');
+        }
+
+        $this->hash = $hash;
+
+        foreach ($probes as $id => $configuration) {
+            $probe = new Probe($id, $configuration['type'], $configuration['step'], $configuration['samples'], $configuration['args'] ?? []);
+            foreach ($configuration['targets'] as $deviceId => $ip) {
+                $device = new Device($deviceId, $ip);
+                $probe->addDevice($device);
+            }
+
+            $this->probes[$id] = $probe;
+        }
     }
 
-    public function setEtag(?string $etag): void
+    public function getHash(): string
     {
-        $this->etag = $etag;
-    }
-
-    private function addProbe(Probe $probe): void
-    {
-        $this->probes[$probe->getId()] = $probe;
+        return $this->hash;
     }
 
     /**
@@ -35,74 +48,10 @@ class Configuration
         return $this->probes;
     }
 
-    public function getProbeById($id): ?Probe
+    public function getTotalTargetCount(): int
     {
-        return $this->probes[$id] ?? null;
-    }
-
-    public function getProbe($id, $type, $step, $samples, $args = null)
-    {
-        if ($probe = $this->getProbeById($id)) {
-            $probe->setConfiguration($id, $type, $step, $samples, $args);
-
-            return $probe;
-        }
-
-        $probe = new Probe($id, $type, $step, $samples, $args);
-        $this->addProbe($probe);
-
-        return $probe;
-    }
-
-    public function getProbeDeviceCount($id): int
-    {
-        $probe = $this->getProbeById($id);
-
-        return null !== $probe ? count($probe->getDevices()) : 0;
-    }
-
-    public function getAllProbesDeviceCount(): int
-    {
-        $total = 0;
-        foreach ($this->getProbes() as $probe) {
-            $total += count($probe->getDevices());
-        }
-
-        return $total;
-    }
-
-    private function deactivateAllDevices(): void
-    {
-        foreach ($this->getProbes() as $probe) {
-            $probe->deactivateAllDevices();
-        }
-    }
-
-    public function purgeAllInactiveDevices()
-    {
-        foreach ($this->getProbes() as $probe) {
-            $probe->purgeAllInactiveDevices();
-        }
-    }
-
-    public function updateConfig($configuration, $etag = null)
-    {
-        $this->deactivateAllDevices();
-        foreach ($configuration as $id => $probeConfig) {
-            // TODO: More checks to make sure all of this data is here?
-
-            $type = $probeConfig['type'];
-            $step = $probeConfig['step'];
-            $samples = $probeConfig['samples'];
-            $args = isset($probeConfig['args']) ? $probeConfig['args'] : null;
-
-            $probe = $this->getProbe($id, $type, $step, $samples, $args);
-            foreach ($probeConfig['targets'] as $hostname => $ip) {
-                $device = new Device($hostname, $ip);
-                $probe->addDevice($device);
-            }
-        }
-        $this->purgeAllInactiveDevices();
-        $this->setEtag($etag);
+        return \array_reduce($this->probes, static function ($carry, Probe $probe) {
+            return $carry + $probe->getDeviceCount();
+        }, 0);
     }
 }

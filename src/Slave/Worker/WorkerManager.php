@@ -2,13 +2,17 @@
 
 namespace App\Slave\Worker;
 
+use App\Slave\Configuration;
 use App\Slave\Exception\WorkerTimedOutException;
+use App\Slave\Probe;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 
 class WorkerManager
 {
+    public const DEVICES_PER_WORKER = 250;
+
     protected $kernel;
 
     private $logger;
@@ -98,9 +102,16 @@ class WorkerManager
         return $worker;
     }
 
-    public function setNumberOfProbeProcesses(int $numberOfProbeProcesses)
+    public function getNumberOfProbeProcesses()
     {
-        $this->numberOfProbeProcesses = $numberOfProbeProcesses;
+        return $this->numberOfProbeProcesses;
+    }
+
+    public function setNumberOfProbeProcesses(Configuration $configuration)
+    {
+        $this->numberOfProbeProcesses = (int) \array_reduce($configuration->getProbes(), function ($carry, Probe $probe) {
+            return $carry + ceil($probe->getDeviceCount() / self::DEVICES_PER_WORKER);
+        }, 0);
     }
 
     public function getInUseWorkerTypes()

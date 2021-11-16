@@ -91,15 +91,9 @@ class Probe
         return $this->devices;
     }
 
-    public function getDeviceByIp($ip)
+    public function getDeviceCount(): int
     {
-        foreach ($this->devices as $device) {
-            if ($device->getIp() === $ip) {
-                return $device->getId();
-            }
-        }
-
-        return null;
+        return \count($this->devices);
     }
 
     public function addDevice(Device $device)
@@ -109,22 +103,6 @@ class Probe
         }
         $this->devices[$device->getId()]->setIp($device->getIp());
         $this->devices[$device->getId()]->setActive(true);
-    }
-
-    public function deactivateAllDevices()
-    {
-        foreach ($this->devices as $device) {
-            $device->setActive(false);
-        }
-    }
-
-    public function purgeAllInactiveDevices()
-    {
-        foreach ($this->devices as $key => $device) {
-            if (!$device->isActive()) {
-                unset($this->devices[$key]);
-            }
-        }
     }
 
     public function getSampleRate()

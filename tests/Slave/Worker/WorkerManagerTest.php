@@ -3,6 +3,7 @@
 namespace App\Tests\Slave\Worker;
 
 use App\Kernel;
+use App\Slave\Configuration;
 use App\Slave\Worker\WorkerManager;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -16,7 +17,9 @@ class WorkerManagerTest extends TestCase
 
         $manager = new WorkerManager($kernel->reveal(), $logger->reveal());
 
-        $manager->setNumberOfProbeProcesses(1);
+        $manager->setNumberOfProbeProcesses(new Configuration('C0FFEE', [
+            1 => ['type' => 'ping', 'samples' => 15, 'step' => 60, 'args' => [], 'targets' => [1 => '192.168.1.1']]
+        ]));
         $manager->initialize(1, 5, 1);
 
         $this->assertEquals(4, $manager->getTotalWorkers());
@@ -54,7 +57,7 @@ class WorkerManagerTest extends TestCase
 
         $manager = new WorkerManager($kernel->reveal(), $logger->reveal());
 
-        $manager->setNumberOfProbeProcesses(0);
+        $manager->setNumberOfProbeProcesses(new Configuration());
         $manager->initialize(1, 5, 0);
 
         $this->expectException(\RuntimeException::class);
@@ -70,7 +73,7 @@ class WorkerManagerTest extends TestCase
 
         $manager = new WorkerManager($kernel->reveal(), $logger->reveal());
 
-        $manager->setNumberOfProbeProcesses(0);
+        $manager->setNumberOfProbeProcesses(new Configuration());
         $manager->initialize(1, 2, 0);
 
         $this->assertEquals(1, $manager->getTotalWorkers());
@@ -81,7 +84,9 @@ class WorkerManagerTest extends TestCase
         $this->assertEquals(1, $manager->getTotalWorkers());
         $this->assertEquals(1, $manager->getAvailableWorkers());
 
-        $manager->setNumberOfProbeProcesses(1);
+        $manager->setNumberOfProbeProcesses(new Configuration('C0FFEE', [
+            1 => ['type' => 'ping', 'samples' => 15, 'step' => 60, 'args' => [], 'targets' => [1 => '192.168.1.1']]
+        ]));
 
         $this->assertEquals(1, $manager->getTotalWorkers());
         $this->assertEquals(1, $manager->getAvailableWorkers());
@@ -104,21 +109,78 @@ class WorkerManagerTest extends TestCase
 
         $manager = new WorkerManager($kernel->reveal(), $logger->reveal());
 
-        $manager->setNumberOfProbeProcesses(1);
+        $manager->setNumberOfProbeProcesses(new Configuration('C0FFEE', [
+            1 => ['type' => 'ping', 'samples' => 15, 'step' => 60, 'args' => [], 'targets' => [1 => '192.168.1.1']]
+        ]));
         $manager->initialize(1, 2, 0);
 
         $worker = $manager->getWorker('bla');
-        $worker->send("", -1, function(){});
+        $worker->send("", -1, function () {
+        });
 
         $this->assertEquals(3, $manager->getTotalWorkers());
         $this->assertEquals(2, $manager->getAvailableWorkers());
         $this->assertEquals(['bla' => 1], $manager->getInUseWorkerTypes());
 
-        $manager->setNumberOfProbeProcesses(0); //lower the baseline so no new worker is created
+        $manager->setNumberOfProbeProcesses(new Configuration()); //lower the baseline so no new worker is created
         $manager->loop(); //triggers a worker timeout
 
         $this->assertEquals(2, $manager->getTotalWorkers());
         $this->assertEquals(2, $manager->getAvailableWorkers());
         $this->assertEquals(['bla' => 0], $manager->getInUseWorkerTypes());
+    }
+
+    /**
+     * @dataProvider configurationProvider
+     * @param Configuration $configuration
+     * @param int $expected
+     */
+    public function testCalculateNumberOfProbeProcesses(Configuration $configuration, int $expected)
+    {
+        $manager = new WorkerManager(
+            $this->prophesize(Kernel::class)->reveal(),
+            $this->prophesize(LoggerInterface::class)->reveal()
+        );
+
+        $manager->setNumberOfProbeProcesses($configuration);
+
+        self::assertEquals($manager->getNumberOfProbeProcesses(), $expected);
+    }
+
+    public function configurationProvider(): array
+    {
+        return [
+            [
+                new Configuration('*', \array_merge(
+                    $this->createProbeConfiguration(1, 'ping', 60, 15, 60),
+                    $this->createProbeConfiguration(2, 'ping', 60, 15, 501),
+                    $this->createProbeConfiguration(3, 'foobar', 60, 15, 60),
+                )), 5
+            ],
+            [
+                new Configuration('*', \array_merge(
+                    $this->createProbeConfiguration(1, 'ping', 60, 15, 60),
+                    $this->createProbeConfiguration(2, 'ping', 60, 15, 60),
+                    $this->createProbeConfiguration(3, 'foobar', 60, 15, 60),
+                )), 3
+            ]
+        ];
+    }
+
+    private function createProbeConfiguration(int $id, string $type, int $step, int $samples, int $deviceCount): array
+    {
+        $targets = [];
+        for ($i = 0; $i < $deviceCount; $i++) {
+            $targets[$i] = "192.168.1.$i";
+        }
+
+        return [
+            $id => [
+                'type' => $type,
+                'samples' => $samples,
+                'step' => $step,
+                'targets' => $targets
+            ]
+        ];
     }
 }

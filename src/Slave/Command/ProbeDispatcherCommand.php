@@ -55,7 +55,7 @@ class ProbeDispatcherCommand extends Command
      *
      * @var Configuration
      */
-    protected $configuration;
+    private $configuration;
 
     /**
      * How long the ProbeDispatcher can run for, in seconds. You can specify 0 to
@@ -75,8 +75,6 @@ class ProbeDispatcherCommand extends Command
     private $workerManager;
 
     private $statsManager;
-
-    private $devicesPerWorker = 250;
 
     private $randomFactor = 0;
 
@@ -179,7 +177,7 @@ class ProbeDispatcherCommand extends Command
                 $instruction = [
                     'type' => FetchConfiguration::class,
                     'delay_execution' => 0,
-                    'etag' => $this->configuration->getEtag(),
+                    'etag' => $this->configuration->getHash(),
                     'timestamp' => $now,
                 ];
                 $this->sendInstruction($instruction);
@@ -203,7 +201,7 @@ class ProbeDispatcherCommand extends Command
                 $ready = 0 === $now % $probe->getStep();
 
                 if ($ready) {
-                    $instructions = new Instruction($probe, $this->devicesPerWorker);
+                    $instructions = new Instruction($probe, WorkerManager::DEVICES_PER_WORKER);
 
                     // Keep track of how many processes are starting.
                     $counter = 0;
@@ -327,19 +325,13 @@ class ProbeDispatcherCommand extends Command
                 break;
 
             case FetchConfiguration::class:
-                $this->logger->info('dispatcher: started handling new configuration response');
                 if (200 === $status) {
-                    $this->logger->info('dispatcher: applying new configuration');
-                    $etag = $response['headers']['etag'];
-                    $this->configuration->updateConfig($contents, $etag);
-                    $this->logger->info(sprintf('dispatcher: new configuration applied (took %.2f seconds)', microtime(true) - $startAt));
-                    $this->logger->info(sprintf('dispatcher: new configuration has %d probes and %d devices', count($this->configuration->getProbes()), $this->configuration->getAllProbesDeviceCount()));
+                    $configuration = $this->configuration;
+                    $this->configuration = new Configuration($response['headers']['etag'], $contents);
+                    unset($configuration);
+                    $this->logger->info('Configuration loaded.');
 
-                    $count = 0;
-                    foreach ($this->configuration->getProbes() as $probe) {
-                        $count += ceil($this->configuration->getProbeDeviceCount($probe->getId()) / $this->devicesPerWorker);
-                    }
-                    $this->workerManager->setNumberOfProbeProcesses(intval($count));
+                    $this->workerManager->setNumberOfProbeProcesses($this->configuration);
                 } else {
                     $this->logger->warning("dispatcher: configuration response ($status) from worker $pid received");
                 }
