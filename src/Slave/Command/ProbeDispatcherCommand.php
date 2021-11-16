@@ -42,7 +42,6 @@ final class ProbeDispatcherCommand extends Command
      * indicate an infinitely running process.
      */
     private int $maxRuntime = 0;
-    private LoopInterface $loop;
     private WorkerManager $workerManager;
     private StatsManager $statsManager;
     private int $devicesPerWorker = 250;
@@ -128,8 +127,6 @@ final class ProbeDispatcherCommand extends Command
         $this->logger->info('Slave name is '.$_ENV['SLAVE_NAME']);
         $this->logger->info('Slave url is '.$_ENV['SLAVE_URL']);
         $this->logger->info('Random factor is '.$this->randomFactor);
-
-        $this->loop = Loop::get();
 
         Loop::addPeriodicTimer(120, function () {
             $this->sendInstruction([
