@@ -26,6 +26,7 @@ use function time;
 final class ProbeDispatcherCommand extends Command
 {
     public const DEFAULT_NUMBER_OF_QUEUES = 10;
+    public const DEVICES_PER_WORKER = 250;
 
     /**
      * @var Queue[]
@@ -42,7 +43,6 @@ final class ProbeDispatcherCommand extends Command
     private int $maxRuntime = 0;
     private WorkerManager $workerManager;
     private StatsManager $statsManager;
-    private int $devicesPerWorker = 250;
 
     public function __construct(LoggerInterface $logger, WorkerManager $workerManager, StatsManager $statsManager)
     {
@@ -166,7 +166,7 @@ final class ProbeDispatcherCommand extends Command
                 $ready = 0 === $now % $probe->getStep();
 
                 if ($ready) {
-                    $instructions = new Instruction($probe, $this->devicesPerWorker);
+                    $instructions = new Instruction($probe, self::DEVICES_PER_WORKER);
 
                     // Keep track of how many processes are starting.
                     $counter = 0;
@@ -286,7 +286,7 @@ final class ProbeDispatcherCommand extends Command
 
                     $count = 0;
                     foreach ($this->configuration->getProbes() as $probe) {
-                        $count += ceil($this->configuration->getProbeDeviceCount($probe->getId()) / $this->devicesPerWorker);
+                        $count += ceil($this->configuration->getProbeDeviceCount($probe->getId()) / self::DEVICES_PER_WORKER);
                     }
                     $this->workerManager->setNumberOfProbeProcesses(intval($count));
                 } else {
