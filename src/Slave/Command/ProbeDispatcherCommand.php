@@ -223,7 +223,7 @@ final class ProbeDispatcherCommand extends Command
 
         $worker->send($json, $expectedRuntime, function ($type, $response) {
             if (Process::OUT === $type) {
-                $this->handleResponse($type, $response);
+                $this->handleResponse($response);
             }
 
             if (Process::ERR === $type) {
@@ -234,11 +234,7 @@ final class ProbeDispatcherCommand extends Command
         $this->logger->info(sprintf('dispatcher: sent instruction to worker %s (took %s seconds)', (string) $worker, microtime(true) - $startAt));
     }
 
-    /**
-     * @param string $channel
-     * @param string $data
-     */
-    private function handleResponse($channel, $data): void
+    private function handleResponse(string $data): void
     {
         $startAt = microtime(true);
         $bytes = strlen($data);
