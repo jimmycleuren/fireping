@@ -18,67 +18,33 @@ use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
 use React\EventLoop\LoopInterface;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
-/**
- * Class ProbeDispatcherCommand.
- */
-class ProbeDispatcherCommand extends Command
+final class ProbeDispatcherCommand extends Command
 {
-    /**
-     * The number of queues that will be created by the ProbeDispatcher.
-     *
-     * @var int
-     */
-    protected $numberOfQueues = 10;
+    private int $numberOfQueues = 10;
 
     /**
-     * A collection of queues available to the ProbeDispatcher.
-     *
      * @var Queue[]
      */
-    protected $queues;
+    private array $queues = [];
 
-    /**
-     * Used to write to log files.
-     *
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    /**
-     * Holds the configuration of our Fireping Slave.
-     *
-     * @var Configuration
-     */
-    protected $configuration;
+    private LoggerInterface $logger;
+    private Configuration $configuration;
 
     /**
      * How long the ProbeDispatcher can run for, in seconds. You can specify 0 to
      * indicate an infinitely running process.
-     *
-     * @var int
      */
-    protected $maxRuntime;
-
-    /**
-     * The LoopInterface that runs our process.
-     *
-     * @var LoopInterface
-     */
-    protected $loop;
-
-    private $workerManager;
-
-    private $statsManager;
-
-    private $devicesPerWorker = 250;
-
-    private $randomFactor = 0;
+    private int $maxRuntime = 0;
+    private LoopInterface $loop;
+    private WorkerManager $workerManager;
+    private StatsManager $statsManager;
+    private int $devicesPerWorker = 250;
+    private int $randomFactor = 0;
 
     public function __construct(LoggerInterface $logger, WorkerManager $workerManager, StatsManager $statsManager)
     {
@@ -89,11 +55,6 @@ class ProbeDispatcherCommand extends Command
         parent::__construct();
     }
 
-    /**
-     * Configure our command.
-     *
-     * @throws InvalidArgumentException
-     */
     protected function configure(): void
     {
         $this
@@ -122,10 +83,6 @@ class ProbeDispatcherCommand extends Command
             );
     }
 
-    /**
-     * @throws \RuntimeException
-     * @throws InvalidArgumentException
-     */
     private function setUp(InputInterface $input)
     {
         $this->maxRuntime = (int) $input->getOption('max-runtime');
@@ -248,7 +205,7 @@ class ProbeDispatcherCommand extends Command
     /**
      * @throws Exception
      */
-    public function sendInstruction(array $instruction, int $expectedRuntime = 60): void
+    private function sendInstruction(array $instruction, int $expectedRuntime = 60): void
     {
         try {
             $this->logger->info(sprintf('dispatcher: selecting worker for type %s', $instruction['type']));
