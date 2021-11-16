@@ -13,48 +13,24 @@ use Psr\Log\LoggerInterface;
 use React\EventLoop\Factory;
 use React\Stream\ReadableResourceStream;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Exception\InvalidArgumentException;
-use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ProbeWorkerCommand extends Command
+final class ProbeWorkerCommand extends Command
 {
-    /**
-     * @var OutputInterface
-     */
-    protected $output;
+    private OutputInterface $output;
+    private string $receiveBuffer = '';
+    private LoggerInterface $logger;
+    private TaskFactory $taskFactory;
 
-    /**
-     * @var string
-     */
-    protected $receiveBuffer;
-
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    /**
-     * @var TaskFactory
-     */
-    private $taskFactory;
-
-    /**
-     * @throws LogicException
-     */
     public function __construct(LoggerInterface $logger, TaskFactory $taskFactory)
     {
+        parent::__construct();
         $this->logger = $logger;
         $this->taskFactory = $taskFactory;
-
-        parent::__construct();
     }
 
-    /**
-     * @throws InvalidArgumentException
-     */
     protected function configure(): void
     {
         $this
@@ -69,9 +45,6 @@ class ProbeWorkerCommand extends Command
             );
     }
 
-    /**
-     * @throws InvalidArgumentException
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->output = $output;
@@ -105,7 +78,7 @@ class ProbeWorkerCommand extends Command
     /**
      * @throws \LogicException
      */
-    protected function process(array $data)
+    private function process(array $data)
     {
         $startedAt = time();
         $this->logger->info(sprintf('worker %d has begun processing at %d', getmypid(), $startedAt));
@@ -193,7 +166,7 @@ class ProbeWorkerCommand extends Command
      * @param array $headers
      * @param array|string $contents
      */
-    protected function sendResponse(string $type, int $status, $contents, array $headers = []): void
+    private function sendResponse(string $type, int $status, $contents, array $headers = []): void
     {
         $pid = getmypid();
 
