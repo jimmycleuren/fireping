@@ -156,6 +156,10 @@ final class ProbeDispatcherCommand extends Command
             );
         });
 
+        Loop::addPeriodicTimer(0.1, function () {
+            $this->workerManager->loop();
+        });
+
         $this->loop->addPeriodicTimer(1, function () {
             $now = time();
 
@@ -181,10 +185,6 @@ final class ProbeDispatcherCommand extends Command
                     }
                 }
             }
-        });
-
-        $this->loop->addPeriodicTimer(0.1, function () {
-            $this->workerManager->loop();
         });
 
         if ($this->maxRuntime > 0) {
