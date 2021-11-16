@@ -16,7 +16,6 @@ use App\Slave\Worker\WorkerManager;
 use Exception;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Loop;
-use React\EventLoop\LoopInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
