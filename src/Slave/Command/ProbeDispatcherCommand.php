@@ -59,7 +59,7 @@ final class ProbeDispatcherCommand extends Command
         $this
             ->setName('fireping:dispatcher')
             ->setAliases(['app:probe:dispatcher'])
-            ->setDescription('Start the probe dispatcher.')
+            ->setDescription('Start the probe dispatcher')
             ->addOption(
                 'workers',
                 'w',

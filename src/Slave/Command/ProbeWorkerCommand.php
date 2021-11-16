@@ -36,7 +36,7 @@ final class ProbeWorkerCommand extends Command
         $this
             ->setName('fireping:worker')
             ->setAliases(['app:probe:worker'])
-            ->setDescription('Start the probe worker.')
+            ->setDescription('Start the probe worker')
             ->addOption(
                 'max-runtime',
                 'runtime',
