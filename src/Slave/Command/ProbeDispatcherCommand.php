@@ -280,9 +280,6 @@ final class ProbeDispatcherCommand extends Command
                     $this->logger->warning("configuration response ($status) from worker $pid received");
                 }
                 break;
-
-            default:
-                $this->logger->warning("unexpected response of type $type");
         }
 
         $runtime = microtime(true) - $startAt;
