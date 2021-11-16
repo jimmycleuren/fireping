@@ -10,7 +10,7 @@ use App\Slave\Task\PublishStatistics;
 use App\Slave\Task\TaskFactory;
 use Exception;
 use Psr\Log\LoggerInterface;
-use React\EventLoop\Factory;
+use React\EventLoop\Loop;
 use React\Stream\ReadableResourceStream;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -49,7 +49,7 @@ final class ProbeWorkerCommand extends Command
     {
         $this->output = $output;
 
-        $loop = Factory::create();
+        $loop = Loop::get();
 
         $read = new ReadableResourceStream(STDIN, $loop);
 
