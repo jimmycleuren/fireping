@@ -22,6 +22,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
+use const INF;
 
 final class ProbeDispatcherCommand extends Command
 {
@@ -147,6 +148,14 @@ final class ProbeDispatcherCommand extends Command
             ]);
         });
 
+        Loop::addPeriodicTimer(1, function () {
+            $this->statsManager->addWorkerStats(
+                $this->workerManager->getTotalWorkers(),
+                $this->workerManager->getAvailableWorkers(),
+                $this->workerManager->getInUseWorkerTypes()
+            );
+        });
+
         $this->loop->addPeriodicTimer(1, function () {
             $now = time();
 
@@ -172,12 +181,6 @@ final class ProbeDispatcherCommand extends Command
                     }
                 }
             }
-
-            $this->statsManager->addWorkerStats(
-                $this->workerManager->getTotalWorkers(),
-                $this->workerManager->getAvailableWorkers(),
-                $this->workerManager->getInUseWorkerTypes()
-            );
         });
 
         $this->loop->addPeriodicTimer(0.1, function () {
