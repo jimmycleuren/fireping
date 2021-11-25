@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\AlertDestination;
 
 use App\AlertDestination\Mail;
@@ -7,114 +9,94 @@ use App\Entity\Alert;
 use App\Entity\AlertRule;
 use App\Entity\Device;
 use App\Entity\SlaveGroup;
+use App\Tests\Doubles\MockTransport;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
+use Psr\Log\NullLogger;
+use Swift_Mailer;
 use Twig\Environment;
+use Twig\Loader\ArrayLoader;
+use UnexpectedValueException;
+use function file_get_contents;
 
 class MailTest extends TestCase
 {
-    public function testTriggerNoSender()
+    private MockTransport $transport;
+    private Swift_Mailer $mailer;
+    private Environment $templating;
+    private Mail $mail;
+
+    public function testMailExpectsValidEmailAddress(): void
     {
-        $mailer = $this->prophesize('Swift_Mailer');
-        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
-        $logger->error('MAILER_FROM env variable is not set')->shouldBeCalledTimes(1);
-        $templating = $this->prophesize(Environment::class);
-
-        $mail = new Mail($mailer->reveal(), $logger->reveal(), $templating->reveal());
-
-        $original = $_ENV['MAILER_FROM'];
-        $_ENV['MAILER_FROM'] = null;
-        $mail->trigger(new Alert());
-        $_ENV['MAILER_FROM'] = $original;
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('invalid e-mail address');
+        new Mail($this->mailer, new NullLogger(), $this->templating, '');
     }
 
-    public function testTrigger()
+    public function testSetParametersExpectsRecipientKey(): void
     {
-        $mailer = $this->prophesize('Swift_Mailer');
-        $mailer->send(Argument::any())->shouldBeCalledTimes(1);
-        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
-        $templating = $this->prophesize(Environment::class);
-        $templating->render(Argument::type('string'), Argument::type('array'))->shouldBeCalledTimes(1);
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('mail requires recipient to be set');
+        $this->mail->setParameters([]);
+    }
 
-        $mail = new Mail($mailer->reveal(), $logger->reveal(), $templating->reveal());
-        $mail->setParameters(['recipient' => 'test@test.com']);
+    public function testSetParametersExpectsRecipientToBeString(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('recipient must be a string');
+        $this->mail->setParameters(['recipient' => null]);
+    }
+
+    public function testSetParametersExpectsRecipientToBeEmail(): void
+    {
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('invalid recipient e-mail address');
+        $this->mail->setParameters(['recipient' => '']);
+    }
+
+    public function testTrigger(): void
+    {
+        $this->mail->setParameters(['recipient' => 'test@example.com']);
+        $this->mail->trigger($this->createDefaultAlert());
+        self::assertEquals(1, $this->transport->getSent());
+    }
+
+    private function createDefaultAlert(): Alert
+    {
+        $rule = new AlertRule();
+        $rule->setMessageUp('up');
+        $rule->setMessageDown('down');
+        $rule->setName('rule');
 
         $device = new Device();
         $device->setName('device');
-        $slaveGroup = new SlaveGroup();
-        $slaveGroup->setName('group');
-        $alertRule = new AlertRule();
-        $alertRule->setName('rule');
-        $alert = new Alert();
-        $alert->setDevice($device);
-        $alert->setSlaveGroup($slaveGroup);
-        $alert->setAlertRule($alertRule);
 
-        $mail->trigger($alert);
+        $group = new SlaveGroup();
+        $group->setName('group');
+
+        $alert = new Alert();
+        $alert->setAlertRule($rule);
+        $alert->setDevice($device);
+        $alert->setSlaveGroup($group);
+
+        return $alert;
     }
 
-    public function testFailedTrigger()
+    public function testClear(): void
     {
-        $mailer = $this->prophesize('Swift_Mailer');
-        $mailer->send(Argument::any())->shouldNotBeCalled();
-        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
-        $logger->error(Argument::type('string'))->shouldBeCalledTimes(1);
-        $templating = $this->prophesize(Environment::class);
-
-        $mail = new Mail($mailer->reveal(), $logger->reveal(), $templating->reveal());
-        $mail->setParameters(['recipient' => 'invalid']);
-
-        $device = new Device();
-        $device->setName('device');
-        $slaveGroup = new SlaveGroup();
-        $slaveGroup->setName('group');
-        $alertRule = new AlertRule();
-        $alertRule->setName('rule');
-        $alert = new Alert();
-        $alert->setDevice($device);
-        $alert->setSlaveGroup($slaveGroup);
-        $alert->setAlertRule($alertRule);
-
-        $mail->trigger($alert);
+        $this->mail->setParameters(['recipient' => 'test@example.com']);
+        $this->mail->clear($this->createDefaultAlert());
+        self::assertEquals(1, $this->transport->getSent());
     }
 
-    public function testClearNoSender()
+    protected function setUp(): void
     {
-        $mailer = $this->prophesize('Swift_Mailer');
-        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
-        $logger->error('MAILER_FROM env variable is not set')->shouldBeCalledTimes(1);
-        $templating = $this->prophesize(Environment::class);
-
-        $mail = new Mail($mailer->reveal(), $logger->reveal(), $templating->reveal());
-
-        $original = $_ENV['MAILER_FROM'];
-        $_ENV['MAILER_FROM'] = null;
-        $mail->trigger(new Alert());
-        $_ENV['MAILER_FROM'] = $original;
-    }
-
-    public function testClear()
-    {
-        $mailer = $this->prophesize('Swift_Mailer');
-        $mailer->send(Argument::any())->shouldBeCalledTimes(1);
-        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
-        $templating = $this->prophesize(Environment::class);
-        $templating->render(Argument::type('string'), Argument::type('array'))->shouldBeCalledTimes(1);
-
-        $mail = new Mail($mailer->reveal(), $logger->reveal(), $templating->reveal());
-        $mail->setParameters(['recipient' => 'test@test.com']);
-
-        $device = new Device();
-        $device->setName('device');
-        $slaveGroup = new SlaveGroup();
-        $slaveGroup->setName('group');
-        $alertRule = new AlertRule();
-        $alertRule->setName('rule');
-        $alert = new Alert();
-        $alert->setDevice($device);
-        $alert->setSlaveGroup($slaveGroup);
-        $alert->setAlertRule($alertRule);
-
-        $mail->clear($alert);
+        parent::setUp();
+        $this->transport = new MockTransport();
+        $this->mailer = new Swift_Mailer($this->transport);
+        $this->templating = new Environment(new ArrayLoader([
+            'emails/alert.html.twig' => file_get_contents(__DIR__ . '/../../templates/emails/alert.html.twig')
+        ]));
+        $this->mail = new Mail($this->mailer, new NullLogger(), $this->templating, "fireping@example.com");
     }
 }
