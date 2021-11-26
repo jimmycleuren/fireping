@@ -69,7 +69,7 @@ class Queue
                         }
                     });
 
-                    $this->logger->info('COMMUNICATION_FLOW: Queue '.$this->id.' sent '.$instruction['type']." instruction to worker $this->worker.");
+                    $this->logger->info('Queue '.$this->id.' sent '.$instruction['type']." instruction to worker $this->worker.");
                 } catch (\Exception $e) {
                     $this->lock = false;
                     $this->logger->warning($e->getMessage().' at '.$e->getFile().':'.$e->getLine());
@@ -84,7 +84,7 @@ class Queue
         $response = json_decode($data, true);
 
         if (!$response) {
-            $this->logger->warning('COMMUNICATION_FLOW: Response from worker could not be decoded to JSON.');
+            $this->logger->warning('Response from worker could not be decoded to JSON.');
 
             return;
         }

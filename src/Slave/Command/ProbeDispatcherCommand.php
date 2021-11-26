@@ -15,70 +15,35 @@ use App\Slave\Worker\StatsManager;
 use App\Slave\Worker\WorkerManager;
 use Exception;
 use Psr\Log\LoggerInterface;
-use React\EventLoop\Factory;
-use React\EventLoop\LoopInterface;
+use React\EventLoop\Loop;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
+use function time;
+use const JSON_THROW_ON_ERROR;
 
-/**
- * Class ProbeDispatcherCommand.
- */
-class ProbeDispatcherCommand extends Command
+final class ProbeDispatcherCommand extends Command
 {
-    /**
-     * The number of queues that will be created by the ProbeDispatcher.
-     *
-     * @var int
-     */
-    protected $numberOfQueues = 10;
+    private const DEFAULT_NUMBER_OF_QUEUES = 10;
+    private const DEVICES_PER_WORKER = 250;
 
     /**
-     * A collection of queues available to the ProbeDispatcher.
-     *
      * @var Queue[]
      */
-    protected $queues;
+    private array $queues = [];
 
-    /**
-     * Used to write to log files.
-     *
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    /**
-     * Holds the configuration of our Fireping Slave.
-     *
-     * @var Configuration
-     */
-    protected $configuration;
+    private LoggerInterface $logger;
+    private Configuration $configuration;
 
     /**
      * How long the ProbeDispatcher can run for, in seconds. You can specify 0 to
      * indicate an infinitely running process.
-     *
-     * @var int
      */
-    protected $maxRuntime;
-
-    /**
-     * The LoopInterface that runs our process.
-     *
-     * @var LoopInterface
-     */
-    protected $loop;
-
-    private $workerManager;
-
-    private $statsManager;
-
-    private $devicesPerWorker = 250;
-
-    private $randomFactor = 0;
+    private int $maxRuntime = 0;
+    private WorkerManager $workerManager;
+    private StatsManager $statsManager;
 
     public function __construct(LoggerInterface $logger, WorkerManager $workerManager, StatsManager $statsManager)
     {
@@ -89,16 +54,12 @@ class ProbeDispatcherCommand extends Command
         parent::__construct();
     }
 
-    /**
-     * Configure our command.
-     *
-     * @throws InvalidArgumentException
-     */
     protected function configure(): void
     {
         $this
-            ->setName('app:probe:dispatcher')
-            ->setDescription('Start the probe dispatcher.')
+            ->setName('fireping:dispatcher')
+            ->setAliases(['app:probe:dispatcher'])
+            ->setDescription('Start the probe dispatcher')
             ->addOption(
                 'workers',
                 'w',
@@ -122,14 +83,9 @@ class ProbeDispatcherCommand extends Command
             );
     }
 
-    /**
-     * @throws \RuntimeException
-     * @throws InvalidArgumentException
-     */
     private function setUp(InputInterface $input)
     {
         $this->maxRuntime = (int) $input->getOption('max-runtime');
-        $this->randomFactor = random_int(0, 119);
 
         foreach (['SLAVE_NAME', 'SLAVE_URL'] as $item) {
             if (!isset($_ENV[$item])) {
@@ -140,10 +96,10 @@ class ProbeDispatcherCommand extends Command
         $this->workerManager->initialize(
             (int) $input->getOption('workers'),
             (int) $input->getOption('maximum-workers'),
-            $this->numberOfQueues
+            self::DEFAULT_NUMBER_OF_QUEUES
         );
 
-        for ($i = 0; $i < $this->numberOfQueues; ++$i) {
+        for ($i = 0; $i < self::DEFAULT_NUMBER_OF_QUEUES; ++$i) {
             $this->queues[$i] = new Queue(
                 $this->workerManager,
                 $this->statsManager,
@@ -156,11 +112,6 @@ class ProbeDispatcherCommand extends Command
         $this->statsManager->setVersion((new GitVersionReader($this->logger, new SymfonyProcessFactory()))->version());
     }
 
-    /**
-     * @return int|void|null
-     *
-     * @throws Exception
-     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->setUp($input);
@@ -168,42 +119,51 @@ class ProbeDispatcherCommand extends Command
         $this->logger->info('Fireping Dispatcher Started.');
         $this->logger->info('Slave name is '.$_ENV['SLAVE_NAME']);
         $this->logger->info('Slave url is '.$_ENV['SLAVE_URL']);
-        $this->logger->info('Random factor is '.$this->randomFactor);
 
-        $this->loop = Factory::create();
+        Loop::addPeriodicTimer(120, function () {
+            $this->sendInstruction([
+                'type' => FetchConfiguration::class,
+                'delay_execution' => 0,
+                'etag' => $this->configuration->getEtag(),
+                'timestamp' => time(),
+            ]);
+        });
 
-        $this->loop->addPeriodicTimer(1, function () {
-            $now = time();
+        Loop::addPeriodicTimer(60, function () {
+            $this->sendInstruction([
+                'type' => PublishStatistics::class,
+                'delay_execution' => 0,
+                'body' => $this->statsManager->getStats(),
+                'timestamp' => time(),
+            ]);
+        });
 
-            if ($now % 120 === $this->randomFactor) {
-                $instruction = [
-                    'type' => FetchConfiguration::class,
-                    'delay_execution' => 0,
-                    'etag' => $this->configuration->getEtag(),
-                    'timestamp' => $now,
-                ];
-                $this->sendInstruction($instruction);
-            }
+        Loop::addPeriodicTimer(1, function () {
+            $this->statsManager->addWorkerStats(
+                $this->workerManager->getTotalWorkers(),
+                $this->workerManager->getAvailableWorkers(),
+                $this->workerManager->getInUseWorkerTypes()
+            );
+        });
 
-            if ($now % 60 === (int) floor($this->randomFactor / 2)) {
-                $instruction = [
-                    'type' => PublishStatistics::class,
-                    'delay_execution' => 0,
-                    'body' => $this->statsManager->getStats(),
-                    'timestamp' => $now,
-                ];
-                $this->sendInstruction($instruction, 30);
-            }
+        Loop::addPeriodicTimer(0.1, function () {
+            $this->workerManager->loop();
+        });
 
+        Loop::addPeriodicTimer(1, function () {
             foreach ($this->queues as $queue) {
                 $queue->loop();
             }
+        });
+
+        Loop::addPeriodicTimer(1, function () {
+            $now = time();
 
             foreach ($this->configuration->getProbes() as $probe) {
                 $ready = 0 === $now % $probe->getStep();
 
                 if ($ready) {
-                    $instructions = new Instruction($probe, $this->devicesPerWorker);
+                    $instructions = new Instruction($probe, self::DEVICES_PER_WORKER);
 
                     // Keep track of how many processes are starting.
                     $counter = 0;
@@ -217,64 +177,44 @@ class ProbeDispatcherCommand extends Command
                     }
                 }
             }
-
-            $this->statsManager->addWorkerStats(
-                $this->workerManager->getTotalWorkers(),
-                $this->workerManager->getAvailableWorkers(),
-                $this->workerManager->getInUseWorkerTypes()
-            );
-        });
-
-        $this->loop->addPeriodicTimer(0.1, function () {
-            $this->workerManager->loop();
         });
 
         if ($this->maxRuntime > 0) {
-            $this->logger->info('Running for '.$this->maxRuntime.' seconds');
-            $this->loop->addTimer(
-                $this->maxRuntime,
-                function () use ($output) {
-                    $output->writeln('Max runtime reached');
-                    $this->loop->stop();
-                }
-            );
+            Loop::addTimer($this->maxRuntime, function () {
+                $this->logger->info('max runtime reached');
+                Loop::stop();
+            });
         }
 
-        $this->loop->run();
+        Loop::run();
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     /**
      * @throws Exception
      */
-    public function sendInstruction(array $instruction, int $expectedRuntime = 60): void
+    private function sendInstruction(array $instruction, int $expectedRuntime = 60): void
     {
         try {
-            $this->logger->info(sprintf('dispatcher: selecting worker for type %s', $instruction['type']));
+            $this->logger->info(sprintf('selecting worker for type %s', $instruction['type']));
             $worker = $this->workerManager->getWorker($instruction['type']);
-            $this->logger->info(sprintf('dispatcher: worker %s selected', (string) $worker));
+            $this->logger->info(sprintf('worker %s selected', (string) $worker));
         } catch (Exception $e) {
-            $this->logger->error('dispatcher: could not select worker: ' . $e->getMessage());
+            $this->logger->error('could not select worker: ' . $e->getMessage());
 
             return;
         }
 
-        $json = json_encode($instruction);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            $this->logger->error('dispatcher: failed to encode instruction: ' . json_last_error_msg());
-
-            return;
-        }
-
+        $json = json_encode($instruction, JSON_THROW_ON_ERROR);
         $startAt = microtime(true);
 
-        $this->logger->info(sprintf('dispatcher: sending instruction to worker %s (%d bytes)', (string) $worker, strlen($json)));
-        $this->logger->debug(sprintf('dispatcher: worker %s instruction: %s', (string) $worker, $json));
+        $this->logger->info(sprintf('sending instruction to worker %s (%d bytes)', (string) $worker, strlen($json)));
+        $this->logger->debug(sprintf('worker %s instruction: %s', (string) $worker, $json));
 
         $worker->send($json, $expectedRuntime, function ($type, $response) {
             if (Process::OUT === $type) {
-                $this->handleResponse($type, $response);
+                $this->handleResponse($response);
             }
 
             if (Process::ERR === $type) {
@@ -282,27 +222,23 @@ class ProbeDispatcherCommand extends Command
             }
         });
 
-        $this->logger->info(sprintf('dispatcher: sent instruction to worker %s (took %s seconds)', (string) $worker, microtime(true) - $startAt));
+        $this->logger->info(sprintf('sent instruction to worker %s (took %s seconds)', (string) $worker, microtime(true) - $startAt));
     }
 
-    /**
-     * @param string $channel
-     * @param string $data
-     */
-    private function handleResponse($channel, $data): void
+    private function handleResponse(string $data): void
     {
         $startAt = microtime(true);
         $bytes = strlen($data);
         $response = json_decode($data, true);
 
         if (!$response) {
-            $this->logger->error('dispatcher: malformed json received from worker');
+            $this->logger->error('malformed json received from worker');
 
             return;
         }
 
         if (!isset($response['pid'], $response['type'], $response['status'], $response['headers'], $response['contents'])) {
-            $this->logger->error('dispatcher: incomplete response received from worker');
+            $this->logger->error('incomplete response received from worker');
 
             return;
         }
@@ -313,44 +249,41 @@ class ProbeDispatcherCommand extends Command
         /** @var array|string $contents */
         $contents = $response['contents'];
 
-        $this->logger->info("dispatcher: $type response ($bytes bytes) received from worker $pid");
+        $this->logger->info("$type response ($bytes bytes) received from worker $pid");
 
         switch ($type) {
             case 'probe':
-                $this->logger->info("dispatcher: enqueueing the response from worker $pid.");
+                $this->logger->info("enqueueing the response from worker $pid.");
 
                 $items = $this->expandProbeResult($contents);
                 foreach ($items as $key => $item) {
-                    $queue = $this->queues[$key % $this->numberOfQueues];
+                    $queue = $this->queues[$key % self::DEFAULT_NUMBER_OF_QUEUES];
                     $queue->enqueue($item);
                 }
                 break;
 
             case FetchConfiguration::class:
-                $this->logger->info('dispatcher: started handling new configuration response');
+                $this->logger->info('started handling new configuration response');
                 if (200 === $status) {
-                    $this->logger->info('dispatcher: applying new configuration');
+                    $this->logger->info('applying new configuration');
                     $etag = $response['headers']['etag'];
                     $this->configuration->updateConfig($contents, $etag);
-                    $this->logger->info(sprintf('dispatcher: new configuration applied (took %.2f seconds)', microtime(true) - $startAt));
-                    $this->logger->info(sprintf('dispatcher: new configuration has %d probes and %d devices', count($this->configuration->getProbes()), $this->configuration->getAllProbesDeviceCount()));
+                    $this->logger->info(sprintf('new configuration applied (took %.2f seconds)', microtime(true) - $startAt));
+                    $this->logger->info(sprintf('new configuration has %d probes and %d devices', count($this->configuration->getProbes()), $this->configuration->getAllProbesDeviceCount()));
 
                     $count = 0;
                     foreach ($this->configuration->getProbes() as $probe) {
-                        $count += ceil($this->configuration->getProbeDeviceCount($probe->getId()) / $this->devicesPerWorker);
+                        $count += ceil($this->configuration->getProbeDeviceCount($probe->getId()) / self::DEVICES_PER_WORKER);
                     }
                     $this->workerManager->setNumberOfProbeProcesses(intval($count));
                 } else {
-                    $this->logger->warning("dispatcher: configuration response ($status) from worker $pid received");
+                    $this->logger->warning("configuration response ($status) from worker $pid received");
                 }
                 break;
-
-            default:
-                $this->logger->warning("dispatcher: unexpected response of type $type");
         }
 
         $runtime = microtime(true) - $startAt;
-        $this->logger->info(sprintf('dispatcher: finished handling response from worker %d (took %.2f seconds)', $pid, $runtime));
+        $this->logger->info(sprintf('finished handling response from worker %d (took %.2f seconds)', $pid, $runtime));
     }
 
     private function expandProbeResult(array $result): array

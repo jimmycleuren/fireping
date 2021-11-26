@@ -10,56 +10,33 @@ use App\Slave\Task\PublishStatistics;
 use App\Slave\Task\TaskFactory;
 use Exception;
 use Psr\Log\LoggerInterface;
-use React\EventLoop\Factory;
+use React\EventLoop\Loop;
 use React\Stream\ReadableResourceStream;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Exception\InvalidArgumentException;
-use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ProbeWorkerCommand extends Command
+final class ProbeWorkerCommand extends Command
 {
-    /**
-     * @var OutputInterface
-     */
-    protected $output;
+    private OutputInterface $output;
+    private string $receiveBuffer = '';
+    private LoggerInterface $logger;
+    private TaskFactory $taskFactory;
 
-    /**
-     * @var string
-     */
-    protected $receiveBuffer;
-
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    /**
-     * @var TaskFactory
-     */
-    private $taskFactory;
-
-    /**
-     * @throws LogicException
-     */
     public function __construct(LoggerInterface $logger, TaskFactory $taskFactory)
     {
+        parent::__construct();
         $this->logger = $logger;
         $this->taskFactory = $taskFactory;
-
-        parent::__construct();
     }
 
-    /**
-     * @throws InvalidArgumentException
-     */
     protected function configure(): void
     {
         $this
-            ->setName('app:probe:worker')
-            ->setDescription('Start the probe worker.')
+            ->setName('fireping:worker')
+            ->setAliases(['app:probe:worker'])
+            ->setDescription('Start the probe worker')
             ->addOption(
                 'max-runtime',
                 'runtime',
@@ -69,16 +46,11 @@ class ProbeWorkerCommand extends Command
             );
     }
 
-    /**
-     * @throws InvalidArgumentException
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->output = $output;
 
-        $loop = Factory::create();
-
-        $read = new ReadableResourceStream(STDIN, $loop);
+        $read = new ReadableResourceStream(STDIN);
 
         $read->on('data', function ($data) {
             $this->receiveBuffer .= $data;
@@ -91,13 +63,13 @@ class ProbeWorkerCommand extends Command
         $maxRuntime = (int)$input->getOption('max-runtime');
         if ($maxRuntime > 0) {
             $this->logger->info("Running for {$maxRuntime} seconds");
-            $loop->addTimer($maxRuntime, function () use ($loop) {
-                $this->output->writeln('Max runtime reached');
-                $loop->stop();
+            Loop::addTimer($maxRuntime, function () {
+                $this->logger->info('max runtime reached');
+                Loop::stop();
             });
         }
 
-        $loop->run();
+        Loop::run();
 
         return 0;
     }
@@ -105,7 +77,7 @@ class ProbeWorkerCommand extends Command
     /**
      * @throws \LogicException
      */
-    protected function process(array $data)
+    private function process(array $data)
     {
         $startedAt = time();
         $this->logger->info(sprintf('worker %d has begun processing at %d', getmypid(), $startedAt));
@@ -193,7 +165,7 @@ class ProbeWorkerCommand extends Command
      * @param array $headers
      * @param array|string $contents
      */
-    protected function sendResponse(string $type, int $status, $contents, array $headers = []): void
+    private function sendResponse(string $type, int $status, $contents, array $headers = []): void
     {
         $pid = getmypid();
 
