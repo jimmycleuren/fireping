@@ -6,29 +6,23 @@ namespace App\Common\Process;
 
 class DummyProcess implements ProcessInterface
 {
-    /**
-     * @var string
-     */
-    private $output;
-    /**
-     * @var string
-     */
-    private $errorOutput;
-    /**
-     * @var bool
-     */
-    private $isSuccessful;
+    private string $output;
+    private string $errorOutput;
+    private bool $isSuccessful;
+    private int $exitCode;
+    private int $timeout;
 
-    public function __construct(string $output, string $errorOutput, bool $isSuccessful)
+    public function __construct(string $output, string $errorOutput, bool $isSuccessful, int $exitCode = 0)
     {
         $this->output = $output;
         $this->errorOutput = $errorOutput;
         $this->isSuccessful = $isSuccessful;
+        $this->exitCode = $exitCode;
     }
 
-    public static function fromFixture(ProcessFixture $fixture)
+    public static function fromFixture(ProcessFixture $fixture): self
     {
-        return new self($fixture->getOutput(), $fixture->getErrorOutput(), $fixture->isSuccessful());
+        return new self($fixture->getOutput(), $fixture->getErrorOutput(), $fixture->isSuccessful(), $fixture->getExitCode());
     }
 
     public function getOutput(): string
@@ -46,7 +40,13 @@ class DummyProcess implements ProcessInterface
         return $this->isSuccessful;
     }
 
-    public function run(): void
+    public function setTimeout(int $timeout): void
     {
+        $this->timeout = $timeout;
+    }
+
+    public function run(): int
+    {
+        return $this->exitCode;
     }
 }

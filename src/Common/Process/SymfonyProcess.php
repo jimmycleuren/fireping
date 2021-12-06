@@ -8,10 +8,7 @@ use Symfony\Component\Process\Process;
 
 class SymfonyProcess implements ProcessInterface
 {
-    /**
-     * @var Process
-     */
-    private $process;
+    private Process $process;
 
     public function __construct(array $command)
     {
@@ -33,8 +30,13 @@ class SymfonyProcess implements ProcessInterface
         return $this->process->isSuccessful();
     }
 
-    public function run(): void
+    public function setTimeout(int $timeout): void
     {
-        $this->process->run();
+        $this->process->setTimeout($timeout);
+    }
+
+    public function run(): int
+    {
+        return $this->process->run();
     }
 }
