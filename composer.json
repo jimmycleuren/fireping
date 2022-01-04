@@ -18,7 +18,9 @@
         "php": "^7.4|^8.0",
         "ext-json": "*",
         "ext-rrd": "*",
-        "api-platform/api-pack": "^1.0",
+        "api-platform/core": "^2.6",
+        "composer/package-versions-deprecated": "1.11.99.2",
+        "doctrine/annotations": "^1.0",
         "doctrine/doctrine-bundle": "^2.0",
         "doctrine/doctrine-migrations-bundle": "^3.0",
         "doctrine/orm": "^2.5",
@@ -27,6 +29,8 @@
         "flexihash/flexihash": "^3.0",
         "guzzlehttp/guzzle": "^7.0",
         "kevinpapst/adminlte-bundle": "^3.2",
+        "nelmio/cors-bundle": "^2.1",
+        "phpdocumentor/reflection-docblock": "^5.2",
         "predis/predis": "^1.1",
         "react/event-loop": "^1.0",
         "react/socket": "^1.0",
@@ -36,14 +40,18 @@
         "symfony/asset": "^5.0",
         "symfony/cache": "^5.0",
         "symfony/dotenv": "^5.0",
+        "symfony/expression-language": "^5.0",
         "symfony/flex": "^1.0",
         "symfony/form": "^5.0",
         "symfony/lock": "^5.0",
         "symfony/monolog-bundle": "^3.2",
-        "symfony/orm-pack": "^2.0",
         "symfony/polyfill-apcu": "^1.0",
         "symfony/process": "^5.0",
+        "symfony/property-access": "^5.0",
+        "symfony/property-info": "^5.0",
+        "symfony/proxy-manager-bridge": "^5.0",
         "symfony/security-bundle": "^5.0",
+        "symfony/serializer": "^5.0",
         "symfony/swiftmailer-bundle": "^3.2",
         "symfony/translation": "^5.0",
         "symfony/twig-bundle": "^5.0",
@@ -60,7 +68,8 @@
         "symfony/css-selector": "^5.0",
         "symfony/maker-bundle": "^1.14",
         "symfony/phpunit-bridge": "^5.0",
-        "symfony/profiler-pack": "^1.0"
+        "symfony/stopwatch": "^5.0",
+        "symfony/web-profiler-bundle": "^5.0"
     },
     "scripts": {
         "post-install-cmd": [
@@ -87,13 +96,6 @@
         "symfony/symfony": "*"
     },
     "extra": {
-        "symfony-app-dir": "app",
-        "symfony-bin-dir": "bin",
-        "symfony-var-dir": "var",
-        "symfony-web-dir": "web",
-        "symfony-tests-dir": "tests",
-        "symfony-assets-install": "relative",
-        "branch-alias": null,
         "symfony": {
             "allow-contrib": "true",
             "require": "^5.0"
