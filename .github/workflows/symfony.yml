@@ -34,7 +34,7 @@ jobs:
 
     steps:
       - name: Install packages
-        run: sudo apt-get install mysql-client librrd-dev rrdtool fping
+        run: sudo apt-get install mysql-client mysql-client-8.0 librrd-dev rrdtool fping
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
