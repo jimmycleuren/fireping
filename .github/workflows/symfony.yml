@@ -28,13 +28,14 @@ jobs:
         image: mysql:5.7
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: fireping_test
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
       - name: Install packages
-        run: sudo apt-get install mysql-client mysql-common mysql-client-8.0 librrd-dev rrdtool fping
+        run: sudo apt-get install librrd-dev rrdtool fping
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -75,9 +76,6 @@ jobs:
 
       - name: Install phpunit
         run: ./vendor/bin/simple-phpunit install
-
-      - name: Create database
-        run: mysql -h 127.0.0.1 -u root -e 'CREATE DATABASE fireping_test;'
 
       - name: Create folders
         run: mkdir build
