@@ -39,7 +39,7 @@ class CleanupCommand extends Command
     /**
      * Executes the current command.
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $stopwatch = new Stopwatch();
         $stopwatch->start('Cleanup');

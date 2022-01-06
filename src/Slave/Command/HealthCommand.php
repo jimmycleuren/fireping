@@ -20,7 +20,7 @@ class HealthCommand extends Command
         $this->client = $client;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
             $this->client->request('GET', '/api/slaves/health');
