@@ -157,8 +157,6 @@ class ProbeDispatcherCommand extends Command
     }
 
     /**
-     * @return int|void|null
-     *
      * @throws Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
