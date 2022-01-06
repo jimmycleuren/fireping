@@ -11,7 +11,7 @@ class MockTransport implements Swift_Transport
 {
     private int $sent = 0;
 
-    public function isStarted()
+    public function isStarted(): bool
     {
         return true;
     }
@@ -24,12 +24,12 @@ class MockTransport implements Swift_Transport
     {
     }
 
-    public function ping()
+    public function ping(): bool
     {
         return true;
     }
 
-    public function send(Swift_Mime_SimpleMessage $message, &$failedRecipients = null)
+    public function send(Swift_Mime_SimpleMessage $message, &$failedRecipients = null): int
     {
         $this->sent = count($message->getTo() ?? []) + count($message->getCc() ?? []) + count($message->getBcc() ?? []);
         return $this->sent;
