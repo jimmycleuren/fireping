@@ -41,7 +41,7 @@ services:
         public: true
 
     App\AlertDestination\Mail:
-        arguments: ["@swiftmailer.mailer.default", "@monolog.logger", "@twig"]
+        arguments: ["@swiftmailer.mailer.default", "@monolog.logger", "@twig", "%env(MAILER_FROM)%"]
         public: true
 
     App\Storage\RrdStorage:
