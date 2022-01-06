@@ -31,7 +31,7 @@ class CleanupAlertCommand extends Command
         $this->setDescription('Clean alerts when a device is moved from slavegroup/alertrule');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $stopwatch = new Stopwatch();
         $stopwatch->start('CleanupAlert');

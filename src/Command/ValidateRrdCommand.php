@@ -30,7 +30,7 @@ class ValidateRrdCommand extends Command
             ->setDescription('Validate the existing rrd data and fix where needed');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $devices = $this->em->getRepository(Device::class)->findAll();
 

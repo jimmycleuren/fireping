@@ -7,7 +7,7 @@ use Symfony\Component\Form\AbstractType;
 
 class ProbeArgumentsType extends AbstractType
 {
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'probe_arguments';
     }

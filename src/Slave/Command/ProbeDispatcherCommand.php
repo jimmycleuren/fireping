@@ -161,7 +161,7 @@ class ProbeDispatcherCommand extends Command
      *
      * @throws Exception
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->setUp($input);
 

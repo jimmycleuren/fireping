@@ -14,7 +14,7 @@ class Kernel extends BaseKernel
 {
     use MicroKernelTrait;
 
-    public function getCacheDir()
+    public function getCacheDir(): string
     {
         if (isset($_ENV['CACHE_PATH'])) {
             return $_ENV['CACHE_PATH'].'/'.$this->environment;
@@ -22,7 +22,7 @@ class Kernel extends BaseKernel
         return $this->getProjectDir().'/var/cache/'.$this->environment;
     }
 
-    public function getLogDir()
+    public function getLogDir(): string
     {
         if (isset($_ENV['LOG_PATH'])) {
             return $_ENV['LOG_PATH'];

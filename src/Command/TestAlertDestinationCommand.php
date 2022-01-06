@@ -38,7 +38,7 @@ class TestAlertDestinationCommand extends Command
             ->setDescription('Test an alertdestination');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $id = (int) $input->getArgument('destination-id');
 
