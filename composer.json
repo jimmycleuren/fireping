@@ -36,7 +36,7 @@
         "react/socket": "^1.0",
         "react/stream": "^1.0",
         "sensio/framework-extra-bundle": "^6.1",
-        "snc/redis-bundle": "^3.2",
+        "snc/redis-bundle": "^4.0",
         "symfony/asset": "^5.0",
         "symfony/cache": "^5.0",
         "symfony/dotenv": "^5.0",
