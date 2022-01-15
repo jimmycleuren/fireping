@@ -13,21 +13,22 @@ class SymfonyProcessTest extends TestCase
     /**
      * @dataProvider dataProvider
      */
-    public function test(array $command, ProcessFixture $fixture)
+    public function test(array $command, ProcessFixture $fixture): void
     {
         $process = new SymfonyProcess($command);
-        $process->run();
+        $exitCode = $process->run();
 
         self::assertEquals($fixture->getOutput(), $process->getOutput());
         self::assertEquals($fixture->getErrorOutput(), $process->getErrorOutput());
         self::assertEquals($fixture->isSuccessful(), $process->isSuccessful());
+        self::assertEquals($fixture->getExitCode(), $exitCode);
     }
 
-    public function dataProvider()
+    public function dataProvider(): array
     {
         return [
-            [['echo', 'hello'], new ProcessFixture("hello\n", '', true)],
-            [['this-command-does-not-exist'], new ProcessFixture('', "sh: 1: exec: this-command-does-not-exist: not found\n", false)],
+            [['echo', 'hello'], new ProcessFixture("hello\n", '', true, 0)],
+            [['this-command-does-not-exist'], new ProcessFixture('', "sh: 1: exec: this-command-does-not-exist: not found\n", false, 127)],
         ];
     }
 }

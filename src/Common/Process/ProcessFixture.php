@@ -18,12 +18,14 @@ class ProcessFixture
      * @var bool
      */
     private $isSuccessful;
+    private int $exitCode;
 
-    public function __construct(string $output, string $errorOutput, bool $isSuccessful)
+    public function __construct(string $output, string $errorOutput, bool $isSuccessful, int $exitCode = 0)
     {
         $this->output = $output;
         $this->errorOutput = $errorOutput;
         $this->isSuccessful = $isSuccessful;
+        $this->exitCode = $exitCode;
     }
 
     /**
@@ -48,5 +50,10 @@ class ProcessFixture
     public function isSuccessful(): bool
     {
         return $this->isSuccessful;
+    }
+
+    public function getExitCode(): int
+    {
+        return $this->exitCode;
     }
 }

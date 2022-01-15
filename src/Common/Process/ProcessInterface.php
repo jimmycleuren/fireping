@@ -12,5 +12,7 @@ interface ProcessInterface
 
     public function isSuccessful(): bool;
 
-    public function run(): void;
+    public function setTimeout(int $timeout): void;
+
+    public function run(): int;
 }
