@@ -2,6 +2,7 @@ FROM php:7.4.27-fpm
 
 ENV MODE slave
 ENV DEV false
+ENV PHP_MEMORY_LIMIT="128M"
 
 ADD . /app
 
@@ -11,7 +12,9 @@ RUN apt-get install -y fping zip git rrdtool librrd-dev procps dos2unix
 WORKDIR /app
 
 COPY docker/timezone.ini /usr/local/etc/php/conf.d/timezone.ini
-RUN chmod 755 /usr/local/etc/php/conf.d/timezone.ini
+COPY docker/memory_limit.ini /usr/local/etc/php/conf.d/memory_limit.ini
+RUN chmod 755 /usr/local/etc/php/conf.d/timezone.ini \
+    && chmod 755 /usr/local/etc/php/conf.d/memory_limit.ini
 
 RUN docker-php-ext-install pcntl pdo_mysql
 RUN pecl install rrd
