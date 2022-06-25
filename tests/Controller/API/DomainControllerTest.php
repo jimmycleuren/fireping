@@ -23,6 +23,44 @@ class DomainControllerTest extends WebTestCase
         $this->assertJson($response->getContent());
     }
 
+    public function testNameFilter(): void
+    {
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
+
+        $client->request('GET', '/api/domains?name=Domain 4', [], [], [
+            'HTTP_Accept' => 'application/json',
+        ]);
+
+        $response = $client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertJson($response->getContent());
+
+        $decoded = json_decode($response->getContent(), true);
+        $this->assertEquals(1, $decoded['hydra:totalItems']);
+        $this->assertEquals("Domain 4", $decoded['hydra:member'][0]['name']);
+    }
+
+    public function testParentNameFilter(): void
+    {
+        $client = static::createClient();
+        $userRepository = new UserRepository(static::$container->get('doctrine'));
+        $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
+
+        $client->request('GET', '/api/domains?parent.name=Domain 1', [], [], [
+            'HTTP_Accept' => 'application/json',
+        ]);
+
+        $response = $client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertJson($response->getContent());
+
+        $decoded = json_decode($response->getContent(), true);
+        $this->assertEquals(1, $decoded['hydra:totalItems']);
+        $this->assertEquals('Subdomain 2', $decoded['hydra:member'][0]['name']);
+    }
+
     public function testAddRemove()
     {
         $client = static::createClient();

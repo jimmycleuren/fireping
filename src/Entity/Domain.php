@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -25,6 +26,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     "delete",
  *     "alerts"={"route_name"="api_domains_alerts","method"="GET"},
  * })
+ * @ApiFilter(filterClass="ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter", properties={"name", "parent.name"}, strategy="exact")
  * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  * @UniqueEntity(fields={"parent", "name"}, errorPath="name", message="This name is already in use within this parent domain.", ignoreNull=false)
  */
