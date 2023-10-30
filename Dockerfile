@@ -1,31 +1,48 @@
-FROM php:7.4.30-fpm
+# Use an official, minimal base image for better security and size
+FROM php:7.4.30-fpm-alpine
 
-ENV MODE slave
-ENV DEV false
-ENV PHP_MEMORY_LIMIT="128M"
+# Set environment variables
+ENV MODE=slave
+ENV DEV=false
+ENV PHP_MEMORY_LIMIT=128M
 
-ADD . /app
+# Create a non-root user for running the application
+RUN adduser -D -H -u 1000 fireping
 
-RUN apt-get update
-RUN apt-get install -y fping zip git rrdtool librrd-dev procps dos2unix
+# Copy your application files into the container
+COPY files/composer.json /app/composer.json
 
+# Set the working directory
 WORKDIR /app
 
-COPY docker/timezone.ini /usr/local/etc/php/conf.d/timezone.ini
-COPY docker/memory_limit.ini /usr/local/etc/php/conf.d/memory_limit.ini
-RUN chmod 755 /usr/local/etc/php/conf.d/timezone.ini \
-    && chmod 755 /usr/local/etc/php/conf.d/memory_limit.ini
+# Copy configuration files (timezone and memory_limit)
+COPY files/timezone.ini /usr/local/etc/php/conf.d/timezone.ini
+COPY files/memory_limit.ini /usr/local/etc/php/conf.d/memory_limit.ini
 
-RUN docker-php-ext-install pcntl pdo_mysql
-RUN pecl install rrd
-RUN docker-php-ext-enable rrd
-RUN php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer
+# Change permissions for the configuration files
+RUN chmod 644 /usr/local/etc/php/conf.d/timezone.ini
+RUN chmod 644 /usr/local/etc/php/conf.d/memory_limit.ini
 
-RUN if [ "$DEV" = "true" ] ; then \
-    composer install --verbose --prefer-dist --optimize-autoloader --no-scripts --no-suggest ; else \
-    composer install --verbose --prefer-dist --no-dev --optimize-autoloader --no-scripts --no-suggest ; fi
+# Install necessary packages and remove cache to reduce image size
+RUN apk --no-cache add make g++ zlib-dev pkgconfig autoconf fping zip git rrdtool-dev librrd && \
+    apk --no-cache add --virtual .build-deps procps dos2unix && \
+    docker-php-ext-install pcntl pdo_mysql && \
+    pecl install rrd xdebug && \
+    docker-php-ext-enable rrd && \
+    php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer && \
+    if [ "$DEV" = "true" ] ; then \
+        composer install --verbose --prefer-dist --optimize-autoloader --no-scripts --no-suggest ; else \
+        composer install --verbose --prefer-dist --no-dev --optimize-autoloader --no-scripts --no-suggest ; fi
 
-ADD docker/entrypoint.sh /usr/local/bin/
-RUN dos2unix /usr/local/bin/entrypoint.sh && chmod +x /usr/local/bin/entrypoint.sh
+ADD files/entrypoint.sh /usr/local/bin/
 
+RUN dos2unix /usr/local/bin/entrypoint.sh && \
+    chmod +x /usr/local/bin/entrypoint.sh && \
+    apk del .build-deps && \
+    rm -rf /var/cache/apk/*
+
+# Drop root privileges for better security
+# USER fireping
+
+# Specify the entrypoint
 ENTRYPOINT ["entrypoint.sh"]
