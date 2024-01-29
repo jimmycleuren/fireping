@@ -34,7 +34,7 @@ class PingOutputFormatter implements OutputFormatterInterface
             return [];
         }
 
-        [$hostname, $results] = explode(':', $input);
+        [$hostname, $results] = explode(' : ', $input);
 
         return ['ip' => trim($hostname), 'result' => $this->transformResult(trim($results))];
     }
