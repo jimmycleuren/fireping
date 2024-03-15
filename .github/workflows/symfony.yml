@@ -75,7 +75,7 @@ jobs:
         run: composer dump-autoload --optimize
 
       - name: Install phpunit
-        run: SYMFONY_PHPUNIT_REQUIRE="nikic/php-parser:4.18" ./vendor/bin/simple-phpunit install
+        run: ./vendor/bin/simple-phpunit install
 
       - name: Create folders
         run: mkdir build
