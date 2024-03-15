@@ -90,7 +90,7 @@ jobs:
         run: ./bin/console lint:container
 
       - name: Check security
-        run: export PATH="$HOME/.symfony/bin:$PATH" ; symfony check:security
+        run: export PATH="$HOME/.symfony5/bin:$PATH" ; symfony check:security
 
       - name: Check doctrine mapping
         run: ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction
