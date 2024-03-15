@@ -74,9 +74,6 @@ jobs:
       - name: Dump Autoload (composer)
         run: composer dump-autoload --optimize
 
-#      - name: Install phpunit
-#        run: ./vendor/bin/simple-phpunit install
-
       - name: Create folders
         run: mkdir build
 
