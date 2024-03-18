@@ -12,7 +12,7 @@ use Prophecy\Argument;
 
 class MonologTest extends TestCase
 {
-    public function testTrigger()
+    public function testTrigger(): void
     {
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
         $logger->warning(Argument::is('FIREPING.ALERT: Device down: device from group'))->shouldBeCalledTimes(1);
@@ -35,7 +35,7 @@ class MonologTest extends TestCase
         $monolog->trigger($alert);
     }
 
-    public function testClear()
+    public function testClear(): void
     {
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
         $logger->warning(Argument::is('FIREPING.CLEAR: Device up: device from group'))->shouldBeCalledTimes(1);

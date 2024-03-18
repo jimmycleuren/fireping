@@ -7,7 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class DeviceControllerTest extends WebTestCase
 {
-    public function testCollection()
+    public function testCollection(): void
     {
         $client = static::createClient();
         $userRepository = new UserRepository(static::$container->get('doctrine'));
@@ -23,7 +23,7 @@ class DeviceControllerTest extends WebTestCase
         $this->assertJson($response->getContent());
     }
 
-    public function testStatus()
+    public function testStatus(): void
     {
         $client = static::createClient();
         $userRepository = new UserRepository(static::$container->get('doctrine'));
@@ -41,7 +41,7 @@ class DeviceControllerTest extends WebTestCase
         $this->assertEquals('unknown', json_decode($response->getContent())->status);
     }
 
-    public function testStatusNoProbe()
+    public function testStatusNoProbe(): void
     {
         $client = static::createClient();
         $userRepository = new UserRepository(static::$container->get('doctrine'));

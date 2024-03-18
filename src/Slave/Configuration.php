@@ -78,14 +78,14 @@ class Configuration
         }
     }
 
-    public function purgeAllInactiveDevices()
+    public function purgeAllInactiveDevices(): void
     {
         foreach ($this->getProbes() as $probe) {
             $probe->purgeAllInactiveDevices();
         }
     }
 
-    public function updateConfig($configuration, $etag = null)
+    public function updateConfig($configuration, $etag = null): void
     {
         $this->deactivateAllDevices();
         foreach ($configuration as $id => $probeConfig) {

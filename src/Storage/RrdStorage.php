@@ -55,7 +55,7 @@ class RrdStorage extends Storage
         return $this->path.$device->getId().'/'.$probe->getId().'/'.$group->getId().'.rrd';
     }
 
-    public function store(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data, bool $addNewSources = false)
+    public function store(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data, bool $addNewSources = false): void
     {
         $path = $this->getFilePath($device, $probe, $group);
 
@@ -269,7 +269,7 @@ class RrdStorage extends Storage
         return $result['data'][$datasource];
     }
 
-    public function validate(Device $device, Probe $probe, SlaveGroup $group)
+    public function validate(Device $device, Probe $probe, SlaveGroup $group): void
     {
         $filename = $this->getFilePath($device, $probe, $group);
 
@@ -428,7 +428,7 @@ class RrdStorage extends Storage
         return $path.$item;
     }
 
-    public function remove(array $items, string $path)
+    public function remove(array $items, string $path): void
     {
         $path = rtrim($path, '/').'/';
         $items = $this->concatCollection($items, $path);

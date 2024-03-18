@@ -15,7 +15,7 @@ class GitVersionReaderTest extends TestCase
     /**
      * @dataProvider dataProvider
      */
-    public function testReadingCreatesVersionObjects(ProcessFixture $fixture, string $version)
+    public function testReadingCreatesVersionObjects(ProcessFixture $fixture, string $version): void
     {
         $factory = new DummyProcessFactory();
         $factory->addFixture(sha1(serialize(['git', 'describe', '--always'])), $fixture);

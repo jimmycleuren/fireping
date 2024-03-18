@@ -220,7 +220,7 @@ class Domain
     /**
      * Remove slavegroup.
      */
-    public function removeSlaveGroup(\App\Entity\SlaveGroup $slavegroup)
+    public function removeSlaveGroup(\App\Entity\SlaveGroup $slavegroup): void
     {
         $this->slavegroups->removeElement($slavegroup);
     }
@@ -250,7 +250,7 @@ class Domain
     /**
      * Remove probe.
      */
-    public function removeProbe(\App\Entity\Probe $probe)
+    public function removeProbe(\App\Entity\Probe $probe): void
     {
         $this->probes->removeElement($probe);
     }
@@ -280,7 +280,7 @@ class Domain
     /**
      * Remove alert rule.
      */
-    public function removeAlertRule(\App\Entity\AlertRule $alertRule)
+    public function removeAlertRule(\App\Entity\AlertRule $alertRule): void
     {
         $this->alertRules->removeElement($alertRule);
     }
@@ -310,7 +310,7 @@ class Domain
     /**
      * Remove alert destination.
      */
-    public function removeAlertDestination(\App\Entity\AlertDestination $alertDestination)
+    public function removeAlertDestination(\App\Entity\AlertDestination $alertDestination): void
     {
         $this->alertDestinations->removeElement($alertDestination);
     }
@@ -340,7 +340,7 @@ class Domain
     /**
      * Remove device.
      */
-    public function removeDevice(\App\Entity\Device $device)
+    public function removeDevice(\App\Entity\Device $device): void
     {
         $this->devices->removeElement($device);
     }
@@ -370,7 +370,7 @@ class Domain
     /**
      * Remove subdomain.
      */
-    public function removeSubdomain(\App\Entity\Domain $subdomain)
+    public function removeSubdomain(\App\Entity\Domain $subdomain): void
     {
         $this->subdomains->removeElement($subdomain);
     }

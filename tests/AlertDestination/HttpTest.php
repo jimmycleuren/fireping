@@ -12,7 +12,7 @@ use Prophecy\Argument;
 
 class HttpTest extends TestCase
 {
-    public function testNoArguments()
+    public function testNoArguments(): void
     {
         $guzzle = $this->prophesize('GuzzleHttp\\Client');
         $guzzle->post('url', Argument::any())->shouldBeCalledTimes(0);
@@ -35,7 +35,7 @@ class HttpTest extends TestCase
         $http->clear($alert);
     }
 
-    public function testException()
+    public function testException(): void
     {
         $guzzle = $this->prophesize('GuzzleHttp\\Client');
         $guzzle->post('url', Argument::any())->shouldBeCalledTimes(2)->willThrow(new \Exception('test'));
@@ -60,7 +60,7 @@ class HttpTest extends TestCase
         $http->clear($alert);
     }
 
-    public function testTrigger()
+    public function testTrigger(): void
     {
         $guzzle = $this->prophesize('GuzzleHttp\\Client');
         $guzzle->post('url', Argument::any())->shouldBeCalledTimes(1);
@@ -83,7 +83,7 @@ class HttpTest extends TestCase
         $http->trigger($alert);
     }
 
-    public function testClear()
+    public function testClear(): void
     {
         $guzzle = $this->prophesize('GuzzleHttp\\Client');
         $guzzle->post('url', Argument::any())->shouldBeCalledTimes(1);

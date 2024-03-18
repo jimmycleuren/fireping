@@ -15,7 +15,7 @@ use Psr\Log\LoggerInterface;
 
 class StorageFactoryTest extends TestCase
 {
-    public function testCreate()
+    public function testCreate(): void
     {
         $logger = $this->prophesize(LoggerInterface::class)->reveal();
 
@@ -41,7 +41,7 @@ class StorageFactoryTest extends TestCase
         $_ENV['STORAGE'] = $existing;
     }
 
-    public function testException()
+    public function testException(): void
     {
         $logger = $this->prophesize(LoggerInterface::class)->reveal();
 

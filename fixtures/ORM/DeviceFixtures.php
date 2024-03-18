@@ -9,7 +9,7 @@ use Doctrine\Persistence\ObjectManager;
 
 class DeviceFixtures extends Fixture implements DependentFixtureInterface
 {
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         $device = new Device();
         $device->setName('Device 1');

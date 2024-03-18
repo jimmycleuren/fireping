@@ -34,7 +34,7 @@ class Device
     /**
      * @return mixed
      */
-    public function setIp($ip)
+    public function setIp($ip): void
     {
         $this->ip = $ip;
     }
@@ -50,7 +50,7 @@ class Device
     /**
      * @param bool $active
      */
-    public function setActive($active)
+    public function setActive($active): void
     {
         $this->active = $active;
     }

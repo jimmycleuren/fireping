@@ -9,7 +9,7 @@ use App\Exception\DirtyInputException;
 
 class TracerouteProcessor extends Processor
 {
-    public function storeResult(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data)
+    public function storeResult(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data): void
     {
         $datasources = [];
 

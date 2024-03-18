@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class AlertControllerTest extends WebTestCase
 {
-    public function testIndex()
+    public function testIndex(): void
     {
         $client = static::createClient();
 
@@ -16,7 +16,7 @@ class AlertControllerTest extends WebTestCase
         $this->assertStringContainsString('Active alerts', $crawler->filter('h1')->text());
     }
 
-    public function testDomain()
+    public function testDomain(): void
     {
         $client = static::createClient();
 

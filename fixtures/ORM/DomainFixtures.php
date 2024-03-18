@@ -9,7 +9,7 @@ use Doctrine\Persistence\ObjectManager;
 
 class DomainFixtures extends Fixture implements DependentFixtureInterface
 {
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         $domain = new Domain();
         $domain->setId(1);

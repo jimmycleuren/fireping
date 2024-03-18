@@ -9,7 +9,7 @@ use Psr\Log\LoggerInterface;
 
 class WorkerManagerTest extends TestCase
 {
-    public function testFlow()
+    public function testFlow(): void
     {
         $logger = $this->prophesize(LoggerInterface::class);
         $kernel = $this->prophesize(Kernel::class);
@@ -47,7 +47,7 @@ class WorkerManagerTest extends TestCase
         $this->assertEquals(['bla' => 0], $manager->getInUseWorkerTypes());
     }
 
-    public function testNoWorker()
+    public function testNoWorker(): void
     {
         $logger = $this->prophesize(LoggerInterface::class);
         $kernel = $this->prophesize(Kernel::class);
@@ -63,7 +63,7 @@ class WorkerManagerTest extends TestCase
         $manager->getWorker('bla');
     }
 
-    public function testNotEnoughWorkers()
+    public function testNotEnoughWorkers(): void
     {
         $logger = $this->prophesize(LoggerInterface::class);
         $kernel = $this->prophesize(Kernel::class);
@@ -97,7 +97,7 @@ class WorkerManagerTest extends TestCase
         $this->assertEquals(2, $manager->getAvailableWorkers());
     }
 
-    public function testTimeout()
+    public function testTimeout(): void
     {
         $logger = $this->prophesize(LoggerInterface::class);
         $kernel = $this->prophesize(Kernel::class);

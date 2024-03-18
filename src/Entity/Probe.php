@@ -259,7 +259,7 @@ class Probe
     /**
      * Remove ProbeArchive.
      */
-    public function removeArchive(ProbeArchive $archive)
+    public function removeArchive(ProbeArchive $archive): void
     {
         $this->archives->removeElement($archive);
     }

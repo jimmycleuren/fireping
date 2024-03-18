@@ -20,7 +20,7 @@ final class TaskFactory
         $this->logger = $logger;
     }
 
-    public function addTaskType(TaskInterface $task)
+    public function addTaskType(TaskInterface $task): void
     {
         $this->types[$task->getType()] = $task;
     }

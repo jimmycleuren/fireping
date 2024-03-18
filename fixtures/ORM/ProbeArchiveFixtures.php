@@ -9,7 +9,7 @@ use Doctrine\Persistence\ObjectManager;
 
 class ProbeArchiveFixtures extends Fixture implements DependentFixtureInterface
 {
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         $probeArchive = new ProbeArchive();
         $probeArchive->setFunction('AVERAGE');

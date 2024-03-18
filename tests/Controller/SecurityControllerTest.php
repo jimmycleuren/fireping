@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class SecurityControllerTest extends WebTestCase
 {
-    public function testLogin()
+    public function testLogin(): void
     {
         $client = static::createClient();
 
@@ -25,7 +25,7 @@ class SecurityControllerTest extends WebTestCase
         $this->assertEquals(302, $client->getResponse()->getStatusCode());
     }
 
-    public function testLogout()
+    public function testLogout(): void
     {
         $client = static::createClient(array(), array(
             'PHP_AUTH_USER' => 'test',

@@ -24,7 +24,7 @@ class NotificationSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function onNotifications(NotificationListEvent $event)
+    public function onNotifications(NotificationListEvent $event): void
     {
         $alerts = $this->alertRepository->findBy(['active' => 1]);
 

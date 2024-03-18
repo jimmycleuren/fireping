@@ -7,7 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class GraphControllerTest extends WebTestCase
 {
-    public function testDevice1Summary()
+    public function testDevice1Summary(): void
     {
         $client = static::createClient();
         $userRepository = new UserRepository(static::$container->get('doctrine'));
@@ -19,7 +19,7 @@ class GraphControllerTest extends WebTestCase
         $this->assertTrue($client->getResponse()->headers->contains('Content-Type', 'image/png'));
     }
 
-    public function testDevice1Detail()
+    public function testDevice1Detail(): void
     {
         $client = static::createClient();
         $userRepository = new UserRepository(static::$container->get('doctrine'));
@@ -31,7 +31,7 @@ class GraphControllerTest extends WebTestCase
         $this->assertTrue($client->getResponse()->headers->contains('Content-Type', 'image/png'));
     }
 
-    public function testDevice1DetailDummy()
+    public function testDevice1DetailDummy(): void
     {
         $client = static::createClient();
         $userRepository = new UserRepository(static::$container->get('doctrine'));
@@ -42,7 +42,7 @@ class GraphControllerTest extends WebTestCase
         $this->assertEquals(500, $client->getResponse()->getStatusCode());
     }
 
-    public function testDevice2Summary()
+    public function testDevice2Summary(): void
     {
         $client = static::createClient();
         $userRepository = new UserRepository(static::$container->get('doctrine'));
@@ -54,7 +54,7 @@ class GraphControllerTest extends WebTestCase
         $this->assertTrue($client->getResponse()->headers->contains('Content-Type', 'image/png'));
     }
 
-    public function testDevice3Summary()
+    public function testDevice3Summary(): void
     {
         $client = static::createClient();
         $userRepository = new UserRepository(static::$container->get('doctrine'));
@@ -65,7 +65,7 @@ class GraphControllerTest extends WebTestCase
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
-    public function testSlaveLoad()
+    public function testSlaveLoad(): void
     {
         $client = static::createClient();
         $userRepository = new UserRepository(static::$container->get('doctrine'));
@@ -77,7 +77,7 @@ class GraphControllerTest extends WebTestCase
         $this->assertTrue($client->getResponse()->headers->contains('Content-Type', 'image/png'));
     }
 
-    public function testSlaveMemory()
+    public function testSlaveMemory(): void
     {
         $client = static::createClient();
         $userRepository = new UserRepository(static::$container->get('doctrine'));
@@ -89,7 +89,7 @@ class GraphControllerTest extends WebTestCase
         $this->assertTrue($client->getResponse()->headers->contains('Content-Type', 'image/png'));
     }
 
-    public function testSlavePosts()
+    public function testSlavePosts(): void
     {
         $client = static::createClient();
         $userRepository = new UserRepository(static::$container->get('doctrine'));
@@ -101,7 +101,7 @@ class GraphControllerTest extends WebTestCase
         $this->assertTrue($client->getResponse()->headers->contains('Content-Type', 'image/png'));
     }
 
-    public function testSlaveQueues()
+    public function testSlaveQueues(): void
     {
         $client = static::createClient();
         $userRepository = new UserRepository(static::$container->get('doctrine'));
@@ -113,7 +113,7 @@ class GraphControllerTest extends WebTestCase
         $this->assertTrue($client->getResponse()->headers->contains('Content-Type', 'image/png'));
     }
 
-    public function testSlaveWorkers()
+    public function testSlaveWorkers(): void
     {
         $client = static::createClient();
         $userRepository = new UserRepository(static::$container->get('doctrine'));

@@ -18,7 +18,7 @@ class RrdCachedStorageTest extends TestCase
         $this->slaveGroupId = date('U');
     }
 
-    public function testCreate()
+    public function testCreate(): void
     {
         $logger = $this->prophesize(LoggerInterface::class)->reveal();
 
@@ -47,7 +47,7 @@ class RrdCachedStorageTest extends TestCase
         $this->assertEquals(['median', 'loss'], $datasources);
     }
 
-    public function testUpdate()
+    public function testUpdate(): void
     {
         $logger = $this->prophesize(LoggerInterface::class)->reveal();
 
@@ -76,7 +76,7 @@ class RrdCachedStorageTest extends TestCase
         $this->assertEquals(['median', 'loss'], $datasources);
     }
 
-    public function testUpdateWithNewDatasource()
+    public function testUpdateWithNewDatasource(): void
     {
         $logger = $this->prophesize(LoggerInterface::class)->reveal();
 

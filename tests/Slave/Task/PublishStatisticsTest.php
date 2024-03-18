@@ -37,7 +37,7 @@ class PublishStatisticsTest extends TestCase
         self::assertSame(['foo' => 'bar'], $class->getBody());
     }
 
-    public function testGetType()
+    public function testGetType(): void
     {
         $class = new PublishStatistics(new TestLogger(), new Client());
 
