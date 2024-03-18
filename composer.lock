@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1d0a1f6a5d087f7d7e9682421a7f1009",
+    "content-hash": "49d52855bb0c14ec7cdc6d15df43cc52",
     "packages": [
         {
             "name": "api-platform/core",
@@ -7781,25 +7781,26 @@
         },
         {
             "name": "symfony/proxy-manager-bridge",
-            "version": "v6.0.19",
+            "version": "v5.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/proxy-manager-bridge.git",
-                "reference": "905733405585e584596a2ea2874dad84a738daa8"
+                "reference": "50aa8ac8012d414f2aed26be760e0654abec2d76"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/proxy-manager-bridge/zipball/905733405585e584596a2ea2874dad84a738daa8",
-                "reference": "905733405585e584596a2ea2874dad84a738daa8",
+                "url": "https://api.github.com/repos/symfony/proxy-manager-bridge/zipball/50aa8ac8012d414f2aed26be760e0654abec2d76",
+                "reference": "50aa8ac8012d414f2aed26be760e0654abec2d76",
                 "shasum": ""
             },
             "require": {
                 "friendsofphp/proxy-manager-lts": "^1.0.2",
-                "php": ">=8.0.2",
-                "symfony/dependency-injection": "^5.4|^6.0"
+                "php": ">=7.2.5",
+                "symfony/dependency-injection": "^5.0|^6.0",
+                "symfony/polyfill-php80": "^1.16"
             },
             "require-dev": {
-                "symfony/config": "^5.4|^6.0"
+                "symfony/config": "^4.4|^5.0|^6.0"
             },
             "type": "symfony-bridge",
             "autoload": {
@@ -7827,7 +7828,7 @@
             "description": "Provides integration for ProxyManager with various Symfony components",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/proxy-manager-bridge/tree/v6.0.19"
+                "source": "https://github.com/symfony/proxy-manager-bridge/tree/v5.4.2"
             },
             "funding": [
                 {
@@ -7843,7 +7844,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-01-01T08:36:10+00:00"
+            "time": "2021-12-25T19:45:36+00:00"
         },
         {
             "name": "symfony/routing",
