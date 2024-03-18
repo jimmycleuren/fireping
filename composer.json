@@ -62,6 +62,7 @@
         "doctrine/doctrine-fixtures-bundle": "^3.0",
         "mi-schi/phpmd-extension": "^4.2",
         "phpmd/phpmd": "^2.6",
+        "phpspec/prophecy": "^1.19",
         "phpstan/phpstan": "^0.12",
         "phpunit/phpunit": "^9.6",
         "squizlabs/php_codesniffer": "^3.3",
