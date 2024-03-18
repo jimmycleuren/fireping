@@ -1,4 +1,4 @@
 parameters:
     inferPrivatePropertyTypeFromConstructor: true
-    excludes_analyse:
+    excludePaths:
         - %rootDir%/../../../src/Migrations/*
