@@ -231,7 +231,7 @@ class RrdStorage extends Storage
         }
     }
 
-    public function fetch(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $key, $function): mixed
+    public function fetch(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $key, $function)
     {
         $path = $this->getFilePath($device, $probe, $group);
 
