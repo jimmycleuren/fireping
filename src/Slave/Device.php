@@ -31,9 +31,6 @@ class Device
         return $this->ip;
     }
 
-    /**
-     * @return mixed
-     */
     public function setIp($ip): void
     {
         $this->ip = $ip;
