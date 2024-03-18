@@ -16,7 +16,7 @@ class UserFixtures extends Fixture
         $this->passwordHasherFactory = $passwordHasherFactory;
     }
 
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         // Create our user and set details
         $user = new User();

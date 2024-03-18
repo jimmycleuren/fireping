@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 class DummyFactoryTest extends TestCase
 {
-    public function test()
+    public function test(): void
     {
         $factory = new DummyProcessFactory();
         $factory->addFixture(sha1(serialize(['echo', 'hello'])), new ProcessFixture("hello\n", '', true));

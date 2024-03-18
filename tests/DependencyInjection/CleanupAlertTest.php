@@ -29,7 +29,7 @@ class CleanupAlertTest extends WebTestCase
             $em);
     }
 
-    public function testExecute()
+    public function testExecute(): void
     {
         $countAlertsBefore = count($this->alertRepository->findAll());
         $this->cleanupAlertService->cleanup();

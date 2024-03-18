@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class SearchControllerTest extends WebTestCase
 {
-    public function testRedirect()
+    public function testRedirect(): void
     {
         $client = static::createClient();
 
@@ -15,7 +15,7 @@ class SearchControllerTest extends WebTestCase
         $this->assertEquals(302, $client->getResponse()->getStatusCode());
     }
 
-    public function testDomainSearch()
+    public function testDomainSearch(): void
     {
         $client = static::createClient();
 
@@ -25,7 +25,7 @@ class SearchControllerTest extends WebTestCase
         $this->assertStringContainsString('Domain 1', $crawler->filter('.box-primary li')->text());
     }
 
-    public function testDeviceSearch()
+    public function testDeviceSearch(): void
     {
         $client = static::createClient();
 
@@ -35,7 +35,7 @@ class SearchControllerTest extends WebTestCase
         $this->assertStringContainsString('Device 1', $crawler->filter('h3')->text());
     }
 
-    public function testSearchIsNotInjectable()
+    public function testSearchIsNotInjectable(): void
     {
         $client = static::createClient();
 

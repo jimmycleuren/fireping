@@ -25,7 +25,7 @@ class NotificationSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function onNotifications(NotificationListEvent $event)
+    public function onNotifications(NotificationListEvent $event): void
     {
         /**
          * @var Alert[] $alerts

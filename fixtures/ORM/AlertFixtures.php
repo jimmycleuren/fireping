@@ -9,7 +9,7 @@ use Doctrine\Persistence\ObjectManager;
 
 class AlertFixtures extends Fixture implements DependentFixtureInterface
 {
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         $alert = new Alert();
         $alert->setActive(1);

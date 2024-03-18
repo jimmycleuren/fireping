@@ -34,7 +34,7 @@ abstract class Processor
         $this->storage = $factory->create();
     }
 
-    private function handleAlertRules(Collection $rules, Device $device, Probe $probe, SlaveGroup $group, $timestamp, AlertRule $parent = null)
+    private function handleAlertRules(Collection $rules, Device $device, Probe $probe, SlaveGroup $group, $timestamp, AlertRule $parent = null): void
     {
         foreach ($rules as $alertRule) {
             if ($alertRule->getParent() == $parent) {

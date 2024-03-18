@@ -8,7 +8,7 @@ use Doctrine\Persistence\ObjectManager;
 
 class AlertDestinationFixtures extends Fixture
 {
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         $alertDestination = new AlertDestination();
         $alertDestination->setName('syslog');

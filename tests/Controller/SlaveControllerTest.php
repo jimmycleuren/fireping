@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class SlaveControllerTest extends WebTestCase
 {
-    public function testIndex()
+    public function testIndex(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/slaves');
@@ -15,7 +15,7 @@ class SlaveControllerTest extends WebTestCase
         $this->assertStringContainsString('Slaves', $crawler->filter('h1')->text());
     }
 
-    public function testDetail()
+    public function testDetail(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/slaves/slave1');

@@ -8,7 +8,7 @@ use Doctrine\Persistence\ObjectManager;
 
 class ProbeFixtures extends Fixture
 {
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         $probe = new Probe();
         $probe->setName('Ping');

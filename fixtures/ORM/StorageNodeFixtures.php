@@ -8,7 +8,7 @@ use Doctrine\Persistence\ObjectManager;
 
 class StorageNodeFixtures extends Fixture
 {
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         $node = new StorageNode();
         $node->setIp('127.0.0.1');

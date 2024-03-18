@@ -50,7 +50,7 @@ class WorkerManager
         $this->logger = $logger;
     }
 
-    public function initialize(int $startWorkers, int $maximumWorkers, int $numberOfQueues)
+    public function initialize(int $startWorkers, int $maximumWorkers, int $numberOfQueues): void
     {
         $this->maximumWorkers = $maximumWorkers;
         $this->numberOfQueues = $numberOfQueues;
@@ -98,7 +98,7 @@ class WorkerManager
         return $worker;
     }
 
-    public function setNumberOfProbeProcesses(int $numberOfProbeProcesses)
+    public function setNumberOfProbeProcesses(int $numberOfProbeProcesses): void
     {
         $this->numberOfProbeProcesses = $numberOfProbeProcesses;
     }
@@ -168,7 +168,7 @@ class WorkerManager
         }
     }
 
-    public function loop()
+    public function loop(): void
     {
         foreach ($this->workers as $worker) {
             try {

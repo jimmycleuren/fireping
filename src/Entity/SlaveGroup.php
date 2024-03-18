@@ -129,7 +129,7 @@ class SlaveGroup
     /**
      * Remove device.
      */
-    public function removeDevice(\App\Entity\Device $device)
+    public function removeDevice(\App\Entity\Device $device): void
     {
         $this->devices->removeElement($device);
     }
@@ -159,7 +159,7 @@ class SlaveGroup
     /**
      * Remove domain.
      */
-    public function removeDomain(\App\Entity\Domain $domain)
+    public function removeDomain(\App\Entity\Domain $domain): void
     {
         $this->domains->removeElement($domain);
     }
@@ -194,7 +194,7 @@ class SlaveGroup
     /**
      * Remove slave.
      */
-    public function removeSlave(\App\Entity\Slave $slave)
+    public function removeSlave(\App\Entity\Slave $slave): void
     {
         $this->slaves->removeElement($slave);
     }

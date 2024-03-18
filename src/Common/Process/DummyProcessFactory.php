@@ -8,7 +8,7 @@ class DummyProcessFactory implements ProcessFactoryInterface
 {
     private $fixtures;
 
-    public function addFixture(string $name, ProcessFixture $fixture)
+    public function addFixture(string $name, ProcessFixture $fixture): void
     {
         $this->fixtures[$name] = $fixture;
     }

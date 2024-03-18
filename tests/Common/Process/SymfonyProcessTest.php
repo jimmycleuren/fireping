@@ -13,7 +13,7 @@ class SymfonyProcessTest extends TestCase
     /**
      * @dataProvider dataProvider
      */
-    public function test(array $command, ProcessFixture $fixture)
+    public function test(array $command, ProcessFixture $fixture): void
     {
         $process = new SymfonyProcess($command);
         $process->run();

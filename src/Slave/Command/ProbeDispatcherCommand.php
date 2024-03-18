@@ -126,7 +126,7 @@ class ProbeDispatcherCommand extends Command
      * @throws \RuntimeException
      * @throws InvalidArgumentException
      */
-    private function setUp(InputInterface $input)
+    private function setUp(InputInterface $input): void
     {
         $this->maxRuntime = (int) $input->getOption('max-runtime');
         $this->randomFactor = random_int(0, 119);

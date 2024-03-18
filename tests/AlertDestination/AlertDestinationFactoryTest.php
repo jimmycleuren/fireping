@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class AlertDestinationFactoryTest extends WebTestCase
 {
-    public function testCreateHttp()
+    public function testCreateHttp(): void
     {
         $client = static::createClient();
 
@@ -21,7 +21,7 @@ class AlertDestinationFactoryTest extends WebTestCase
         $this->assertEquals('App\AlertDestination\Http', get_class($http));
     }
 
-    public function testCreateMonolog()
+    public function testCreateMonolog(): void
     {
         $client = static::createClient();
 

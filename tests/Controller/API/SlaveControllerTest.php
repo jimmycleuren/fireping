@@ -10,7 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class SlaveControllerTest extends WebTestCase
 {
-    public function testError()
+    public function testError(): void
     {
         $client = static::createClient();
         $userRepository = new UserRepository(static::$container->get('doctrine'));
@@ -24,7 +24,7 @@ class SlaveControllerTest extends WebTestCase
         $this->assertJson($response->getContent());
     }
 
-    public function testConfig()
+    public function testConfig(): void
     {
         $client = static::createClient();
         $userRepository = new UserRepository(static::$container->get('doctrine'));
@@ -38,7 +38,7 @@ class SlaveControllerTest extends WebTestCase
         $this->assertJson($response->getContent());
     }
 
-    public function testConfigUnusedSlave()
+    public function testConfigUnusedSlave(): void
     {
         $client = static::createClient();
         $userRepository = new UserRepository(static::$container->get('doctrine'));
@@ -52,7 +52,7 @@ class SlaveControllerTest extends WebTestCase
         $this->assertJson($response->getContent());
     }
 
-    public function testConfigNewSlave()
+    public function testConfigNewSlave(): void
     {
         $id = date('U');
 
@@ -71,7 +71,7 @@ class SlaveControllerTest extends WebTestCase
         $this->assertNotNull($em->getRepository('App:Slave')->findOneById($id));
     }
 
-    public function testEmptyResult()
+    public function testEmptyResult(): void
     {
         $client = static::createClient();
         $userRepository = new UserRepository(static::$container->get('doctrine'));
@@ -85,7 +85,7 @@ class SlaveControllerTest extends WebTestCase
         $this->assertJson($response->getContent());
     }
 
-    public function testResultWithoutTimestamp()
+    public function testResultWithoutTimestamp(): void
     {
         $client = static::createClient();
         $userRepository = new UserRepository(static::$container->get('doctrine'));
@@ -101,7 +101,7 @@ class SlaveControllerTest extends WebTestCase
         $this->assertJson($response->getContent());
     }
 
-    public function testResultInvalidFormat()
+    public function testResultInvalidFormat(): void
     {
         $client = static::createClient();
         $userRepository = new UserRepository(static::$container->get('doctrine'));
@@ -119,7 +119,7 @@ class SlaveControllerTest extends WebTestCase
         $this->assertJson($response->getContent());
     }
 
-    public function testResultUnknownTarget()
+    public function testResultUnknownTarget(): void
     {
         $client = static::createClient();
         $userRepository = new UserRepository(static::$container->get('doctrine'));
@@ -140,7 +140,7 @@ class SlaveControllerTest extends WebTestCase
         $this->assertJson($response->getContent());
     }
 
-    public function testResultPingWrongStep()
+    public function testResultPingWrongStep(): void
     {
         $timestamp = date('U');
 
@@ -165,7 +165,7 @@ class SlaveControllerTest extends WebTestCase
         $this->assertJson($response->getContent());
     }
 
-    public function testResultPingUnreachable()
+    public function testResultPingUnreachable(): void
     {
         $timestamp = date('U');
 
@@ -206,7 +206,7 @@ class SlaveControllerTest extends WebTestCase
         unlink($client->getContainer()->get('kernel')->getProjectDir().'/var/rrd/1/1/1.rrd');
     }
 
-    public function testResultPing()
+    public function testResultPing(): void
     {
         $timestamp = date('U');
 
@@ -278,7 +278,7 @@ class SlaveControllerTest extends WebTestCase
         unlink($client->getContainer()->get('kernel')->getProjectDir().'/var/rrd/1/1/1.rrd');
     }
 
-    public function testResultTracerouteWrongStep()
+    public function testResultTracerouteWrongStep(): void
     {
         $timestamp = date('U');
 
@@ -308,7 +308,7 @@ class SlaveControllerTest extends WebTestCase
         $this->assertJson($response->getContent());
     }
 
-    public function testResultTraceroute()
+    public function testResultTraceroute(): void
     {
         $timestamp = date('U');
 
@@ -338,7 +338,7 @@ class SlaveControllerTest extends WebTestCase
         $this->assertJson($response->getContent());
     }
 
-    public function testResultHttp()
+    public function testResultHttp(): void
     {
         $timestamp = date("U");
 
@@ -367,7 +367,7 @@ class SlaveControllerTest extends WebTestCase
         $this->assertJson($response->getContent());
     }
 
-    public function testResultHttpIncorrectSampleCount()
+    public function testResultHttpIncorrectSampleCount(): void
     {
         $timestamp = date("U") + 1;
 
@@ -393,7 +393,7 @@ class SlaveControllerTest extends WebTestCase
         $this->assertJson($response->getContent());
     }
 
-    public function testResultHttpUnreachable()
+    public function testResultHttpUnreachable(): void
     {
         $timestamp = date("U") + 2;
 
@@ -422,7 +422,7 @@ class SlaveControllerTest extends WebTestCase
         $this->assertJson($response->getContent());
     }
 
-    public function testResultTracerouteNoIp()
+    public function testResultTracerouteNoIp(): void
     {
         $timestamp = date("U");
 
@@ -451,7 +451,7 @@ class SlaveControllerTest extends WebTestCase
         $this->assertJson($response->getContent());
     }
 
-    public function testResultTracerouteUnreachable()
+    public function testResultTracerouteUnreachable(): void
     {
         $timestamp = date("U")+1;
 
@@ -481,7 +481,7 @@ class SlaveControllerTest extends WebTestCase
         $this->assertJson($response->getContent());
     }
 
-    public function testStats()
+    public function testStats(): void
     {
         $client = static::createClient();
         $userRepository = new UserRepository(static::$container->get('doctrine'));

@@ -28,7 +28,7 @@ class CreateUserCommandTest extends KernelTestCase
         $this->em = $container->get('doctrine')->getManager();
     }
 
-    public function testExecute()
+    public function testExecute(): void
     {
         $cleanUpCommand = new CreateUserCommand(
             $this->em,

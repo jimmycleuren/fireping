@@ -9,7 +9,7 @@ use App\Exception\DirtyInputException;
 
 class HttpProcessor extends SmokeProcessor
 {
-    public function storeResult(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data)
+    public function storeResult(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data): void
     {
         if (count($data) != $probe->getSamples()) {
             throw new DirtyInputException(count($data)." ".$this->datasource." samples received, should have been ".$probe->getSamples());

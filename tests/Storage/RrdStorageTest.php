@@ -12,7 +12,7 @@ use Psr\Log\NullLogger;
 
 class RrdStorageTest extends TestCase
 {
-    public function testFetch()
+    public function testFetch(): void
     {
         @unlink("/tmp/1/1/1.rrd");
 
@@ -43,7 +43,7 @@ class RrdStorageTest extends TestCase
         $this->assertEquals(10, $storage->fetch($device, $probe, $group, $timestamp + 60, "median", "AVERAGE"));
     }
 
-    public function testFetchUnknown()
+    public function testFetchUnknown(): void
     {
         @unlink("/tmp/1/1/1.rrd");
 

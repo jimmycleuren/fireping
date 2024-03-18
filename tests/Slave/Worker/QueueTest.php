@@ -11,7 +11,7 @@ use Prophecy\Argument;
 
 class QueueTest extends TestCase
 {
-    public function testQueueSameTimestamp()
+    public function testQueueSameTimestamp(): void
     {
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
 
@@ -49,7 +49,7 @@ class QueueTest extends TestCase
         $queue->loop();
     }
 
-    public function testQueue3Timestamps()
+    public function testQueue3Timestamps(): void
     {
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
 

@@ -45,7 +45,7 @@ class SlaveStatsRrdStorage
         return $this->path.$slave->getId().'/'.$type.'.rrd';
     }
 
-    public function store(Slave $slave, string $type, $timestamp, $data)
+    public function store(Slave $slave, string $type, $timestamp, $data): void
     {
         $path = $this->getFilePath($slave, $type);
 
