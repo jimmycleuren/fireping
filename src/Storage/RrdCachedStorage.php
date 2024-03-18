@@ -298,7 +298,7 @@ class RrdCachedStorage extends RrdStorage
      *
      * @return mixed|string|void|null
      */
-    public function fetch(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $key, $function, $daemon = null): mixed
+    public function fetch(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $key, $function, $daemon = null)
     {
         if (!$daemon) {
             $daemon = $this->daemon;
