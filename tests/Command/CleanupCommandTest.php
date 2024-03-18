@@ -41,7 +41,7 @@ class CleanupCommandTest extends KernelTestCase
         $this->setupDirectory();
     }
 
-    public function testExecute()
+    public function testExecute(): void
     {
         $cleanUpCommand = new CleanupCommand($this->logger, $this->cleanupService);
         $this->application->add($cleanUpCommand);
@@ -80,7 +80,7 @@ class CleanupCommandTest extends KernelTestCase
         $this->assertEquals(0, $this->cleanupService->getInactiveDeviceCount());
     }
 
-    public function setupDirectory()
+    public function setupDirectory(): void
     {
         $this->fileSystem->mkdir($this->dirPath);
 

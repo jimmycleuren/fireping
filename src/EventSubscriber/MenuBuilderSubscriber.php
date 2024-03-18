@@ -69,7 +69,7 @@ class MenuBuilderSubscriber implements EventSubscriberInterface
         return $event;
     }
 
-    public function onSetupMenu(SidebarMenuEvent $event)
+    public function onSetupMenu(SidebarMenuEvent $event): void
     {
         $event = $this->addStaticMenu($event);
 
@@ -92,7 +92,7 @@ class MenuBuilderSubscriber implements EventSubscriberInterface
         );
     }
 
-    public function onSetupBreadcrumbMenu(SidebarMenuEvent $event)
+    public function onSetupBreadcrumbMenu(SidebarMenuEvent $event): void
     {
         $event = $this->addStaticMenu($event);
 

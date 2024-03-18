@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class ProcessFixtureTest extends TestCase
 {
-    public function test()
+    public function test(): void
     {
         $fixture = new ProcessFixture('output', '', true);
 

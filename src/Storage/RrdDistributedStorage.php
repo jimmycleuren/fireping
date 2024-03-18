@@ -35,7 +35,7 @@ class RrdDistributedStorage extends RrdCachedStorage
         }
     }
 
-    public function store(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data, bool $addNewSources = false, $daemon = null)
+    public function store(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data, bool $addNewSources = false, $daemon = null): void
     {
         $node = $this->getStorageNode($device);
         $daemon = $node->getIp().':42217';
@@ -51,7 +51,7 @@ class RrdDistributedStorage extends RrdCachedStorage
         return parent::getDatasources($device, $probe, $group, $daemon);
     }
 
-    public function fetch(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $key, $function, $daemon = null)
+    public function fetch(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $key, $function, $daemon = null): mixed
     {
         $node = $this->getStorageNode($device);
         $daemon = $node->getIp().':42217';
@@ -112,7 +112,7 @@ class RrdDistributedStorage extends RrdCachedStorage
         return $node;
     }
 
-    private function copyRrdFiles(Device $device, StorageNode $from, StorageNode $to)
+    private function copyRrdFiles(Device $device, StorageNode $from, StorageNode $to): void
     {
         //first delete the folder in the destination node
         $process = new Process(['ssh', 'fireping@'.$to->getIp(), "'rm -rf /opt/fireping/var/rrd/".$device->getId()."'"]);
@@ -201,7 +201,7 @@ class RrdDistributedStorage extends RrdCachedStorage
         return $path.$item;
     }
 
-    public function remove(array $items, string $path)
+    public function remove(array $items, string $path): void
     {
         $path = rtrim($path, '/').'/';
         $items = $this->concatCollection($items, $path);

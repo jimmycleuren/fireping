@@ -60,7 +60,7 @@ class MigrationTest extends WebTestCase
         return self::$application;
     }
 
-    public function testMigrations()
+    public function testMigrations(): void
     {
         // Test if all migrations run through
         $output = $this->runCommand('doctrine:migrations:migrate', '--no-interaction --env=test');
@@ -74,7 +74,7 @@ class MigrationTest extends WebTestCase
         $this->assertStringContainsString('[OK] Nothing to update', $output);
     }
 
-    public function testRollback()
+    public function testRollback(): void
     {
         self::$application = null;
 

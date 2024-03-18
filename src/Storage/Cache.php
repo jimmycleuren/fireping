@@ -18,7 +18,7 @@ class Cache
         $this->cache = new RedisAdapter($connection, 'fireping', 3600 * 24);
     }
 
-    public function store(Device $device, Probe $probe, SlaveGroup $group, $key, $value)
+    public function store(Device $device, Probe $probe, SlaveGroup $group, $key, $value): void
     {
         $key = $device->getId().'-'.$probe->getId().'-'.$group->getId().'-'.$key;
         $cacheItem = $this->cache->getItem($key);
@@ -45,7 +45,7 @@ class Cache
         return $value;
     }
 
-    public function setPatternValues(Device $device, AlertRule $alertRule, SlaveGroup $group, $value)
+    public function setPatternValues(Device $device, AlertRule $alertRule, SlaveGroup $group, $value): void
     {
         $key = $this->getPatternKey($device, $alertRule, $group);
         $cacheItem = $this->cache->getItem($key);

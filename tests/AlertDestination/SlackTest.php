@@ -12,7 +12,7 @@ use Prophecy\Argument;
 
 class SlackTest extends TestCase
 {
-    public function testNoArguments()
+    public function testNoArguments(): void
     {
         $client = $this->prophesize('GuzzleHttp\\Client');
         $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
@@ -34,7 +34,7 @@ class SlackTest extends TestCase
         $this->assertEquals(false, $slack->clear($alert));
     }
 
-    public function testException()
+    public function testException(): void
     {
         $url = 'http://slack.com';
 
@@ -61,7 +61,7 @@ class SlackTest extends TestCase
         $slack->clear($alert);
     }
 
-    public function testTrigger()
+    public function testTrigger(): void
     {
         $url = 'http://slack.com';
 
@@ -86,7 +86,7 @@ class SlackTest extends TestCase
         $slack->trigger($alert);
     }
 
-    public function testClear()
+    public function testClear(): void
     {
         $url = 'http://slack.com';
 

@@ -20,7 +20,7 @@ class Slack extends AlertDestinationInterface
         $this->logger = $logger;
     }
 
-    public function setParameters(array $parameters)
+    public function setParameters(array $parameters): void
     {
         if ($parameters && isset($parameters['channel'])) {
             $this->channel = $parameters['channel'];

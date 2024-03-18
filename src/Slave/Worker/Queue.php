@@ -27,7 +27,7 @@ class Queue
         $this->queue = new \SplQueue();
     }
 
-    public function enqueue($data)
+    public function enqueue($data): void
     {
         $this->queue->enqueue($data);
     }
@@ -35,7 +35,7 @@ class Queue
     /**
      * Loop is triggered every second.
      */
-    public function loop()
+    public function loop(): void
     {
         if (!$this->lock) {
             if (!$this->queue->isEmpty()) {
@@ -77,7 +77,7 @@ class Queue
         $this->statsManager->addQueueItems($this->id, $this->queue->count());
     }
 
-    private function handleResponse($type, $data)
+    private function handleResponse($type, $data): void
     {
         $response = json_decode($data, true);
 
@@ -134,7 +134,7 @@ class Queue
         return $first;
     }
 
-    private function reserveWorker()
+    private function reserveWorker(): void
     {
         try {
             $this->worker = $this->workerManager->getWorker('queue');
@@ -144,7 +144,7 @@ class Queue
         }
     }
 
-    private function retryPost()
+    private function retryPost(): void
     {
         if (isset($this->current)) {
             $this->logger->info('Retrying '.json_encode($this->current).' at a later date.');

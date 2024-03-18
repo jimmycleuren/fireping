@@ -9,7 +9,7 @@ use Psr\Log\LoggerInterface;
 
 class PingTest extends TestCase
 {
-    public function testPingUnorderedArguments()
+    public function testPingUnorderedArguments(): void
     {
         $ping = new Ping(new PingOutputFormatter());
         $ping->setArgs([
@@ -28,7 +28,7 @@ class PingTest extends TestCase
         $this->assertEquals(1, count($result[1]));
     }
 
-    public function testMissingArgument()
+    public function testMissingArgument(): void
     {
         $ping = new Ping(new PingOutputFormatter());
         $ping->setArgs([
@@ -46,7 +46,7 @@ class PingTest extends TestCase
         $ping->execute();
     }
 
-    public function testNoTargets()
+    public function testNoTargets(): void
     {
         $ping = new Ping(new PingOutputFormatter());
 
@@ -64,7 +64,7 @@ class PingTest extends TestCase
         $ping->execute();
     }
 
-    public function testGetType()
+    public function testGetType(): void
     {
         $ping = new Ping(new PingOutputFormatter());
 

@@ -7,7 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class IndexControllerTest extends WebTestCase
 {
-    public function testIndex()
+    public function testIndex(): void
     {
         $client = static::createClient();
 
@@ -19,7 +19,7 @@ class IndexControllerTest extends WebTestCase
         $this->assertStringContainsString('Guest', $crawler->filter('.hidden-xs')->text());
     }
 
-    public function testIndexAsAdmin()
+    public function testIndexAsAdmin(): void
     {
         $client = static::createClient();
 
@@ -33,7 +33,7 @@ class IndexControllerTest extends WebTestCase
         $this->assertStringContainsString('Fireping', $crawler->filter('.logo-lg')->text());
     }
 
-    public function testFilledDatabaseInit()
+    public function testFilledDatabaseInit(): void
     {
         $client = static::createClient();
 
@@ -45,7 +45,7 @@ class IndexControllerTest extends WebTestCase
     /**
      * Drop en recreate to have an empty database
      */
-    public function testEmptyDatabaseInit()
+    public function testEmptyDatabaseInit(): void
     {
         $client = static::createClient();
 

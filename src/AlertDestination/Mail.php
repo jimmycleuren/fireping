@@ -36,7 +36,7 @@ class Mail extends AlertDestinationInterface
         $this->from = $from;
     }
 
-    public function setParameters(array $parameters)
+    public function setParameters(array $parameters): void
     {
         if (array_key_exists('recipient', $parameters) === false) {
             throw new UnexpectedValueException('mail requires recipient to be set');
@@ -53,12 +53,12 @@ class Mail extends AlertDestinationInterface
         $this->recipient = $parameters['recipient'];
     }
 
-    public function trigger(Alert $alert)
+    public function trigger(Alert $alert): void
     {
         $this->sendMail($this->recipient, $this->getAlertMessage($alert), $alert, 'ALERT');
     }
 
-    private function sendMail(string $to, string $subject, Alert $alert, string $action)
+    private function sendMail(string $to, string $subject, Alert $alert, string $action): void
     {
         try {
             $message = (new \Swift_Message($subject))
@@ -83,7 +83,7 @@ class Mail extends AlertDestinationInterface
         }
     }
 
-    public function clear(Alert $alert)
+    public function clear(Alert $alert): void
     {
         $this->sendMail($this->recipient, $this->getAlertMessage($alert), $alert, 'CLEAR');
     }

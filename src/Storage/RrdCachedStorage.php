@@ -29,7 +29,7 @@ class RrdCachedStorage extends RrdStorage
         }
     }
 
-    private function connect($daemon)
+    private function connect($daemon): void
     {
         $socket = stristr($daemon, 'unix://') ? $daemon : "tcp://$daemon";
         if (!isset($this->connections[$daemon]) || !$this->connections[$daemon]) {
@@ -38,7 +38,7 @@ class RrdCachedStorage extends RrdStorage
         }
     }
 
-    private function send($command, $daemon)
+    private function send($command, $daemon): void
     {
         if (!fwrite($this->connections[$daemon], $command.PHP_EOL)) {
             throw new RrdException('Could not write to rrdcached');
@@ -71,7 +71,7 @@ class RrdCachedStorage extends RrdStorage
      * @throws RrdException
      * @throws WrongTimestampRrdException
      */
-    public function store(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data, bool $addNewSources = false, $daemon = null)
+    public function store(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data, bool $addNewSources = false, $daemon = null): void
     {
         $path = $this->getFilePath($device, $probe, $group);
 
@@ -298,7 +298,7 @@ class RrdCachedStorage extends RrdStorage
      *
      * @return mixed|string|void|null
      */
-    public function fetch(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $key, $function, $daemon = null)
+    public function fetch(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $key, $function, $daemon = null): mixed
     {
         if (!$daemon) {
             $daemon = $this->daemon;
@@ -426,7 +426,7 @@ class RrdCachedStorage extends RrdStorage
         }
     }
 
-    private function flush($filename, $daemon)
+    private function flush($filename, $daemon): void
     {
         $this->connect($daemon);
         $this->send('FLUSH '.$filename, $daemon);

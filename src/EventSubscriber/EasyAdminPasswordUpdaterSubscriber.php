@@ -24,7 +24,7 @@ class EasyAdminPasswordUpdaterSubscriber implements EventSubscriberInterface
     /**
      * @param BeforeEntityPersistedEvent|BeforeEntityUpdatedEvent $event
      */
-    public function encodePassword($event)
+    public function encodePassword($event): void
     {
         $entity = $event->getEntityInstance();
 

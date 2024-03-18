@@ -48,7 +48,7 @@ class Worker
         $this->process->setIdleTimeout($idleTimeout);
     }
 
-    public function start()
+    public function start(): void
     {
         $this->logger->info('Starting new worker.');
 
@@ -71,7 +71,7 @@ class Worker
         $this->name = '#'.$this->process->getPid();
     }
 
-    public function stop()
+    public function stop(): void
     {
         $this->process->stop(3, SIGINT);
         $this->receiveBuffer = null;
@@ -80,7 +80,7 @@ class Worker
         $this->executing = false;
     }
 
-    public function release()
+    public function release(): void
     {
         $this->receiveBuffer = '';
         $this->startTime = null;
@@ -89,7 +89,7 @@ class Worker
         $this->manager->release($this);
     }
 
-    public function send($data, $expectedRuntime, callable $callback)
+    public function send($data, $expectedRuntime, callable $callback): void
     {
         $this->executing = true;
         $this->startTime = microtime(true);
@@ -100,7 +100,7 @@ class Worker
         $this->input->write($data);
     }
 
-    public function loop()
+    public function loop(): void
     {
         if (null != $this->startTime && null != $this->expectedRuntime) {
             $actualRuntime = microtime(true) - $this->startTime;
@@ -126,7 +126,7 @@ class Worker
         return $this->type;
     }
 
-    public function setType($type)
+    public function setType($type): void
     {
         $this->type = $type;
     }

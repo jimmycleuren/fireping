@@ -14,7 +14,7 @@ use Prophecy\Argument;
 
 class PingGraphTest extends TestCase
 {
-    public function testSummaryGraphWithoutRrd()
+    public function testSummaryGraphWithoutRrd(): void
     {
         $storage = $this->prophesize('App\\Storage\\RrdStorage');
         $storage->fileExists(Argument::type(Device::class), '/tmp/unknown.rrd')->shouldBeCalledTimes(1);
@@ -44,7 +44,7 @@ class PingGraphTest extends TestCase
         $this->assertNotNull($image);
     }
 
-    public function testSummaryGraph()
+    public function testSummaryGraph(): void
     {
         @unlink('/tmp/2/1/1.rrd');
 
@@ -90,7 +90,7 @@ class PingGraphTest extends TestCase
         $this->assertNotNull($image);
     }
 
-    public function testSummaryGraphException()
+    public function testSummaryGraphException(): void
     {
         @unlink('/tmp/3/1/1.rrd');
 
@@ -130,7 +130,7 @@ class PingGraphTest extends TestCase
         $graph->getSummaryGraph($device, $probe);
     }
 
-    public function testDetailGraphWithoutRrd()
+    public function testDetailGraphWithoutRrd(): void
     {
         $storage = $this->prophesize('App\\Storage\\RrdStorage');
         $storage->fileExists(Argument::type(Device::class), '/tmp/unknown.rrd')->shouldBeCalledTimes(1);
@@ -160,7 +160,7 @@ class PingGraphTest extends TestCase
         $this->assertNotNull($image);
     }
 
-    public function testDetailGraph()
+    public function testDetailGraph(): void
     {
         @unlink('/tmp/5/1/1.rrd');
 
@@ -206,7 +206,7 @@ class PingGraphTest extends TestCase
         $this->assertNotNull($image);
     }
 
-    public function testDetailGraphException()
+    public function testDetailGraphException(): void
     {
         @unlink('/tmp/6/1/1.rrd');
 

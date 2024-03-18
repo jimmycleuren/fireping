@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class InstructionTest extends TestCase
 {
-    public function testChunks()
+    public function testChunks(): void
     {
         $probeDefinition = new Probe(1, 'ping', 60, 15);
         $probeDefinition->addDevice(new Device('foo', '1.1.1.1'));
