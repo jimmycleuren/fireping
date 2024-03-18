@@ -74,9 +74,6 @@ jobs:
       - name: Dump Autoload (composer)
         run: composer dump-autoload --optimize
 
-      - name: Install phpunit
-        run: ./vendor/bin/simple-phpunit install
-
       - name: Create folders
         run: mkdir build
 
@@ -99,7 +96,7 @@ jobs:
         run: composer validate
 
       - name: Run phpunit
-        run: ./vendor/bin/simple-phpunit --coverage-clover build/logs/clover.xml
+        run: ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml
 
       - uses: actions/upload-artifact@v2
         if: failure()
