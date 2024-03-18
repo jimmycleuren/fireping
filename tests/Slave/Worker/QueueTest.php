@@ -17,7 +17,7 @@ class QueueTest extends TestCase
 
         $worker = $this->prophesize(Worker::class);
         $worker->__toString()->willReturn('name');
-        $worker->send(Argument::type('string'), Argument::type('integer'), Argument::any())->willReturn();
+        $worker->send(Argument::type('string'), Argument::type('integer'), Argument::any());
         //$worker->getPid()->willReturn(1234)->shouldBeCalledTimes(1);
 
         $workerManager = $this->prophesize(WorkerManager::class);
@@ -55,7 +55,7 @@ class QueueTest extends TestCase
 
         $worker = $this->prophesize(Worker::class);
         $worker->__toString()->willReturn('name');
-        $worker->send(Argument::type('string'), Argument::type('integer'), Argument::any())->willReturn();
+        $worker->send(Argument::type('string'), Argument::type('integer'), Argument::any());
         //$worker->getPid()->willReturn(1234)->shouldBeCalledTimes(3);
 
         $workerManager = $this->prophesize(WorkerManager::class);
