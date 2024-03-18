@@ -18,10 +18,9 @@ class CleanupAlertCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $logger = $this->prophesize(LoggerInterface::class);
         $service = $this->prophesize(CleanupAlert::class);
 
-        $application->add(new CleanupAlertCommand($logger->reveal(), $service->reveal()));
+        $application->add(new CleanupAlertCommand($service->reveal()));
 
         $command = $application->find('app:cleanupAlert');
         $commandTester = new CommandTester($command);

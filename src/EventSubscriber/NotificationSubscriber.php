@@ -2,6 +2,7 @@
 
 namespace App\EventSubscriber;
 
+use App\Entity\Alert;
 use App\Repository\AlertRepository;
 use KevinPapst\AdminLTEBundle\Event\NotificationListEvent;
 use KevinPapst\AdminLTEBundle\Helper\Constants;
@@ -26,13 +27,16 @@ class NotificationSubscriber implements EventSubscriberInterface
 
     public function onNotifications(NotificationListEvent $event)
     {
+        /**
+         * @var Alert[] $alerts
+         */
         $alerts = $this->alertRepository->findBy(['active' => 1]);
 
         $counter = 0;
         foreach ($alerts as $alert) {
             $notification = new NotificationModel();
             $notification
-                ->setId($alert->getId())
+                ->setId((string) $alert->getId())
                 ->setMessage($alert)
                 ->setType(Constants::COLOR_YELLOW)
                 ->setIcon('far fa-bell')

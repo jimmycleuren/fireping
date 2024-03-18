@@ -5,14 +5,12 @@ declare(strict_types=1);
 namespace App\Slave\Task;
 
 use App\Slave\OutputFormatter\PingOutputFormatter;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Process\ExecutableFinder;
 
 class Ping implements TaskInterface
 {
     public const MAX_TARGETS = 1e4;
 
-    private $logger;
     private $formatter;
 
     private $mappedArguments = [
@@ -27,9 +25,8 @@ class Ping implements TaskInterface
     private $arguments = [];
     private $targets = [];
 
-    public function __construct(LoggerInterface $logger, PingOutputFormatter $formatter)
+    public function __construct(PingOutputFormatter $formatter)
     {
-        $this->logger = $logger;
         $this->formatter = $formatter;
     }
 

@@ -19,15 +19,13 @@ class MenuBuilderSubscriber implements EventSubscriberInterface
     private $domainRepository;
     private $slaveRepository;
     private $storageNodeRepository;
-    private $security;
 
-    public function __construct(DomainRepository $domainRepository, Security $security, AlertRepository $alertRepository, SlaveRepository $slaveRepository, StorageNodeRepository $storageNodeRepository)
+    public function __construct(DomainRepository $domainRepository, AlertRepository $alertRepository, SlaveRepository $slaveRepository, StorageNodeRepository $storageNodeRepository)
     {
         $this->alertRepository = $alertRepository;
         $this->domainRepository = $domainRepository;
         $this->slaveRepository = $slaveRepository;
         $this->storageNodeRepository = $storageNodeRepository;
-        $this->security = $security;
     }
 
     public static function getSubscribedEvents(): array

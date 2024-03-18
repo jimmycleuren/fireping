@@ -18,9 +18,8 @@ class StatsManager
     private $logger;
     /**
      * The running version of the dispatcher. This will either be the tag (v1.0) or the commit id.
-     * @var Version
      */
-    private $version;
+    private ?Version $version;
 
     public function __construct(LoggerInterface $logger)
     {
