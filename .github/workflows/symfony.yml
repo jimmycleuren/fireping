@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php-versions: ['7.4', '8.0']
+        php-versions: ['8.1']
 
     services:
       # https://docs.docker.com/samples/library/mysql/
@@ -113,7 +113,7 @@ jobs:
           path: ./var/log/test.log
 
       - name: Upload coverage results to Coveralls
-        if: ${{ matrix.php-versions == '7.4' }}
+        if: ${{ matrix.php-versions == '8.1' }}
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
