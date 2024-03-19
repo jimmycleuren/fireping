@@ -15,7 +15,7 @@
         }
     },
     "require": {
-        "php": "^7.4|^8.0",
+        "php": "^8.2|^8.3",
         "ext-json": "*",
         "ext-rrd": "*",
         "api-platform/core": "^2.6",
