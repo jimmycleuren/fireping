@@ -66,6 +66,7 @@ class Device
     private $ip;
 
     /**
+     * @var  ArrayCollection<int, SlaveGroup>
      * @ORM\ManyToMany(targetEntity="SlaveGroup", inversedBy="devices", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="device_slavegroups",
      *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id", onDelete="CASCADE")},
@@ -78,6 +79,7 @@ class Device
     private $slavegroups;
 
     /**
+     * @var  ArrayCollection<int, Probe>
      * @ORM\ManyToMany(targetEntity="Probe", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="device_probes",
      *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id", onDelete="CASCADE")},
@@ -90,6 +92,7 @@ class Device
     private $probes;
 
     /**
+     * @var  ArrayCollection<int, AlertRule>
      * @ORM\ManyToMany(targetEntity="AlertRule", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="device_alert_rules",
      *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id", onDelete="CASCADE")},
@@ -102,6 +105,7 @@ class Device
     private $alertRules;
 
     /**
+     * @var  ArrayCollection<int, AlertDestination>
      * @ORM\ManyToMany(targetEntity="AlertDestination", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="device_alert_destinations",
      *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id", onDelete="CASCADE")},
@@ -113,6 +117,7 @@ class Device
     private $alertDestinations;
 
     /**
+     * @var  ArrayCollection<int, Alert>
      * @ORM\OneToMany(targetEntity="Alert", mappedBy="device", fetch="EXTRA_LAZY")
      */
     private $alerts;

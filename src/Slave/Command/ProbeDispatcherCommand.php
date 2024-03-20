@@ -148,7 +148,6 @@ class ProbeDispatcherCommand extends Command
                 $this->workerManager,
                 $this->statsManager,
                 $i,
-                $_ENV['SLAVE_NAME'],
                 $this->logger
             );
         }

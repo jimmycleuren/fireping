@@ -61,6 +61,7 @@ class Domain
     private $name;
 
     /**
+     * @var  ArrayCollection<int, SlaveGroup>
      * @ORM\ManyToMany(targetEntity="SlaveGroup", inversedBy="domains", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="domain_slavegroups",
      *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id", onDelete="CASCADE")},
@@ -72,6 +73,7 @@ class Domain
     private $slavegroups;
 
     /**
+     * @var  ArrayCollection<int, Probe>
      * @ORM\ManyToMany(targetEntity="Probe", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="domain_probes",
      *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id", onDelete="CASCADE")},
@@ -83,6 +85,7 @@ class Domain
     private $probes;
 
     /**
+     * @var  ArrayCollection<int, AlertRule>
      * @ORM\ManyToMany(targetEntity="AlertRule", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="domain_alert_rules",
      *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id", onDelete="CASCADE")},
@@ -94,6 +97,7 @@ class Domain
     private $alertRules;
 
     /**
+     * @var  ArrayCollection<int, AlertDestination>
      * @ORM\ManyToMany(targetEntity="AlertDestination", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="domain_alert_destinations",
      *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id", onDelete="CASCADE")},

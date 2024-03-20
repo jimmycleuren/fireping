@@ -10,7 +10,6 @@ class Queue
 {
     private $queue;
     private $lock;
-    private $slaveName;
     private $current = null;
     private $worker;
     private $logger;
@@ -19,11 +18,10 @@ class Queue
     private $statsManager;
     private $targetsPerPacket = 100;
 
-    public function __construct(WorkerManager $workerManager, StatsManager $statsManager, int $id, string $slaveName, LoggerInterface $logger)
+    public function __construct(WorkerManager $workerManager, StatsManager $statsManager, int $id, LoggerInterface $logger)
     {
         $this->id = $id;
         $this->logger = $logger;
-        $this->slaveName = $slaveName;
         $this->workerManager = $workerManager;
         $this->statsManager = $statsManager;
         $this->queue = new \SplQueue();

@@ -224,7 +224,7 @@ class Alert
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->alertRule->getName().' on '.$this->device->getName().' from '.$this->slaveGroup->getName();
     }

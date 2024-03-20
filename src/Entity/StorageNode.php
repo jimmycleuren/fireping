@@ -36,6 +36,7 @@ class StorageNode
     private $status;
 
     /**
+     * @var ArrayCollection<int, Device>
      * @ORM\OneToMany(targetEntity="App\Entity\Device", mappedBy="storageNode")
      */
     private $devices;

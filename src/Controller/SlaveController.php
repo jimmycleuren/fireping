@@ -26,9 +26,6 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class SlaveController extends AbstractController
 {
-    private $em = null;
-    private $logger = null;
-
     private $domainSlaveGroupCache = [];
     private $deviceSlaveGroupCache = [];
     private $domainProbeCache = [];

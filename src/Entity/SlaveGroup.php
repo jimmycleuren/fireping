@@ -38,17 +38,19 @@ class SlaveGroup
     private $name;
 
     /**
+     * @var ArrayCollection<int, Device>
      * @ORM\ManyToMany(targetEntity="Device", mappedBy="slavegroups")
      */
     private $devices;
 
     /**
+     * @var ArrayCollection<int, Domain>
      * @ORM\ManyToMany(targetEntity="Domain", mappedBy="slavegroups")
      */
     private $domains;
 
     /**
-     * @var ArrayCollection
+     * @var ArrayCollection<int, Slave>
      * @ORM\OneToMany(targetEntity="Slave", mappedBy="slavegroup")
      * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
      * @ORM\OrderBy({"id" = "asc"})

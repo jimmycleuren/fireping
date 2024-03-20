@@ -26,7 +26,7 @@ class QueueTest extends TestCase
 
         $statsManager = $this->prophesize(StatsManager::class);
 
-        $queue = new Queue($workerManager->reveal(), $statsManager->reveal(), 1, 'test', $logger->reveal());
+        $queue = new Queue($workerManager->reveal(), $statsManager->reveal(), 1, $logger->reveal());
 
         $queue->enqueue($this->getData(1, 1000, 10));
         $queue->enqueue($this->getData(1, 1000, 11));
@@ -64,7 +64,7 @@ class QueueTest extends TestCase
 
         $statsManager = $this->prophesize(StatsManager::class);
 
-        $queue = new Queue($workerManager->reveal(), $statsManager->reveal(), 1, 'test', $logger->reveal());
+        $queue = new Queue($workerManager->reveal(), $statsManager->reveal(), 1, $logger->reveal());
 
         $queue->enqueue($this->getData(1, 1000, 10));
         $queue->enqueue($this->getData(1, 1000, 11));

@@ -17,7 +17,7 @@ class ProbeWorkerCommandTest extends KernelTestCase
         $application = new Application($kernel);
 
         $logger = self::$container->get(LoggerInterface::class);
-        $factory = new TaskFactory($logger);
+        $factory = new TaskFactory();
 
         $application->add(new ProbeWorkerCommand($logger, $factory));
 

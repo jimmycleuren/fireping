@@ -64,7 +64,7 @@ class Probe
     private $samples;
 
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(name="arguments", type="text")
      */
