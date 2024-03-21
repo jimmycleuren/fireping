@@ -6,24 +6,8 @@ namespace App\Common\Process;
 
 class ProcessFixture
 {
-    /**
-     * @var string
-     */
-    private $output;
-    /**
-     * @var string
-     */
-    private $errorOutput;
-    /**
-     * @var bool
-     */
-    private $isSuccessful;
-
-    public function __construct(string $output, string $errorOutput, bool $isSuccessful)
+    public function __construct(private readonly string $output, private readonly string $errorOutput, private readonly bool $isSuccessful)
     {
-        $this->output = $output;
-        $this->errorOutput = $errorOutput;
-        $this->isSuccessful = $isSuccessful;
     }
 
     /**

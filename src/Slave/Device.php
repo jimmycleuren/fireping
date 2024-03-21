@@ -4,14 +4,10 @@ namespace App\Slave;
 
 class Device
 {
-    protected $id;
-    protected $ip;
     protected $active;
 
-    public function __construct($hostname, $ip)
+    public function __construct(protected $id, protected $ip)
     {
-        $this->id = $hostname;
-        $this->ip = $ip;
         $this->active = true;
     }
 

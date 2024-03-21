@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ApiResource(attributes={"normalization_context"={"groups"={"slavegroup"}}})
  * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  */
-class SlaveGroup
+class SlaveGroup implements \Stringable
 {
     /**
      * @var int
@@ -174,7 +174,7 @@ class SlaveGroup
         return $this->domains;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->name;
     }

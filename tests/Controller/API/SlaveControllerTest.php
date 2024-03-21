@@ -346,20 +346,7 @@ class SlaveControllerTest extends WebTestCase
         $userRepository = new UserRepository(static::$container->get('doctrine'));
         $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
 
-        $client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
-            '4' => array(
-                'timestamp' => $timestamp,
-                'targets' => array(
-                    '1' => array(
-                        0 => ['time' => -1, 'code' => -1],
-                        1 => ['time' => -1, 'code' => -1],
-                        2 => ['time' => 100, 'code' => 200],
-                        3 => ['time' => 100, 'code' => 200],
-                        4 => ['time' => 100, 'code' => 200],
-                    )
-                )
-            )
-        )));
+        $client->request('POST', '/api/slaves/slave1/result', [], [], [], json_encode(['4' => ['timestamp' => $timestamp, 'targets' => ['1' => [0 => ['time' => -1, 'code' => -1], 1 => ['time' => -1, 'code' => -1], 2 => ['time' => 100, 'code' => 200], 3 => ['time' => 100, 'code' => 200], 4 => ['time' => 100, 'code' => 200]]]]]));
 
         $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
@@ -375,17 +362,7 @@ class SlaveControllerTest extends WebTestCase
         $userRepository = new UserRepository(static::$container->get('doctrine'));
         $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
 
-        $client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
-            '4' => array(
-                'timestamp' => $timestamp,
-                'targets' => array(
-                    '1' => array(
-                        0 => ['time' => -1, 'code' => -1],
-                        1 => ['time' => -1, 'code' => -1],
-                    )
-                )
-            )
-        )));
+        $client->request('POST', '/api/slaves/slave1/result', [], [], [], json_encode(['4' => ['timestamp' => $timestamp, 'targets' => ['1' => [0 => ['time' => -1, 'code' => -1], 1 => ['time' => -1, 'code' => -1]]]]]));
 
         $response = $client->getResponse();
         $this->assertEquals(409, $response->getStatusCode());
@@ -401,20 +378,7 @@ class SlaveControllerTest extends WebTestCase
         $userRepository = new UserRepository(static::$container->get('doctrine'));
         $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
 
-        $client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
-            '4' => array(
-                'timestamp' => $timestamp,
-                'targets' => array(
-                    '1' => array(
-                        0 => ['time' => -1, 'code' => -1],
-                        1 => ['time' => -1, 'code' => -1],
-                        2 => ['time' => -1, 'code' => -1],
-                        3 => ['time' => -1, 'code' => -1],
-                        4 => ['time' => -1, 'code' => -1],
-                    )
-                )
-            )
-        )));
+        $client->request('POST', '/api/slaves/slave1/result', [], [], [], json_encode(['4' => ['timestamp' => $timestamp, 'targets' => ['1' => [0 => ['time' => -1, 'code' => -1], 1 => ['time' => -1, 'code' => -1], 2 => ['time' => -1, 'code' => -1], 3 => ['time' => -1, 'code' => -1], 4 => ['time' => -1, 'code' => -1]]]]]));
 
         $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
@@ -430,20 +394,7 @@ class SlaveControllerTest extends WebTestCase
         $userRepository = new UserRepository(static::$container->get('doctrine'));
         $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
 
-        $client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
-            '2' => array(
-                'timestamp' => $timestamp,
-                'targets' => array(
-                    '1' => array(
-                        'hop' => array(
-                            0 => array(
-                                'latencies' => array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
-                            ),
-                        )
-                    )
-                )
-            )
-        )));
+        $client->request('POST', '/api/slaves/slave1/result', [], [], [], json_encode(['2' => ['timestamp' => $timestamp, 'targets' => ['1' => ['hop' => [0 => ['latencies' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]]]]]]]));
 
         $response = $client->getResponse();
         $this->assertEquals(409, $response->getStatusCode());
@@ -459,21 +410,7 @@ class SlaveControllerTest extends WebTestCase
         $userRepository = new UserRepository(static::$container->get('doctrine'));
         $client->loginUser($userRepository->findOneBy(['username' => 'test']), 'api');
 
-        $client->request('POST', '/api/slaves/slave1/result', array(), array(), array(), json_encode(array(
-            '2' => array(
-                'timestamp' => $timestamp,
-                'targets' => array(
-                    '1' => array(
-                        'hop' => array(
-                            0 => array(
-                                'ip' => "1.1.1.1",
-                                'latencies' => array(-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1)
-                            ),
-                        )
-                    )
-                )
-            )
-        )));
+        $client->request('POST', '/api/slaves/slave1/result', [], [], [], json_encode(['2' => ['timestamp' => $timestamp, 'targets' => ['1' => ['hop' => [0 => ['ip' => "1.1.1.1", 'latencies' => [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]]]]]]]));
 
         $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());

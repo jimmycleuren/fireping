@@ -12,12 +12,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 class HealthCommand extends Command
 {
     protected static $defaultName = 'app:slave:health';
-    private ClientInterface $client;
 
-    public function __construct(ClientInterface $client, string $name = null)
+    public function __construct(private readonly ClientInterface $client, string $name = null)
     {
         parent::__construct($name);
-        $this->client = $client;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -26,7 +24,7 @@ class HealthCommand extends Command
             $this->client->request('GET', '/api/slaves/health');
             $output->writeln('healthy');
             return Command::SUCCESS;
-        } catch (GuzzleException $e) {
+        } catch (GuzzleException) {
             $output->writeln('unhealthy');
             return Command::FAILURE;
         }

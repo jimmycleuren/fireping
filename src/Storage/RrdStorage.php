@@ -16,7 +16,6 @@ use Symfony\Component\Process\Process;
 class RrdStorage extends Storage
 {
     protected $logger = null;
-    protected $path = null;
 
     protected $predictions = [
         [
@@ -28,12 +27,11 @@ class RrdStorage extends Storage
         ],
     ];
 
-    public function __construct($path, LoggerInterface $logger)
+    public function __construct(protected $path, LoggerInterface $logger)
     {
         $this->logger = $logger;
-        $this->path = $path;
 
-        if ($path && !file_exists($concurrentDirectory = $this->path) && !mkdir($concurrentDirectory) && !is_dir($concurrentDirectory)) {
+        if ($this->path && !file_exists($concurrentDirectory = $this->path) && !mkdir($concurrentDirectory) && !is_dir($concurrentDirectory)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
     }
@@ -94,7 +92,7 @@ class RrdStorage extends Storage
         foreach ($probe->getArchives() as $archive) {
             $options[] = sprintf(
                 'RRA:%s:0.5:%s:%s',
-                strtoupper($archive->getFunction()),
+                strtoupper((string) $archive->getFunction()),
                 $archive->getSteps(),
                 $archive->getRows()
             );
@@ -103,7 +101,7 @@ class RrdStorage extends Storage
         foreach ($this->predictions as $value) {
             $options[] = sprintf(
                 'RRA:%s:%s:%s:%s:%s',
-                strtoupper($value['function']),
+                strtoupper((string) $value['function']),
                 $value['rows'],
                 $value['alpha'],
                 $value['beta'],
@@ -254,7 +252,7 @@ class RrdStorage extends Storage
     {
         $path = $this->getFilePath($device, $probe, $group);
 
-        $result = rrd_fetch($path, array($function, "--start", $start, "--end", $end));
+        $result = rrd_fetch($path, [$function, "--start", $start, "--end", $end]);
 
         if (!$result || !$result['data'] || !isset($result['data'][$datasource]) || !$result['data'][$datasource]) {
             return null;
@@ -305,7 +303,7 @@ class RrdStorage extends Storage
                 $this->logger->info("Adding $archive");
                 $rradef = sprintf(
                     'RRA:%s:0.5:%s:%s',
-                    strtoupper($archive->getFunction()),
+                    strtoupper((string) $archive->getFunction()),
                     $archive->getSteps(),
                     $archive->getRows()
                 );
@@ -345,7 +343,7 @@ class RrdStorage extends Storage
 
         $rra = [];
         foreach ($info as $key => $item) {
-            if ('rra' == substr($key, 0, 3)) {
+            if (str_starts_with($key, 'rra')) {
                 preg_match("/rra\[([\d]+)\]\.([\w\_]+)/", $key, $matches);
                 $rra[$matches[1]][$matches[2]] = $item;
             }
@@ -414,9 +412,7 @@ class RrdStorage extends Storage
      */
     private function concatCollection($items, $path): array
     {
-        return array_map(function ($item) use ($path) {
-            return $this->concatPath($item, $path);
-        }, $items);
+        return array_map(fn($item) => $this->concatPath($item, $path), $items);
     }
 
     /**

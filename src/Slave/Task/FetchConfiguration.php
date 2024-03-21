@@ -20,12 +20,10 @@ class FetchConfiguration implements TaskInterface
      * @var string|null
      */
     protected $etag;
-    private ClientInterface $client;
 
-    public function __construct(LoggerInterface $logger, ClientInterface $client)
+    public function __construct(LoggerInterface $logger, private readonly ClientInterface $client)
     {
         $this->logger = $logger;
-        $this->client = $client;
     }
 
     public function execute(): array

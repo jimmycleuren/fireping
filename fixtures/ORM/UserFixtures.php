@@ -9,11 +9,8 @@ use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 
 class UserFixtures extends Fixture
 {
-    private PasswordHasherFactoryInterface $passwordHasherFactory;
-
-    public function __construct(PasswordHasherFactoryInterface $passwordHasherFactory)
+    public function __construct(private readonly PasswordHasherFactoryInterface $passwordHasherFactory)
     {
-        $this->passwordHasherFactory = $passwordHasherFactory;
     }
 
     public function load(ObjectManager $manager): void

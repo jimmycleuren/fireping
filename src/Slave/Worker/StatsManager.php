@@ -15,15 +15,13 @@ class StatsManager
     private $discardedPosts = 0;
     private $workers;
     private $queues;
-    private $logger;
     /**
      * The running version of the dispatcher. This will either be the tag (v1.0) or the commit id.
      */
-    private ?Version $version;
+    private ?Version $version = null;
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(private readonly LoggerInterface $logger)
     {
-        $this->logger = $logger;
     }
 
     public function getStats()
@@ -99,7 +97,7 @@ class StatsManager
                     break;
                 default:
                     $this->logger->warning("Could not simplify the $type worker type");
-                    $name = substr($type, -15);
+                    $name = substr((string) $type, -15);
                     break;
             }
             $temp[$name] = $count;

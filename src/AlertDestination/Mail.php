@@ -16,19 +16,11 @@ use const FILTER_VALIDATE_EMAIL;
 
 class Mail extends AlertDestinationInterface
 {
-    private Swift_Mailer $mailer;
-    private Environment $twig;
-    private LoggerInterface $logger;
-
-    private string $from;
+    private readonly string $from;
     private string $recipient;
 
-    public function __construct(\Swift_Mailer $mailer, LoggerInterface $logger, Environment $twig, string $from)
+    public function __construct(private readonly Swift_Mailer $mailer, private readonly LoggerInterface $logger, private readonly Environment $twig, string $from)
     {
-        $this->mailer = $mailer;
-        $this->logger = $logger;
-        $this->twig = $twig;
-
         if (filter_var($from, FILTER_VALIDATE_EMAIL) === false) {
             throw new UnexpectedValueException('invalid e-mail address');
         }

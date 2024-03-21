@@ -28,7 +28,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  * @UniqueEntity(fields={"parent", "name"}, errorPath="name", message="This name is already in use within this parent domain.", ignoreNull=false)
  */
-class Domain
+class Domain implements \Stringable
 {
     /**
      * @var int
@@ -188,7 +188,6 @@ class Domain
     /**
      * Set parent.
      *
-     * @param \App\Entity\Domain $parent
      *
      * @return Domain
      */
@@ -408,7 +407,7 @@ class Domain
         return $activeAlerts;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->name;
     }

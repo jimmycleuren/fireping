@@ -9,9 +9,9 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\StorageNodeRepository")
  */
-class StorageNode
+class StorageNode implements \Stringable
 {
-    const STATUS_ACTIVE = 'active';
+    public const STATUS_ACTIVE = 'active';
 
     /**
      * @ORM\Id()
@@ -118,8 +118,8 @@ class StorageNode
         return $this;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->name;
+        return (string) $this->name;
     }
 }

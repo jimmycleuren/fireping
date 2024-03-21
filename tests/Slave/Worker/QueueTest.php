@@ -13,7 +13,7 @@ class QueueTest extends TestCase
 {
     public function testQueueSameTimestamp(): void
     {
-        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
+        $logger = $this->prophesize(\Psr\Log\LoggerInterface::class);
 
         $worker = $this->prophesize(Worker::class);
         $worker->__toString()->willReturn('name');
@@ -51,7 +51,7 @@ class QueueTest extends TestCase
 
     public function testQueue3Timestamps(): void
     {
-        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
+        $logger = $this->prophesize(\Psr\Log\LoggerInterface::class);
 
         $worker = $this->prophesize(Worker::class);
         $worker->__toString()->willReturn('name');

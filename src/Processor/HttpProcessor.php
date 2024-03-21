@@ -15,7 +15,7 @@ class HttpProcessor extends SmokeProcessor
             throw new DirtyInputException(count($data)." ".$this->datasource." samples received, should have been ".$probe->getSamples());
         }
 
-        $datasources = array();
+        $datasources = [];
         $failed = 0;
         $success = 0;
 

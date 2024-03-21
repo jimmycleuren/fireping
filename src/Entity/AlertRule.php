@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ApiResource
  * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  */
-class AlertRule
+class AlertRule implements \Stringable
 {
     /**
      * @var int
@@ -194,7 +194,6 @@ class AlertRule
     /**
      * Set parent.
      *
-     * @param \App\Entity\AlertRule $parent
      *
      * @return AlertRule
      */
@@ -283,7 +282,7 @@ class AlertRule
         return $this->messageDown;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->name;
     }

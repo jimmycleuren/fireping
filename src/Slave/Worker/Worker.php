@@ -8,10 +8,8 @@ use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Process\InputStream;
 use Symfony\Component\Process\Process;
 
-class Worker
+class Worker implements \Stringable
 {
-    private $manager;
-
     private $input;
 
     private $process;
@@ -24,8 +22,6 @@ class Worker
 
     private $callback;
 
-    private $logger;
-
     private $type;
 
     private $name = 'unknown';
@@ -34,10 +30,8 @@ class Worker
 
     private $lastTask = null;
 
-    public function __construct(WorkerManager $manager, KernelInterface $kernel, LoggerInterface $logger, int $timeout, int $idleTimeout)
+    public function __construct(private readonly WorkerManager $manager, KernelInterface $kernel, private readonly LoggerInterface $logger, int $timeout, int $idleTimeout)
     {
-        $this->manager = $manager;
-        $this->logger = $logger;
         $executable = $kernel->getProjectDir().'/bin/console';
         $environment = $kernel->getEnvironment();
         $this->process = Process::fromShellCommandline("exec php $executable app:probe:worker --env=$environment");
@@ -116,9 +110,9 @@ class Worker
         $this->process->getIncrementalErrorOutput();
     }
 
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->name;
+        return (string) $this->name;
     }
 
     public function getType()

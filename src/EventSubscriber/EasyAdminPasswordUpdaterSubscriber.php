@@ -12,13 +12,8 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class EasyAdminPasswordUpdaterSubscriber implements EventSubscriberInterface
 {
-    private UserPasswordHasherInterface $passwordEncoder;
-    private LoggerInterface $logger;
-
-    public function __construct(UserPasswordHasherInterface $passwordEncoder, LoggerInterface $logger)
+    public function __construct(private readonly UserPasswordHasherInterface $passwordEncoder, private readonly LoggerInterface $logger)
     {
-        $this->passwordEncoder = $passwordEncoder;
-        $this->logger = $logger;
     }
 
     /**

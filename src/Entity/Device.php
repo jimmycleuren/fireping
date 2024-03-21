@@ -25,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * })
  * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  */
-class Device
+class Device implements \Stringable
 {
     /**
      * @var int
@@ -219,7 +219,6 @@ class Device
     /**
      * Set domain.
      *
-     * @param \App\Entity\Domain $domain
      *
      * @return Device
      * @Groups({"device"})
@@ -474,7 +473,7 @@ class Device
         return $this->alerts;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->name;
     }

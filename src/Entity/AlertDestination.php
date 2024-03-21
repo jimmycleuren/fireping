@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ApiResource
  * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  */
-class AlertDestination
+class AlertDestination implements \Stringable
 {
     /**
      * @var int

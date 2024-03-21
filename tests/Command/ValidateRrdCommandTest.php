@@ -14,7 +14,7 @@ class ValidateRrdCommandTest extends KernelTestCase
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $storage = $this->prophesize("App\Storage\RrdStorage");
+        $storage = $this->prophesize(\App\Storage\RrdStorage::class);
 
         $application->add(new ValidateRrdCommand($kernel->getContainer()->get('doctrine')->getManager(), $storage->reveal()));
 

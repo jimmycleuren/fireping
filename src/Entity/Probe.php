@@ -20,7 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ApiResource
  * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  */
-class Probe
+class Probe implements \Stringable
 {
     /**
      * @var int
@@ -206,8 +206,6 @@ class Probe
     }
 
     /**
-     * @param ProbeArgumentsInterface $arguments
-     *
      * @return Probe
      */
     public function setArguments(ProbeArgumentsInterface $arguments): Probe
@@ -224,16 +222,12 @@ class Probe
     {
         $arguments = $this->arguments ?? '{}';
 
-        switch ($this->type) {
-            case 'ping':
-                return PingArguments::fromJsonString($arguments);
-            case 'traceroute':
-                return TracerouteArguments::fromJsonString($arguments);
-            case 'http':
-                return HttpArguments::fromJsonString($arguments);
-            default:
-                return NullArguments::fromJsonString($arguments);
-        }
+        return match ($this->type) {
+            'ping' => PingArguments::fromJsonString($arguments),
+            'traceroute' => TracerouteArguments::fromJsonString($arguments),
+            'http' => HttpArguments::fromJsonString($arguments),
+            default => NullArguments::fromJsonString($arguments),
+        };
     }
 
     /**
@@ -264,7 +258,7 @@ class Probe
         $this->archives->removeElement($archive);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->name;
     }

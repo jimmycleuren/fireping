@@ -19,14 +19,6 @@ class CleanupService
      */
     private $path;
     /**
-     * @var EntityManagerInterface
-     */
-    private $em;
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-    /**
      * @var array
      */
     private $inactiveDevices;
@@ -55,11 +47,9 @@ class CleanupService
      */
     private $storage;
 
-    public function __construct(EntityManagerInterface $em, LoggerInterface $logger, ParameterBagInterface $params, StorageFactory $storage)
+    public function __construct(private readonly EntityManagerInterface $em, private readonly LoggerInterface $logger, ParameterBagInterface $params, StorageFactory $storage)
     {
         $this->path = $params->get('rrd_storage_path');
-        $this->em = $em;
-        $this->logger = $logger;
         $this->storage = $storage->create();
     }
 

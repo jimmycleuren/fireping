@@ -10,7 +10,7 @@ class TracerouteGraph extends RrdGraph
 {
     public function getSummaryGraph(Device $device, Probe $probe, $start = -43200, $end = null, $width = 600)
     {
-        return file_get_contents(dirname(__FILE__).'/../../public/notfound.png');
+        return file_get_contents(__DIR__.'/../../public/notfound.png');
     }
 
     public function getDetailGraph(Device $device, Probe $probe, SlaveGroup $slavegroup, $start = -3600, $end = null, $type = "default", $debug = false)
@@ -21,7 +21,7 @@ class TracerouteGraph extends RrdGraph
 
         $file = $this->storage->getFilePath($device, $probe, $slavegroup);
         if (!$this->storage->fileExists($device, $file)) {
-            return file_get_contents(dirname(__FILE__).'/../../public/notfound.png');
+            return file_get_contents(__DIR__.'/../../public/notfound.png');
         }
 
         if ($start < 0) {
@@ -48,7 +48,7 @@ class TracerouteGraph extends RrdGraph
         $hops = [];
         if (is_array($datasources)) {
             foreach ($datasources as $datasource) {
-                $name = substr($datasource, 0, -1);
+                $name = substr((string) $datasource, 0, -1);
                 $hops[] = $name;
             }
             $hops = array_unique($hops);
@@ -65,11 +65,7 @@ class TracerouteGraph extends RrdGraph
             $id1 = $parts1[0];
             $parts2 = explode('_', $b);
             $id2 = $parts2[0];
-            if ($id1 == $id2) {
-                return 0;
-            } else {
-                return $id1 < $id2 ? -1 : 1;
-            }
+            return $id1 <=> $id2;
         });
 
         $someData = false;

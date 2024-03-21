@@ -31,7 +31,7 @@ class RrdCachedStorage extends RrdStorage
 
     private function connect($daemon): void
     {
-        $socket = stristr($daemon, 'unix://') ? $daemon : "tcp://$daemon";
+        $socket = stristr((string) $daemon, 'unix://') ? $daemon : "tcp://$daemon";
         if (!isset($this->connections[$daemon]) || !$this->connections[$daemon]) {
             $this->connections[$daemon] = stream_socket_client($socket, $errno, $errstr, 5);
             stream_set_timeout($this->connections[$daemon], 5);
@@ -91,7 +91,7 @@ class RrdCachedStorage extends RrdStorage
 
         $this->send("INFO $path", $daemon);
         $message = $this->read($daemon);
-        if (stristr($message, 'rrd_version')) {
+        if (stristr((string) $message, 'rrd_version')) {
             return true;
         }
 
@@ -126,7 +126,7 @@ class RrdCachedStorage extends RrdStorage
         foreach ($probe->getArchives() as $archive) {
             $options[] = sprintf(
                 'RRA:%s:0.5:%s:%s',
-                strtoupper($archive->getFunction()),
+                strtoupper((string) $archive->getFunction()),
                 $archive->getSteps(),
                 $archive->getRows()
             );
@@ -135,7 +135,7 @@ class RrdCachedStorage extends RrdStorage
         foreach ($this->predictions as $value) {
             $options[] = sprintf(
                 'RRA:%s:%s:%s:%s:%s',
-                strtoupper($value['function']),
+                strtoupper((string) $value['function']),
                 $value['rows'],
                 $value['alpha'],
                 $value['beta'],
@@ -145,8 +145,8 @@ class RrdCachedStorage extends RrdStorage
 
         $this->send("CREATE $filename ".implode(' ', $options), $daemon);
         $message = $this->read($daemon);
-        if (!stristr($message, '0 RRD created OK')) {
-            throw new RrdException(trim($message));
+        if (!stristr((string) $message, '0 RRD created OK')) {
+            throw new RrdException(trim((string) $message));
         }
     }
 
@@ -155,10 +155,10 @@ class RrdCachedStorage extends RrdStorage
         $this->connect($daemon);
         $this->send('LAST '.$filename, $daemon);
         $message = $this->read($daemon);
-        if (!trim($message)) {
-            throw new RrdException(trim($message));
+        if (!trim((string) $message)) {
+            throw new RrdException(trim((string) $message));
         }
-        $timestamp = explode(' ', $message)[1];
+        $timestamp = explode(' ', (string) $message)[1];
 
         return $timestamp;
     }
@@ -230,7 +230,7 @@ class RrdCachedStorage extends RrdStorage
 
         $this->send("UPDATE $filename ".implode(':', $values), $daemon);
         $message = $this->read($daemon);
-        if (!stristr($message, '0 errors')) {
+        if (!stristr((string) $message, '0 errors')) {
             $this->logger->warning($message);
         }
     }
@@ -250,7 +250,7 @@ class RrdCachedStorage extends RrdStorage
         $sources = [];
         $this->send("INFO $filename", $daemon);
         $message = $this->read($daemon);
-        $message = explode("\n", $message);
+        $message = explode("\n", (string) $message);
         foreach ($message as $line) {
             if (preg_match("/ds\[([\w]+)\]/", $line, $match)) {
                 if (!in_array($match[1], $sources)) {
@@ -298,7 +298,7 @@ class RrdCachedStorage extends RrdStorage
      *
      * @return mixed|string|void|null
      */
-    public function fetch(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $key, $function, $daemon = null)
+    public function fetch(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $key, $function, $daemon = null): void
     {
         if (!$daemon) {
             $daemon = $this->daemon;
@@ -345,7 +345,7 @@ class RrdCachedStorage extends RrdStorage
 
         $this->send("FETCH $path $function $start $end", $daemon);
         $message = $this->read($daemon);
-        $message = explode("\n", $message);
+        $message = explode("\n", (string) $message);
         $message = array_filter($message);
 
         if (!strstr($message[0], "Success")) {
@@ -432,7 +432,7 @@ class RrdCachedStorage extends RrdStorage
         $this->send('FLUSH '.$filename, $daemon);
         $message = $this->read($daemon);
 
-        if (!stristr($message, '0 Successfully flushed')) {
+        if (!stristr((string) $message, '0 Successfully flushed')) {
             $this->logger->warning($message);
         }
     }

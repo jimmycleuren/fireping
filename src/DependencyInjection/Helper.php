@@ -6,9 +6,9 @@ class Helper
 {
     public function getProbeGraphTypes(string $probeType)
     {
-        switch($probeType) {
-            case 'http': return ['latency', 'response'];
-            default: return ['default'];
-        }
+        return match ($probeType) {
+            'http' => ['latency', 'response'],
+            default => ['default'],
+        };
     }
 }

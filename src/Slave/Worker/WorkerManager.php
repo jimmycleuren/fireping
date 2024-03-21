@@ -11,8 +11,6 @@ class WorkerManager
 {
     protected $kernel;
 
-    private $logger;
-
     /**
      * An array of process ids of workers that are currently idle.
      *
@@ -44,10 +42,9 @@ class WorkerManager
 
     private $numberOfProbeProcesses = 0;
 
-    public function __construct(KernelInterface $kernel, LoggerInterface $logger)
+    public function __construct(KernelInterface $kernel, private readonly LoggerInterface $logger)
     {
         $this->kernel = $kernel;
-        $this->logger = $logger;
     }
 
     public function initialize(int $startWorkers, int $maximumWorkers, int $numberOfQueues): void
@@ -173,7 +170,7 @@ class WorkerManager
         foreach ($this->workers as $worker) {
             try {
                 $worker->loop();
-            } catch (ProcessTimedOutException $exception) {
+            } catch (ProcessTimedOutException) {
                 $this->logger->info("Process $worker timed out", [
                     'available' => count($this->availableWorkers),
                     'inuse' => count($this->inUseWorkers),

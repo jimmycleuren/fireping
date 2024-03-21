@@ -27,10 +27,7 @@ class SecurityControllerTest extends WebTestCase
 
     public function testLogout(): void
     {
-        $client = static::createClient(array(), array(
-            'PHP_AUTH_USER' => 'test',
-            'PHP_AUTH_PW'   => 'test123',
-        ));
+        $client = static::createClient([], ['PHP_AUTH_USER' => 'test', 'PHP_AUTH_PW'   => 'test123']);
 
         $crawler = $client->request('GET', '/logout');
 

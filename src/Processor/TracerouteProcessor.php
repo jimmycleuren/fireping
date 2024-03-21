@@ -33,7 +33,7 @@ class TracerouteProcessor extends Processor
                         ++$failed;
                     }
                 }
-                $name = $hop.'_'.str_replace('.', '_', $details->ip);
+                $name = $hop.'_'.str_replace('.', '_', (string) $details->ip);
 
                 $datasources[$name.'l'] = $failed;
                 if (0 == $success) {

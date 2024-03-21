@@ -18,7 +18,7 @@ class AlertDestinationFactoryTest extends WebTestCase
         $alertDestination->setType('http');
         $http = $factory->create($alertDestination);
 
-        $this->assertEquals('App\AlertDestination\Http', get_class($http));
+        $this->assertEquals(\App\AlertDestination\Http::class, $http::class);
     }
 
     public function testCreateMonolog(): void
@@ -31,6 +31,6 @@ class AlertDestinationFactoryTest extends WebTestCase
         $alertDestination->setType('monolog');
         $monolog = $factory->create($alertDestination);
 
-        $this->assertEquals('App\AlertDestination\Monolog', get_class($monolog));
+        $this->assertEquals(\App\AlertDestination\Monolog::class, $monolog::class);
     }
 }

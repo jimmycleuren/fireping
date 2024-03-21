@@ -24,7 +24,7 @@ class Probe
         $this->step = $step;
         $this->samples = $samples;
 
-        $this->args = isset($args) ? $args : [];
+        $this->args = $args ?? [];
         // TODO: Move to arguments.
         $this->args['samples'] = $samples;
         $this->args['wait_time'] = intval($step / $samples) * 1000;

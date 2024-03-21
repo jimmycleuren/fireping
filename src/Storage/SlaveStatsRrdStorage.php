@@ -80,7 +80,7 @@ class SlaveStatsRrdStorage
         foreach ($this->archives as $archive) {
             $options[] = sprintf(
                 'RRA:%s:0.5:%s:%s',
-                strtoupper($archive['function']),
+                strtoupper((string) $archive['function']),
                 $archive['steps'],
                 $archive['rows']
             );

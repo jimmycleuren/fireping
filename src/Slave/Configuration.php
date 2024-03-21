@@ -94,7 +94,7 @@ class Configuration
             $type = $probeConfig['type'];
             $step = $probeConfig['step'];
             $samples = $probeConfig['samples'];
-            $args = isset($probeConfig['args']) ? $probeConfig['args'] : null;
+            $args = $probeConfig['args'] ?? null;
 
             $probe = $this->getProbe($id, $type, $step, $samples, $args);
             foreach ($probeConfig['targets'] as $hostname => $ip) {
