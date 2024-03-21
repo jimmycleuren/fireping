@@ -136,12 +136,13 @@ class HttpGraph extends SmokeRrdGraph
             $step = floor(150 / ($total[floor($code / 100)] - 1));
         }
 
-        return match (floor($code / 100)) {
-            2 => "00".sprintf("%02x", 105 + ($step * array_search($code, $categories[floor($code / 100)])))."00",
-            3 => "0000".sprintf("%02x", 105 + ($step * array_search($code, $categories[floor($code / 100)]))),
-            4 => sprintf("%02x", 105 + ($step * array_search($code, $categories[floor($code / 100)])))."0000",
-            5 => sprintf("%02x", 105 + ($step * array_search($code, $categories[floor($code / 100)])))."00".sprintf("%02x", 105 + ($step * array_search($code, $categories[floor($code / 100)]))),
-            default => "333333",
-        };
+        switch(floor($code / 100)) {
+            //case 1: return "999999";
+            case 2: return "00".sprintf("%02x", 105 + ($step * array_search($code, $categories[floor($code / 100)])))."00";
+            case 3: return "0000".sprintf("%02x", 105 + ($step * array_search($code, $categories[floor($code / 100)])));
+            case 4: return sprintf("%02x", 105 + ($step * array_search($code, $categories[floor($code / 100)])))."0000";
+            case 5: return sprintf("%02x", 105 + ($step * array_search($code, $categories[floor($code / 100)])))."00".sprintf("%02x", 105 + ($step * array_search($code, $categories[floor($code / 100)])));
+            default: return "333333";
+        }
     }
 }
