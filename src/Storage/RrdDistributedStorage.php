@@ -47,7 +47,7 @@ class RrdDistributedStorage extends RrdCachedStorage
         return parent::getDatasources($device, $probe, $group, $daemon);
     }
 
-    public function fetch(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $key, $function, $daemon = null): mixed
+    public function fetch(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $key, $function, $daemon = null)
     {
         $node = $this->getStorageNode($device);
         $daemon = $node->getIp().':42217';
