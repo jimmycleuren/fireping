@@ -15,15 +15,13 @@ class StatsManager
     private $discardedPosts = 0;
     private $workers;
     private $queues;
-    private $logger;
     /**
      * The running version of the dispatcher. This will either be the tag (v1.0) or the commit id.
      */
-    private ?Version $version;
+    private ?Version $version = null;
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(private readonly LoggerInterface $logger)
     {
-        $this->logger = $logger;
     }
 
     public function getStats()
@@ -50,22 +48,22 @@ class StatsManager
         return $res;
     }
 
-    public function addSuccessfulPost()
+    public function addSuccessfulPost(): void
     {
         ++$this->successfulPosts;
     }
 
-    public function addFailedPost()
+    public function addFailedPost(): void
     {
         ++$this->failedPosts;
     }
 
-    public function addDiscardedPost()
+    public function addDiscardedPost(): void
     {
         ++$this->discardedPosts;
     }
 
-    public function addQueueItems($id, $count)
+    public function addQueueItems($id, $count): void
     {
         if (!isset($this->queues[date('U')])) {
             $this->queues[date('U')] = [];
@@ -73,7 +71,7 @@ class StatsManager
         $this->queues[date('U')][$id] = $count;
     }
 
-    public function addWorkerStats($total, $available, $types)
+    public function addWorkerStats($total, $available, $types): void
     {
         $temp = [
             'total'     => $total,
@@ -99,7 +97,7 @@ class StatsManager
                     break;
                 default:
                     $this->logger->warning("Could not simplify the $type worker type");
-                    $name = substr($type, -15);
+                    $name = substr((string) $type, -15);
                     break;
             }
             $temp[$name] = $count;

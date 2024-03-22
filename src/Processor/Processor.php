@@ -34,12 +34,12 @@ abstract class Processor
         $this->storage = $factory->create();
     }
 
-    private function handleAlertRules(Collection $rules, Device $device, Probe $probe, SlaveGroup $group, $timestamp, AlertRule $parent = null)
+    private function handleAlertRules(Collection $rules, Device $device, Probe $probe, SlaveGroup $group, $timestamp, AlertRule $parent = null): void
     {
         foreach ($rules as $alertRule) {
             if ($alertRule->getParent() == $parent) {
                 if ($alertRule->getProbe() == $probe) {
-                    $pattern = explode(',', $alertRule->getPattern());
+                    $pattern = explode(',', (string) $alertRule->getPattern());
                     $value = $this->cache->getPatternValues($device, $alertRule, $group);
                     if ($this->matchPattern($pattern, $value)) {
                         $alert = $this->em->getRepository('App:Alert')->findOneBy([
@@ -102,19 +102,19 @@ abstract class Processor
         foreach ($pattern as $key => $field) {
             switch ($field[0]) {
                 case '=':
-                    $val = str_replace('=', '', $field);
+                    $val = str_replace('=', '', (string) $field);
                     if ($value[$key] != $val) {
                         $result = false;
                     }
                     break;
                 case '>':
-                    $val = str_replace('>', '', $field);
+                    $val = str_replace('>', '', (string) $field);
                     if ($value[$key] <= $val) {
                         $result = false;
                     }
                     break;
                 case '<':
-                    $val = str_replace('<', '', $field);
+                    $val = str_replace('<', '', (string) $field);
                     if ($value[$key] >= $val) {
                         $result = false;
                     }
@@ -128,7 +128,7 @@ abstract class Processor
     protected function cacheResults(Device $device, SlaveGroup $group, $timestamp, $datasources)
     {
         foreach ($device->getActiveAlertRules() as $alertRule) {
-            $pattern = explode(',', $alertRule->getPattern());
+            $pattern = explode(',', (string) $alertRule->getPattern());
             $value = $this->cache->getPatternValues($device, $alertRule, $group);
             if (!is_array($value)) {
                 $value = [];
@@ -140,8 +140,7 @@ abstract class Processor
 
             ksort($value);
             while (count($value) > count($pattern)) {
-                reset($value);
-                unset($value[key($value)]);
+                unset($value[array_key_first($value)]);
             }
 
             $this->cache->setPatternValues($device, $alertRule, $group, $value);

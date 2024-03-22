@@ -6,11 +6,8 @@ use Throwable;
 
 class WorkerTimedOutException extends \Exception
 {
-    private $timeout;
-
-    public function __construct($timeout, $message = '', $code = 0, Throwable $previous = null)
+    public function __construct(private $timeout, $message = '', $code = 0, Throwable $previous = null)
     {
-        $this->timeout = $timeout;
         parent::__construct($message, $code, $previous);
     }
 

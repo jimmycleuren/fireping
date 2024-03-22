@@ -8,19 +8,8 @@ use Symfony\Component\Cache\Adapter\AdapterInterface;
 
 class CacheVersionReader implements VersionReaderInterface
 {
-    /**
-     * @var VersionReaderInterface
-     */
-    private $reader;
-    /**
-     * @var AdapterInterface
-     */
-    private $adapter;
-
-    public function __construct(VersionReaderInterface $reader, AdapterInterface $adapter)
+    public function __construct(private readonly VersionReaderInterface $reader, private readonly AdapterInterface $adapter)
     {
-        $this->reader = $reader;
-        $this->adapter = $adapter;
     }
 
     public function version(): Version

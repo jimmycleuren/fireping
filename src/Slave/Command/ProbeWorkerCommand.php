@@ -37,17 +37,11 @@ class ProbeWorkerCommand extends Command
     protected $logger;
 
     /**
-     * @var TaskFactory
-     */
-    private $taskFactory;
-
-    /**
      * @throws LogicException
      */
-    public function __construct(LoggerInterface $logger, TaskFactory $taskFactory)
+    public function __construct(LoggerInterface $logger, private readonly TaskFactory $taskFactory)
     {
         $this->logger = $logger;
-        $this->taskFactory = $taskFactory;
 
         parent::__construct();
     }
@@ -188,9 +182,6 @@ class ProbeWorkerCommand extends Command
     }
 
     /**
-     * @param string $type
-     * @param int $status
-     * @param array $headers
      * @param array|string $contents
      */
     protected function sendResponse(string $type, int $status, $contents, array $headers = []): void

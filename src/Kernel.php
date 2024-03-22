@@ -24,10 +24,7 @@ class Kernel extends BaseKernel
 
     public function getLogDir(): string
     {
-        if (isset($_ENV['LOG_PATH'])) {
-            return $_ENV['LOG_PATH'];
-        }
-        return $this->getProjectDir().'/var/log';
+        return $_ENV['LOG_PATH'] ?? $this->getProjectDir().'/var/log';
     }
 
     protected function configureContainer(ContainerConfigurator $container): void

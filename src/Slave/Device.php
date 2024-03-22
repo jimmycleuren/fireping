@@ -4,14 +4,10 @@ namespace App\Slave;
 
 class Device
 {
-    protected $id;
-    protected $ip;
     protected $active;
 
-    public function __construct($hostname, $ip)
+    public function __construct(protected $id, protected $ip)
     {
-        $this->id = $hostname;
-        $this->ip = $ip;
         $this->active = true;
     }
 
@@ -31,10 +27,7 @@ class Device
         return $this->ip;
     }
 
-    /**
-     * @return mixed
-     */
-    public function setIp($ip)
+    public function setIp($ip): void
     {
         $this->ip = $ip;
     }
@@ -50,7 +43,7 @@ class Device
     /**
      * @param bool $active
      */
-    public function setActive($active)
+    public function setActive($active): void
     {
         $this->active = $active;
     }

@@ -10,15 +10,15 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class TestAlertDestinationCommandTest extends KernelTestCase
 {
-    public function testExecuteInvalid()
+    public function testExecuteInvalid(): void
     {
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $destination = $this->prophesize("App\AlertDestination\Monolog");
-        $factory = $this->prophesize("App\AlertDestination\AlertDestinationFactory");
+        $destination = $this->prophesize(\App\AlertDestination\Monolog::class);
+        $factory = $this->prophesize(\App\AlertDestination\AlertDestinationFactory::class);
         $factory->create(Argument::any())->willReturn($destination->reveal());
-        $logger = $this->prophesize("Psr\Log\LoggerInterface");
+        $logger = $this->prophesize(\Psr\Log\LoggerInterface::class);
         $logger->warning(Argument::type('string'))->shouldBeCalledTimes(1);
 
         $application->add(new TestAlertDestinationCommand($kernel->getContainer()->get('doctrine')->getManager(), $factory->reveal(), $logger->reveal()));
@@ -33,15 +33,15 @@ class TestAlertDestinationCommandTest extends KernelTestCase
         $this->assertEquals(1, $commandTester->getStatusCode());
     }
 
-    public function testExecute()
+    public function testExecute(): void
     {
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $destination = $this->prophesize("App\AlertDestination\Monolog");
-        $factory = $this->prophesize("App\AlertDestination\AlertDestinationFactory");
+        $destination = $this->prophesize(\App\AlertDestination\Monolog::class);
+        $factory = $this->prophesize(\App\AlertDestination\AlertDestinationFactory::class);
         $factory->create(Argument::any())->willReturn($destination->reveal());
-        $logger = $this->prophesize("Psr\Log\LoggerInterface");
+        $logger = $this->prophesize(\Psr\Log\LoggerInterface::class);
 
         $application->add(new TestAlertDestinationCommand($kernel->getContainer()->get('doctrine')->getManager(), $factory->reveal(), $logger->reveal()));
 

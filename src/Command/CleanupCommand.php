@@ -16,17 +16,11 @@ class CleanupCommand extends Command
 {
     protected static $defaultName = 'app:cleanup';
 
-    private $logger;
-    private $cleanupService;
-
     /**
      * CleanupCommand constructor.
      */
-    public function __construct(LoggerInterface $logger, CleanupService $cleanupService)
+    public function __construct(private readonly LoggerInterface $logger, private readonly CleanupService $cleanupService)
     {
-        $this->cleanupService = $cleanupService;
-        $this->logger = $logger;
-
         parent::__construct();
     }
 

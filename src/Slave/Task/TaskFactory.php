@@ -12,7 +12,7 @@ final class TaskFactory
      */
     private $types = [];
 
-    public function addTaskType(TaskInterface $task)
+    public function addTaskType(TaskInterface $task): void
     {
         $this->types[$task->getType()] = $task;
     }

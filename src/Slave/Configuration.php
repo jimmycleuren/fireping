@@ -78,14 +78,14 @@ class Configuration
         }
     }
 
-    public function purgeAllInactiveDevices()
+    public function purgeAllInactiveDevices(): void
     {
         foreach ($this->getProbes() as $probe) {
             $probe->purgeAllInactiveDevices();
         }
     }
 
-    public function updateConfig($configuration, $etag = null)
+    public function updateConfig($configuration, $etag = null): void
     {
         $this->deactivateAllDevices();
         foreach ($configuration as $id => $probeConfig) {
@@ -94,7 +94,7 @@ class Configuration
             $type = $probeConfig['type'];
             $step = $probeConfig['step'];
             $samples = $probeConfig['samples'];
-            $args = isset($probeConfig['args']) ? $probeConfig['args'] : null;
+            $args = $probeConfig['args'] ?? null;
 
             $probe = $this->getProbe($id, $type, $step, $samples, $args);
             foreach ($probeConfig['targets'] as $hostname => $ip) {

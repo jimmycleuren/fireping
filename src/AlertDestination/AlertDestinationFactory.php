@@ -16,7 +16,7 @@ class AlertDestinationFactory
 
     public function create(AlertDestination $destination): AlertDestinationInterface
     {
-        $dest = $this->container->get('App\\AlertDestination\\'.ucfirst($destination->getType()));
+        $dest = $this->container->get('App\\AlertDestination\\'.ucfirst((string) $destination->getType()));
         if ($destination->getParameters()) {
             $dest->setParameters($destination->getParameters());
         }

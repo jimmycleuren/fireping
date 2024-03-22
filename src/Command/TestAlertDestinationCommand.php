@@ -17,16 +17,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class TestAlertDestinationCommand extends Command
 {
-    private $em = null;
-    private $alertDestinationFactory = null;
-    private $logger = null;
-
-    public function __construct(EntityManagerInterface $em, AlertDestinationFactory $alertDestinationFactory, LoggerInterface $logger)
+    public function __construct(private readonly EntityManagerInterface $em, private readonly AlertDestinationFactory $alertDestinationFactory, private readonly LoggerInterface $logger)
     {
-        $this->em = $em;
-        $this->alertDestinationFactory = $alertDestinationFactory;
-        $this->logger = $logger;
-
         parent::__construct();
     }
 

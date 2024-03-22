@@ -14,12 +14,8 @@ class CleanupAlertCommand extends Command
 {
     protected static $defaultName = 'app:cleanupAlert';
 
-    private $cleanupAlert;
-
-    public function __construct(CleanupAlert $cleanupAlert)
+    public function __construct(private readonly CleanupAlert $cleanupAlert)
     {
-        $this->cleanupAlert = $cleanupAlert;
-
         parent::__construct();
     }
 

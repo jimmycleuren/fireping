@@ -11,11 +11,8 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class NotificationSubscriber implements EventSubscriberInterface
 {
-    private $alertRepository;
-
-    public function __construct(AlertRepository $alertRepository)
+    public function __construct(private readonly AlertRepository $alertRepository)
     {
-        $this->alertRepository = $alertRepository;
     }
 
     public static function getSubscribedEvents(): array
@@ -25,7 +22,7 @@ class NotificationSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function onNotifications(NotificationListEvent $event)
+    public function onNotifications(NotificationListEvent $event): void
     {
         /**
          * @var Alert[] $alerts

@@ -15,7 +15,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ApiResource(attributes={"normalization_context"={"groups"={"slave"}}})
  * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  */
-class Slave
+class Slave implements \Stringable
 {
     /**
      * @var string
@@ -106,7 +106,6 @@ class Slave
     /**
      * Set slavegroup.
      *
-     * @param \App\Entity\SlaveGroup $slavegroup
      *
      * @return Slave
      * @Groups({"slave"})
@@ -132,7 +131,7 @@ class Slave
     /*
      * toString
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->id;
     }

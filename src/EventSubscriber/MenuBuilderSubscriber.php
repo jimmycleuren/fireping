@@ -15,17 +15,8 @@ use Symfony\Component\Security\Core\Security;
 
 class MenuBuilderSubscriber implements EventSubscriberInterface
 {
-    private $alertRepository;
-    private $domainRepository;
-    private $slaveRepository;
-    private $storageNodeRepository;
-
-    public function __construct(DomainRepository $domainRepository, AlertRepository $alertRepository, SlaveRepository $slaveRepository, StorageNodeRepository $storageNodeRepository)
+    public function __construct(private readonly DomainRepository $domainRepository, private readonly AlertRepository $alertRepository, private readonly SlaveRepository $slaveRepository, private readonly StorageNodeRepository $storageNodeRepository)
     {
-        $this->alertRepository = $alertRepository;
-        $this->domainRepository = $domainRepository;
-        $this->slaveRepository = $slaveRepository;
-        $this->storageNodeRepository = $storageNodeRepository;
     }
 
     public static function getSubscribedEvents(): array
@@ -69,7 +60,7 @@ class MenuBuilderSubscriber implements EventSubscriberInterface
         return $event;
     }
 
-    public function onSetupMenu(SidebarMenuEvent $event)
+    public function onSetupMenu(SidebarMenuEvent $event): void
     {
         $event = $this->addStaticMenu($event);
 
@@ -92,7 +83,7 @@ class MenuBuilderSubscriber implements EventSubscriberInterface
         );
     }
 
-    public function onSetupBreadcrumbMenu(SidebarMenuEvent $event)
+    public function onSetupBreadcrumbMenu(SidebarMenuEvent $event): void
     {
         $event = $this->addStaticMenu($event);
 

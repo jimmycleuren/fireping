@@ -13,15 +13,13 @@ class Http implements TaskInterface
 {
     private $args;
     private $delay;
-    private $logger;
     private $targets;
     private $samples;
     private $waitTime;
     private $times;
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(private readonly LoggerInterface $logger)
     {
-        $this->logger = $logger;
     }
 
     public function execute(): array
@@ -41,8 +39,8 @@ class Http implements TaskInterface
         }
         $client = new Client($options);
 
-        $path = isset($this->args['path']) ? $this->args['path'] : "/";
-        $protocol = isset($this->args['protocol']) ? $this->args['protocol'] : "http";
+        $path = $this->args['path'] ?? "/";
+        $protocol = $this->args['protocol'] ?? "http";
 
         for ($i = 0; $i < $this->samples; ++$i) {
             $start = microtime(true);
@@ -68,7 +66,7 @@ class Http implements TaskInterface
                         $result[$id][] = ['time' => -1, 'code' => -1];
                     }
                 } catch (\Exception $exception) {
-                    $this->logger->error(get_class($exception) . ": " . $exception->getMessage());
+                    $this->logger->error($exception::class . ": " . $exception->getMessage());
                 }
             }
 

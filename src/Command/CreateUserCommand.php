@@ -18,14 +18,9 @@ class CreateUserCommand extends Command
 {
     protected static $defaultName = 'fireping:create:user';
 
-    private EntityManagerInterface $entityManager;
-    private UserPasswordHasherInterface $passwordEncoder;
-
-    public function __construct(EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher)
+    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly UserPasswordHasherInterface $passwordEncoder)
     {
         parent::__construct();
-        $this->entityManager = $entityManager;
-        $this->passwordEncoder = $passwordHasher;
     }
 
     protected function configure(): void

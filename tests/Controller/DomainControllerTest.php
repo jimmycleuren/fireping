@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class DomainControllerTest extends WebTestCase
 {
-    public function testDomain()
+    public function testDomain(): void
     {
         $client = static::createClient();
 

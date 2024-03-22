@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Common\Version;
 
-final class Version
+final class Version implements \Stringable
 {
     /**
      * @var string
@@ -21,7 +21,7 @@ final class Version
         return $this->version;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->asString();
     }

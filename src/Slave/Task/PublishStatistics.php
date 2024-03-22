@@ -14,19 +14,12 @@ use stdClass;
 
 class PublishStatistics implements TaskInterface
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-    private ClientInterface $client;
     private $method;
     private $endpoint;
     private $body;
 
-    public function __construct(LoggerInterface $logger, ClientInterface $client)
+    public function __construct(private readonly LoggerInterface $logger, private readonly ClientInterface $client)
     {
-        $this->logger = $logger;
-        $this->client = $client;
     }
 
     public function execute(): array

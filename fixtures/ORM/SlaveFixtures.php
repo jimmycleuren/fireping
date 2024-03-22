@@ -9,7 +9,7 @@ use Doctrine\Persistence\ObjectManager;
 
 class SlaveFixtures extends Fixture implements DependentFixtureInterface
 {
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         $slave = new Slave();
         $slave->setId('slave1');

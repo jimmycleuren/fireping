@@ -8,7 +8,7 @@ use Psr\Log\LoggerInterface;
 
 class HttpTest extends TestCase
 {
-    public function testHttp()
+    public function testHttp(): void
     {
         $logger = $this->prophesize(LoggerInterface::class)->reveal();
 
@@ -30,7 +30,7 @@ class HttpTest extends TestCase
         $this->assertEquals(2, count($result[1]));
     }
 
-    public function testHttpTooLong()
+    public function testHttpTooLong(): void
     {
         $logger = $this->prophesize(LoggerInterface::class)->reveal();
 
@@ -52,7 +52,7 @@ class HttpTest extends TestCase
         $this->assertEquals(2, count($result[1]));
     }
 
-    public function testHttps()
+    public function testHttps(): void
     {
         $logger = $this->prophesize(LoggerInterface::class)->reveal();
 

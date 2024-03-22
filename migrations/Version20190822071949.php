@@ -44,7 +44,7 @@ final class Version20190822071949 extends AbstractMigration
             $roles = $row['roles'];
             $last_login = $row['last_login'];
 
-            preg_match_all('/"(?P<roles>.*?)"/', $roles, $matches);
+            preg_match_all('/"(?P<roles>.*?)"/', (string) $roles, $matches);
 
             $roles = $matches['roles'];
             $roles = array_values($roles);

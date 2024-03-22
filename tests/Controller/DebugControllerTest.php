@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class DebugControllerTest extends WebTestCase
 {
-    public function testDebug()
+    public function testDebug(): void
     {
         $client = static::createClient();
         $client->followRedirects(true);

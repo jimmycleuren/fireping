@@ -7,11 +7,8 @@ use App\Storage\SlaveStatsRrdStorage;
 
 class SlaveGraph
 {
-    private $storage;
-
-    public function __construct(SlaveStatsRrdStorage $storage)
+    public function __construct(private readonly SlaveStatsRrdStorage $storage)
     {
-        $this->storage = $storage;
     }
 
     public function getGraph(Slave $slave, $type, $start = -3600, $end = null, $debug = false)
@@ -22,7 +19,7 @@ class SlaveGraph
 
         $file = $this->storage->getFilePath($slave, $type);
         if (!file_exists($file)) {
-            return file_get_contents(dirname(__FILE__).'/../../public/notfound.png');
+            return file_get_contents(__DIR__.'/../../public/notfound.png');
         }
 
         $max = 100000;
@@ -74,16 +71,12 @@ class SlaveGraph
     }
 
     private function getAxisLabel($type) {
-        switch ($type) {
-            case 'queues':
-                return "messages";
-            case 'load':
-                return "processes";
-            case 'memory':
-                return "bytes";
-            default:
-                return $type;
-        }
+        return match ($type) {
+            'queues' => "messages",
+            'load' => "processes",
+            'memory' => "bytes",
+            default => $type,
+        };
     }
 
     public function createPostGraph($slave, $options)
@@ -171,7 +164,7 @@ class SlaveGraph
         $index = 0;
         foreach ($sources as $source) {
             $options[] = sprintf('DEF:%s=%s:%s:%s', $source, $this->storage->getFilePath($slave, 'queues'), $source, 'AVERAGE');
-            $options[] = sprintf('LINE1:%s%s:%s', $source, $this->getColor($index, count($this->storage->getDataSources($file))), sprintf('%-7s', ucfirst($source)));
+            $options[] = sprintf('LINE1:%s%s:%s', $source, $this->getColor($index, count($this->storage->getDataSources($file))), sprintf('%-7s', ucfirst((string) $source)));
 
             $options[] = "GPRINT:$source:AVERAGE:\: %7.1lf avg";
             $options[] = "GPRINT:$source:MAX:%7.1lf max";

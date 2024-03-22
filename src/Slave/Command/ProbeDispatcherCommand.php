@@ -72,19 +72,13 @@ class ProbeDispatcherCommand extends Command
      */
     protected $loop;
 
-    private $workerManager;
-
-    private $statsManager;
-
     private $devicesPerWorker = 250;
 
     private $randomFactor = 0;
 
-    public function __construct(LoggerInterface $logger, WorkerManager $workerManager, StatsManager $statsManager)
+    public function __construct(LoggerInterface $logger, private readonly WorkerManager $workerManager, private readonly StatsManager $statsManager)
     {
         $this->logger = $logger;
-        $this->workerManager = $workerManager;
-        $this->statsManager = $statsManager;
         $this->configuration = new Configuration();
         parent::__construct();
     }
@@ -126,7 +120,7 @@ class ProbeDispatcherCommand extends Command
      * @throws \RuntimeException
      * @throws InvalidArgumentException
      */
-    private function setUp(InputInterface $input)
+    private function setUp(InputInterface $input): void
     {
         $this->maxRuntime = (int) $input->getOption('max-runtime');
         $this->randomFactor = random_int(0, 119);

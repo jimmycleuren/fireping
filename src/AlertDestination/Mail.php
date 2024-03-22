@@ -16,19 +16,11 @@ use const FILTER_VALIDATE_EMAIL;
 
 class Mail extends AlertDestinationInterface
 {
-    private Swift_Mailer $mailer;
-    private Environment $twig;
-    private LoggerInterface $logger;
-
-    private string $from;
+    private readonly string $from;
     private string $recipient;
 
-    public function __construct(\Swift_Mailer $mailer, LoggerInterface $logger, Environment $twig, string $from)
+    public function __construct(private readonly Swift_Mailer $mailer, private readonly LoggerInterface $logger, private readonly Environment $twig, string $from)
     {
-        $this->mailer = $mailer;
-        $this->logger = $logger;
-        $this->twig = $twig;
-
         if (filter_var($from, FILTER_VALIDATE_EMAIL) === false) {
             throw new UnexpectedValueException('invalid e-mail address');
         }
@@ -36,7 +28,7 @@ class Mail extends AlertDestinationInterface
         $this->from = $from;
     }
 
-    public function setParameters(array $parameters)
+    public function setParameters(array $parameters): void
     {
         if (array_key_exists('recipient', $parameters) === false) {
             throw new UnexpectedValueException('mail requires recipient to be set');
@@ -53,12 +45,12 @@ class Mail extends AlertDestinationInterface
         $this->recipient = $parameters['recipient'];
     }
 
-    public function trigger(Alert $alert)
+    public function trigger(Alert $alert): void
     {
         $this->sendMail($this->recipient, $this->getAlertMessage($alert), $alert, 'ALERT');
     }
 
-    private function sendMail(string $to, string $subject, Alert $alert, string $action)
+    private function sendMail(string $to, string $subject, Alert $alert, string $action): void
     {
         try {
             $message = (new \Swift_Message($subject))
@@ -83,7 +75,7 @@ class Mail extends AlertDestinationInterface
         }
     }
 
-    public function clear(Alert $alert)
+    public function clear(Alert $alert): void
     {
         $this->sendMail($this->recipient, $this->getAlertMessage($alert), $alert, 'CLEAR');
     }

@@ -13,7 +13,7 @@ use Prophecy\Argument;
 
 class HttpGraphTest extends TestCase
 {
-    public function testResponseGraph()
+    public function testResponseGraph(): void
     {
         @unlink('/tmp/2/1/1.rrd');
 
@@ -70,7 +70,7 @@ class HttpGraphTest extends TestCase
             Argument::type('array')
         )->willReturn(true)->shouldBeCalledTimes(1);
 
-        $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
+        $storageFactory = $this->prophesize(\App\Storage\StorageFactory::class);
         $storageFactory->create()->willReturn($storage->reveal())->shouldBeCalledTimes(1);
 
         $graph = new HttpGraph($storageFactory->reveal());
@@ -78,9 +78,9 @@ class HttpGraphTest extends TestCase
         $this->assertNotNull($image);
     }
 
-    public function testGradient()
+    public function testGradient(): void
     {
-        $storageFactory = $this->prophesize('App\\Storage\\StorageFactory');
+        $storageFactory = $this->prophesize(\App\Storage\StorageFactory::class);
         $storageFactory->create()->willReturn(null)->shouldBeCalledTimes(1);
 
         $graph = new HttpGraph($storageFactory->reveal());

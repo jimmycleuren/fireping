@@ -25,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * })
  * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  */
-class Device
+class Device implements \Stringable
 {
     /**
      * @var int
@@ -219,7 +219,6 @@ class Device
     /**
      * Set domain.
      *
-     * @param \App\Entity\Domain $domain
      *
      * @return Device
      * @Groups({"device"})
@@ -257,7 +256,7 @@ class Device
     /**
      * Remove slavegroup.
      */
-    public function removeSlaveGroup(\App\Entity\SlaveGroup $slavegroup)
+    public function removeSlaveGroup(\App\Entity\SlaveGroup $slavegroup): void
     {
         $this->slavegroups->removeElement($slavegroup);
     }
@@ -309,7 +308,7 @@ class Device
     /**
      * Remove probe.
      */
-    public function removeProbe(\App\Entity\Probe $probe)
+    public function removeProbe(\App\Entity\Probe $probe): void
     {
         $this->probes->removeElement($probe);
     }
@@ -361,7 +360,7 @@ class Device
     /**
      * Remove alert.
      */
-    public function removeAlertRule(\App\Entity\AlertRule $alertRule)
+    public function removeAlertRule(\App\Entity\AlertRule $alertRule): void
     {
         $this->alertRules->removeElement($alertRule);
     }
@@ -413,7 +412,7 @@ class Device
     /**
      * Remove alert destination.
      */
-    public function removeAlertDestination(\App\Entity\AlertDestination $alertDestination)
+    public function removeAlertDestination(\App\Entity\AlertDestination $alertDestination): void
     {
         $this->alertDestinations->removeElement($alertDestination);
     }
@@ -474,7 +473,7 @@ class Device
         return $this->alerts;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->name;
     }
@@ -494,7 +493,7 @@ class Device
     /**
      * Remove alert.
      */
-    public function removeAlert(\App\Entity\Alert $alert)
+    public function removeAlert(\App\Entity\Alert $alert): void
     {
         $this->alerts->removeElement($alert);
     }

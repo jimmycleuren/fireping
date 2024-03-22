@@ -17,14 +17,14 @@ class Probe
         $this->setConfiguration($id, $type, $step, $samples, $args);
     }
 
-    public function setConfiguration($id, $type, $step, $samples, array $args = null)
+    public function setConfiguration($id, $type, $step, $samples, array $args = null): void
     {
         $this->id = $id;
         $this->type = $type;
         $this->step = $step;
         $this->samples = $samples;
 
-        $this->args = isset($args) ? $args : [];
+        $this->args = $args ?? [];
         // TODO: Move to arguments.
         $this->args['samples'] = $samples;
         $this->args['wait_time'] = intval($step / $samples) * 1000;
@@ -67,7 +67,7 @@ class Probe
         return $this->args;
     }
 
-    public function setArg($key, $value)
+    public function setArg($key, $value): void
     {
         $this->args[$key] = $value;
     }
@@ -102,7 +102,7 @@ class Probe
         return null;
     }
 
-    public function addDevice(Device $device)
+    public function addDevice(Device $device): void
     {
         if (!isset($this->devices[$device->getId()])) {
             $this->devices[$device->getId()] = $device;
@@ -111,14 +111,14 @@ class Probe
         $this->devices[$device->getId()]->setActive(true);
     }
 
-    public function deactivateAllDevices()
+    public function deactivateAllDevices(): void
     {
         foreach ($this->devices as $device) {
             $device->setActive(false);
         }
     }
 
-    public function purgeAllInactiveDevices()
+    public function purgeAllInactiveDevices(): void
     {
         foreach ($this->devices as $key => $device) {
             if (!$device->isActive()) {
