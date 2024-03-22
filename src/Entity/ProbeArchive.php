@@ -37,7 +37,7 @@ class ProbeArchive implements \Stringable
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255)
+     @ORM\Column(name="`function`", type="string", length=255)
      * @Assert\NotBlank
      */
     private $function;
