@@ -24,29 +24,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class SlaveController extends AbstractController
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
-    /**
-     * @var ProcessorFactory
-     */
-    private $processorFactory;
-    /**
-     * @var SlaveStatsRrdStorage
-     */
-    private $slaveStatsRrdStorage;
-
-    public function __construct(LoggerInterface $logger, EntityManagerInterface $em, ProcessorFactory $processorFactory, SlaveStatsRrdStorage $slaveStatsRrdStorage)
+    public function __construct(private readonly LoggerInterface $logger, private readonly EntityManagerInterface $em, private readonly ProcessorFactory $processorFactory, private readonly SlaveStatsRrdStorage $slaveStatsRrdStorage)
     {
-        $this->logger = $logger;
-        $this->em = $em;
-        $this->processorFactory = $processorFactory;
-        $this->slaveStatsRrdStorage = $slaveStatsRrdStorage;
     }
 
     /**

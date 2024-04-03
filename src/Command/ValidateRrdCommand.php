@@ -12,14 +12,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ValidateRrdCommand extends Command
 {
-    private $em = null;
-    private $storage = null;
-
-    public function __construct(EntityManagerInterface $em, RrdStorage $storage)
+    public function __construct(private readonly EntityManagerInterface $em, private readonly RrdStorage $storage)
     {
-        $this->em = $em;
-        $this->storage = $storage;
-
         parent::__construct();
     }
 

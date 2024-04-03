@@ -26,9 +26,6 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class SlaveController extends AbstractController
 {
-    private $em = null;
-    private $logger = null;
-
     private $domainSlaveGroupCache = [];
     private $deviceSlaveGroupCache = [];
     private $domainProbeCache = [];
@@ -184,7 +181,7 @@ class SlaveController extends AbstractController
         return $config;
     }
 
-    private function prepareCache(EntityManagerInterface $entityManager)
+    private function prepareCache(EntityManagerInterface $entityManager): void
     {
         $devices = $entityManager->createQuery('SELECT d, s FROM App:Device d JOIN d.slavegroups s')->getResult();
         foreach ($devices as $device) {
@@ -216,7 +213,7 @@ class SlaveController extends AbstractController
         return $domains;
     }
 
-    private function getDeviceProbes($device, &$config)
+    private function getDeviceProbes($device, &$config): void
     {
         $probes = $this->getActiveProbes($device);
         foreach ($probes as $probe) {

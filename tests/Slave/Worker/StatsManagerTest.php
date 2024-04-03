@@ -11,7 +11,7 @@ use Psr\Log\LoggerInterface;
 
 class StatsManagerTest extends TestCase
 {
-    public function testAddFailedPost()
+    public function testAddFailedPost(): void
     {
         $logger = $this->prophesize(LoggerInterface::class);
         $statsManager = new StatsManager($logger->reveal());
@@ -24,7 +24,7 @@ class StatsManagerTest extends TestCase
         $this->assertEquals(0, $statsManager->getStats()['posts']['failed']);
     }
 
-    public function testAddDiscardedPosts()
+    public function testAddDiscardedPosts(): void
     {
         $logger = $this->prophesize(LoggerInterface::class);
         $statsManager = new StatsManager($logger->reveal());
@@ -37,7 +37,7 @@ class StatsManagerTest extends TestCase
         $this->assertEquals(0, $statsManager->getStats()['posts']['discarded']);
     }
 
-    public function testAddSuccessfulPosts()
+    public function testAddSuccessfulPosts(): void
     {
         $logger = $this->prophesize(LoggerInterface::class);
         $statsManager = new StatsManager($logger->reveal());
@@ -50,7 +50,7 @@ class StatsManagerTest extends TestCase
         $this->assertEquals(0, $statsManager->getStats()['posts']['success']);
     }
 
-    public function testLoadAverage()
+    public function testLoadAverage(): void
     {
         $logger = $this->prophesize(LoggerInterface::class);
         $statsManager = new StatsManager($logger->reveal());
@@ -60,7 +60,7 @@ class StatsManagerTest extends TestCase
         $this->assertEquals(3, count($stats['load']));
     }
 
-    public function testMemory()
+    public function testMemory(): void
     {
         $logger = $this->prophesize(LoggerInterface::class);
         $statsManager = new StatsManager($logger->reveal());
@@ -70,7 +70,7 @@ class StatsManagerTest extends TestCase
         $this->assertEquals(6, count($stats['memory']));
     }
 
-    public function testQueueItems()
+    public function testQueueItems(): void
     {
         $logger = $this->prophesize(LoggerInterface::class);
         $statsManager = new StatsManager($logger->reveal());
@@ -90,7 +90,7 @@ class StatsManagerTest extends TestCase
         $this->assertEquals(100, array_values($stats['queues'])[1][1]);
     }
 
-    public function testWorkerStats()
+    public function testWorkerStats(): void
     {
         $logger = $this->prophesize(LoggerInterface::class);
         $statsManager = new StatsManager($logger->reveal());

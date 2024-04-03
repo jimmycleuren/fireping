@@ -20,39 +20,21 @@ class HttpGraph extends SmokeRrdGraph
 
         $file = $this->storage->getFilePath($device, $probe, $slavegroup);
         if (!$this->storage->fileExists($device, $file)) {
-            return file_get_contents(dirname(__FILE__)."/../../public/notfound.png");
+            return file_get_contents(__DIR__."/../../public/notfound.png");
         }
 
-        switch($type) {
-            case "response":
-                return $this->getResponseDetailGraph($device, $probe, $slavegroup, $start, $end, $debug);
-            case "latency":
-            default:
-                return $this->getLatencyDetailGraph($device, $probe, $slavegroup, $start, $end, $debug);
-        }
+        return match ($type) {
+            "response" => $this->getResponseDetailGraph($device, $probe, $slavegroup, $start, $end, $debug),
+            default => $this->getLatencyDetailGraph($device, $probe, $slavegroup, $start, $end, $debug),
+        };
     }
 
     protected function getResponseDetailGraph(Device $device, Probe $probe, SlaveGroup $slavegroup, $start = -3600, $end = null, $debug = false)
     {
-        $options = array(
-            "--slope-mode",
-            "--border=0",
-            "--start", $start,
-            "--end", $end,
-            "--title=".$device->getName(),
-            "--vertical-label=samples",
-            "--lower-limit=0",
-            "--upper-limit=".($probe->getSamples() + 1),
-            "--rigid",
-            "--width=1000",
-            "--height=200",
-            "--color=BACK".$_ENV['RRD_BACKGROUND']
-        );
+        $options = ["--slope-mode", "--border=0", "--start", $start, "--end", $end, "--title=".$device->getName(), "--vertical-label=samples", "--lower-limit=0", "--upper-limit=".($probe->getSamples() + 1), "--rigid", "--width=1000", "--height=200", "--color=BACK".$_ENV['RRD_BACKGROUND']];
 
         $datasources = $this->storage->getDatasources($device, $probe, $slavegroup);
-        $datasources = array_filter($datasources, function($value) {
-            return substr($value, 0, 4) === "code";
-        });
+        $datasources = array_filter($datasources, fn($value) => str_starts_with((string) $value, "code"));
 
         $codes = [];
         for ($i = 1; $i <= $probe->getSamples(); $i++) {
@@ -69,7 +51,7 @@ class HttpGraph extends SmokeRrdGraph
         //end dirty hack
 
         if(count($codes) == 0) {
-            return file_get_contents(dirname(__FILE__)."/../../public/notfound.png");
+            return file_get_contents(__DIR__."/../../public/notfound.png");
         }
 
         $options[] = "COMMENT:HTTP status codes\\n";

@@ -28,8 +28,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
      *
      * This works in combination with the providers.user.entity configuration in security.yaml.
      *
-     * @param UserInterface $user
-     * @param string $newEncodedPassword
      * @throws ORMException
      * @throws OptimisticLockException
      *

@@ -29,9 +29,7 @@ class DomainCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         $name = TextField::new('name');
-        $parent = AssociationField::new('parent')->formatValue(function (?string $value, Domain $entity) {
-            return null === $value ? null : $entity->getParentFqdn();
-        });
+        $parent = AssociationField::new('parent')->formatValue(fn(?string $value, Domain $entity) => null === $value ? null : $entity->getParentFqdn());
         $slavegroups = AssociationField::new('slavegroups');
         $probes = AssociationField::new('probes');
         $alertRules = AssociationField::new('alertRules');

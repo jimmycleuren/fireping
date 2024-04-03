@@ -31,7 +31,7 @@ class NavbarUserSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function onShowUser(ShowUserEvent $event)
+    public function onShowUser(ShowUserEvent $event): void
     {
         $event->setShowProfileLink(false);
 

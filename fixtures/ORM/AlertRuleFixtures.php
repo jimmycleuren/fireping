@@ -9,7 +9,7 @@ use Doctrine\Persistence\ObjectManager;
 
 class AlertRuleFixtures extends Fixture implements DependentFixtureInterface
 {
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         $alertrule = new AlertRule();
         $alertrule->setName('Alertrule 1');

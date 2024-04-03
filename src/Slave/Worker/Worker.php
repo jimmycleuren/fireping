@@ -8,10 +8,8 @@ use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Process\InputStream;
 use Symfony\Component\Process\Process;
 
-class Worker
+class Worker implements \Stringable
 {
-    private $manager;
-
     private $input;
 
     private $process;
@@ -24,8 +22,6 @@ class Worker
 
     private $callback;
 
-    private $logger;
-
     private $type;
 
     private $name = 'unknown';
@@ -34,10 +30,8 @@ class Worker
 
     private $lastTask = null;
 
-    public function __construct(WorkerManager $manager, KernelInterface $kernel, LoggerInterface $logger, int $timeout, int $idleTimeout)
+    public function __construct(private readonly WorkerManager $manager, KernelInterface $kernel, private readonly LoggerInterface $logger, int $timeout, int $idleTimeout)
     {
-        $this->manager = $manager;
-        $this->logger = $logger;
         $executable = $kernel->getProjectDir().'/bin/console';
         $environment = $kernel->getEnvironment();
         $this->process = Process::fromShellCommandline("exec php $executable app:probe:worker --env=$environment");
@@ -48,7 +42,7 @@ class Worker
         $this->process->setIdleTimeout($idleTimeout);
     }
 
-    public function start()
+    public function start(): void
     {
         $this->logger->info('Starting new worker.');
 
@@ -71,7 +65,7 @@ class Worker
         $this->name = '#'.$this->process->getPid();
     }
 
-    public function stop()
+    public function stop(): void
     {
         $this->process->stop(3, SIGINT);
         $this->receiveBuffer = null;
@@ -80,7 +74,7 @@ class Worker
         $this->executing = false;
     }
 
-    public function release()
+    public function release(): void
     {
         $this->receiveBuffer = '';
         $this->startTime = null;
@@ -89,7 +83,7 @@ class Worker
         $this->manager->release($this);
     }
 
-    public function send($data, $expectedRuntime, callable $callback)
+    public function send($data, $expectedRuntime, callable $callback): void
     {
         $this->executing = true;
         $this->startTime = microtime(true);
@@ -100,7 +94,7 @@ class Worker
         $this->input->write($data);
     }
 
-    public function loop()
+    public function loop(): void
     {
         if (null != $this->startTime && null != $this->expectedRuntime) {
             $actualRuntime = microtime(true) - $this->startTime;
@@ -116,9 +110,9 @@ class Worker
         $this->process->getIncrementalErrorOutput();
     }
 
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->name;
+        return (string) $this->name;
     }
 
     public function getType()
@@ -126,7 +120,7 @@ class Worker
         return $this->type;
     }
 
-    public function setType($type)
+    public function setType($type): void
     {
         $this->type = $type;
     }

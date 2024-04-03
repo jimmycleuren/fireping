@@ -45,7 +45,7 @@ class SlaveStatsRrdStorage
         return $this->path.$slave->getId().'/'.$type.'.rrd';
     }
 
-    public function store(Slave $slave, string $type, $timestamp, $data)
+    public function store(Slave $slave, string $type, $timestamp, $data): void
     {
         $path = $this->getFilePath($slave, $type);
 
@@ -80,7 +80,7 @@ class SlaveStatsRrdStorage
         foreach ($this->archives as $archive) {
             $options[] = sprintf(
                 'RRA:%s:0.5:%s:%s',
-                strtoupper($archive['function']),
+                strtoupper((string) $archive['function']),
                 $archive['steps'],
                 $archive['rows']
             );

@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class SymfonyProcessFactoryTest extends TestCase
 {
-    public function test()
+    public function test(): void
     {
         $factory = new SymfonyProcessFactory();
         $process = $factory->create(['echo', 'hello']);

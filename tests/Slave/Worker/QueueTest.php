@@ -11,13 +11,13 @@ use Prophecy\Argument;
 
 class QueueTest extends TestCase
 {
-    public function testQueueSameTimestamp()
+    public function testQueueSameTimestamp(): void
     {
-        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
+        $logger = $this->prophesize(\Psr\Log\LoggerInterface::class);
 
         $worker = $this->prophesize(Worker::class);
         $worker->__toString()->willReturn('name');
-        $worker->send(Argument::type('string'), Argument::type('integer'), Argument::any())->willReturn();
+        $worker->send(Argument::type('string'), Argument::type('integer'), Argument::any());
         //$worker->getPid()->willReturn(1234)->shouldBeCalledTimes(1);
 
         $workerManager = $this->prophesize(WorkerManager::class);
@@ -26,7 +26,7 @@ class QueueTest extends TestCase
 
         $statsManager = $this->prophesize(StatsManager::class);
 
-        $queue = new Queue($workerManager->reveal(), $statsManager->reveal(), 1, 'test', $logger->reveal());
+        $queue = new Queue($workerManager->reveal(), $statsManager->reveal(), 1, $logger->reveal());
 
         $queue->enqueue($this->getData(1, 1000, 10));
         $queue->enqueue($this->getData(1, 1000, 11));
@@ -49,13 +49,13 @@ class QueueTest extends TestCase
         $queue->loop();
     }
 
-    public function testQueue3Timestamps()
+    public function testQueue3Timestamps(): void
     {
-        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
+        $logger = $this->prophesize(\Psr\Log\LoggerInterface::class);
 
         $worker = $this->prophesize(Worker::class);
         $worker->__toString()->willReturn('name');
-        $worker->send(Argument::type('string'), Argument::type('integer'), Argument::any())->willReturn();
+        $worker->send(Argument::type('string'), Argument::type('integer'), Argument::any());
         //$worker->getPid()->willReturn(1234)->shouldBeCalledTimes(3);
 
         $workerManager = $this->prophesize(WorkerManager::class);
@@ -64,7 +64,7 @@ class QueueTest extends TestCase
 
         $statsManager = $this->prophesize(StatsManager::class);
 
-        $queue = new Queue($workerManager->reveal(), $statsManager->reveal(), 1, 'test', $logger->reveal());
+        $queue = new Queue($workerManager->reveal(), $statsManager->reveal(), 1, $logger->reveal());
 
         $queue->enqueue($this->getData(1, 1000, 10));
         $queue->enqueue($this->getData(1, 1000, 11));

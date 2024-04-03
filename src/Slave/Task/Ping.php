@@ -5,15 +5,11 @@ declare(strict_types=1);
 namespace App\Slave\Task;
 
 use App\Slave\OutputFormatter\PingOutputFormatter;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Process\ExecutableFinder;
 
 class Ping implements TaskInterface
 {
     public const MAX_TARGETS = 1e4;
-
-    private $logger;
-    private $formatter;
 
     private $mappedArguments = [
         'samples' => '-C',
@@ -27,10 +23,8 @@ class Ping implements TaskInterface
     private $arguments = [];
     private $targets = [];
 
-    public function __construct(LoggerInterface $logger, PingOutputFormatter $formatter)
+    public function __construct(private readonly PingOutputFormatter $formatter)
     {
-        $this->logger = $logger;
-        $this->formatter = $formatter;
     }
 
     public function setArgs(array $args): void
@@ -118,9 +112,7 @@ class Ping implements TaskInterface
 
     private function buildTargets(): string
     {
-        $ipAddresses = array_map(function ($device) {
-            return $device['ip'];
-        }, $this->targets);
+        $ipAddresses = array_map(fn($device) => $device['ip'], $this->targets);
 
         return implode(' ', $ipAddresses);
     }

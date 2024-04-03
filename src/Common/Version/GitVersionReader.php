@@ -9,19 +9,8 @@ use Psr\Log\LoggerInterface;
 
 class GitVersionReader implements VersionReaderInterface
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-    /**
-     * @var ProcessFactoryInterface
-     */
-    private $factory;
-
-    public function __construct(LoggerInterface $logger, ProcessFactoryInterface $factory)
+    public function __construct(private readonly LoggerInterface $logger, private readonly ProcessFactoryInterface $factory)
     {
-        $this->logger = $logger;
-        $this->factory = $factory;
     }
 
     public function version(): Version

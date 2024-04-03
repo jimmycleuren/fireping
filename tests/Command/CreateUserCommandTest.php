@@ -28,7 +28,7 @@ class CreateUserCommandTest extends KernelTestCase
         $this->em = $container->get('doctrine')->getManager();
     }
 
-    public function testExecute()
+    public function testExecute(): void
     {
         $cleanUpCommand = new CreateUserCommand(
             $this->em,
@@ -44,9 +44,7 @@ class CreateUserCommandTest extends KernelTestCase
 
         $commandTester->setInputs(['tester', 'pass', 'a@b.c', '1']);
 
-        $commandTester->execute(array(
-            'command'  => $command->getName(),
-        ));
+        $commandTester->execute(['command'  => $command->getName()]);
 
         $user = $this->em->getRepository(User::class)->findOneByUsername('tester');
 

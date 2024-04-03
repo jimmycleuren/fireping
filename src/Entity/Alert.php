@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity(repositoryClass="App\Repository\AlertRepository")
  * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  */
-class Alert
+class Alert implements \Stringable
 {
     /**
      * @var int
@@ -224,7 +224,7 @@ class Alert
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->alertRule->getName().' on '.$this->device->getName().' from '.$this->slaveGroup->getName();
     }

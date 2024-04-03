@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ApiResource
  * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  */
-class ProbeArchive
+class ProbeArchive implements \Stringable
 {
     /**
      * @var int
@@ -118,7 +118,7 @@ class ProbeArchive
         $this->probe = $probe;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->function.'-'.$this->steps.'-'.$this->rows;
     }

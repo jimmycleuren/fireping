@@ -4,23 +4,15 @@ declare(strict_types=1);
 
 namespace App\Slave\Task;
 
-use Psr\Log\LoggerInterface;
-
 final class TaskFactory
 {
-    private $logger;
 
     /**
      * @var TaskInterface[]
      */
     private $types = [];
 
-    public function __construct(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    public function addTaskType(TaskInterface $task)
+    public function addTaskType(TaskInterface $task): void
     {
         $this->types[$task->getType()] = $task;
     }

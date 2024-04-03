@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ApiResource(attributes={"normalization_context"={"groups"={"slavegroup"}}})
  * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  */
-class SlaveGroup
+class SlaveGroup implements \Stringable
 {
     /**
      * @var int
@@ -38,17 +38,19 @@ class SlaveGroup
     private $name;
 
     /**
+     * @var ArrayCollection<int, Device>
      * @ORM\ManyToMany(targetEntity="Device", mappedBy="slavegroups")
      */
     private $devices;
 
     /**
+     * @var ArrayCollection<int, Domain>
      * @ORM\ManyToMany(targetEntity="Domain", mappedBy="slavegroups")
      */
     private $domains;
 
     /**
-     * @var ArrayCollection
+     * @var ArrayCollection<int, Slave>
      * @ORM\OneToMany(targetEntity="Slave", mappedBy="slavegroup")
      * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
      * @ORM\OrderBy({"id" = "asc"})
@@ -127,7 +129,7 @@ class SlaveGroup
     /**
      * Remove device.
      */
-    public function removeDevice(\App\Entity\Device $device)
+    public function removeDevice(\App\Entity\Device $device): void
     {
         $this->devices->removeElement($device);
     }
@@ -157,7 +159,7 @@ class SlaveGroup
     /**
      * Remove domain.
      */
-    public function removeDomain(\App\Entity\Domain $domain)
+    public function removeDomain(\App\Entity\Domain $domain): void
     {
         $this->domains->removeElement($domain);
     }
@@ -172,7 +174,7 @@ class SlaveGroup
         return $this->domains;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->name;
     }
@@ -192,7 +194,7 @@ class SlaveGroup
     /**
      * Remove slave.
      */
-    public function removeSlave(\App\Entity\Slave $slave)
+    public function removeSlave(\App\Entity\Slave $slave): void
     {
         $this->slaves->removeElement($slave);
     }

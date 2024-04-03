@@ -8,7 +8,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 class TracerouteArgumentsType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         // Construct your arguments form here.
     }

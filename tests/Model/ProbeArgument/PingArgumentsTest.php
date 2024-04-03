@@ -12,7 +12,7 @@ class PingArgumentsTest extends TestCase
     /**
      * @dataProvider dataProvider
      */
-    public function testDefault(string $json, array $expected)
+    public function testDefault(string $json, array $expected): void
     {
         $arguments = PingArguments::fromJsonString($json);
         self::assertEquals($expected, $arguments->asArray());

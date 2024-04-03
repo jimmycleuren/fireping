@@ -29,9 +29,7 @@ class Instruction
 
     public function prepareInstruction(array $devices): array
     {
-        $serializedDevices = array_map(function (Device $device) {
-            return $device->asArray();
-        }, $devices);
+        $serializedDevices = array_map(fn(Device $device) => $device->asArray(), $devices);
 
         return $this->probe->getConfiguration($serializedDevices);
     }

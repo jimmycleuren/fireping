@@ -13,15 +13,14 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class CleanupAlertCommandTest extends KernelTestCase
 {
-    public function testExecute()
+    public function testExecute(): void
     {
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $logger = $this->prophesize(LoggerInterface::class);
         $service = $this->prophesize(CleanupAlert::class);
 
-        $application->add(new CleanupAlertCommand($logger->reveal(), $service->reveal()));
+        $application->add(new CleanupAlertCommand($service->reveal()));
 
         $command = $application->find('app:cleanupAlert');
         $commandTester = new CommandTester($command);

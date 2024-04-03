@@ -9,11 +9,9 @@ use Psr\Log\LoggerInterface;
 
 class PingTest extends TestCase
 {
-    public function testPingUnorderedArguments()
+    public function testPingUnorderedArguments(): void
     {
-        $logger = $this->prophesize(LoggerInterface::class)->reveal();
-
-        $ping = new Ping($logger, new PingOutputFormatter());
+        $ping = new Ping(new PingOutputFormatter());
         $ping->setArgs([
             'delay_execution' => 0,
             'targets' => [
@@ -30,10 +28,9 @@ class PingTest extends TestCase
         $this->assertEquals(1, count($result[1]));
     }
 
-    public function testMissingArgument()
+    public function testMissingArgument(): void
     {
-        $logger = $this->prophesize(LoggerInterface::class)->reveal();
-        $ping = new Ping($logger, new PingOutputFormatter());
+        $ping = new Ping(new PingOutputFormatter());
         $ping->setArgs([
             'delay_execution' => 0,
             'targets' => [
@@ -49,10 +46,9 @@ class PingTest extends TestCase
         $ping->execute();
     }
 
-    public function testNoTargets()
+    public function testNoTargets(): void
     {
-        $logger = $this->prophesize(LoggerInterface::class)->reveal();
-        $ping = new Ping($logger, new PingOutputFormatter());
+        $ping = new Ping(new PingOutputFormatter());
 
         $this->expectException(\Exception::class);
 
@@ -68,10 +64,9 @@ class PingTest extends TestCase
         $ping->execute();
     }
 
-    public function testGetType()
+    public function testGetType(): void
     {
-        $logger = $this->prophesize(LoggerInterface::class)->reveal();
-        $ping = new Ping($logger, new PingOutputFormatter());
+        $ping = new Ping(new PingOutputFormatter());
 
         $this->assertEquals('ping', $ping->getType());
     }

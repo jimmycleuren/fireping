@@ -12,11 +12,11 @@ use Prophecy\Argument;
 
 class HttpTest extends TestCase
 {
-    public function testNoArguments()
+    public function testNoArguments(): void
     {
-        $guzzle = $this->prophesize('GuzzleHttp\\Client');
+        $guzzle = $this->prophesize(\GuzzleHttp\Client::class);
         $guzzle->post('url', Argument::any())->shouldBeCalledTimes(0);
-        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
+        $logger = $this->prophesize(\Psr\Log\LoggerInterface::class);
 
         $http = new Http($guzzle->reveal(), $logger->reveal());
 
@@ -35,11 +35,11 @@ class HttpTest extends TestCase
         $http->clear($alert);
     }
 
-    public function testException()
+    public function testException(): void
     {
-        $guzzle = $this->prophesize('GuzzleHttp\\Client');
+        $guzzle = $this->prophesize(\GuzzleHttp\Client::class);
         $guzzle->post('url', Argument::any())->shouldBeCalledTimes(2)->willThrow(new \Exception('test'));
-        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
+        $logger = $this->prophesize(\Psr\Log\LoggerInterface::class);
         $logger->error(Argument::type('string'))->shouldBeCalledTimes(2);
 
         $http = new Http($guzzle->reveal(), $logger->reveal());
@@ -60,11 +60,11 @@ class HttpTest extends TestCase
         $http->clear($alert);
     }
 
-    public function testTrigger()
+    public function testTrigger(): void
     {
-        $guzzle = $this->prophesize('GuzzleHttp\\Client');
+        $guzzle = $this->prophesize(\GuzzleHttp\Client::class);
         $guzzle->post('url', Argument::any())->shouldBeCalledTimes(1);
-        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
+        $logger = $this->prophesize(\Psr\Log\LoggerInterface::class);
 
         $http = new Http($guzzle->reveal(), $logger->reveal());
         $http->setParameters(['url' => 'url']);
@@ -83,11 +83,11 @@ class HttpTest extends TestCase
         $http->trigger($alert);
     }
 
-    public function testClear()
+    public function testClear(): void
     {
-        $guzzle = $this->prophesize('GuzzleHttp\\Client');
+        $guzzle = $this->prophesize(\GuzzleHttp\Client::class);
         $guzzle->post('url', Argument::any())->shouldBeCalledTimes(1);
-        $logger = $this->prophesize('Psr\\Log\\LoggerInterface');
+        $logger = $this->prophesize(\Psr\Log\LoggerInterface::class);
 
         $http = new Http($guzzle->reveal(), $logger->reveal());
         $http->setParameters(['url' => 'url']);

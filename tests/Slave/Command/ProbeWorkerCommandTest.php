@@ -11,13 +11,13 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class ProbeWorkerCommandTest extends KernelTestCase
 {
-    public function testExecute()
+    public function testExecute(): void
     {
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
         $logger = self::$container->get(LoggerInterface::class);
-        $factory = new TaskFactory($logger);
+        $factory = new TaskFactory();
 
         $application->add(new ProbeWorkerCommand($logger, $factory));
 

@@ -25,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * })
  * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  */
-class Device
+class Device implements \Stringable
 {
     /**
      * @var int
@@ -66,6 +66,7 @@ class Device
     private $ip;
 
     /**
+     * @var  ArrayCollection<int, SlaveGroup>
      * @ORM\ManyToMany(targetEntity="SlaveGroup", inversedBy="devices", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="device_slavegroups",
      *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id", onDelete="CASCADE")},
@@ -78,6 +79,7 @@ class Device
     private $slavegroups;
 
     /**
+     * @var  ArrayCollection<int, Probe>
      * @ORM\ManyToMany(targetEntity="Probe", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="device_probes",
      *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id", onDelete="CASCADE")},
@@ -90,6 +92,7 @@ class Device
     private $probes;
 
     /**
+     * @var  ArrayCollection<int, AlertRule>
      * @ORM\ManyToMany(targetEntity="AlertRule", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="device_alert_rules",
      *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id", onDelete="CASCADE")},
@@ -102,6 +105,7 @@ class Device
     private $alertRules;
 
     /**
+     * @var  ArrayCollection<int, AlertDestination>
      * @ORM\ManyToMany(targetEntity="AlertDestination", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="device_alert_destinations",
      *      joinColumns={@ORM\JoinColumn(name="device_id", referencedColumnName="id", onDelete="CASCADE")},
@@ -113,6 +117,7 @@ class Device
     private $alertDestinations;
 
     /**
+     * @var  ArrayCollection<int, Alert>
      * @ORM\OneToMany(targetEntity="Alert", mappedBy="device", fetch="EXTRA_LAZY")
      */
     private $alerts;
@@ -214,7 +219,6 @@ class Device
     /**
      * Set domain.
      *
-     * @param \App\Entity\Domain $domain
      *
      * @return Device
      * @Groups({"device"})
@@ -252,7 +256,7 @@ class Device
     /**
      * Remove slavegroup.
      */
-    public function removeSlaveGroup(\App\Entity\SlaveGroup $slavegroup)
+    public function removeSlaveGroup(\App\Entity\SlaveGroup $slavegroup): void
     {
         $this->slavegroups->removeElement($slavegroup);
     }
@@ -304,7 +308,7 @@ class Device
     /**
      * Remove probe.
      */
-    public function removeProbe(\App\Entity\Probe $probe)
+    public function removeProbe(\App\Entity\Probe $probe): void
     {
         $this->probes->removeElement($probe);
     }
@@ -356,7 +360,7 @@ class Device
     /**
      * Remove alert.
      */
-    public function removeAlertRule(\App\Entity\AlertRule $alertRule)
+    public function removeAlertRule(\App\Entity\AlertRule $alertRule): void
     {
         $this->alertRules->removeElement($alertRule);
     }
@@ -408,7 +412,7 @@ class Device
     /**
      * Remove alert destination.
      */
-    public function removeAlertDestination(\App\Entity\AlertDestination $alertDestination)
+    public function removeAlertDestination(\App\Entity\AlertDestination $alertDestination): void
     {
         $this->alertDestinations->removeElement($alertDestination);
     }
@@ -469,7 +473,7 @@ class Device
         return $this->alerts;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->name;
     }
@@ -489,7 +493,7 @@ class Device
     /**
      * Remove alert.
      */
-    public function removeAlert(\App\Entity\Alert $alert)
+    public function removeAlert(\App\Entity\Alert $alert): void
     {
         $this->alerts->removeElement($alert);
     }

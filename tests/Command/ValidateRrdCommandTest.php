@@ -9,12 +9,12 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class ValidateRrdCommandTest extends KernelTestCase
 {
-    public function testExecute()
+    public function testExecute(): void
     {
         $kernel = self::bootKernel();
         $application = new Application($kernel);
 
-        $storage = $this->prophesize("App\Storage\RrdStorage");
+        $storage = $this->prophesize(\App\Storage\RrdStorage::class);
 
         $application->add(new ValidateRrdCommand($kernel->getContainer()->get('doctrine')->getManager(), $storage->reveal()));
 

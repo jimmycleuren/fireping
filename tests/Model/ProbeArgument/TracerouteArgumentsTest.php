@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class TracerouteArgumentsTest extends TestCase
 {
-    public function testDefault()
+    public function testDefault(): void
     {
         $arguments = NullArguments::fromJsonString('{}');
         self::assertSame([], $arguments->asArray());

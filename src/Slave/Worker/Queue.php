@@ -10,26 +10,16 @@ class Queue
 {
     private $queue;
     private $lock;
-    private $slaveName;
     private $current = null;
     private $worker;
-    private $logger;
-    private $id;
-    private $workerManager;
-    private $statsManager;
     private $targetsPerPacket = 100;
 
-    public function __construct(WorkerManager $workerManager, StatsManager $statsManager, int $id, string $slaveName, LoggerInterface $logger)
+    public function __construct(private readonly WorkerManager $workerManager, private readonly StatsManager $statsManager, private readonly int $id, private readonly LoggerInterface $logger)
     {
-        $this->id = $id;
-        $this->logger = $logger;
-        $this->slaveName = $slaveName;
-        $this->workerManager = $workerManager;
-        $this->statsManager = $statsManager;
         $this->queue = new \SplQueue();
     }
 
-    public function enqueue($data)
+    public function enqueue($data): void
     {
         $this->queue->enqueue($data);
     }
@@ -37,7 +27,7 @@ class Queue
     /**
      * Loop is triggered every second.
      */
-    public function loop()
+    public function loop(): void
     {
         if (!$this->lock) {
             if (!$this->queue->isEmpty()) {
@@ -79,9 +69,9 @@ class Queue
         $this->statsManager->addQueueItems($this->id, $this->queue->count());
     }
 
-    private function handleResponse($type, $data)
+    private function handleResponse($type, $data): void
     {
-        $response = json_decode($data, true);
+        $response = json_decode((string) $data, true);
 
         if (!$response) {
             $this->logger->warning('COMMUNICATION_FLOW: Response from worker could not be decoded to JSON.');
@@ -136,17 +126,17 @@ class Queue
         return $first;
     }
 
-    private function reserveWorker()
+    private function reserveWorker(): void
     {
         try {
             $this->worker = $this->workerManager->getWorker('queue');
             $this->logger->info("Worker $this->worker reserved to post data for queue ".$this->id);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             $this->logger->critical('Could not reserve a worker to post data for queue '.$this->id);
         }
     }
 
-    private function retryPost()
+    private function retryPost(): void
     {
         if (isset($this->current)) {
             $this->logger->info('Retrying '.json_encode($this->current).' at a later date.');

@@ -9,7 +9,7 @@ use App\Exception\DirtyInputException;
 
 class TracerouteProcessor extends Processor
 {
-    public function storeResult(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data)
+    public function storeResult(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data): void
     {
         $datasources = [];
 
@@ -33,7 +33,7 @@ class TracerouteProcessor extends Processor
                         ++$failed;
                     }
                 }
-                $name = $hop.'_'.str_replace('.', '_', $details->ip);
+                $name = $hop.'_'.str_replace('.', '_', (string) $details->ip);
 
                 $datasources[$name.'l'] = $failed;
                 if (0 == $success) {

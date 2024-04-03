@@ -13,11 +13,9 @@ class Traceroute implements TaskInterface
     private $step = null;
     private $samples = null;
     private $targets = [];
-    private $logger = null;
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(private readonly LoggerInterface $logger)
     {
-        $this->logger = $logger;
     }
 
     public function execute(): array

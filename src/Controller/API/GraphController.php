@@ -48,9 +48,6 @@ class GraphController extends AbstractController
     }
 
     /**
-     * @param Device     $device
-     * @param Probe      $probe
-     * @param SlaveGroup $slavegroup
      *
      * @return Response
      *

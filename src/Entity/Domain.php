@@ -28,7 +28,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  * @UniqueEntity(fields={"parent", "name"}, errorPath="name", message="This name is already in use within this parent domain.", ignoreNull=false)
  */
-class Domain
+class Domain implements \Stringable
 {
     /**
      * @var int
@@ -61,6 +61,7 @@ class Domain
     private $name;
 
     /**
+     * @var  ArrayCollection<int, SlaveGroup>
      * @ORM\ManyToMany(targetEntity="SlaveGroup", inversedBy="domains", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="domain_slavegroups",
      *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id", onDelete="CASCADE")},
@@ -72,6 +73,7 @@ class Domain
     private $slavegroups;
 
     /**
+     * @var  ArrayCollection<int, Probe>
      * @ORM\ManyToMany(targetEntity="Probe", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="domain_probes",
      *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id", onDelete="CASCADE")},
@@ -83,6 +85,7 @@ class Domain
     private $probes;
 
     /**
+     * @var  ArrayCollection<int, AlertRule>
      * @ORM\ManyToMany(targetEntity="AlertRule", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="domain_alert_rules",
      *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id", onDelete="CASCADE")},
@@ -94,6 +97,7 @@ class Domain
     private $alertRules;
 
     /**
+     * @var  ArrayCollection<int, AlertDestination>
      * @ORM\ManyToMany(targetEntity="AlertDestination", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="domain_alert_destinations",
      *      joinColumns={@ORM\JoinColumn(name="domain_id", referencedColumnName="id", onDelete="CASCADE")},
@@ -184,7 +188,6 @@ class Domain
     /**
      * Set parent.
      *
-     * @param \App\Entity\Domain $parent
      *
      * @return Domain
      */
@@ -220,7 +223,7 @@ class Domain
     /**
      * Remove slavegroup.
      */
-    public function removeSlaveGroup(\App\Entity\SlaveGroup $slavegroup)
+    public function removeSlaveGroup(\App\Entity\SlaveGroup $slavegroup): void
     {
         $this->slavegroups->removeElement($slavegroup);
     }
@@ -250,7 +253,7 @@ class Domain
     /**
      * Remove probe.
      */
-    public function removeProbe(\App\Entity\Probe $probe)
+    public function removeProbe(\App\Entity\Probe $probe): void
     {
         $this->probes->removeElement($probe);
     }
@@ -280,7 +283,7 @@ class Domain
     /**
      * Remove alert rule.
      */
-    public function removeAlertRule(\App\Entity\AlertRule $alertRule)
+    public function removeAlertRule(\App\Entity\AlertRule $alertRule): void
     {
         $this->alertRules->removeElement($alertRule);
     }
@@ -310,7 +313,7 @@ class Domain
     /**
      * Remove alert destination.
      */
-    public function removeAlertDestination(\App\Entity\AlertDestination $alertDestination)
+    public function removeAlertDestination(\App\Entity\AlertDestination $alertDestination): void
     {
         $this->alertDestinations->removeElement($alertDestination);
     }
@@ -340,7 +343,7 @@ class Domain
     /**
      * Remove device.
      */
-    public function removeDevice(\App\Entity\Device $device)
+    public function removeDevice(\App\Entity\Device $device): void
     {
         $this->devices->removeElement($device);
     }
@@ -370,7 +373,7 @@ class Domain
     /**
      * Remove subdomain.
      */
-    public function removeSubdomain(\App\Entity\Domain $subdomain)
+    public function removeSubdomain(\App\Entity\Domain $subdomain): void
     {
         $this->subdomains->removeElement($subdomain);
     }
@@ -404,7 +407,7 @@ class Domain
         return $activeAlerts;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->name;
     }

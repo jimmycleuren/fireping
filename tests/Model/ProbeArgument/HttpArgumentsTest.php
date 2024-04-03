@@ -12,7 +12,7 @@ class HttpArgumentsTest extends TestCase
     /**
      * @dataProvider dataProvider
      */
-    public function testDefault(string $json, array $expected)
+    public function testDefault(string $json, array $expected): void
     {
         $arguments = HttpArguments::fromJsonString($json);
         self::assertSame($expected, $arguments->asArray());

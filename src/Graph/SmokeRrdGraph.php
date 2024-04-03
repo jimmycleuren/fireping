@@ -61,7 +61,7 @@ class SmokeRrdGraph extends RrdGraph
         }
 
         if (0 == $counter) {
-            return file_get_contents(dirname(__FILE__).'/../../public/notfound.png');
+            return file_get_contents(__DIR__.'/../../public/notfound.png');
         }
 
         $options[] = 'COMMENT:'.date("D M j H\\\:i\\\:s Y").' \\r';
@@ -87,7 +87,7 @@ class SmokeRrdGraph extends RrdGraph
 
         $file = $this->storage->getFilePath($device, $probe, $slavegroup);
         if (!$this->storage->fileExists($device, $file)) {
-            return file_get_contents(dirname(__FILE__).'/../../public/notfound.png');
+            return file_get_contents(__DIR__.'/../../public/notfound.png');
         }
 
         $max = 100000;

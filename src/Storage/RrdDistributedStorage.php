@@ -15,27 +15,23 @@ use Symfony\Component\Process\Process;
 
 class RrdDistributedStorage extends RrdCachedStorage
 {
-    private $entityManager;
     private $storageNodes;
-    private $storageNodeRepo;
     private $hash;
 
-    public function __construct($path, LoggerInterface $logger, StorageNodeRepository $storageNodeRepository, EntityManagerInterface $entityManager)
+    public function __construct($path, LoggerInterface $logger, private readonly StorageNodeRepository $storageNodeRepo, private readonly EntityManagerInterface $entityManager)
     {
         parent::__construct($path, $logger);
 
         $this->hash = new Flexihash();
-        $this->entityManager = $entityManager;
-        $this->storageNodeRepo = $storageNodeRepository;
 
-        $temp = $storageNodeRepository->findBy(['status' => StorageNode::STATUS_ACTIVE], ['id' => 'ASC']);
+        $temp = $this->storageNodeRepo->findBy(['status' => StorageNode::STATUS_ACTIVE], ['id' => 'ASC']);
         foreach ($temp as $node) {
             $this->storageNodes[$node->getId()] = $node;
             $this->hash->addTarget(''.$node->getId());
         }
     }
 
-    public function store(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data, bool $addNewSources = false, $daemon = null)
+    public function store(Device $device, Probe $probe, SlaveGroup $group, $timestamp, $data, bool $addNewSources = false, $daemon = null): void
     {
         $node = $this->getStorageNode($device);
         $daemon = $node->getIp().':42217';
@@ -112,7 +108,7 @@ class RrdDistributedStorage extends RrdCachedStorage
         return $node;
     }
 
-    private function copyRrdFiles(Device $device, StorageNode $from, StorageNode $to)
+    private function copyRrdFiles(Device $device, StorageNode $from, StorageNode $to): void
     {
         //first delete the folder in the destination node
         $process = new Process(['ssh', 'fireping@'.$to->getIp(), "'rm -rf /opt/fireping/var/rrd/".$device->getId()."'"]);
@@ -187,9 +183,7 @@ class RrdDistributedStorage extends RrdCachedStorage
      */
     private function concatCollection($items, $path): array
     {
-        return array_map(function ($item) use ($path) {
-            return $this->concatPath($item, $path);
-        }, $items);
+        return array_map(fn($item) => $this->concatPath($item, $path), $items);
     }
 
     /**
@@ -201,7 +195,7 @@ class RrdDistributedStorage extends RrdCachedStorage
         return $path.$item;
     }
 
-    public function remove(array $items, string $path)
+    public function remove(array $items, string $path): void
     {
         $path = rtrim($path, '/').'/';
         $items = $this->concatCollection($items, $path);

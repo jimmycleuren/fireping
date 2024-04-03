@@ -7,7 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class AlertDestinationControllerTest extends WebTestCase
 {
-    public function testCollection()
+    public function testCollection(): void
     {
         $client = static::createClient();
         $userRepository = new UserRepository(static::$container->get('doctrine'));
@@ -23,7 +23,7 @@ class AlertDestinationControllerTest extends WebTestCase
         $this->assertJson($response->getContent());
     }
 
-    public function testAddRemove()
+    public function testAddRemove(): void
     {
         $client = static::createClient();
         $userRepository = new UserRepository(static::$container->get('doctrine'));
