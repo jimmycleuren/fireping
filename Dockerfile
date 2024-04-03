@@ -1,48 +1,62 @@
-# Use an official, minimal base image for better security and size
-FROM php:7.4.30-fpm-alpine
+FROM composer:2.7.1 AS composer
+FROM php:8.2.17-fpm AS base
 
 # Set environment variables
 ENV MODE=slave
 ENV DEV=false
-ENV PHP_MEMORY_LIMIT=128M
+ENV PHP_MEMORY_LIMIT="128M"
 
-# Create a non-root user for running the application
-RUN adduser -D -H -u 1000 fireping
+# Set user-related variables
+ENV USER_ID=1000
+ENV USER_NAME=fireping
+ENV USER_GROUP=0
 
-# Copy your application files into the container
-COPY files/composer.json /app/composer.json
-
-# Set the working directory
+# Set working directory
 WORKDIR /app
 
-# Copy configuration files (timezone and memory_limit)
-COPY files/timezone.ini /usr/local/etc/php/conf.d/timezone.ini
-COPY files/memory_limit.ini /usr/local/etc/php/conf.d/memory_limit.ini
+# Set user
+RUN set -ex && useradd -u $USER_ID -g $USER_GROUP $USER_NAME --home /app
 
-# Change permissions for the configuration files
-RUN chmod 644 /usr/local/etc/php/conf.d/timezone.ini
-RUN chmod 644 /usr/local/etc/php/conf.d/memory_limit.ini
+# Copy app to working directory
+COPY --chown=$USER_NAME:$USER_GROUP bin/console /app/bin/console
+COPY --chown=$USER_NAME:$USER_GROUP config/ /app/config
+COPY --chown=$USER_NAME:$USER_GROUP migrations/ /app/migrations
+COPY --chown=$USER_NAME:$USER_GROUP src/ /app/src
+COPY --chown=$USER_NAME:$USER_GROUP public/ /app/public
+COPY --chown=$USER_NAME:$USER_GROUP templates/ /app/templates
+COPY --chown=$USER_NAME:$USER_GROUP LICENSE .env composer.json composer.lock symfony.lock /app/
 
-# Install necessary packages and remove cache to reduce image size
-RUN apk --no-cache add make g++ zlib-dev pkgconfig autoconf fping zip git rrdtool-dev librrd && \
-    apk --no-cache add --virtual .build-deps procps dos2unix && \
-    docker-php-ext-install pcntl pdo_mysql && \
-    pecl install rrd xdebug && \
-    docker-php-ext-enable rrd && \
-    php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer && \
-    if [ "$DEV" = "true" ] ; then \
-        composer install --verbose --prefer-dist --optimize-autoloader --no-scripts --no-suggest ; else \
-        composer install --verbose --prefer-dist --no-dev --optimize-autoloader --no-scripts --no-suggest ; fi
+# Copy PHP configuration files
+COPY --chown=$USER_NAME:$USER_GROUP docker/timezone.ini docker/memory_limit.ini /usr/local/etc/php/conf.d/
 
-ADD files/entrypoint.sh /usr/local/bin/
+# Copy Composer files
+COPY --chown=$USER_NAME:$USER_GROUP --from=composer /usr/bin/composer /usr/bin/composer
 
-RUN dos2unix /usr/local/bin/entrypoint.sh && \
-    chmod +x /usr/local/bin/entrypoint.sh && \
-    apk del .build-deps && \
-    rm -rf /var/cache/apk/*
+# Copy entrypoint script
+COPY --chown=$USER_NAME:$USER_GROUP docker/entrypoint.sh /usr/local/bin/
 
-# Drop root privileges for better security
-# USER fireping
+RUN chmod 755 /usr/local/etc/php/conf.d/timezone.ini \
+    && chmod 755 /usr/local/etc/php/conf.d/memory_limit.ini \
+    && chmod +x /usr/local/bin/entrypoint.sh \
+    && apt-get update \
+    && apt-get install --no-install-recommends -y fping unzip libzip-dev git rrdtool librrd-dev procps dos2unix \
+    && apt-get purge \
+    && rm -rf /var/lib/apt/lists/* \
+    && dos2unix /usr/local/bin/entrypoint.sh \
+    && docker-php-ext-install zip pcntl pdo_mysql \
+    && pecl install rrd \
+    && docker-php-ext-enable rrd \
+    && if [ "$DEV" = "true" ] ; then \
+        composer install --no-ansi --no-interaction --no-progress --verbose --prefer-dist --optimize-autoloader --no-scripts ; \
+       else \
+        composer install --no-ansi --no-interaction --no-progress --verbose --prefer-dist --no-dev --optimize-autoloader --no-scripts ; \
+       fi \
+    && composer clear-cache \
+    && rm -rf /usr/bin/composer /root/.composer \
+    && mkdir -p /app/var/cache/slave \
+    && chown -R $USER_NAME:$USER_GROUP /app/
 
-# Specify the entrypoint
+# Switch user
+USER $USER_ID
+
 ENTRYPOINT ["entrypoint.sh"]
