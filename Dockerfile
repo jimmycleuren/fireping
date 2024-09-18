@@ -1,4 +1,4 @@
-FROM php:8.2.22-fpm
+FROM php:8.2.23-fpm
 
 ENV MODE slave
 ENV DEV false
