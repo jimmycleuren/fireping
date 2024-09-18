@@ -106,7 +106,7 @@ jobs:
       - name: Run phpunit
         run: ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: artifact
