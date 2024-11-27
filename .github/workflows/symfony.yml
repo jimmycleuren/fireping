@@ -54,7 +54,7 @@ jobs:
         run: docker run -d -p 127.0.0.1:42217:42217 --name rrdcached -v /tmp/fireping/rrd:/data/db -e TZ="Europe/Paris" -e PUID=$(id -u $(whoami)) -e PGID=$(id -g $(whoami)) crazymax/rrdcached
 
       - name: Install symfony
-        run: export PATH="$HOME/.symfony/bin:$PATH" ; if symfony self:version; then symfony self:update --yes ; else wget https://get.symfony.com/cli/installer -O - | bash ; fi
+        run: export PATH="$HOME/.symfony5/bin:$PATH" ; if symfony self:version; then symfony self:update --yes ; else wget https://get.symfony.com/cli/installer -O - | bash ; fi
 
       - uses: actions/checkout@v2
 
@@ -86,16 +86,8 @@ jobs:
       - name: Lint container
         run: ./bin/console lint:container
 
-      - name: Set up Symfony path
-        run: export PATH="$HOME/.symfony5/bin:$PATH"
-
-      - name: Check Symfony Security
-        id: security_check
-        run: symfony check:security || echo "::warning::Security check failed"
-
-      - name: Continue execution
-        if: ${{ steps.security_check.outcome == 'success' }}
-        run: echo "Security check succeeded"
+      - name: Check security
+        run: export PATH="$HOME/.symfony5/bin:$PATH" ; symfony check:security
 
       - name: Check doctrine mapping
         run: ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction
