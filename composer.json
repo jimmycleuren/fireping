@@ -51,7 +51,7 @@
         "symfony/property-info": "^5.0",
         "symfony/proxy-manager-bridge": "^5.0",
         "symfony/security-bundle": "^5.0",
-        "symfony/serializer": "^5.0",
+        "symfony/serializer": "^6.3",
         "symfony/swiftmailer-bundle": "^3.2",
         "symfony/translation": "^5.0",
         "symfony/twig-bundle": "^5.0",
