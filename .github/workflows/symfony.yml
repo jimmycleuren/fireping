@@ -51,7 +51,7 @@ jobs:
           redis-version: 6
 
       - name: Fix file permissions
-        run: chmod 777 /tmp/fireping/rrd
+        run: mkdir -p /tmp/fireping/rrd &&chmod 777 /tmp/fireping/rrd
 
       - name: Start rrdcached
         run: docker run -d -p 127.0.0.1:42217:42217 --name rrdcached -v /tmp/fireping/rrd:/data/db -e TZ="Europe/Paris" -e PUID=$(id -u $(whoami)) -e PGID=$(id -g $(whoami)) crazymax/rrdcached
