@@ -22,7 +22,7 @@ class Cache
     {
         $key = $device->getId().'-'.$probe->getId().'-'.$group->getId().'-'.$key;
         $cacheItem = $this->cache->getItem($key);
-        $cacheItem->expiresAfter($probe->getStep() + 10);
+        $cacheItem->expiresAfter($probe->getStep() * 1.5);
         $cacheItem->set($value);
         $this->cache->save($cacheItem);
     }
