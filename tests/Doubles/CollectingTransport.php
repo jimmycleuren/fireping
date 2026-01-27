@@ -17,7 +17,6 @@ class CollectingTransport implements TransportInterface
     {
         $sentMessage = new SentMessage($message, $envelope ?? Envelope::create($message));
         $this->messages[] = $sentMessage;
-        
         return $sentMessage;
     }
 
