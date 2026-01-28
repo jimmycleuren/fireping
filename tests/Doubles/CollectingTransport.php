@@ -13,7 +13,7 @@ class CollectingTransport implements TransportInterface
 {
     private array $messages = [];
 
-    public function send(RawMessage $message, Envelope $envelope = null): ?SentMessage
+    public function send(RawMessage $message, ?Envelope $envelope = null): ?SentMessage
     {
         $sentMessage = new SentMessage($message, $envelope ?? Envelope::create($message));
         $this->messages[] = $sentMessage;
