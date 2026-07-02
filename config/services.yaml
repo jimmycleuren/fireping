@@ -40,6 +40,10 @@ services:
         arguments: ["@eight_points_guzzle.client.alert", "@monolog.logger"]
         public: true
 
+    App\AlertDestination\Gotify:
+        arguments: ["@eight_points_guzzle.client.alert", "@monolog.logger"]
+        public: true
+
     App\AlertDestination\Mail:
         arguments: ["@swiftmailer.mailer.default", "@monolog.logger", "@twig", "%env(MAILER_FROM)%"]
         public: true
