@@ -13,9 +13,9 @@ abstract class AlertDestinationInterface
     protected function getAlertMessage(Alert $alert)
     {
         if ($alert->getActive()) {
-            return $alert->getAlertRule()->getMessageDown().': '.$alert->getDevice()->getName().' from '.$alert->getSlaveGroup()->getName();
+            return '🔴 '.$alert->getAlertRule()->getMessageDown().': '.$alert->getDevice()->getName().' from '.$alert->getSlaveGroup()->getName();
         } else {
-            return $alert->getAlertRule()->getMessageUp().': '.$alert->getDevice()->getName().' from '.$alert->getSlaveGroup()->getName();
+            return '🟢 '.$alert->getAlertRule()->getMessageUp().': '.$alert->getDevice()->getName().' from '.$alert->getSlaveGroup()->getName();
         }
     }
 
