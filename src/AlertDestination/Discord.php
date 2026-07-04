@@ -28,15 +28,15 @@ class Discord extends AlertDestinationInterface
 
     public function trigger(Alert $alert)
     {
-        return $this->send($alert, 16728374, '🔴');
+        return $this->send($alert, 16728374);
     }
 
     public function clear(Alert $alert)
     {
-        return $this->send($alert, 3066944, '🟢');
+        return $this->send($alert, 3066944);
     }
 
-    protected function send(Alert $alert, int $color, string $dot)
+    protected function send(Alert $alert, int $color)
     {
         if (!$this->url) {
             return false;
@@ -46,7 +46,7 @@ class Discord extends AlertDestinationInterface
                 'username' => 'fireping',
                 'embeds' => [
                     [
-                        'description' => $dot.' '.$this->getAlertMessage($alert),
+                        'description' => $this->getAlertMessage($alert),
                         'color' => $color,
                     ],
                 ],
