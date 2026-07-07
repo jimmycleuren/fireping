@@ -7,7 +7,7 @@ ENV PHP_MEMORY_LIMIT="128M"
 ADD . /app
 
 RUN apt-get update
-RUN apt-get install -y fping zip git rrdtool librrd-dev procps dos2unix
+RUN apt-get install -y fping zip git rrdtool librrd-dev procps dos2unix ca-certificates && update-ca-certificates
 
 WORKDIR /app
 
