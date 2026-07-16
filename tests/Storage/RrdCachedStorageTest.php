@@ -5,6 +5,7 @@ namespace App\Tests\Storage;
 use App\Entity\Device;
 use App\Entity\Probe;
 use App\Entity\SlaveGroup;
+use App\Exception\RrdException;
 use App\Storage\RrdCachedStorage;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -45,6 +46,29 @@ class RrdCachedStorageTest extends TestCase
         $datasources = $storage->getDatasources($device, $probe, $group, $_ENV['RRDCACHED_TEST'] ?? '127.0.0.1:42217');
 
         $this->assertEquals(['median', 'loss'], $datasources);
+    }
+
+    public function testCreateFails(): void
+    {
+        $this->expectException(RrdException::class);
+        $this->expectExceptionMessage('-1 RRD Error: you must define at least one Data Source');
+        $logger = $this->prophesize(LoggerInterface::class)->reveal();
+
+        $path = realpath('/tmp/fireping/rrd').'/';
+
+        $storage = new RrdCachedStorage($path, $logger);
+
+        $device = new Device();
+        $device->setId(3);
+
+        $probe = new Probe();
+        $probe->setId(1);
+        $probe->setStep(60);
+
+        $group = new SlaveGroup();
+        $group->setId($this->slaveGroupId);
+
+        $storage->store($device, $probe, $group, 0, [], true, $_ENV['RRDCACHED_TEST'] ?? '127.0.0.1:42217');
     }
 
     public function testUpdate(): void
