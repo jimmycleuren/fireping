@@ -1,4 +1,4 @@
-FROM php:8.2.27-fpm
+FROM php:8.2.32-fpm-trixie
 
 ENV MODE slave
 ENV DEV false
