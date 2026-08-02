@@ -4,6 +4,7 @@ namespace App\Tests\Command;
 
 use App\Command\CleanupCommand;
 use App\Services\CleanupService;
+use App\Storage\SlaveStatsRrdStorage;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -57,6 +58,9 @@ class CleanupCommandTest extends KernelTestCase
         //Check whether the irrelevant "device" is deleted
         $this->assertFalse($this->fileSystem->exists($this->dirPath.'/VeryFunnyFolder'));
 
+        //Slave statistics share the storage root but are not devices
+        $this->assertTrue($this->fileSystem->exists($this->dirPath.'/'.SlaveStatsRrdStorage::STORAGE_SUBDIRECTORY.'/1/ping.rrd'));
+
         //Check if probe 1 and 3 exists, and 2 is removed for Device 1
         $this->assertTrue($this->fileSystem->exists($this->dirPath.'/1/1'));
         $this->assertFalse($this->fileSystem->exists($this->dirPath.'/1/2'));
@@ -104,6 +108,10 @@ class CleanupCommandTest extends KernelTestCase
 
         //create an irrelevant folder
         $this->fileSystem->mkdir($this->dirPath.'/VeryFunnyFolder');
+
+        //slave statistics live alongside the per-device directories
+        $this->fileSystem->mkdir($this->dirPath.'/'.SlaveStatsRrdStorage::STORAGE_SUBDIRECTORY.'/1');
+        $this->fileSystem->touch($this->dirPath.'/'.SlaveStatsRrdStorage::STORAGE_SUBDIRECTORY.'/1/ping.rrd');
     }
 
     public function tearDown(): void

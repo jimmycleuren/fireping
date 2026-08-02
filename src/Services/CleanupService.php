@@ -6,6 +6,7 @@ use App\Entity\Device;
 use App\Storage\RrdCachedStorage;
 use App\Storage\RrdDistributedStorage;
 use App\Storage\RrdStorage;
+use App\Storage\SlaveStatsRrdStorage;
 use App\Storage\StorageFactory;
 use function count;
 use Doctrine\ORM\EntityManagerInterface;
@@ -60,13 +61,17 @@ class CleanupService
     public function cleanup(): void
     {
         $this->logger->info('Retrieving statistics...');
-        $this->setCurrentSituation();
+        if (!$this->setCurrentSituation()) {
+            return;
+        }
 
         $this->logger->info('Removing inactive devices...');
         $this->removeInactiveDevices();
 
         $this->logger->info('Updating statistics...');
-        $this->setCurrentSituation();
+        if (!$this->setCurrentSituation()) {
+            return;
+        }
 
         $this->logger->info('Removing inactive probes...');
         $this->removeInactiveProbes();
@@ -78,16 +83,25 @@ class CleanupService
     /**
      * This function paints a picture and sets variables
      * required for the cleanup.
+     *
+     * Returns false when the storage root could not be read, in which case
+     * the caller must not continue: acting on an empty listing would treat
+     * every device as inactive.
      */
-    private function setCurrentSituation(): void
+    private function setCurrentSituation(): bool
     {
         //create an array of existing directories
-        $this->storedDeviceIds = $this->storage->listItems($this->path);
+        $items = $this->storage->listItems($this->path);
 
-        if (null === $this->storedDeviceIds) {
-            $this->logger->info('No items found, directory is either clean or wrongly set');
-            exit;
+        if (null === $items) {
+            $this->logger->warning(sprintf('No items found in "%s", directory is either clean or wrongly configured', $this->path));
+
+            return false;
         }
+
+        //slave statistics share the storage root with the per-device
+        //directories, they are not devices and must never be cleaned up here
+        $this->storedDeviceIds = array_values(array_diff($items, [SlaveStatsRrdStorage::STORAGE_SUBDIRECTORY]));
 
         //get only the active devices based on previous result set
         $this->storedActiveDevices = $this->em->getRepository(Device::class)->findBy(['id' => $this->storedDeviceIds]);
@@ -99,6 +113,8 @@ class CleanupService
         //Do the comparison to get the inactive devices
         $this->activeDeviceIds = array_column($activeDevices, 'id');
         $this->inactiveDevices = array_diff($this->storedDeviceIds, $this->activeDeviceIds);
+
+        return true;
     }
 
     protected function setActiveSlaveGroups(): void

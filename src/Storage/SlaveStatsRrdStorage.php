@@ -11,6 +11,13 @@ use Symfony\Component\Process\Process;
 
 class SlaveStatsRrdStorage
 {
+    /**
+     * Subdirectory of the rrd storage root holding slave statistics.
+     * It lives alongside the numeric per-device directories, so anything
+     * walking that root has to skip it.
+     */
+    public const STORAGE_SUBDIRECTORY = 'slaves';
+
     protected $logger;
     protected $path;
 
@@ -27,7 +34,7 @@ class SlaveStatsRrdStorage
     public function __construct(KernelInterface $kernel, LoggerInterface $logger)
     {
         $this->logger = $logger;
-        $this->path = $kernel->getProjectDir().'/var/rrd/slaves/';
+        $this->path = $kernel->getProjectDir().'/var/rrd/'.self::STORAGE_SUBDIRECTORY.'/';
     }
 
     public function getFilePath(Slave $slave, $type)

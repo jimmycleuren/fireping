@@ -1,0 +1,8 @@
+# CleanupService walks the same directory the storage classes write to, so
+# keep this derived from storage.path rather than repeating the path here.
+#
+# This has to live under config/packages/ and not in config/services.yaml:
+# Kernel::configureContainer() imports services.yaml last, so a definition
+# there would override the per-environment overrides in packages/<env>/.
+parameters:
+    rrd_storage_path: '%storage.path%'
