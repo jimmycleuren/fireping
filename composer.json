@@ -56,7 +56,7 @@
         "symfony/translation": "^5.0",
         "symfony/twig-bundle": "^5.0",
         "symfony/validator": "^5.0",
-        "twig/twig": "^3.0.3"
+        "twig/twig": "^3.8.0"
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.0",
