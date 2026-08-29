@@ -1,0 +1,8 @@
+Action: {{ action }}
+
+Device: {{ alert.device.name }}
+Domain: {{ alert.device.domain }}
+Alert Rule: {{ alert.alertRule.name }}
+Slave Group: {{ alert.slaveGroup.name }}
+
+Message: {% if action == 'ALERT' %}{{ alert.alertRule.messageDown }}{% else %}{{ alert.alertRule.messageUp }}{% endif %}

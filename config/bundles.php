@@ -14,7 +14,6 @@ return [
     Snc\RedisBundle\SncRedisBundle::class => ['all' => true, 'slave' => false],
     Symfony\Bundle\MonologBundle\MonologBundle::class => ['all' => true],
     Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle::class => ['all' => true],
-    Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle::class => ['all' => true],
     Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle::class => ['dev' => true, 'test' => true],
     Symfony\Bundle\MakerBundle\MakerBundle::class => ['dev' => true],
     KevinPapst\AdminLTEBundle\AdminLTEBundle::class => ['all' => true],

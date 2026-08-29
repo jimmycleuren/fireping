@@ -11,13 +11,13 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Utils;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\Test\TestLogger;
+use Psr\Log\NullLogger;
 
 class PublishResultsTest extends TestCase
 {
     public function testGetType(): void
     {
-        $logger = new TestLogger();
+        $logger = new NullLogger();
 
         $client = new Client([
             'handler' => MockHandler::createWithMiddleware()
@@ -29,7 +29,7 @@ class PublishResultsTest extends TestCase
 
     public function testSetArgsDefaults(): void
     {
-        $logger = new TestLogger();
+        $logger = new NullLogger();
 
         $client = new Client([
             'handler' => MockHandler::createWithMiddleware()
@@ -45,7 +45,7 @@ class PublishResultsTest extends TestCase
 
     public function testSetArguments(): void
     {
-        $logger = new TestLogger();
+        $logger = new NullLogger();
 
         $client = new Client([
             'handler' => MockHandler::createWithMiddleware()
@@ -63,7 +63,7 @@ class PublishResultsTest extends TestCase
 
     public function testHandlesClientException(): void
     {
-        $logger = new TestLogger();
+        $logger = new NullLogger();
 
         $client = new Client([
             'handler' => MockHandler::createWithMiddleware([
@@ -84,7 +84,7 @@ class PublishResultsTest extends TestCase
 
     public function testHandlesServerException(): void
     {
-        $logger = new TestLogger();
+        $logger = new NullLogger();
 
         $client = new Client([
             'handler' => MockHandler::createWithMiddleware([
@@ -105,7 +105,7 @@ class PublishResultsTest extends TestCase
 
     public function testHandlesConnectException(): void
     {
-        $logger = new TestLogger();
+        $logger = new NullLogger();
 
         $client = new Client([
             'handler' => MockHandler::createWithMiddleware([
@@ -126,7 +126,7 @@ class PublishResultsTest extends TestCase
 
     public function testExecute(): void
     {
-        $logger = new TestLogger();
+        $logger = new NullLogger();
 
         $client = new Client([
             'handler' => MockHandler::createWithMiddleware([
