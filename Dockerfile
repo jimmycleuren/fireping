@@ -1,4 +1,4 @@
-FROM php:8.2.32-fpm-bookworm
+FROM php:8.2.35-fpm-bookworm
 
 ENV MODE slave
 ENV DEV false
