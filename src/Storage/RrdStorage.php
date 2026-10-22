@@ -31,6 +31,10 @@ class RrdStorage extends Storage
     {
         $this->logger = $logger;
 
+        if ($this->path) {
+            $this->path = rtrim($this->path, '/').'/';
+        }
+
         if ($this->path && !file_exists($concurrentDirectory = $this->path) && !mkdir($concurrentDirectory) && !is_dir($concurrentDirectory)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
