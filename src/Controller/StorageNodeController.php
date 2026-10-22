@@ -66,9 +66,9 @@ class StorageNodeController extends AbstractController
         $process = new Process(['ssh', '-oBatchMode=yes', $node->getIp(), 'touch', '/opt/fireping/var/rrd/test.txt']);
         $process->run();
 
-        $error = $process->getErrorOutput();
+        $error = !$process->isSuccessful();
         if ($error) {
-            $this->logger->warning("Error creating test file on $node: ".trim($error));
+            $this->logger->warning("Error creating test file on $node: ".trim($process->getErrorOutput()));
 
             return false;
         }
@@ -76,9 +76,9 @@ class StorageNodeController extends AbstractController
         $process = new Process(['ssh', '-oBatchMode=yes', $node->getIp(), 'rm', '/opt/fireping/var/rrd/test.txt']);
         $process->run();
 
-        $error = $process->getErrorOutput();
+        $error = !$process->isSuccessful();
         if ($error) {
-            $this->logger->warning("Error deleting test file on $node: ".trim($error));
+            $this->logger->warning("Error deleting test file on $node: ".trim($process->getErrorOutput()));
 
             return false;
         }
