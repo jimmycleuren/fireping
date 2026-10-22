@@ -145,7 +145,15 @@ class RrdCachedStorage extends RrdStorage
 
         $this->send("CREATE $filename ".implode(' ', $options), $daemon);
         $message = $this->read($daemon);
-        if (!stristr((string) $message, '0 RRD created OK')) {
+        preg_match('/-?\d+/', $message, $matches);
+
+        if(count($matches) === 0) {
+            throw new RrdException('RRDcached returned an empty response');
+        }
+
+        $code = (int)$matches[0];
+
+        if ($code < 0) {
             throw new RrdException(trim((string) $message));
         }
     }
