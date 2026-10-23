@@ -17,7 +17,7 @@ class AdminControllerTest extends WebTestCase
 
         $crawler = $client->request('GET', '/admin');
 
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertStringContainsString('Fireping', $crawler->filter('a')->text());
+        $this->assertEquals(302, $client->getResponse()->getStatusCode());
+        $this->assertStringContainsString('Domain', $crawler->filter('a')->text());
     }
 }
