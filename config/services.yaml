@@ -4,7 +4,10 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
-    storage.path: '%kernel.project_dir%/var/rrd/'
+    # rrd directory for device data, on the app server or on the storage nodes
+    # depending on the storage type
+    env(STORAGE_PATH): '%kernel.project_dir%/var/rrd'
+    storage.path: '%env(STORAGE_PATH)%'
 
 services:
     # default configuration for services in *this* file
@@ -22,6 +25,11 @@ services:
     # as action arguments even if you don't extend any base controller class
     App\Controller\:
         resource: '../src/Controller'
+        tags: ['controller.service_arguments']
+
+    App\Controller\StorageNodeController:
+        arguments:
+            $storagePath: '%storage.path%'
         tags: ['controller.service_arguments']
 
     App\AlertDestination\:

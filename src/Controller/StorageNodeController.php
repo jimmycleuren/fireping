@@ -12,6 +12,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class StorageNodeController extends AbstractController
 {
     private $logger = null;
+    private readonly string $storagePath;
+
+    public function __construct(string $storagePath)
+    {
+        $this->storagePath = rtrim($storagePath, '/');
+    }
 
     /**
      * @Route("/storagenode", name="storagenode")
@@ -63,7 +69,9 @@ class StorageNodeController extends AbstractController
 
     private function checkPermissions(StorageNode $node)
     {
-        $process = new Process(['ssh', '-oBatchMode=yes', $node->getIp(), 'touch', '/opt/fireping/var/rrd/test.txt']);
+        $testFile = $this->storagePath.'/test.txt';
+
+        $process = new Process(['ssh', '-oBatchMode=yes', $node->getIp(), 'touch', $testFile]);
         $process->run();
 
         $error = !$process->isSuccessful();
@@ -73,7 +81,7 @@ class StorageNodeController extends AbstractController
             return false;
         }
 
-        $process = new Process(['ssh', '-oBatchMode=yes', $node->getIp(), 'rm', '/opt/fireping/var/rrd/test.txt']);
+        $process = new Process(['ssh', '-oBatchMode=yes', $node->getIp(), 'rm', $testFile]);
         $process->run();
 
         $error = !$process->isSuccessful();

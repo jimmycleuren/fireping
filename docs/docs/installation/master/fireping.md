@@ -169,6 +169,16 @@ Example:
 STORAGE=rrd
 ```
 
+## STORAGE_PATH
+
+Configure this to set the directory holding the rrd files of the devices. With `STORAGE=rrd` or `STORAGE=rrdcached` this is a directory on the application server, with `STORAGE=rrddistributed` it is the directory on the storage nodes. It should match the `BASE_PATH` of rrdcached. Defaults to `var/rrd` in the installation directory.
+
+Example:
+
+```bash
+STORAGE_PATH=/opt/fireping/var/rrd
+```
+
 ## TRUSTED_PROXIES
 
 Configure this if you are using a reverse proxy in front of nginx.
