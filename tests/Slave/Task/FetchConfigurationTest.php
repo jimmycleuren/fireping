@@ -10,7 +10,6 @@ use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Utils;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
-use Psr\Log\Test\TestLogger;
 
 class FetchConfigurationTest extends TestCase
 {
@@ -47,7 +46,7 @@ class FetchConfigurationTest extends TestCase
 
     public function testConfigurationNoChange(): void
     {
-        $logger = new TestLogger();
+        $logger = new NullLogger();
         $client = new Client([
             'handler' => MockHandler::createWithMiddleware([
                 new Response(304, [
@@ -69,7 +68,7 @@ class FetchConfigurationTest extends TestCase
 
     public function testConfigurationNoChangeNoEtag(): void
     {
-        $logger = new TestLogger();
+        $logger = new NullLogger();
         $client = new Client([
             'handler' => MockHandler::createWithMiddleware([
                 new Response(304)
@@ -89,7 +88,7 @@ class FetchConfigurationTest extends TestCase
 
     public function testConfigurationInvalidJson(): void
     {
-        $logger = new TestLogger();
+        $logger = new NullLogger();
         $client = new Client([
             'handler' => MockHandler::createWithMiddleware([
                 new Response(200, [], Utils::streamFor('{'))
@@ -109,7 +108,7 @@ class FetchConfigurationTest extends TestCase
 
     public function testSuccess(): void
     {
-        $logger = new TestLogger();
+        $logger = new NullLogger();
         $configuration = ['some' => 'configuration', 'foo' => [0, 1, 2, 3]];
         $client = new Client([
             'handler' => MockHandler::createWithMiddleware([
@@ -130,7 +129,7 @@ class FetchConfigurationTest extends TestCase
 
     public function testGuzzleException(): void
     {
-        $logger = new TestLogger();
+        $logger = new NullLogger();
         $client = new Client([
             'handler' => MockHandler::createWithMiddleware([
                 new Response(500)

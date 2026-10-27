@@ -7,7 +7,8 @@ namespace App\AlertDestination;
 use App\Entity\Alert;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
-use Swift_Mailer;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Twig\Environment;
 use UnexpectedValueException;
 use function array_key_exists;
@@ -19,7 +20,7 @@ class Mail extends AlertDestinationInterface
     private readonly string $from;
     private string $recipient;
 
-    public function __construct(private readonly Swift_Mailer $mailer, private readonly LoggerInterface $logger, private readonly Environment $twig, string $from)
+    public function __construct(private readonly MailerInterface $mailer, private readonly LoggerInterface $logger, private readonly Environment $twig, string $from)
     {
         if (filter_var($from, FILTER_VALIDATE_EMAIL) === false) {
             throw new UnexpectedValueException('invalid e-mail address');
@@ -53,23 +54,30 @@ class Mail extends AlertDestinationInterface
     private function sendMail(string $to, string $subject, Alert $alert, string $action): void
     {
         try {
-            $message = (new \Swift_Message($subject))
-                ->setFrom($this->from)
-                ->setTo($to)
-                ->setBody(
+            $email = (new Email())
+                ->from($this->from)
+                ->to($to)
+                ->subject($subject)
+                ->html(
                     $this->twig->render(
                         'emails/alert.html.twig',
                         [
                             'alert' => $alert,
                             'action' => $action,
                         ]
-                    ),
-                    'text/html'
+                    )
+                )
+                ->text(
+                    $this->twig->render(
+                        'emails/alert.txt.twig',
+                        [
+                            'alert' => $alert,
+                            'action' => $action,
+                        ]
+                    )
                 );
 
-            if (!$this->mailer->send($message)) {
-                $this->logger->warning("Mail to $to could not be sent");
-            }
+            $this->mailer->send($email);
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
         }

@@ -11,13 +11,13 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Utils;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\Test\TestLogger;
+use Psr\Log\NullLogger;
 
 class PublishStatisticsTest extends TestCase
 {
     public function testSetArgsDefaults(): void
     {
-        $class = new PublishStatistics(new TestLogger(), new Client());
+        $class = new PublishStatistics(new NullLogger(), new Client());
         $class->setArgs([]);
 
         self::assertSame('POST', $class->getMethod());
@@ -27,7 +27,7 @@ class PublishStatisticsTest extends TestCase
 
     public function testSetArguments(): void
     {
-        $class = new PublishStatistics(new TestLogger(), new Client());
+        $class = new PublishStatistics(new NullLogger(), new Client());
         $class->setArgs([
             'method' => 'GET',
             'body' => ['foo' => 'bar']
@@ -39,14 +39,14 @@ class PublishStatisticsTest extends TestCase
 
     public function testGetType(): void
     {
-        $class = new PublishStatistics(new TestLogger(), new Client());
+        $class = new PublishStatistics(new NullLogger(), new Client());
 
         self::assertSame(PublishStatistics::class, $class->getType());
     }
 
     public function testHandlesClientException(): void
     {
-        $class = new PublishStatistics(new TestLogger(), new Client([
+        $class = new PublishStatistics(new NullLogger(), new Client([
             'handler' => MockHandler::createWithMiddleware([
                 new Response(400, [], Utils::streamFor('You did a bad thing'))
             ])
@@ -63,7 +63,7 @@ class PublishStatisticsTest extends TestCase
 
     public function testHandlesServerException(): void
     {
-        $class = new PublishStatistics(new TestLogger(), new Client([
+        $class = new PublishStatistics(new NullLogger(), new Client([
             'handler' => MockHandler::createWithMiddleware([
                 new Response(500, [], Utils::streamFor('I did a bad thing'))
             ])
@@ -80,7 +80,7 @@ class PublishStatisticsTest extends TestCase
 
     public function testHandlesConnectException(): void
     {
-        $class = new PublishStatistics(new TestLogger(), new Client([
+        $class = new PublishStatistics(new NullLogger(), new Client([
             'handler' => MockHandler::createWithMiddleware([
                 new ConnectException('Failure!', new Request('GET', '/api/slaves'))
             ])
@@ -97,7 +97,7 @@ class PublishStatisticsTest extends TestCase
 
     public function testExecute(): void
     {
-        $class = new PublishStatistics(new TestLogger(), new Client([
+        $class = new PublishStatistics(new NullLogger(), new Client([
             'handler' => MockHandler::createWithMiddleware([
                 new Response(200, [], Utils::streamFor('there is a result here!'))
             ])
