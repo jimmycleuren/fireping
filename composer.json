@@ -24,7 +24,7 @@
         "doctrine/doctrine-bundle": "^2.0",
         "doctrine/doctrine-migrations-bundle": "^3.0",
         "doctrine/orm": "^2.5",
-        "easycorp/easyadmin-bundle": "^3.0",
+        "easycorp/easyadmin-bundle": "^4.10",
         "eightpoints/guzzle-bundle": "^8.1",
         "flexihash/flexihash": "^3.0",
         "guzzlehttp/guzzle": "^7.0",
